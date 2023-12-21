@@ -52,5 +52,6 @@ export const OobeDialogHostBehavior = {
 
 /** @interface */
 export class OobeDialogHostBehaviorInterface {
-  onBeforeShow() {}
+  /** @param {...Object} data  */
+  onBeforeShow(...data) {}
 }

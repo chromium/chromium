@@ -137,7 +137,7 @@ common_screens_js_files = [
   "screens/common/oobe_reset.js",
   "screens/common/os_install.js",
   "screens/common/os_trial.js",
-  "screens/common/parental_handoff.js",
+  "screens/common/parental_handoff.ts",
   "screens/common/quick_start.js",
   "screens/common/remote_activity_notification.js",
 

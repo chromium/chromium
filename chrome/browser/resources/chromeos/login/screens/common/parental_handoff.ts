@@ -12,87 +12,69 @@ import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 
-import {afterNextRender, dom, flush, html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OobeNextButton} from '../../components/buttons/oobe_next_button.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {getTemplate} from './parental_handoff.html.js';
 
+export const ParentalHandoffElementBase =
+    mixinBehaviors(
+        [OobeI18nBehavior, LoginScreenBehavior, OobeDialogHostBehavior],
+        PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
+    };
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {OobeI18nBehaviorInterface}
- * @implements {LoginScreenBehaviorInterface}
- */
-const ParentalHandoffElementBase = mixinBehaviors(
-    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    PolymerElement);
+interface ParentalHandoffScreenData {
+  username: string;
+}
 
-/**
- * @typedef {{
- *   parentalHandoffDialog:  OobeAdaptiveDialog,
- * }}
- */
-ParentalHandoffElementBase.$;
-
-/**
- * Data that is passed to the screen during onBeforeShow.
- * @typedef {{
- *   username: string,
- * }}
- */
-let ParentalHandoffScreenData;
-
-/**
- * @polymer
- */
-class ParentalHandoff extends ParentalHandoffElementBase {
+export class ParentalHandoff extends ParentalHandoffElementBase {
   static get is() {
-    return 'parental-handoff-element';
+    return 'parental-handoff-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * The username to be displayed
        */
-      username_: {
+      username: {
         type: String,
+        value: '',
       },
     };
   }
 
+  private username: string;
+
   constructor() {
     super();
-    this.username_ = '';
-  }
-
-  /** @override */
-  get EXTERNAL_API() {
-    return [];
   }
 
   /**
    * Event handler that is invoked just before the frame is shown.
-   * @param {ParentalHandoffScreenData} data Screen init payload
    */
-  onBeforeShow(data) {
+  override onBeforeShow(data: ParentalHandoffScreenData): void {
     if ('username' in data) {
-      this.username_ = data.username;
+      this.username = data.username;
     }
-    this.$.parentalHandoffDialog.focus();
+    const parentalHandoffDialog =
+        this.shadowRoot!.querySelector<OobeAdaptiveDialog>(
+            '#parentalHandoffDialog')!;
+    parentalHandoffDialog.focus();
   }
 
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('ParentalHandoffScreen');
   }
@@ -100,17 +82,22 @@ class ParentalHandoff extends ParentalHandoffElementBase {
   /*
    * Executed on language change.
    */
-  updateLocalizedContent() {
+  override updateLocalizedContent(): void {
     this.i18nUpdateLocale();
   }
 
   /**
    * On-tap event handler for Next button.
    *
-   * @private
    */
-  onNextButtonPressed_() {
+  private onNextButtonPressed(): void {
     this.userActed('next');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [ParentalHandoff.is]: ParentalHandoff;
   }
 }
 

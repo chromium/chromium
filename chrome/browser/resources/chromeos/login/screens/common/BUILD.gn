@@ -42,7 +42,6 @@ js_type_check("closure_compile_local") {
     ":oobe_reset",
     ":os_install",
     ":os_trial",
-    ":parental_handoff",
     ":placeholder",
     ":quick_start",
     ":recommend_apps",
@@ -276,18 +275,6 @@ js_library("os_install") {
 
   externs_list = [ "$externs_path/webview_tag.js" ]
 
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("parental_handoff") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/parental_handoff.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
   extra_deps = [ ":web_components" ]
 }
 
