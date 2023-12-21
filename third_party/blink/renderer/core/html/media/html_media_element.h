@@ -500,8 +500,6 @@ class CORE_EXPORT HTMLMediaElement
                          UpdateBehavior::kStyleAndLayout) const final;
   bool IsFocusable(UpdateBehavior update_behavior =
                        UpdateBehavior::kStyleAndLayout) const final;
-  bool IsKeyboardFocusable(UpdateBehavior update_behavior =
-                               UpdateBehavior::kStyleAndLayout) const final;
   int DefaultTabIndex() const final;
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
