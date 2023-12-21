@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.PASSKEY_MANAGE
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -114,6 +115,9 @@ public class PasswordManagerHelper {
     private static final String LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.CredentialManager.LocalProfile.Launch.Success";
 
+    private static final String ACCOUNT_SETTINGS_ACTIVITY_HISTOGRAM =
+            "PasswordManager.AccountSettings.Launch.Success";
+
     private static final String PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.PasswordCheckup.Launch.Success";
 
@@ -201,10 +205,10 @@ public class PasswordManagerHelper {
                             ? CoreAccountInfo.getEmailFrom(syncService.getAccountInfo())
                             : "";
             // TODO(crbug.com/1507785): Find an alternative to account settings intent.
-            Activity activity = ContextUtils.activityFromContext(context);
-            if (activity == null) return;
             credentialManagerLauncher.getAccountSettingsIntent(
-                    accountName, (intent) -> activity.startActivityForResult(intent, 0));
+                    accountName,
+                    (intent) ->
+                            PasswordManagerHelper.startAccountSettingsActivity(context, intent));
             return;
         }
 
@@ -741,5 +745,18 @@ public class PasswordManagerHelper {
 
         throw new CredentialManagerBackendException(
                 "Can not instantiate backend client.", CredentialManagerError.UNCATEGORIZED);
+    }
+
+    private static void startAccountSettingsActivity(Context context, Intent intent) {
+        boolean success = false;
+        Activity activity = ContextUtils.activityFromContext(context);
+        if (activity != null) {
+            try {
+                activity.startActivityForResult(intent, 0);
+                success = true;
+            } catch (ActivityNotFoundException e) {
+            }
+        }
+        RecordHistogram.recordBooleanHistogram(ACCOUNT_SETTINGS_ACTIVITY_HISTOGRAM, success);
     }
 }
