@@ -165,8 +165,6 @@ extern const BASE_EXPORT base::FeatureParam<bool>
 extern const BASE_EXPORT base::FeatureParam<BucketDistributionMode>
     kPartitionAllocBucketDistributionParam;
 
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocBackupRefPtrForAsh);
-
 BASE_EXPORT BASE_DECLARE_FEATURE(kLowerPAMemoryLimitForNonMainRenderers);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanMUAwareScheduler);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanStackScanning);

@@ -106,11 +106,6 @@ enum class RawPtrTraits : unsigned {
   // Don't use directly, use AllowPtrArithmetic instead.
   kAllowPtrArithmetic = (1 << 3),
 
-  // This pointer is evaluated by a separate, Ash-related experiment.
-  //
-  // Don't use directly, use ExperimentalAsh instead.
-  kExperimentalAsh = (1 << 4),
-
   // Uninitialized pointers are discouraged and disabled by default.
   //
   // Don't use directly, use AllowUninitialized instead.
@@ -132,8 +127,7 @@ enum class RawPtrTraits : unsigned {
   kDummyForTest = (1 << 11),
 
   kAllMask = kMayDangle | kDisableHooks | kAllowPtrArithmetic |
-             kExperimentalAsh | kAllowUninitialized | kUseCountingImplForTest |
-             kDummyForTest,
+             kAllowUninitialized | kUseCountingImplForTest | kDummyForTest,
 };
 // Template specialization to use |PA_DEFINE_OPERATORS_FOR_FLAGS| without
 // |kMaxValue| declaration.
@@ -226,10 +220,7 @@ template <RawPtrTraits Traits>
 using UnderlyingImplForTraits = internal::RawPtrBackupRefImpl<
     /*AllowDangling=*/partition_alloc::internal::ContainsFlags(
         Traits,
-        RawPtrTraits::kMayDangle),
-    /*ExperimentalAsh=*/partition_alloc::internal::ContainsFlags(
-        Traits,
-        RawPtrTraits::kExperimentalAsh)>;
+        RawPtrTraits::kMayDangle)>;
 
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 template <RawPtrTraits Traits>
@@ -968,14 +959,6 @@ struct RemovePointer<raw_ptr<T, Traits>> {
 template <typename T>
 using RemovePointerT = typename RemovePointer<T>::type;
 
-struct RawPtrGlobalSettings {
-  static void EnableExperimentalAsh() {
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    internal::BackupRefPtrGlobalSettings::EnableExperimentalAsh();
-#endif
-  }
-};
-
 }  // namespace base
 
 using base::raw_ptr;
@@ -1016,14 +999,9 @@ constexpr auto AcrossTasksDanglingUntriaged = base::RawPtrTraits::kMayDangle;
 // instead of the raw_ptr.
 constexpr auto AllowPtrArithmetic = base::RawPtrTraits::kAllowPtrArithmetic;
 
-// Temporary flag for `raw_ptr` / `raw_ref`. This is used by finch experiments
-// to differentiate pointers added recently for the ChromeOS ash rewrite.
-//
-// See launch plan:
-// https://docs.google.com/document/d/105OVhNl-2lrfWElQSk5BXYv-nLynfxUrbC4l8cZ0CoU/edit
-//
-// This is not meant to be added manually. You can ignore this flag.
-constexpr auto ExperimentalAsh = base::RawPtrTraits::kExperimentalAsh;
+// Does nothing.
+// TODO(bartekn): Remove once no longer referenced.
+constexpr auto ExperimentalAsh = base::RawPtrTraits::kEmpty;
 
 // The use of uninitialized pointers is strongly discouraged. raw_ptrs will
 // be initialized to nullptr by default in all cases when building against

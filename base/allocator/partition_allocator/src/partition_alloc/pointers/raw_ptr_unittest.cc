@@ -26,7 +26,6 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "partition_alloc/chromeos_buildflags.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc.h"
@@ -2317,84 +2316,6 @@ TEST_F(BackupRefPtrTest, QuarantineHook) {
 
   partition_alloc::PartitionAllocHooks::SetQuarantineOverrideHook(nullptr);
 }
-
-#if BUILDFLAG(PA_IS_CHROMEOS_ASH)
-TEST_F(BackupRefPtrTest, ExperimentalAsh) {
-  const bool feature_enabled_by_default =
-      BackupRefPtrGlobalSettings::IsExperimentalAshEnabled();
-  if (feature_enabled_by_default) {
-    BackupRefPtrGlobalSettings::DisableExperimentalAshForTest();
-  }
-
-  // Allocate a slot so that a slot span doesn't get decommitted from memory,
-  // while we allocate/deallocate/access the tested slot below.
-  void* sentinel = allocator_.root()->Alloc(sizeof(unsigned int), "");
-
-  constexpr uint32_t kQuarantined2Bytes =
-      partition_alloc::internal::kQuarantinedByte |
-      (partition_alloc::internal::kQuarantinedByte << 8);
-  constexpr uint32_t kQuarantined4Bytes =
-      kQuarantined2Bytes | (kQuarantined2Bytes << 16);
-
-  // Plain raw_ptr, with BRP for ExperimentalAsh pointer disabled.
-  {
-    raw_ptr<unsigned int, DanglingUntriaged> ptr = static_cast<unsigned int*>(
-        allocator_.root()->Alloc(sizeof(unsigned int), ""));
-    *ptr = 0;
-    allocator_.root()->Free(ptr);
-#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    EXPECT_DEATH_IF_SUPPORTED(*ptr = 0, "");
-#else
-    EXPECT_EQ(kQuarantined4Bytes, *ptr);
-#endif
-  }
-  // raw_ptr with ExperimentalAsh, BRP is expected to be off, as it is enabled
-  // independently for these pointers.
-  {
-    raw_ptr<unsigned int, DanglingUntriaged | ExperimentalAsh> ptr =
-        static_cast<unsigned int*>(
-            allocator_.root()->Alloc(sizeof(unsigned int), ""));
-    *ptr = 0;
-    allocator_.root()->Free(ptr);
-    // A tad fragile as a new allocation or free-list pointer may be there, but
-    // highly unlikely it'll match 4 quarantine bytes in a row.
-    EXPECT_NE(kQuarantined4Bytes, *ptr);
-  }
-
-  BackupRefPtrGlobalSettings::EnableExperimentalAsh();
-  // BRP should be on for both types of pointers.
-  {
-    raw_ptr<unsigned int, DanglingUntriaged> ptr = static_cast<unsigned int*>(
-        allocator_.root()->Alloc(sizeof(unsigned int), ""));
-    *ptr = 0;
-    allocator_.root()->Free(ptr);
-#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    EXPECT_DEATH_IF_SUPPORTED(*ptr = 0, "");
-#else
-    EXPECT_EQ(kQuarantined4Bytes, *ptr);
-#endif
-  }
-  {
-    raw_ptr<unsigned int, DanglingUntriaged | ExperimentalAsh> ptr =
-        static_cast<unsigned int*>(
-            allocator_.root()->Alloc(sizeof(unsigned int), ""));
-    *ptr = 0;
-    allocator_.root()->Free(ptr);
-#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    EXPECT_DEATH_IF_SUPPORTED(*ptr = 0, "");
-#else
-    EXPECT_EQ(kQuarantined4Bytes, *ptr);
-#endif
-  }
-
-  allocator_.root()->Free(sentinel);
-
-  // Restore the feature state to avoid one test to "leak" into the next one.
-  if (!feature_enabled_by_default) {
-    BackupRefPtrGlobalSettings::DisableExperimentalAshForTest();
-  }
-}
-#endif  // BUILDFLAG(PA_IS_CHROMEOS_ASH)
 
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
