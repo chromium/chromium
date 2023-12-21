@@ -177,9 +177,14 @@ ComposeSession::~ComposeSession() {
   }
   if (!current_msbb_state_ || msbb_enabled_during_session_) {
     compose::LogComposeMSBBSessionDialogShownCount(msbb_close_reason_,
-                                                   dialog_shown_count_);
+                                                   msbb_dialog_shown_count_);
     compose::LogComposeMSBBSessionCloseReason(msbb_close_reason_);
     if (!current_msbb_state_) {
+      // Log whether or not the user inserted text after having
+      // accepted/acknowledged consent in the same session.
+      if (consent_given_in_session_) {
+        compose::LogComposeConsentSessionCloseReason(consent_close_reason_);
+      }
       return;
     }
   }
@@ -553,7 +558,13 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
 
 void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
                                         const bool text_selected) {
+  if (!current_msbb_state_) {
+    msbb_dialog_shown_count_ += 1;
+    return;
+  }
+
   dialog_shown_count_ += 1;
+
   text_selected_ = text_selected;
   RefreshInnerText();
 

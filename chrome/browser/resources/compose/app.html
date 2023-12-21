@@ -35,6 +35,13 @@
     margin-block-start: -4px;
   }
 
+  #freMsbbHeading {
+    display: flex;
+    height: 48px;
+    align-items: start;
+    padding: 0 var(--padding_);
+  }
+
   #consentIconContainer {
     margin-inline-end: var(--gap-between-sections_);
     min-width: 48px;
@@ -77,6 +84,16 @@
     display: flex;
     flex-direction: column;
     gap: 7px;
+    padding: 0 20px;
+  }
+
+  #freMsbbContainer {
+    color: var(--cr-secondary-text-color);
+    font: inherit;
+    font-size: 13px;
+    line-height: 20px;
+    display: flex;
+    flex-direction: column;
     padding: 0 20px;
   }
 
@@ -333,7 +350,7 @@
   }
 </style>
 
-<div id="consentDialog" class="dialog" hidden="[[showMainAppDialog_]]">
+<div id="consentDialog" class="dialog" hidden="[[!showConsentDialog_]]">
   <div id="consentHeading">
     <div id="consentIconContainer">
       <iron-icon icon="compose:compose"></iron-icon>
@@ -373,26 +390,25 @@
 </div>
 
 
-<div id="consentMSBBDialog" class="dialog" hidden>
-  <div id="consentMSBBHeading">
-    <h1>$i18n{consentMSBBTitle}</h1>
-    <cr-icon-button id="closeButtonConsent" iron-icon="cr:close"
+<div id="freMsbbDialog" class="dialog" hidden="[[!showMSBBDialog_]]">
+  <div id="freMsbbHeading">
+    <h1>$i18n{freMsbbTitle}</h1>
+    <cr-icon-button id="closeButtonMSBB" iron-icon="cr:close"
       on-click="onClose_">
     </cr-icon-button>
   </div>
 
-  <div id="consentMSBBContainer">
-    <div id="consentMSBBTopText">
-      $i18nRaw{consentMSBBMainTop}
-    </div>
-    <div id="consentMSBBBottomText">
-      $i18n{consentMSBBMainBottom}
+
+  <div id="freMsbbContainer">
+    <div id="freMsbbText">
+      $i18nRaw{freMsbbMain}
     </div>
   </div>
 
-  <div id="consentMSBBFooter" class="footer">
-    <cr-button id="ContinueButton" class="action-button">
-      $i18n{consentMSBBContinueButton}
+  <div id="freMsbbFooter" class="footer">
+    <cr-button id="SettingsButton" class="action-button"
+      on-click="onMsbbSettingsClick_">
+      $i18n{freMsbbSettingsButton}
     </cr-button>
   </div>
 </div>

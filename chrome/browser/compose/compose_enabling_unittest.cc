@@ -174,13 +174,6 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 
-  void SetMsbbState(bool new_state) {
-    PrefService* prefs = GetProfile()->GetPrefs();
-    prefs->SetBoolean(
-        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
-        new_state);
-  }
-
   CustomMockOptimizationGuideKeyedService& opt_guide() { return *opt_guide_; }
 
  protected:
@@ -235,7 +228,6 @@ TEST_F(ComposeEnablingTest, EverythingDisabledTest) {
       {}, {compose::features::kEnableCompose,
            compose::features::kEnableComposeNudge});
   // We intentionally don't call sign in to make our state not signed in.
-  SetMsbbState(false);
   EXPECT_NE(compose_enabling_->IsEnabled(), base::ok());
 }
 
@@ -247,26 +239,13 @@ TEST_F(ComposeEnablingTest, FeatureNotEnabledTest) {
            compose::features::kEnableComposeNudge});
   // Sign in, with sync turned on.
   SignIn(signin::ConsentLevel::kSync);
-  // Turn on MSBB.
-  SetMsbbState(true);
 
   CheckIsEnabledError(compose_enabling_.get(),
                       compose::ComposeShowStatus::kGenericBlocked);
 }
 
-TEST_F(ComposeEnablingTest, MsbbDisabledTest) {
-  // Sign in, with sync turned on.
-  SignIn(signin::ConsentLevel::kSync);
-  // MSBB turned off.
-  SetMsbbState(false);
-  CheckIsEnabledError(compose_enabling_.get(),
-                      compose::ComposeShowStatus::kDisabledMsbb);
-}
-
 TEST_F(ComposeEnablingTest, NotSignedInTest) {
   // Intentionally skip the signin step.
-  // Turn on MSBB.
-  SetMsbbState(true);
   CheckIsEnabledError(compose_enabling_.get(),
                       compose::ComposeShowStatus::kSignedOut);
 }
@@ -280,8 +259,6 @@ TEST_F(ComposeEnablingTest, SignedInErrorTest) {
       GoogleServiceAuthError(
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
 
-  // Turn on MSBB.
-  SetMsbbState(true);
   CheckIsEnabledError(compose_enabling_.get(),
                       compose::ComposeShowStatus::kSignedOut);
 }
@@ -295,8 +272,6 @@ TEST_F(ComposeEnablingTest, ComposeEligibleTest) {
       {compose::features::kComposeEligible});
   // Sign in, with sync turned on.
   SignIn(signin::ConsentLevel::kSync);
-  // Turn on MSBB.
-  SetMsbbState(true);
 
   // The ComposeEligible switch should win, and disable the feature.
   CheckIsEnabledError(compose_enabling_.get(),
@@ -306,16 +281,12 @@ TEST_F(ComposeEnablingTest, ComposeEligibleTest) {
 TEST_F(ComposeEnablingTest, EverythingEnabledTest) {
   // Sign in, with sync turned on.
   SignIn(signin::ConsentLevel::kSync);
-  // Turn on MSBB.
-  SetMsbbState(true);
   EXPECT_EQ(compose_enabling_->IsEnabled(), base::ok());
 }
 
 TEST_F(ComposeEnablingTest, UserNotAllowedTest) {
   // Sign in, with sync turned on.
   SignIn(signin::ConsentLevel::kSync);
-  // Turn on MSBB.
-  SetMsbbState(true);
   // Cause per-user check to fail.
   ComposeEnabling::SkipUserEnabledCheckForTesting(false);
 
@@ -330,7 +301,6 @@ TEST_F(ComposeEnablingTest, StaticMethodEverythingDisabledTest) {
       {}, {compose::features::kEnableCompose,
            compose::features::kEnableComposeNudge});
   // We intentionally don't call sign in to make our state not signed in.
-  SetMsbbState(false);
   EXPECT_FALSE(ComposeEnabling::IsEnabledForProfile(GetProfile()));
 }
 
