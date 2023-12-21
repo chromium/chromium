@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_ash_browser_test_starter.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
@@ -65,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, RegularOnlineKiosk) {
   EXPECT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, PRE_NonKioskAppLaunchError) {
+IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, NonKioskAppLaunchError) {
   if (!kiosk_ash_starter_.HasLacrosArgument()) {
     return;
   }
@@ -86,10 +87,13 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, PRE_NonKioskAppLaunchError) {
 }
 
 // Kiosk launch error is recorded on the next kiosk session run.
-IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, NonKioskAppLaunchError) {
+IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, ShouldLogPreviousLaunchError) {
   if (!kiosk_ash_starter_.HasLacrosArgument()) {
     return;
   }
+
+  KioskAppLaunchError::Save(KioskAppLaunchError::Error::kNotKioskEnabled);
+
   NewAuraWindowWatcher watcher;
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
