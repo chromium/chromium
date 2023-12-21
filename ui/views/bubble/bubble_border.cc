@@ -705,6 +705,9 @@ void BubbleBorder::PaintVisibleArrow(const View& view, gfx::Canvas* canvas) {
                                     side == BubbleArrowSide::kLeft ? 0 : -2));
   canvas->ClipRect(clip_rect);
 
+  // Unlike the flags for drawing the border, these are not cached because
+  // arrows are currently rare. Should this change over time, we might want to
+  // cache these flags, too.
   cc::PaintFlags flags;
   flags.setStrokeCap(cc::PaintFlags::kRound_Cap);
 
@@ -713,6 +716,8 @@ void BubbleBorder::PaintVisibleArrow(const View& view, gfx::Canvas* canvas) {
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(1.2);
     flags.setAntiAlias(true);
+    flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowValues(
+        view.GetColorProvider(), md_shadow_elevation_, shadow_)));
     canvas->DrawPath(
         GetVisibleArrowPath(arrow_, arrow_bounds, BubbleArrowPart::kBorder),
         flags);
@@ -722,6 +727,8 @@ void BubbleBorder::PaintVisibleArrow(const View& view, gfx::Canvas* canvas) {
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setStrokeWidth(1.0);
   flags.setAntiAlias(true);
+  flags.setLooper(gfx::CreateShadowDrawLooper(
+      GetShadowValues(view.GetColorProvider(), md_shadow_elevation_, shadow_)));
   canvas->DrawPath(
       GetVisibleArrowPath(arrow_, arrow_bounds, BubbleArrowPart::kFill), flags);
 }
