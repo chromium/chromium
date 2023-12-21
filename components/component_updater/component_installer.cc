@@ -128,25 +128,29 @@ Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
   }
 
   const std::string* version_ascii = local_manifest->FindString("version");
-  if (!version_ascii || !base::IsStringASCII(*version_ascii))
+  if (!version_ascii || !base::IsStringASCII(*version_ascii)) {
     return Result(InstallError::INVALID_VERSION);
+  }
 
   const base::Version manifest_version(*version_ascii);
 
   VLOG(1) << "Install: version=" << manifest_version.GetString()
           << " current version=" << current_version_.GetString();
 
-  if (!manifest_version.IsValid())
+  if (!manifest_version.IsValid()) {
     return Result(InstallError::INVALID_VERSION);
+  }
   base::FilePath local_install_path;
-  if (!base::PathService::Get(DIR_COMPONENT_USER, &local_install_path))
+  if (!base::PathService::Get(DIR_COMPONENT_USER, &local_install_path)) {
     return Result(InstallError::NO_DIR_COMPONENT_USER);
+  }
   local_install_path =
       local_install_path.Append(installer_policy_->GetRelativeInstallDir())
           .AppendASCII(manifest_version.GetString());
   if (base::PathExists(local_install_path)) {
-    if (!base::DeletePathRecursively(local_install_path))
+    if (!base::DeletePathRecursively(local_install_path)) {
       return Result(InstallError::CLEAN_INSTALL_DIR_FAILED);
+    }
   }
 
   VLOG(1) << "unpack_path=" << unpack_path.AsUTF8Unsafe()
@@ -181,8 +185,9 @@ Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
 
   const Result result =
       installer_policy_->OnCustomInstall(*local_manifest, local_install_path);
-  if (result.error)
+  if (result.error) {
     return result;
+  }
 
   if (!installer_policy_->VerifyInstallation(*local_manifest,
                                              local_install_path)) {
@@ -226,8 +231,9 @@ void ComponentInstaller::Install(
 
 bool ComponentInstaller::GetInstalledFile(const std::string& file,
                                           base::FilePath* installed_file) {
-  if (current_version_ == base::Version(kNullVersion))
+  if (current_version_ == base::Version(kNullVersion)) {
     return false;  // No component has been installed yet.
+  }
   *installed_file = current_install_dir_.AppendASCII(file);
   return true;
 }
@@ -399,8 +405,9 @@ void ComponentInstaller::DeleteUnselectedComponentVersions(
 
 absl::optional<base::FilePath> ComponentInstaller::GetComponentDirectory() {
   base::FilePath base_component_dir;
-  if (!base::PathService::Get(DIR_COMPONENT_USER, &base_component_dir))
+  if (!base::PathService::Get(DIR_COMPONENT_USER, &base_component_dir)) {
     return absl::nullopt;
+  }
   base::FilePath base_dir =
       base_component_dir.Append(installer_policy_->GetRelativeInstallDir());
   if (!base::CreateDirectory(base_dir)) {
@@ -464,10 +471,12 @@ void ComponentInstaller::UninstallOnTaskRunner() {
 
   // Only try to delete any files that are in our user-level install path.
   base::FilePath userInstallPath;
-  if (!base::PathService::Get(DIR_COMPONENT_USER, &userInstallPath))
+  if (!base::PathService::Get(DIR_COMPONENT_USER, &userInstallPath)) {
     return;
-  if (!userInstallPath.IsParent(current_install_dir_))
+  }
+  if (!userInstallPath.IsParent(current_install_dir_)) {
     return;
+  }
 
   const base::FilePath base_dir = current_install_dir_.DirName();
   base::FileEnumerator file_enumerator(base_dir, false,
@@ -478,17 +487,20 @@ void ComponentInstaller::UninstallOnTaskRunner() {
 
     // Ignore folders that don't have valid version names. These folders are not
     // managed by the component installer, so do not try to remove them.
-    if (!version.IsValid())
+    if (!version.IsValid()) {
       continue;
+    }
 
-    if (!base::DeletePathRecursively(path))
+    if (!base::DeletePathRecursively(path)) {
       DVLOG(0) << "Couldn't delete " << path.value();
+    }
   }
 
   // Delete the base directory if it's empty now.
   if (base::IsDirectoryEmpty(base_dir)) {
-    if (!base::DeleteFile(base_dir))
+    if (!base::DeleteFile(base_dir)) {
       DVLOG(0) << "Couldn't delete " << base_dir.value();
+    }
   }
 
   // Customized operations for individual component.
@@ -520,8 +532,9 @@ void ComponentInstaller::FinishRegistration(
                installer_policy_->AllowCachedCopies()))) {
     VLOG(0) << "Component registration failed for "
             << installer_policy_->GetName();
-    if (!callback.is_null())
+    if (!callback.is_null()) {
       std::move(callback).Run();
+    }
     return;
   }
 
@@ -531,8 +544,9 @@ void ComponentInstaller::FinishRegistration(
     DVLOG(1) << "No component found for " << installer_policy_->GetName();
   }
 
-  if (!callback.is_null())
+  if (!callback.is_null()) {
     std::move(callback).Run();
+  }
 }
 
 void ComponentInstaller::ComponentReady(base::Value::Dict manifest) {
