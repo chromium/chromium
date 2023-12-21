@@ -2912,10 +2912,6 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
         if (GetNode()) {
           cache->RemoveSubtreeWhenSafe(GetNode(), /* remove_root */ false);
-        } else {
-          // Removing the AXObject for a nodeless layout object will also
-          // remove its subtree.
-          cache->Remove(this);
         }
       }
     }
@@ -3745,9 +3741,6 @@ void LayoutObject::WillBeDestroyed() {
 
   Remove();
 
-  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
-    cache->Remove(this);
-
   // If this layoutObject had a parent, remove should have destroyed any
   // counters attached to this layoutObject and marked the affected other
   // counters for reevaluation. This apparently redundant check is here for the
@@ -4065,7 +4058,7 @@ void LayoutObject::Destroy() {
   bitfields_.SetBeingDestroyed(true);
   WillBeDestroyed();
 #if DCHECK_IS_ON()
-  DCHECK(!has_ax_object_);
+  DCHECK(!has_ax_object_) << this;
   is_destroyed_ = true;
 #endif
 }

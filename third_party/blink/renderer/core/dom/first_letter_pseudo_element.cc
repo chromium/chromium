@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
@@ -470,6 +471,13 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
   }
   GetLayoutObject()->AddChild(letter);
 
+  // AXObjects are normally removed from destroyed layout objects in
+  // Node::DetachLayoutTree(), but as the ::first-letter implementation manually
+  // destroys the layout object for the first letter text, it must manually
+  // remove the accessibility object for it as well.
+  if (auto* cache = GetDocument().ExistingAXObjectCache()) {
+    cache->RemoveAXObjectsInLayoutSubtree(first_letter_text);
+  }
   first_letter_text->Destroy();
 }
 

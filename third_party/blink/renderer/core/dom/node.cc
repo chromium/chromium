@@ -1545,11 +1545,18 @@ void Node::DetachLayoutTree(bool performing_reattach) {
          GetDocument().GetStyleEngine().InRebuildLayoutTree());
   DocumentLifecycle::DetachScope will_detach(GetDocument().Lifecycle());
 
-  if (performing_reattach)
-    ReattachHookScope::NotifyDetach(*this);
+  // Review: under what conditions should we call this?
+  if (auto* cache = GetDocument().ExistingAXObjectCache()) {
+    cache->RemoveAXObjectsInLayoutSubtree(this);
+  }
 
-  if (GetLayoutObject())
+  if (performing_reattach) {
+    ReattachHookScope::NotifyDetach(*this);
+  }
+
+  if (GetLayoutObject()) {
     GetLayoutObject()->DestroyAndCleanupAnonymousWrappers(performing_reattach);
+  }
   SetLayoutObject(nullptr);
   if (!performing_reattach) {
     // We are clearing the ComputedStyle for elements, which means we should not
