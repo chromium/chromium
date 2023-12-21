@@ -3840,6 +3840,13 @@
       status: "experimental",
       base_feature: "none",
     },
+    {
+      name: "Tpcd1p",
+      origin_trial_feature_name: "Tpcd1p",
+      origin_trial_type: "deprecation",
+      status: "experimental",
+      base_feature: "none",
+    },
     // This is conditionally set if the platform supports translation.
     {
       name: "TranslateService",
