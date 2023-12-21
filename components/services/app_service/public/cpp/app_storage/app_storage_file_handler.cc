@@ -4,6 +4,8 @@
 
 #include "components/services/app_service/public/cpp/app_storage/app_storage_file_handler.h"
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/json/json_string_value_serializer.h"
@@ -63,13 +65,13 @@ constexpr char kExtraKey[] = "extra";
 
 absl::optional<std::string> GetStringValueFromDict(
     const base::Value::Dict& dict,
-    base::StringPiece key_name) {
+    std::string_view key_name) {
   const std::string* value = dict.FindString(key_name);
   return value ? absl::optional<std::string>(*value) : absl::nullopt;
 }
 
 absl::optional<uint64_t> GetUint64ValueFromDict(const base::Value::Dict& dict,
-                                                base::StringPiece key_name) {
+                                                std::string_view key_name) {
   const std::string* value = dict.FindString(key_name);
   uint64_t ret = 0;
   if (value && base::StringToUint64(*value, &ret)) {

@@ -7,11 +7,11 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -46,18 +46,18 @@ std::ostream& operator<<(std::ostream& os,
 
 namespace {
 
-// Helper for tests to create a |uint8_t| span from a StringPiece.
-base::span<const uint8_t> MakeBytes(base::StringPiece s) {
+// Helper for tests to create a |uint8_t| span from a std::string_view.
+base::span<const uint8_t> MakeBytes(std::string_view s) {
   return base::as_bytes(base::make_span(s));
 }
 
-DomStorageDatabase::KeyValuePair MakeKeyValuePair(base::StringPiece key,
-                                                  base::StringPiece value) {
+DomStorageDatabase::KeyValuePair MakeKeyValuePair(std::string_view key,
+                                                  std::string_view value) {
   return {DomStorageDatabase::Key(key.begin(), key.end()),
           DomStorageDatabase::Value(value.begin(), value.end())};
 }
 
-std::string MakePrefixedKey(base::StringPiece prefix, base::StringPiece key) {
+std::string MakePrefixedKey(std::string_view prefix, std::string_view key) {
   return std::string(prefix) + std::string(key);
 }
 

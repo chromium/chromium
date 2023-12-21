@@ -3,15 +3,16 @@
 // found in the LICENSE file.
 
 #include "components/services/screen_ai/proto/main_content_extractor_proto_convertor.h"
-#include "build/build_config.h"
+
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_proto_loader.h"
+#include "build/build_config.h"
 #include "components/services/screen_ai/proto/view_hierarchy.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -68,7 +69,7 @@ int GetAxNodeID(const ::screenai::UiElement& ui_element) {
   return static_cast<int>(ui::kInvalidAXNodeID);
 }
 
-base::FilePath GetTestFilePath(const base::StringPiece file_name) {
+base::FilePath GetTestFilePath(std::string_view file_name) {
   base::FilePath path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
   return path.AppendASCII("components/test/data/screen_ai")

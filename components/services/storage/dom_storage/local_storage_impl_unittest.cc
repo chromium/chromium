@@ -4,6 +4,7 @@
 
 #include "components/services/storage/dom_storage/local_storage_impl.h"
 
+#include <string_view>
 #include <tuple>
 
 #include "base/containers/span.h"
@@ -155,7 +156,7 @@ class LocalStorageImplTest : public testing::Test {
     loop.Run();
   }
 
-  void SetDatabaseEntry(base::StringPiece key, base::StringPiece value) {
+  void SetDatabaseEntry(std::string_view key, std::string_view value) {
     WaitForDatabaseOpen();
     base::RunLoop loop;
     context()->GetDatabaseForTesting().PostTaskWithThisObject(

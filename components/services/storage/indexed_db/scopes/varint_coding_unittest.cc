@@ -4,6 +4,8 @@
 
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 
+#include <string_view>
+
 #include "base/dcheck_is_on.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,21 +50,21 @@ TEST(VarIntCoding, Decode) {
     int64_t n = test_cases[i];
     std::string v = WrappedEncodeVarInt(n);
     ASSERT_GT(v.size(), 0u);
-    base::StringPiece slice(v);
+    std::string_view slice(v);
     int64_t res;
     EXPECT_TRUE(DecodeVarInt(&slice, &res));
     EXPECT_EQ(n, res);
     EXPECT_TRUE(slice.empty());
 
-    slice = base::StringPiece(&*v.begin(), v.size() - 1);
+    slice = std::string_view(&*v.begin(), v.size() - 1);
     EXPECT_FALSE(DecodeVarInt(&slice, &res));
 
-    slice = base::StringPiece(&*v.begin(), static_cast<size_t>(0));
+    slice = std::string_view(&*v.begin(), static_cast<size_t>(0));
     EXPECT_FALSE(DecodeVarInt(&slice, &res));
 
     // Verify decoding at an offset, to detect unaligned memory access.
     v.insert(v.begin(), 1u, static_cast<char>(0));
-    slice = base::StringPiece(&*v.begin() + 1, v.size() - 1);
+    slice = std::string_view(&*v.begin() + 1, v.size() - 1);
     EXPECT_TRUE(DecodeVarInt(&slice, &res));
     EXPECT_EQ(n, res);
     EXPECT_TRUE(slice.empty());

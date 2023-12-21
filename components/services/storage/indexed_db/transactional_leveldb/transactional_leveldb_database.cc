@@ -18,7 +18,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -39,7 +38,6 @@
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 
-using base::StringPiece;
 using leveldb_env::DBTracker;
 
 namespace content {
@@ -91,7 +89,7 @@ TransactionalLevelDBDatabase::~TransactionalLevelDBDatabase() {
       this);
 }
 
-leveldb::Status TransactionalLevelDBDatabase::Put(const StringPiece& key,
+leveldb::Status TransactionalLevelDBDatabase::Put(const std::string_view& key,
                                                   std::string* value) {
   leveldb::WriteOptions write_options;
   write_options.sync = kSyncWrites;
@@ -103,7 +101,8 @@ leveldb::Status TransactionalLevelDBDatabase::Put(const StringPiece& key,
   return s;
 }
 
-leveldb::Status TransactionalLevelDBDatabase::Remove(const StringPiece& key) {
+leveldb::Status TransactionalLevelDBDatabase::Remove(
+    const std::string_view& key) {
   leveldb::WriteOptions write_options;
   write_options.sync = kSyncWrites;
 
@@ -114,7 +113,7 @@ leveldb::Status TransactionalLevelDBDatabase::Remove(const StringPiece& key) {
   return s;
 }
 
-leveldb::Status TransactionalLevelDBDatabase::Get(const StringPiece& key,
+leveldb::Status TransactionalLevelDBDatabase::Get(const std::string_view& key,
                                                   std::string* value,
                                                   bool* found) {
   *found = false;
@@ -186,8 +185,8 @@ TransactionalLevelDBDatabase::CreateIterator(
       std::move(snapshot));
 }
 
-void TransactionalLevelDBDatabase::Compact(const base::StringPiece& start,
-                                           const base::StringPiece& stop) {
+void TransactionalLevelDBDatabase::Compact(const std::string_view& start,
+                                           const std::string_view& stop) {
   TRACE_EVENT0("leveldb", "LevelDBDatabase::Compact");
   const leveldb::Slice start_slice = leveldb_env::MakeSlice(start);
   const leveldb::Slice stop_slice = leveldb_env::MakeSlice(stop);

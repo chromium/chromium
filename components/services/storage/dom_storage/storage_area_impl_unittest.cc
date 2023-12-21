@@ -7,6 +7,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -44,7 +45,7 @@ std::string ToString(const std::vector<uint8_t>& input) {
   return std::string(input.begin(), input.end());
 }
 
-std::vector<uint8_t> ToBytes(base::StringPiece input) {
+std::vector<uint8_t> ToBytes(std::string_view input) {
   return std::vector<uint8_t>(input.begin(), input.end());
 }
 
@@ -180,11 +181,11 @@ class StorageAreaImplTest : public testing::Test,
     loop.Run();
   }
 
-  void SetDatabaseEntry(base::StringPiece key, base::StringPiece value) {
+  void SetDatabaseEntry(std::string_view key, std::string_view value) {
     SetDatabaseEntry(ToBytes(key), ToBytes(value));
   }
 
-  std::string GetDatabaseEntry(base::StringPiece key) {
+  std::string GetDatabaseEntry(std::string_view key) {
     std::vector<uint8_t> value;
     base::RunLoop loop;
     db_->database().PostTaskWithThisObject(
@@ -196,7 +197,7 @@ class StorageAreaImplTest : public testing::Test,
     return std::string(value.begin(), value.end());
   }
 
-  bool HasDatabaseEntry(base::StringPiece key) {
+  bool HasDatabaseEntry(std::string_view key) {
     base::RunLoop loop;
     leveldb::Status status;
     db_->database().PostTaskWithThisObject(
