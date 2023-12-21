@@ -115,6 +115,10 @@ suite('item tests', function() {
   });
 
   test('icon overridden by danger type', async () => {
+    loadTimeData.overrideValues({improvedDownloadWarningsUX: false});
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
     testIconLoader.setShouldIconsLoad(true);
     item.set('data', createDownload({
                filePath: 'unique1',
