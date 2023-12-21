@@ -18,7 +18,11 @@ switch_access_dir =
 tsc_out_dir = "$target_gen_dir/tsc"
 
 # TS files to compile.
-ts_modules = [ "commands.ts" ]
+ts_modules = [
+  "cache.ts",
+  "commands.ts",
+  "metrics.ts",
+]
 
 # JS files needed to compile TS.
 js_deps = []
@@ -67,7 +71,6 @@ run_jsbundler("copied_files") {
     "action_manager.js",
     "auto_scan_manager.js",
     "background.html",
-    "cache.js",
     "focus_ring_manager.js",
     "history.js",
     "icons/back.svg",
@@ -98,7 +101,6 @@ run_jsbundler("copied_files") {
     "icons/textSelectionStart.svg",
     "item_scan_manager.js",
     "menu_manager.js",
-    "metrics.js",
     "navigator.js",
     "navigator_interfaces.js",
     "nodes/back_button_node.js",

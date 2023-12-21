@@ -15,7 +15,6 @@ module.exports = {
     'object-shorthand' : ['error', 'always'],
     'prefer-const' : ['error', {'destructuring' : 'all'}],
     '@typescript-eslint/explicit-function-return-type' : 'off',
-    '@typescript-eslint/naming-convention' : 'off',
   },
   // clang-format off
   'overrides':
