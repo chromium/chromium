@@ -698,6 +698,9 @@ void InjectBrowserInitParams(
 
   params->is_cros_shortstand_enabled =
       chromeos::features::IsCrosShortstandEnabled();
+
+  params->should_disable_chrome_compose_on_chromeos =
+      chromeos::features::ShouldDisableChromeComposeOnChromeOS();
 }
 
 template <typename BrowserParams>

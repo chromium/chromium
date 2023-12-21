@@ -1534,6 +1534,10 @@ struct BrowserInitParams {
   // behaviour between web apps and browser created shortcuts to be displayed.
   [MinVersion=74]
   bool is_cros_shortstand_enabled@74;
+
+  // If true, "Compose" will be disabled. Only applies on chromeos devices.
+  [MinVersion=75]
+  bool should_disable_chrome_compose_on_chromeos@75;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

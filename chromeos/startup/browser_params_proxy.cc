@@ -339,4 +339,8 @@ bool BrowserParamsProxy::IsCrosShortstandEnabled() const {
   return BrowserInitParams::Get()->is_cros_shortstand_enabled;
 }
 
+bool BrowserParamsProxy::ShouldDisableChromeComposeOnChromeOS() const {
+  return BrowserInitParams::Get()->should_disable_chrome_compose_on_chromeos;
+}
+
 }  // namespace chromeos

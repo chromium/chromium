@@ -104,21 +104,21 @@ INSTANTIATE_TEST_SUITE_P(
          .expected_availability = false},
         {.test_name = "FeatureNotAvailableForManagedAccountOnNonDogfoodDevices",
          .enabled_flags = {chromeos::features::kOrca,
-                           features::kFeatureManagementOrca},
+                           chromeos::features::kFeatureManagementOrca},
          .disabled_flags = {},
          .country_code = kAllowedTestCountry,
          .is_managed = true,
          .expected_availability = false},
         {.test_name = "FeatureNotAvailableInACountryNotApprovedYet",
          .enabled_flags = {chromeos::features::kOrca,
-                           features::kFeatureManagementOrca},
+                           chromeos::features::kFeatureManagementOrca},
          .disabled_flags = {},
          .country_code = kDeniedTestCountry,
          .is_managed = false,
          .expected_availability = false},
         {.test_name = "FeatureNotAvailableWithoutFeatureManagementFlag",
          .enabled_flags = {chromeos::features::kOrca},
-         .disabled_flags = {features::kFeatureManagementOrca},
+         .disabled_flags = {chromeos::features::kFeatureManagementOrca},
          .country_code = kAllowedTestCountry,
          .is_managed = false,
          .expected_availability = false},
@@ -131,7 +131,7 @@ INSTANTIATE_TEST_SUITE_P(
         {.test_name = "FeatureAvailableOnUnmanagedDeviceInApprovedCountryWithFe"
                       "atureManagementFlag",
          .enabled_flags = {chromeos::features::kOrca,
-                           features::kFeatureManagementOrca},
+                           chromeos::features::kFeatureManagementOrca},
          .disabled_flags = {},
          .country_code = kAllowedTestCountry,
          .is_managed = false,
@@ -397,7 +397,7 @@ TEST_P(EditorSwitchTriggerTest, TestEditorMode) {
   content::BrowserTaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list;
   std::vector<base::test::FeatureRef> base_enabled_features = {
-      chromeos::features::kOrca, features::kFeatureManagementOrca};
+      chromeos::features::kOrca, chromeos::features::kFeatureManagementOrca};
   base_enabled_features.insert(base_enabled_features.end(),
                                test_case.additional_enabled_flags.begin(),
                                test_case.additional_enabled_flags.end());

@@ -155,6 +155,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsCrosShortstandEnabled() const;
 
+  bool ShouldDisableChromeComposeOnChromeOS() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 
