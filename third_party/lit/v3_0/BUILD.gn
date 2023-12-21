@@ -8,11 +8,16 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/minify_js.gni")
 import("//ui/webui/webui_features.gni")
 
-# TODO(crbug.com/1503223): Preventing Lit from being used in production. Remove
-# this when experimentation has concluded.
-assert(!optimize_webui)
-
 ts_library("build_ts") {
+  visibility = [
+    ":build_bundle",
+
+    # TODO(crbug.com/1503223): Currently Limiting only to cr_elements for the
+    # initial experimentation phase. Update when the migration enters its next
+    # phase.
+    "//chrome/test/data/webui/cr_elements:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+  ]
   composite = true
   in_files = [
     "lit.ts",

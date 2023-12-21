@@ -8,6 +8,7 @@ foreach(excluded_file,
         [
           "resources/mojo/mojo/public/js/bindings.js",
           "resources/mojo/mojo/public/mojom/base/time.mojom-lite.js",
+          "resources/lit/v3_0/lit.rollup.js",
           "resources/polymer/v3_0/polymer/polymer_bundled.min.js",
           "resources/js/cr.js",  # This file relies on globals.
           "resources/js/load_time_data.js",
