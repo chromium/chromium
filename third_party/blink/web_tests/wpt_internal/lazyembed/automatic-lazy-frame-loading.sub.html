@@ -107,12 +107,6 @@
       })
     };
 
-    const waitUntilIdle = () => {
-      return new Promise(resolve => {
-        window.requestIdleCallback(() => resolve());
-      });
-    };
-
     setup(cleanup);
 
     promise_test(async t => {
@@ -156,13 +150,13 @@
       t.add_cleanup(cleanup);
 
       appendFrameToBelowTheFold({ isLazy: true });
+      // LazyEmbeds timeout is set as 1000ms.
       const timeoutMs = 1000;
       let result;
       // To detect the frame src is not loaded, wait until the timeout.
       result = await wait(t, timeoutMs, FRAME_IDS.BTF_LAZY);
       assert_false(result, "iframe is not loaded yet right after the timeout");
 
-      await waitUntilIdle();
       result = await waitForElementLoad(FRAME_IDS.BTF_LAZY);
       assert_true(result, "iframe with lazy loadable url below the fold is " +
                           "loaded when after the timeout and idle");
