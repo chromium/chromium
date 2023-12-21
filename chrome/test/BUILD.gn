@@ -3020,7 +3020,6 @@ if (!is_android && !is_fuchsia) {
       sources += [
         "../browser/accessibility/live_caption/live_caption_unavailability_notifier_browsertest.cc",
         "../browser/ui/views/device_id/pen_id_browsertest_win.cc",
-        "../browser/ui/views/eye_dropper/eye_dropper_view_aura_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_win.cc",
       ]
       sources -= [ "../browser/ui/views/tabs/tab_search_button_browsertest.cc" ]
@@ -11004,6 +11003,13 @@ if (!is_android && !is_chromeos_device && !is_fuchsia) {
         "//ui/base/dragdrop:types",
         "//ui/base/dragdrop/mojom",
       ]
+    }
+
+    # LaCrOS opens EyeDropper in ash via crosapi. Tests only work for ash.
+    # TODO(crbug.com/1513382) disabled on ash due to asan failures.
+    if (use_aura && !is_chromeos_lacros && !is_chromeos_ash) {
+      sources += [ "../browser/ui/views/eye_dropper/eye_dropper_view_aura_interactive_uitest.cc" ]
+      deps += [ "//components/eye_dropper" ]
     }
 
     if (toolkit_views) {
