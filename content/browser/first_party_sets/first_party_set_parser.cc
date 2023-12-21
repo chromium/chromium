@@ -22,6 +22,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "content/browser/first_party_sets/first_party_sets_overrides_policy.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -780,8 +781,8 @@ FirstPartySetParser::ParseSetsFromEnterprisePolicy(
 
   return FirstPartySetParser::PolicyParseResult(
       std::move(set_lists).transform([](ParsedPolicySetLists lists) {
-        return net::SetsMutation(std::move(lists.replacements),
-                                 std::move(lists.additions));
+        return FirstPartySetsOverridesPolicy(net::SetsMutation(
+            std::move(lists.replacements), std::move(lists.additions)));
       }),
       context.warnings());
 }

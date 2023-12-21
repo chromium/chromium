@@ -1017,6 +1017,8 @@ source_set("browser") {
     "first_party_sets/first_party_sets_handler_impl_instance.h",
     "first_party_sets/first_party_sets_loader.cc",
     "first_party_sets/first_party_sets_loader.h",
+    "first_party_sets/first_party_sets_overrides_policy.cc",
+    "first_party_sets/first_party_sets_overrides_policy.h",
     "first_party_sets/first_party_sets_site_data_remover.cc",
     "first_party_sets/first_party_sets_site_data_remover.h",
     "font_access/font_access_manager.cc",

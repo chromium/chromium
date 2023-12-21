@@ -827,10 +827,10 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
               }
             )")
                                  .value();
-  EXPECT_THAT(
+  EXPECT_EQ(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      net::SetsMutation({}, {}));
+      FirstPartySetsOverridesPolicy(net::SetsMutation({}, {})));
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
@@ -842,10 +842,10 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
               }
             )")
                                  .value();
-  EXPECT_THAT(
+  EXPECT_EQ(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      net::SetsMutation({}, {}));
+      FirstPartySetsOverridesPolicy(net::SetsMutation({}, {})));
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
@@ -1044,10 +1044,10 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
               }
             )")
                                  .value();
-  EXPECT_THAT(
+  EXPECT_EQ(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      net::SetsMutation(
+      FirstPartySetsOverridesPolicy(net::SetsMutation(
           {
               {
                   {primary2,
@@ -1067,7 +1067,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                    net::FirstPartySetEntry(primary3, net::SiteType::kAssociated,
                                            absl::nullopt)},
               },
-          }));
+          })));
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
@@ -1102,10 +1102,10 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   // The invalid associated site is ignored, but the rest of the set is still
   // processed. If the set becomes a singleton as a result of ignoring a member
   // site, the set is ignored entirely.
-  EXPECT_THAT(
+  EXPECT_EQ(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      net::SetsMutation(
+      FirstPartySetsOverridesPolicy(net::SetsMutation(
           {
               {
                   {primary1,
@@ -1116,7 +1116,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                            absl::nullopt)},
               },
           },
-          {}));
+          {})));
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
@@ -1140,10 +1140,10 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
               }
             )")
                                  .value();
-  EXPECT_THAT(
+  EXPECT_EQ(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      net::SetsMutation(
+      FirstPartySetsOverridesPolicy(net::SetsMutation(
           {
               {
                   {primary2,
@@ -1154,7 +1154,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                            absl::nullopt)},
               },
           },
-          {}));
+          {})));
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
@@ -1320,10 +1320,10 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
               }
             )")
                                  .value();
-  EXPECT_THAT(
+  EXPECT_EQ(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      net::SetsMutation(
+      FirstPartySetsOverridesPolicy(net::SetsMutation(
           {{
                {primary1,
                 net::FirstPartySetEntry(primary1, net::SiteType::kPrimary,
@@ -1340,7 +1340,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                 net::FirstPartySetEntry(primary2, net::SiteType::kAssociated,
                                         absl::nullopt)},
            }},
-          {}));
+          {})));
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .second,
@@ -1377,10 +1377,10 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
               }
             )")
                                  .value();
-  EXPECT_THAT(
+  EXPECT_EQ(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      net::SetsMutation(
+      FirstPartySetsOverridesPolicy(net::SetsMutation(
           {{
                {primary1,
                 net::FirstPartySetEntry(primary1, net::SiteType::kPrimary,
@@ -1403,7 +1403,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
               {associatedSite3,
                net::FirstPartySetEntry(primary3, net::SiteType::kAssociated,
                                        absl::nullopt)},
-          }}));
+          }})));
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .second,
@@ -1450,10 +1450,10 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
               }
             )")
                                  .value();
-  EXPECT_THAT(
+  EXPECT_EQ(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      net::SetsMutation(
+      FirstPartySetsOverridesPolicy(net::SetsMutation(
           {{
                {primary1,
                 net::FirstPartySetEntry(primary1, net::SiteType::kPrimary,
@@ -1476,7 +1476,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
               {associated3,
                net::FirstPartySetEntry(primary3, net::SiteType::kAssociated,
                                        absl::nullopt)},
-          }}));
+          }})));
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .second,
@@ -1515,10 +1515,10 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
               }
             )")
                                  .value();
-  EXPECT_THAT(
+  EXPECT_EQ(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      net::SetsMutation(
+      FirstPartySetsOverridesPolicy(net::SetsMutation(
           {{
                {primary1,
                 net::FirstPartySetEntry(primary1, net::SiteType::kPrimary,
@@ -1541,7 +1541,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                 net::FirstPartySetEntry(primary2, net::SiteType::kAssociated,
                                         absl::nullopt)},
            }},
-          {}));
+          {})));
 
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
@@ -1698,10 +1698,10 @@ TEST(FirstPartySetParser, EnterprisePolicies_ExemptFromAssociatedSiteLimit) {
               }
             )")
                                  .value();
-  EXPECT_THAT(
+  EXPECT_EQ(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      net::SetsMutation(
+      FirstPartySetsOverridesPolicy(net::SetsMutation(
           {{
               {primary1, net::FirstPartySetEntry(
                              primary1, net::SiteType::kPrimary, absl::nullopt)},
@@ -1724,7 +1724,7 @@ TEST(FirstPartySetParser, EnterprisePolicies_ExemptFromAssociatedSiteLimit) {
                net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
                                        absl::nullopt)},
           }},
-          {}));
+          {})));
 }
 
 TEST(FirstPartySetParser, ParseFromCommandLine_Invalid_MultipleSets) {

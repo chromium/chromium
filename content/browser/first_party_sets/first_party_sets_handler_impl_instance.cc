@@ -21,6 +21,7 @@
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
+#include "content/browser/first_party_sets/first_party_sets_overrides_policy.h"
 #include "content/browser/first_party_sets/first_party_sets_site_data_remover.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -529,7 +530,12 @@ FirstPartySetsHandlerImplInstance::GetContextConfigForPolicyInternal(
   auto [parsed, warnings] =
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
 
-  return global_sets_->ComputeConfig(parsed.value_or(net::SetsMutation()));
+  if (!parsed.has_value()) {
+    return global_sets_->ComputeConfig(net::SetsMutation());
+  }
+
+  FirstPartySetsOverridesPolicy& policy_result = parsed.value();
+  return global_sets_->ComputeConfig(std::move(policy_result.mutation()));
 }
 
 bool FirstPartySetsHandlerImplInstance::ForEachEffectiveSetEntry(
