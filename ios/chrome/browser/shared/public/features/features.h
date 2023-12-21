@@ -33,6 +33,9 @@ BASE_DECLARE_FEATURE(kSafetyCheckMagicStack);
 // Feature flag to enable Shared Highlighting (Link to Text).
 BASE_DECLARE_FEATURE(kSharedHighlightingIOS);
 
+// Feature flag to enable Share button in web context menu in iOS.
+BASE_DECLARE_FEATURE(kShareInWebContextMenuIOS);
+
 // TODO(crbug.com/1128242): Remove this flag after the refactoring work is
 // finished. Flag to modernize the tabstrip without disturbing the existing one.
 BASE_DECLARE_FEATURE(kModernTabStrip);

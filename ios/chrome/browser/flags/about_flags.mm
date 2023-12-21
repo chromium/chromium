@@ -1617,6 +1617,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRemoveOldWebStateRestoreName,
      flag_descriptions::kRemoveOldWebStateRestoreDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kRemoveOldWebStateRestoration)},
+    {"share-in-web-context-menu-ios",
+     flag_descriptions::kShareInWebContextMenuIOSName,
+     flag_descriptions::kShareInWebContextMenuIOSDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kShareInWebContextMenuIOS)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

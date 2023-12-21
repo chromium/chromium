@@ -60,6 +60,10 @@ BASE_FEATURE(kSharedHighlightingIOS,
              "SharedHighlightingIOS",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kShareInWebContextMenuIOS,
+             "ShareInWebContextMenuIOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO(crbug.com/1128242): Remove this flag after the refactoring work is
 // finished.
 BASE_FEATURE(kModernTabStrip,

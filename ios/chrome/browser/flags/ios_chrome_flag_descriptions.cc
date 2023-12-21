@@ -883,6 +883,10 @@ const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "
     "text fragment.";
 
+const char kShareInWebContextMenuIOSName[] = "Share in web context menu";
+const char kShareInWebContextMenuIOSDescription[] =
+    "Enables the Share button in the web context menu in iOS 16.0 and above.";
+
 const char kShowAutofillTypePredictionsName[] = "Show Autofill predictions";
 const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
