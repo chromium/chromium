@@ -63,6 +63,19 @@ std::unique_ptr<VideoDecoderMixin> V4L2StatelessVideoDecoder::Create(
       new StatelessDevice()));
 }
 
+V4L2StatelessVideoDecoder::DecodeRequest::DecodeRequest(
+    scoped_refptr<DecoderBuffer> buf,
+    VideoDecoder::DecodeCB cb,
+    int32_t id)
+    : buffer(std::move(buf)), decode_cb(std::move(cb)), bitstream_id(id) {}
+
+V4L2StatelessVideoDecoder::DecodeRequest::DecodeRequest(DecodeRequest&&) =
+    default;
+V4L2StatelessVideoDecoder::DecodeRequest&
+V4L2StatelessVideoDecoder::DecodeRequest::operator=(DecodeRequest&&) = default;
+
+V4L2StatelessVideoDecoder::DecodeRequest::~DecodeRequest() = default;
+
 V4L2StatelessVideoDecoder::V4L2StatelessVideoDecoder(
     std::unique_ptr<MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
@@ -80,6 +93,10 @@ V4L2StatelessVideoDecoder::V4L2StatelessVideoDecoder(
 V4L2StatelessVideoDecoder::~V4L2StatelessVideoDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4);
+  DCHECK(!current_decode_request_)
+      << "|current_decode_request_| should have been flushed.";
+  DCHECK(decode_request_queue_.empty())
+      << "|decode_request_queue_| is not empty, it should have been flushed.";
 }
 
 // static
@@ -151,7 +168,6 @@ void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
 void V4L2StatelessVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                        DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  CHECK(!decode_done_) << "Overlapping decodes are not supported.";
   DVLOGF(4) << buffer->AsHumanReadableString(/*verbose=*/false);
 
   const int32_t bitstream_id =
@@ -169,17 +185,26 @@ void V4L2StatelessVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     CHECK(output_queue_task_runner_);
   }
 
-  decode_done_ = std::move(decode_cb);
   if (!buffer->end_of_stream()) {
-    ProcessCompressedBuffer(std::move(buffer), std::move(decode_cb),
-                            bitstream_id);
+    decode_request_queue_.push(
+        DecodeRequest(std::move(buffer), std::move(decode_cb), bitstream_id));
+
+    ServiceDecodeRequestQueue();
   } else {
-    // TODO(frkoenig): This is not correct. The buffers in progress must be
-    // completed before this callback can execute.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(decode_done_), DecoderStatus::Codes::kOk));
+        base::BindOnce(&V4L2StatelessVideoDecoder::Flush,
+                       base::Unretained(this), std::move(decode_cb)));
   }
+}
+
+void V4L2StatelessVideoDecoder::Flush(DecodeCB decode_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  DVLOGF(2);
+
+  // TODO(frkoenig): This is not correct. The buffers in progress must be
+  // completed before this callback can execute.
+  std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void V4L2StatelessVideoDecoder::Reset(base::OnceClosure reset_cb) {
@@ -493,12 +518,6 @@ void V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers(Buffer buffer) {
   // display, and should not be queued.
   output_queue_->RegisterDequeuedBuffer(buffer);
 
-  // Only one frame is in the queue at a time. The callback needs to be run
-  // after the frame is dequeued so the next frame can be processed.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(decode_done_), DecoderStatus::Codes::kOk));
-
   // Check the display queue to see if there are buffers that are ready to
   // be displayed.
   ServiceDisplayQueue();
@@ -517,46 +536,21 @@ void V4L2StatelessVideoDecoder::EnqueueDecodedOutputBufferByFrameID(
   output_queue_->QueueBufferByFrameID(frame_id);
 }
 
-void V4L2StatelessVideoDecoder::ProcessCompressedBuffer(
-    scoped_refptr<DecoderBuffer> compressed_buffer,
-    VideoDecoder::DecodeCB decode_cb,
-    int32_t bitstream_id) {
+void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4);
   DCHECK(decoder_);
 
-  // The |decoder_| does not own the |compressed_buffer|. The
-  // |compressed_buffer| needs to be held onto until |Decode| returns
-  // AcceleratedVideoDecoder::kRanOutOfStreamData. Multiple calls to |Decode|
-  // can process the same |compressed_buffer|. This function can not return
-  // until the |decoder_| no longer needs to use that data.
-  AcceleratedVideoDecoder::DecodeResult decode_result = decoder_->Decode();
-
-  // This function expects that the decoder will be in a state ready to
-  // receive compressed data. Because the lifetime of the |compressed_buffer|
-  // is only for this function every time through the decoder should
-  // be requesting more data.
-  // TODO(frkoenig): There is the possibility of this function being called
-  // and |decode_result| being a decode error.  Should that be handled
-  // here?  or else where?
-  CHECK_EQ(decode_result, AcceleratedVideoDecoder::kRanOutOfStreamData);
-
-  // There are some exceptions to running with a single OUTPUT buffer
-  // VP9 has superframes, which means that a single call to this function
-  // will result in multiple ->Decode() calls.
-  // h.244 can has the SPS/PPS separate, in which case multiple calls to
-  // this function are required before a single frame can come out.
-  decoder_->SetStream(bitstream_id, *compressed_buffer);
-  bitstream_id_to_timestamp_.Put(bitstream_id, compressed_buffer->timestamp());
-
+  bool done = false;
+  AcceleratedVideoDecoder::DecodeResult decode_result;
   do {
     decode_result = decoder_->Decode();
     switch (decode_result) {
       case AcceleratedVideoDecoder::kConfigChange:
         VLOGF(2) << "AcceleratedVideoDecoder::kConfigChange";
         if (!CreateInputQueue(decoder_->GetProfile(), decoder_->GetPicSize())) {
-          std::move(decode_cb).Run(
-              DecoderStatus::Codes::kPlatformDecodeFailure);
+          std::move(current_decode_request_->decode_cb)
+              .Run(DecoderStatus::Codes::kPlatformDecodeFailure);
           VLOGF(1) << "Unable to create an input queue for "
                    << GetProfileName(decoder_->GetProfile())
                    << " of resolution " << decoder_->GetPicSize().ToString();
@@ -564,27 +558,53 @@ void V4L2StatelessVideoDecoder::ProcessCompressedBuffer(
         break;
       case AcceleratedVideoDecoder::kRanOutOfStreamData:
         VLOGF(2) << "AcceleratedVideoDecoder::kRanOutOfStreamData";
-        // Handled on first entry to function.
+        if (decode_request_queue_.empty() && !current_decode_request_) {
+          return;
+        }
+
+        // In a normal decode cycle |current_decode_request_| will be empty at
+        // this point, so the next request should be popped off the queue and
+        // fed into the |decoder_|. However, some codecs pack multiple frames
+        // into a single request (i.e. VP9/AV1 superframes). In that situation
+        // |current_decode_request_| is still valid.
+        if (current_decode_request_) {
+          done = true;
+          break;
+        }
+
+        current_decode_request_ = std::move(decode_request_queue_.front());
+        decode_request_queue_.pop();
+
+        decoder_->SetStream(current_decode_request_->bitstream_id,
+                            *current_decode_request_->buffer);
+        bitstream_id_to_timestamp_.Put(
+            current_decode_request_->bitstream_id,
+            current_decode_request_->buffer->timestamp());
+
         break;
       case AcceleratedVideoDecoder::kRanOutOfSurfaces:
-        VLOGF(2) << "AcceleratedVideoDecoder::kRanOutOfSurfaces";
-        NOTREACHED();
+        NOTREACHED() << "AcceleratedVideoDecoder::kRanOutOfSurfaces";
         break;
       case AcceleratedVideoDecoder::kDecodeError:
-        VLOGF(2) << "AcceleratedVideoDecoder::kDecodeError";
+        VLOGF(1) << "AcceleratedVideoDecoder::kDecodeError.";
+        done = true;
         break;
       case AcceleratedVideoDecoder::kTryAgain:
         // Will be needed for h.264 CENCv1
-        VLOGF(2) << "AcceleratedVideoDecoder::kTryAgain";
-        NOTIMPLEMENTED();
+        NOTIMPLEMENTED() << "AcceleratedVideoDecoder::kTryAgain";
         break;
     }
-  } while (AcceleratedVideoDecoder::kRanOutOfStreamData != decode_result &&
-           AcceleratedVideoDecoder::kDecodeError != decode_result);
+  } while (!done);
 
-  DecoderStatus decoder_status = DecoderStatus::Codes::kOk;
-  if (AcceleratedVideoDecoder::kDecodeError == decode_result) {
-    decoder_status = DecoderStatus::Codes::kFailed;
+  if (current_decode_request_) {
+    const DecoderStatus::Codes decode_status =
+        (decode_result == AcceleratedVideoDecoder::kDecodeError)
+            ? DecoderStatus::Codes::kPlatformDecodeFailure
+            : DecoderStatus::Codes::kOk;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(current_decode_request_->decode_cb),
+                                  decode_status));
+    current_decode_request_ = absl::nullopt;
   }
 }
 

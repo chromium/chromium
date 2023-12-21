@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_V4L2_STATELESS_V4L2_STATELESS_VIDEO_DECODER_H_
 #define MEDIA_GPU_V4L2_STATELESS_V4L2_STATELESS_VIDEO_DECODER_H_
 
+#include <queue>
 #include <vector>
 
 #include "base/containers/lru_cache.h"
@@ -79,6 +80,30 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
       scoped_refptr<StatelessDevice> device);
   ~V4L2StatelessVideoDecoder() override;
 
+  // Request for decoding buffer. Every EnqueueDecodeTask() call generates 1
+  // DecodeRequest.
+  struct DecodeRequest {
+    // The decode buffer passed to EnqueueDecodeTask().
+    scoped_refptr<DecoderBuffer> buffer;
+    // The callback function passed to EnqueueDecodeTask().
+    VideoDecoder::DecodeCB decode_cb;
+    // The identifier for the decoder buffer.
+    int32_t bitstream_id;
+
+    DecodeRequest(scoped_refptr<DecoderBuffer> buf,
+                  VideoDecoder::DecodeCB cb,
+                  int32_t id);
+
+    DecodeRequest(const DecodeRequest&) = delete;
+    DecodeRequest& operator=(const DecodeRequest&) = delete;
+
+    // Allow move, but not copy
+    DecodeRequest(DecodeRequest&&);
+    DecodeRequest& operator=(DecodeRequest&&);
+
+    ~DecodeRequest();
+  };
+
   // Create a codec specific decoder. When successful this decoder is stored in
   // the |decoder_| member variable.
   bool CreateDecoder(VideoCodecProfile profile, VideoColorSpace color_space);
@@ -104,15 +129,18 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // buffer after it is done being used.
   void EnqueueDecodedOutputBufferByFrameID(uint64_t frame_id);
 
-  // Process the data in the |compressed_buffer| using the |decoder_|.
-  void ProcessCompressedBuffer(scoped_refptr<DecoderBuffer> compressed_buffer,
-                               VideoDecoder::DecodeCB decode_cb,
-                               int32_t bitstream_id);
-
   // Match up frames that have been decoded and are sitting in the
   // |output_queue_| with |display_queue_| which holds the frames in display
   // order.
   void ServiceDisplayQueue();
+
+  // Service the queue of outstanding decode request. The client can send
+  // multiple compressed frames without waiting for a callback. These frames
+  // need to be queued up as there may not be free input buffers available.
+  void ServiceDecodeRequestQueue();
+
+  // Clear all of the pending decode buffers.
+  void Flush(DecodeCB decode_cb);
 
   SEQUENCE_CHECKER(decoder_sequence_checker_);
 
@@ -122,8 +150,9 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // has finished decoding and is ready for the client to display.
   OutputCB output_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
-  // Callback to be used after a chunk is decoded.
-  DecodeCB decode_done_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
+  // Hold the callback that came in with the EOS signal until the rest of the
+  // frames have finished decoding._;
+  DecodeCB flush_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
   // Video decoder used to parse stream headers by software.
   std::unique_ptr<AcceleratedVideoDecoder> decoder_;
@@ -151,6 +180,12 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
       GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
   base::LRUCache<int32_t, base::TimeDelta> bitstream_id_to_timestamp_;
+
+  // Queue of pending decode request.
+  std::queue<DecodeRequest> decode_request_queue_;
+
+  // The decode request decode loop needs to keep this alive.
+  absl::optional<DecodeRequest> current_decode_request_;
 
   base::CancelableTaskTracker cancelable_output_queue_tracker_;
   base::CancelableTaskTracker cancelable_input_queue_tracker_;
