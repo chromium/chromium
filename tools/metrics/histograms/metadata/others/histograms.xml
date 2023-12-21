@@ -10656,14 +10656,6 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
-<histogram name="UncompressAndParseSkiaVectorAsset" units="microseconds"
-    expires_after="M85">
-  <owner>malaykeshav@chromium.org</owner>
-  <summary>
-    Records the time spent in uncompressing a gzipped animation file.
-  </summary>
-</histogram>
-
 <histogram name="UnifiedConsent.MakeSearchesAndBrowsingBetter.OnProfileLoad"
     enum="BooleanEnabled" expires_after="never">
 <!-- expires-never: Core metric for monitoring user settings for making searches and browsing better. -->
