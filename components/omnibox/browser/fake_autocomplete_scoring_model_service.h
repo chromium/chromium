@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_FAKE_AUTOCOMPLETE_SCORING_MODEL_SERVICE_H_
 #define COMPONENTS_OMNIBOX_BROWSER_FAKE_AUTOCOMPLETE_SCORING_MODEL_SERVICE_H_
 
-#include <string>
 #include <vector>
 
 #include "components/omnibox/browser/autocomplete_scoring_model_service.h"
@@ -18,8 +17,7 @@ class FakeAutocompleteScoringModelService
 
   // AutocompleteScoringModelService:
   std::vector<Result> BatchScoreAutocompleteUrlMatchesSync(
-      const std::vector<const ScoringSignals*>& batch_scoring_signals,
-      const std::vector<std::string>& stripped_destination_urls) override;
+      const std::vector<const ScoringSignals*>& batch_scoring_signals) override;
 
   std::vector<Result> fake_response_;
 };

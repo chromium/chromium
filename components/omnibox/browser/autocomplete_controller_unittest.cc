@@ -24,6 +24,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -34,7 +35,7 @@ struct MlMatchTestData {
   bool allowed_to_be_default_match;
   bool shortcut_boosted;
   int traditional_relevance;
-  float ml_output;
+  absl::optional<float> ml_output;
 
   static MlMatchTestData MakeSearch(std::string name,
                                     bool allowed_to_be_default_match,
@@ -44,7 +45,7 @@ struct MlMatchTestData {
             allowed_to_be_default_match,
             false,
             traditional_relevance,
-            -1};
+            absl::nullopt};
   }
 
   static MlMatchTestData MakeHistory(std::string name,
@@ -151,10 +152,9 @@ class AutocompleteControllerTest : public testing::Test {
       match.allowed_to_be_default_match = data.allowed_to_be_default_match;
       match.stripped_destination_url = GURL{"https://google.com/" + data.name};
       match.contents = base::UTF8ToUTF16(data.name);
-      if (data.ml_output >= 0) {
+      if (data.ml_output.has_value()) {
         match.scoring_signals = {{}};
-        ml_results.push_back(
-            {data.ml_output, match.stripped_destination_url.spec()});
+        ml_results.push_back(data.ml_output);
       }
       matches.push_back(match);
     }

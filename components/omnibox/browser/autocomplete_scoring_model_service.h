@@ -22,7 +22,7 @@
 // OptimizationGuide's model handler.
 class AutocompleteScoringModelService : public KeyedService {
  public:
-  using Result = std::tuple<absl::optional<float>, std::string>;
+  using Result = absl::optional<float>;
   using ModelOutput = AutocompleteScoringModelExecutor::ModelOutput;
   using ScoringSignals =
       ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
@@ -48,18 +48,11 @@ class AutocompleteScoringModelService : public KeyedService {
   // Returns an empty vector if model is not available or the input signals are
   // invalid.
   virtual std::vector<Result> BatchScoreAutocompleteUrlMatchesSync(
-      const std::vector<const ScoringSignals*>& batch_scoring_signals,
-      const std::vector<std::string>& stripped_destination_urls);
+      const std::vector<const ScoringSignals*>& batch_scoring_signals);
 
  private:
   // Returns whether the scoring model is enabled and loaded.
   bool UrlScoringModelAvailable();
-
-  // Extracts model output values and associates them with the stripped
-  // destination urls.
-  std::vector<Result> GetBatchResultFromModelOutput(
-      const std::vector<std::string>& stripped_destination_urls,
-      const std::vector<absl::optional<ModelOutput>>& batch_model_output);
 
   scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner_;
 

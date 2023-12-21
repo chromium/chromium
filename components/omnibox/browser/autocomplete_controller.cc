@@ -1086,9 +1086,8 @@ AutocompleteController::PreprocessResultForMlScoring(
       default_match_to_preserve = *internal_result_.default_match();
     }
   } else {
-    // Deduplicate matches according to `stripped_destination_url` prior to
-    // running ML scoring. This step is not needed if `SortAndCull()` is
-    // called before the model is executed.
+    // Deduplicate matches prior to running ML scoring. This step is not needed
+    // if `SortAndCull()` is called before the model is executed.
     internal_result_.DeduplicateMatches(input_, template_url_service_);
   }
   return default_match_to_preserve;
@@ -1698,35 +1697,14 @@ void AutocompleteController::RunBatchUrlScoringModel() {
   if (eligible_matches_count == 0)
     return;
 
-  // Run the model for the eligible matches.
+  // Run the model for the eligible matches. Keep a reference to those matches
+  // to later redistribute their relevance scores based on the model output.
   std::vector<const ScoringSignals*> batch_scoring_signals;
   batch_scoring_signals.reserve(eligible_matches_count);
-  std::vector<std::string> stripped_destination_urls;
-  stripped_destination_urls.reserve(eligible_matches_count);
-  for (auto& match : internal_result_) {
-    if (!match.IsUrlScoringEligible()) {
-      continue;
-    }
-    batch_scoring_signals.push_back(&match.scoring_signals.value());
-    stripped_destination_urls.push_back(match.stripped_destination_url.spec());
-  }
-
-  auto elapsed_timer = base::ElapsedTimer();
-  const auto results = provider_client_->GetAutocompleteScoringModelService()
-                           ->BatchScoreAutocompleteUrlMatchesSync(
-                               std::move(batch_scoring_signals),
-                               std::move(stripped_destination_urls));
-  if (results.empty())
-    return;
-
-  // Group the eligible matches by `stripped_destination_url`.
-  // TODO(crbug.com/1446688): `stripped_destination_url` is not necessarily
-  //  non-empty or unique. A more reliable way to identify the matches will be
-  //  needed before ML scoring can be applied to the search suggestions.
-  std::map<std::string, ACMatches::iterator> url_to_match_map;
+  std::vector<ACMatches::iterator> eligible_match_itrs;
   for (auto match_itr = internal_result_.begin();
        match_itr != internal_result_.end(); ++match_itr) {
-    if (!match_itr->scoring_signals.has_value()) {
+    if (!match_itr->IsUrlScoringEligible()) {
       continue;
     }
 
@@ -1737,15 +1715,21 @@ void AutocompleteController::RunBatchUrlScoringModel() {
         << AutocompleteMatchType::ToString(match_itr->type)
         << " match receiving model scoring.";
 
-    // Verify the eligible match has a `stripped_destination_url`. This is
-    // computed for the eligible matches before executing the model. No new
-    // matches are added since then as the model is executed after all the
-    // providers are done.
-    DCHECK(!match_itr->stripped_destination_url.is_empty())
-        << "ACMatch::stripped_destination_url expected but not present for "
-        << AutocompleteMatchType::ToString(match_itr->type);
+    batch_scoring_signals.push_back(&match_itr->scoring_signals.value());
+    eligible_match_itrs.push_back(match_itr);
+  }
 
-    url_to_match_map[match_itr->stripped_destination_url.spec()] = match_itr;
+  auto elapsed_timer = base::ElapsedTimer();
+  const auto results = provider_client_->GetAutocompleteScoringModelService()
+                           ->BatchScoreAutocompleteUrlMatchesSync(
+                               std::move(batch_scoring_signals));
+  if (results.empty()) {
+    return;
+  }
+
+  if (results.size() != eligible_match_itrs.size()) {
+    NOTREACHED();
+    return;
   }
 
   // The goal is to redistribute the existing relevance scores among the
@@ -1757,19 +1741,13 @@ void AutocompleteController::RunBatchUrlScoringModel() {
   // Likewise, keep the same number of shortcut boosted suggestions but reassign
   // them to the highest scoring suggestions.
   size_t boosted_shortcut_count = 0;
-  for (auto& [prediction, stripped_destination_url] : results) {
+  for (size_t index = 0; index < results.size(); index++) {
+    const auto& prediction = results[index];
     if (!prediction.has_value()) {
       continue;
     }
 
-    // A match with the given stripped destination url is expected to be found.
-    if (!base::Contains(url_to_match_map, stripped_destination_url)) {
-      NOTREACHED();
-      continue;
-    }
-
-    auto match_itr = url_to_match_map.at(stripped_destination_url);
-
+    auto match_itr = eligible_match_itrs[index];
     relevance_heap.emplace(match_itr->relevance);
     prediction_and_match_itr_heap.emplace(prediction.value(), match_itr);
     if (match_itr->shortcut_boosted)
