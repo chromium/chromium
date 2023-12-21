@@ -1086,9 +1086,20 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
     builder.Append(" ");
     builder.Append(longhand.GetPropertyName());
   }
-  builder.Append(" (from ");
-  builder.Append(value.CustomCSSText());
-  builder.Append(")");
+
+  // Append the value before resolving...
+  builder.Append(" (from \"");
+  CSSVariableReferenceValue* shorthand_value = value.ShorthandValue();
+  builder.Append(shorthand_value->CustomCSSText());
+  builder.Append("\" becoming \"");
+
+  // ...and after.
+  TokenSequence sequence;
+  CSSTokenizer tokenizer(shorthand_value->VariableDataValue()->OriginalText());
+  CSSParserTokenStream stream(tokenizer);
+  ResolveTokensInto(stream, resolver, &tokenizer, sequence);
+  builder.Append(sequence.OriginalText());
+  builder.Append("\")");
 
   // TODO(crbug.com/1423568): Remove once bug has been tracked down.
   SCOPED_CRASH_KEY_STRING1024("css_substitution_error", "properties",
