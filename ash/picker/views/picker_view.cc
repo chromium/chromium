@@ -11,6 +11,7 @@
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
 #include "ash/picker/views/picker_user_education_view.h"
+#include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
@@ -44,7 +45,7 @@ std::unique_ptr<views::BubbleBorder> CreateBorder() {
 
 }  // namespace
 
-PickerView::PickerView(std::unique_ptr<Delegate> delegate,
+PickerView::PickerView(std::unique_ptr<PickerViewDelegate> delegate,
                        const base::TimeTicks trigger_event_timestamp)
     : session_metrics_(trigger_event_timestamp),
       delegate_(std::move(delegate)) {
@@ -87,7 +88,7 @@ PickerView::PickerView(std::unique_ptr<Delegate> delegate,
 PickerView::~PickerView() = default;
 
 views::UniqueWidgetPtr PickerView::CreateWidget(
-    std::unique_ptr<PickerView::Delegate> delegate,
+    std::unique_ptr<PickerViewDelegate> delegate,
     const base::TimeTicks trigger_event_timestamp) {
   views::Widget::InitParams params;
   params.activatable = views::Widget::InitParams::Activatable::kYes;

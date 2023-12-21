@@ -26,6 +26,7 @@ class PickerSearchResult;
 class PickerSearchResults;
 class PickerSearchResultsView;
 class PickerUserEducationView;
+class PickerViewDelegate;
 class PickerZeroStateView;
 
 // View for the Picker widget.
@@ -33,29 +34,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
  public:
   METADATA_HEADER(PickerView);
 
-  class Delegate {
-   public:
-    using SearchResultsCallback =
-        base::RepeatingCallback<void(const PickerSearchResults& results)>;
-
-    virtual ~Delegate() {}
-    virtual std::unique_ptr<AshWebView> CreateWebView(
-        const AshWebView::InitParams& params) = 0;
-
-    // Starts a search for `query`. Results will be returned via `callback`,
-    // which may be called multiples times to update the results.
-    virtual void StartSearch(const std::u16string& query,
-                             SearchResultsCallback callback) = 0;
-
-    // Inserts `result` into the previously focused input field.
-    virtual void InsertResult(const PickerSearchResult& result) = 0;
-
-    // Whether the view should paint. Certain test scenarios do not need
-    // painting, so it is better to skip painting.
-    virtual bool ShouldPaint() = 0;
-  };
-
-  explicit PickerView(std::unique_ptr<Delegate> delegate,
+  explicit PickerView(std::unique_ptr<PickerViewDelegate> delegate,
                       base::TimeTicks trigger_event_timestamp);
   PickerView(const PickerView&) = delete;
   PickerView& operator=(const PickerView&) = delete;
@@ -66,7 +45,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   // click, then it should be the timestamp of the click. By default, the
   // timestamp is the time this function is called.
   static views::UniqueWidgetPtr CreateWidget(
-      std::unique_ptr<Delegate> delegate,
+      std::unique_ptr<PickerViewDelegate> delegate,
       base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 
   // views::WidgetDelegateView:
@@ -96,7 +75,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   void SelectSearchResult(const PickerSearchResult& result);
 
   PickerSessionMetrics session_metrics_;
-  std::unique_ptr<Delegate> delegate_;
+  std::unique_ptr<PickerViewDelegate> delegate_;
   raw_ptr<PickerSearchFieldView> search_field_view_ = nullptr;
   raw_ptr<PickerContentsView> contents_view_ = nullptr;
   raw_ptr<PickerZeroStateView> zero_state_view_ = nullptr;

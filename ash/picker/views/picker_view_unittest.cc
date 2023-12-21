@@ -10,6 +10,7 @@
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
 #include "ash/picker/views/picker_user_education_view.h"
+#include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view.h"
@@ -33,7 +34,7 @@ using ::testing::Truly;
 
 using PickerViewTest = AshTestBase;
 
-class FakePickerViewDelegate : public PickerView::Delegate {
+class FakePickerViewDelegate : public PickerViewDelegate {
  public:
   using FakeSearchFunction =
       base::RepeatingCallback<PickerSearchResults(std::u16string_view query)>;

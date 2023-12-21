@@ -9,6 +9,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_view.h"
+#include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "base/command_line.h"
@@ -48,7 +49,7 @@ PickerFeatureKeyType MatchPickerFeatureKeyHash() {
   return PickerFeatureKeyType::kNone;
 }
 
-class PickerViewDelegateImpl : public PickerView::Delegate {
+class PickerViewDelegateImpl : public PickerViewDelegate {
  public:
   explicit PickerViewDelegateImpl(PickerClient* client)
       : client_(client),
