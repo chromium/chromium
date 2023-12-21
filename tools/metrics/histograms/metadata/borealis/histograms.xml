@@ -232,7 +232,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Borealis.Startup.fsckResult" enum="BorealisStartupFsckResult"
+<histogram name="Borealis.Startup.fsckResult" enum="FsckResult"
     expires_after="2024-06-24">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
