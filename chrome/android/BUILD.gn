@@ -2671,11 +2671,10 @@ if (current_toolchain == default_toolchain) {
       }
 
       if (enable_manifest_verification) {
-        expected_android_manifest =
-            "expectations/trichrome_library_apk.AndroidManifest.expected"
+        expected_android_manifest = "expectations/$_main_trichrome_library_apk_target.AndroidManifest.expected"
       }
       if (enable_libs_and_assets_verification) {
-        expected_libs_and_assets = "expectations/trichrome_library_apk.$target_cpu.libs_and_assets.expected"
+        expected_libs_and_assets = "expectations/$_main_trichrome_library_apk_target.$target_cpu.libs_and_assets.expected"
       }
     }
 
@@ -2703,6 +2702,10 @@ if (current_toolchain == default_toolchain) {
       apk_name = "TrichromeLibrary64"
       is_64_bit_browser = true
       include_32_bit_webview = false
+      if (enable_manifest_verification) {
+        expected_android_manifest =
+            "expectations/$target_name.AndroidManifest.expected"
+      }
       if (enable_libs_and_assets_verification) {
         expected_libs_and_assets =
             "expectations/$target_name.$target_cpu.libs_and_assets.expected"
@@ -2718,12 +2721,20 @@ if (current_toolchain == default_toolchain) {
           expected_libs_and_assets =
               "expectations/$target_name.$target_cpu.libs_and_assets.expected"
         }
+        if (enable_manifest_verification) {
+          expected_android_manifest =
+              "expectations/$target_name.AndroidManifest.expected"
+        }
       }
 
       trichrome_library_apk_tmpl("trichrome_library_64_32_apk") {
         apk_name = "TrichromeLibrary6432"
         is_64_bit_browser = true
         include_32_bit_webview = true
+        if (enable_manifest_verification) {
+          expected_android_manifest =
+              "expectations/$target_name.AndroidManifest.expected"
+        }
         if (enable_libs_and_assets_verification) {
           expected_libs_and_assets =
               "expectations/$target_name.$target_cpu.libs_and_assets.expected"
@@ -3164,12 +3175,10 @@ if (current_toolchain == default_toolchain) {
         include_64_bit_webview = true
       }
       if (enable_manifest_verification) {
-        expected_android_manifest_template = "expectations/monochrome_public_bundle__SPLIT_NAME.AndroidManifest.expected"
-        expected_proguard_config =
-            "expectations/monochrome_public_bundle.proguard_flags.expected"
+        expected_android_manifest = "expectations/${_main_monochrome_public_bundle_target}__base.AndroidManifest.expected"
       }
       if (enable_libs_and_assets_verification) {
-        expected_libs_and_assets = "expectations/monochrome_public_bundle.$target_cpu.libs_and_assets.expected"
+        expected_libs_and_assets = "expectations/${_main_monochrome_public_bundle_target}.$target_cpu.libs_and_assets.expected"
       }
     }
 
@@ -3216,11 +3225,11 @@ if (current_toolchain == default_toolchain) {
       }
 
       if (enable_manifest_verification) {
-        # Monochrome verifies all bundle modules, so only check base module here.
-        expected_android_manifest = "expectations/trichrome_chrome_bundle__base.AndroidManifest.expected"
+        # Monochrome6432 verifies all bundle modules, so only check base module here.
+        expected_android_manifest = "expectations/${_main_trichrome_chrome_bundle_target}__base.AndroidManifest.expected"
       }
       if (enable_libs_and_assets_verification) {
-        expected_libs_and_assets = "expectations/trichrome_chrome_bundle.$target_cpu.libs_and_assets.expected"
+        expected_libs_and_assets = "expectations/$_main_trichrome_chrome_bundle_target.$target_cpu.libs_and_assets.expected"
       }
     }
 
@@ -3368,6 +3377,10 @@ if (current_toolchain == default_toolchain) {
       bundle_name = "MonochromePublic64"
       is_64_bit_browser = true
       include_32_bit_webview = false
+      if (enable_manifest_verification) {
+        # Monochrome6432 verifies all bundle modules, so only check base module here.
+        expected_android_manifest = "expectations/monochrome_64_public_bundle__base.AndroidManifest.expected"
+      }
     }
 
     chrome_public_bundle("trichrome_chrome_64_bundle") {
@@ -3376,6 +3389,10 @@ if (current_toolchain == default_toolchain) {
       is_64_bit_browser = true
       include_32_bit_webview = false
       static_library_provider = ":trichrome_library_64_apk"
+      if (enable_manifest_verification) {
+        # Monochrome6432 verifies all bundle modules, so only check base module here.
+        expected_android_manifest = "expectations/trichrome_chrome_64_bundle__base.AndroidManifest.expected"
+      }
       if (enable_libs_and_assets_verification) {
         expected_libs_and_assets =
             "expectations/$target_name.$target_cpu.libs_and_assets.expected"
@@ -3388,6 +3405,10 @@ if (current_toolchain == default_toolchain) {
         bundle_name = "MonochromePublic32"
         is_64_bit_browser = false
         include_64_bit_webview = false
+        if (enable_manifest_verification) {
+          # Monochrome6432 verifies all bundle modules, so only check base module here.
+          expected_android_manifest = "expectations/monochrome_32_public_bundle__base.AndroidManifest.expected"
+        }
       }
 
       chrome_public_bundle("monochrome_64_32_public_bundle") {
@@ -3395,6 +3416,14 @@ if (current_toolchain == default_toolchain) {
         bundle_name = "MonochromePublic6432"
         is_64_bit_browser = true
         include_32_bit_webview = true
+        if (enable_manifest_verification) {
+          expected_android_manifest_template = "expectations/monochrome_64_32_public_bundle__SPLIT_NAME.AndroidManifest.expected"
+          expected_proguard_config = "expectations/monochrome_64_32_public_bundle.proguard_flags.expected"
+        }
+        if (enable_libs_and_assets_verification) {
+          expected_libs_and_assets =
+              "expectations/$target_name.$target_cpu.libs_and_assets.expected"
+        }
       }
 
       chrome_public_bundle("trichrome_chrome_64_32_bundle") {
@@ -3403,6 +3432,10 @@ if (current_toolchain == default_toolchain) {
         is_64_bit_browser = true
         include_32_bit_webview = true
         static_library_provider = ":trichrome_library_64_32_apk"
+        if (enable_manifest_verification) {
+          # Monochrome6432 verifies all bundle modules, so only check base module here.
+          expected_android_manifest = "expectations/trichrome_chrome_64_32_bundle__base.AndroidManifest.expected"
+        }
         if (enable_libs_and_assets_verification) {
           expected_libs_and_assets =
               "expectations/$target_name.$target_cpu.libs_and_assets.expected"
@@ -3414,6 +3447,10 @@ if (current_toolchain == default_toolchain) {
         is_64_bit_browser = false
         include_64_bit_webview = false
         static_library_provider = ":trichrome_library_32_apk"
+        if (enable_manifest_verification) {
+          # Monochrome6432 verifies all bundle modules, so only check base module here.
+          expected_android_manifest = "expectations/trichrome_chrome_32_bundle__base.AndroidManifest.expected"
+        }
         if (enable_libs_and_assets_verification) {
           expected_libs_and_assets =
               "expectations/$target_name.$target_cpu.libs_and_assets.expected"
@@ -3891,16 +3928,14 @@ if (current_toolchain == default_toolchain &&
   group("validate_expectations") {
     deps = []
     if (enable_libs_and_assets_verification) {
-      deps += [
-        ":${_main_monochrome_public_bundle_target}_validate_libs_and_assets",
-        ":${_main_trichrome_chrome_bundle_target}_validate_libs_and_assets",
-        ":${_main_trichrome_library_apk_target}_validate_libs_and_assets",
-      ]
       if (android_64bit_target_cpu) {
         deps += [
+          ":monochrome_64_32_public_bundle_validate_libs_and_assets",
+          ":trichrome_chrome_32_64_bundle_validate_libs_and_assets",
           ":trichrome_chrome_32_bundle_validate_libs_and_assets",
           ":trichrome_chrome_64_32_bundle_validate_libs_and_assets",
           ":trichrome_chrome_64_bundle_validate_libs_and_assets",
+          ":trichrome_library_32_64_apk_validate_libs_and_assets",
           ":trichrome_library_32_apk_validate_libs_and_assets",
           ":trichrome_library_64_32_apk_validate_libs_and_assets",
           ":trichrome_library_64_apk_validate_libs_and_assets",
@@ -3911,24 +3946,43 @@ if (current_toolchain == default_toolchain &&
         ]
       } else {
         deps += [
+          ":${_main_monochrome_public_bundle_target}_validate_libs_and_assets",
+          ":${_main_trichrome_chrome_bundle_target}_validate_libs_and_assets",
+          ":${_main_trichrome_library_apk_target}_validate_libs_and_assets",
           "//android_webview:trichrome_webview_bundle_validate_libs_and_assets",
         ]
       }
     }
     if (enable_manifest_verification) {
-      deps += [
-        ":${_main_monochrome_public_bundle_target}_validate_manifests",
-        ":${_main_monochrome_public_bundle_target}_validate_proguard_config",
-        ":${_main_trichrome_chrome_bundle_target}__base_bundle_module_validate_android_manifest",
-        ":${_main_trichrome_library_apk_target}_validate_android_manifest",
-      ]
       if (android_64bit_target_cpu) {
         deps += [
+          ":monochrome_32_64_public_bundle__base_bundle_module_validate_android_manifest",
+          ":monochrome_32_public_bundle__base_bundle_module_validate_android_manifest",
+          ":monochrome_64_32_public_bundle_validate_manifests",
+          ":monochrome_64_32_public_bundle_validate_proguard_config",
+          ":monochrome_64_public_bundle__base_bundle_module_validate_android_manifest",
+          ":trichrome_chrome_32_64_bundle__base_bundle_module_validate_android_manifest",
+          ":trichrome_chrome_32_bundle__base_bundle_module_validate_android_manifest",
+          ":trichrome_chrome_64_32_bundle__base_bundle_module_validate_android_manifest",
+          ":trichrome_chrome_64_bundle__base_bundle_module_validate_android_manifest",
+          ":trichrome_library_32_64_apk_validate_android_manifest",
+          ":trichrome_library_32_apk_validate_android_manifest",
+          ":trichrome_library_64_32_apk_validate_android_manifest",
+          ":trichrome_library_64_apk_validate_android_manifest",
           "//android_webview:system_webview_32_64_base_bundle_module_validate_android_manifest",
+          "//android_webview:system_webview_32_base_bundle_module_validate_android_manifest",
+          "//android_webview:system_webview_64_base_bundle_module_validate_android_manifest",
           "//android_webview:trichrome_webview_32_64_base_bundle_module_validate_android_manifest",
+          "//android_webview:trichrome_webview_32_base_bundle_module_validate_android_manifest",
+          "//android_webview:trichrome_webview_64_32_base_bundle_module_validate_android_manifest",
+          "//android_webview:trichrome_webview_64_base_bundle_module_validate_android_manifest",
         ]
       } else {
         deps += [
+          ":${_main_monochrome_public_bundle_target}_validate_manifests",
+          ":${_main_monochrome_public_bundle_target}_validate_proguard_config",
+          ":${_main_trichrome_chrome_bundle_target}__base_bundle_module_validate_android_manifest",
+          ":${_main_trichrome_library_apk_target}_validate_android_manifest",
           "//android_webview:system_webview_base_bundle_module_validate_android_manifest",
           "//android_webview:trichrome_webview_base_bundle_module_validate_android_manifest",
         ]

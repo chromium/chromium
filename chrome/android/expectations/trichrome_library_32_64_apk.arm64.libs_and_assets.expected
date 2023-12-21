@@ -1,0 +1,5 @@
+apk_path=lib/armeabi-v7a/libarcore_sdk_c.so, compress=False, alignment=4096
+apk_path=lib/armeabi-v7a/libcrashpad_handler_trampoline.so, compress=False, alignment=4096
+apk_path=lib/armeabi-v7a/libmonochrome.so, compress=False, alignment=4096
+apk_path=assets/icudtl.dat, compress=False, alignment=4
+apk_path=assets/snapshot_blob_32.bin, compress=False, alignment=4
