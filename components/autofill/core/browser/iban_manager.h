@@ -53,8 +53,6 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
   void OnSingleFieldSuggestionSelected(const std::u16string& value,
                                        PopupItemId popup_item_id) override;
 
-  base::WeakPtr<IbanManager> GetWeakPtr();
-
  private:
   // Records metrics related to the IBAN suggestions popup.
   class UmaRecorder {
@@ -92,8 +90,6 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
   const raw_ptr<PersonalDataManager> personal_data_manager_;
 
   UmaRecorder uma_recorder_;
-
-  base::WeakPtrFactory<IbanManager> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

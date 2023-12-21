@@ -83,10 +83,6 @@ void IbanManager::OnSingleFieldSuggestionSelected(const std::u16string& value,
   uma_recorder_.OnIbanSuggestionSelected();
 }
 
-base::WeakPtr<IbanManager> IbanManager::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 void IbanManager::UmaRecorder::OnIbanSuggestionsShown(
     FieldGlobalId field_global_id) {
   // Log metrics related to the IBAN-related suggestions in the popup.

@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FORM_FILL_ROUTER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FORM_FILL_ROUTER_H_
 
-#include "base/memory/weak_ptr.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/iban_manager.h"
 #include "components/autofill/core/browser/merchant_promo_code_manager.h"
@@ -60,15 +61,21 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
                                        PopupItemId popup_item_id) override;
 
  private:
-  // Handles autocompleting single fields.
-  base::WeakPtr<AutocompleteHistoryManager> autocomplete_history_manager_;
+  // Handles autocompleting single fields. The `AutocompleteHistoryManager` is
+  // a KeyedService that outlives the `SingleFieldFormFillRouter`.
+  // TODO(crbug.com/1501199): Once WebView doesn't have an
+  // AutocompleteHistoryManager anymore, this should become a raw_ptr instead.
+  raw_ref<AutocompleteHistoryManager> autocomplete_history_manager_;
 
-  // Handles autofilling IBAN fields (can be null for unsupported platforms).
-  base::WeakPtr<IbanManager> iban_manager_;
+  // Handles autofilling IBAN fields. Can be null on unsupported platforms, but
+  // otherwise outlives the `SingleFieldFormFillRouter`, since it is a
+  // KeyedService.
+  raw_ptr<IbanManager> iban_manager_;
 
-  // Handles autofilling merchant promo code fields (can be null for unsupported
-  // platforms).
-  base::WeakPtr<MerchantPromoCodeManager> merchant_promo_code_manager_;
+  // Handles autofilling merchant promo code fields. Can be null on unsupported
+  // platforms, but otherwise outlives the `SingleFieldFormFillRouter`, since it
+  // is a KeyedService.
+  raw_ptr<MerchantPromoCodeManager> merchant_promo_code_manager_;
 };
 
 }  // namespace autofill

@@ -6702,14 +6702,6 @@ TEST_F(BrowserAutofillManagerTest,
   browser_autofill_manager_.reset();
 }
 
-// Make sure that we don't error out when AutocompleteHistoryManager was
-// destroyed before BrowserAutofillManager.
-TEST_F(BrowserAutofillManagerTest, Destructor_DeletedAutocomplete_Works) {
-  // The assertion here is that no exceptions will be thrown.
-  autocomplete_history_manager_.reset();
-  browser_autofill_manager_.reset();
-}
-
 // Test that OnLoadedServerPredictions can obtain the FormStructure with the
 // signature of the queried form from the API and apply type predictions.
 // What we test here:

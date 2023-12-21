@@ -191,11 +191,6 @@ void AutocompleteHistoryManager::Init(
   }
 }
 
-base::WeakPtr<AutocompleteHistoryManager>
-AutocompleteHistoryManager::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 void AutocompleteHistoryManager::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle current_handle,
     std::unique_ptr<WDTypedResult> result) {

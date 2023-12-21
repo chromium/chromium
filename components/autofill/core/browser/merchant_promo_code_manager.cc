@@ -66,10 +66,6 @@ void MerchantPromoCodeManager::Init(PersonalDataManager* personal_data_manager,
   is_off_the_record_ = is_off_the_record;
 }
 
-base::WeakPtr<MerchantPromoCodeManager> MerchantPromoCodeManager::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 void MerchantPromoCodeManager::UMARecorder::OnOffersSuggestionsShown(
     const FieldGlobalId& field_global_id,
     const std::vector<const AutofillOfferData*>& offers) {

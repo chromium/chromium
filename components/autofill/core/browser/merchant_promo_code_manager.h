@@ -55,10 +55,6 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
   // currently operating in an off-the-record context (i.e. incognito).
   void Init(PersonalDataManager* personal_data_manager, bool is_off_the_record);
 
-  // Returns a weak pointer to the current MerchantPromoCodeManager
-  // instance.
-  base::WeakPtr<MerchantPromoCodeManager> GetWeakPtr();
-
  private:
   friend class MerchantPromoCodeManagerTest;
   FRIEND_TEST_ALL_PREFIXES(MerchantPromoCodeManagerTest,
@@ -106,8 +102,6 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
   bool is_off_the_record_ = false;
 
   UMARecorder uma_recorder_;
-
-  base::WeakPtrFactory<MerchantPromoCodeManager> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
