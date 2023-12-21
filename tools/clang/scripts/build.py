@@ -1282,10 +1282,8 @@ def main():
       target_triple = target_arch
       if target_arch == 'arm':
         target_triple = 'armv7'
-      api_level = '19'
-      if target_arch == 'aarch64' or target_arch == 'x86_64':
-        api_level = '21'
-      elif target_arch == 'riscv64':
+      api_level = '21'
+      if target_arch == 'riscv64':
         api_level = '35'
         toolchain_dir = ANDROID_NDK_CANARY_TOOLCHAIN_DIR
       target_triple += '-linux-android' + api_level
