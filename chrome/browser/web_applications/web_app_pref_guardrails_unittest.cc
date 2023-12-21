@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -31,7 +30,7 @@ const webapps::AppId app_id = "app_id";
 class WebAppGuardrailsTest : public testing::Test {
  public:
   WebAppGuardrailsTest() {
-    WebAppPrefsUtilsRegisterProfilePrefs(prefs_.registry());
+    WebAppPrefGuardrails::RegisterProfilePrefs(prefs_.registry());
   }
 
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
@@ -423,7 +422,7 @@ class WebAppPrefsMLGuardrailsMaxStorageTest : public WebAppTest {
  public:
   WebAppPrefsMLGuardrailsMaxStorageTest()
       : WebAppTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    WebAppPrefsUtilsRegisterProfilePrefs(prefs_.registry());
+    WebAppPrefGuardrails::RegisterProfilePrefs(prefs_.registry());
     base::FieldTrialParams params;
     params["max_days_to_store_guardrails"] = "2";
     feature_list_.InitAndEnableFeatureWithParameters(
@@ -550,7 +549,7 @@ class WebAppPrefsLinkCapturingIPHGuardrailsTest : public WebAppTest {
  public:
   WebAppPrefsLinkCapturingIPHGuardrailsTest()
       : WebAppTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    WebAppPrefsUtilsRegisterProfilePrefs(prefs_.registry());
+    WebAppPrefGuardrails::RegisterProfilePrefs(prefs_.registry());
     base::FieldTrialParams params;
     params["link_capturing_guardrail_storage_duration"] = "2";
     feature_list_.InitAndEnableFeatureWithParameters(

@@ -19,6 +19,10 @@
 
 class PrefService;
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}
+
 namespace web_app {
 
 struct GuardrailData {
@@ -39,6 +43,14 @@ struct GuardrailPrefNames {
   std::string_view block_reason_name;
 };
 
+absl::optional<int> GetIntWebAppPref(const PrefService* pref_service,
+                                     const webapps::AppId& app_id,
+                                     base::StringPiece path);
+
+absl::optional<base::Time> GetTimeWebAppPref(const PrefService* pref_service,
+                                             const webapps::AppId& app_id,
+                                             base::StringPiece path);
+
 // WebAppPrefGuardrails provide a simple way of building guardrails based on the
 // number of times a prompt on an app has been ignored or dismissed in the past.
 // The guardrails help prevent the prompt from showing up after a specific
@@ -58,6 +70,41 @@ class WebAppPrefGuardrails {
   // Returns an instance of the WebAppPrefGuardrails built to handle when the
   // IPH bubble for apps launched via link capturing should be shown.
   static WebAppPrefGuardrails GetForLinkCapturingIph(PrefService* pref_service);
+
+  // The time values are stored as a string-flavored base::value representing
+  // the int64_t number of microseconds since the Windows epoch, using
+  // base::TimeToValue(). The stored preferences look like:
+  //   "web_app_ids": {
+  //     "<app_id_1>": {
+  //       "was_external_app_uninstalled_by_user": true,
+  //       "IPH_num_of_consecutive_ignore": 2,
+  //       "IPH_link_capturing_consecutive_not_accepted_num": 2,
+  //       "ML_num_of_consecutive_not_accepted": 2,
+  //       "IPH_last_ignore_time": "13249617864945580",
+  //       "ML_last_time_install_ignored": "13249617864945580",
+  //       "ML_last_time_install_dismissed": "13249617864945580",
+  //       "IPH_link_capturing_last_time_ignored": "13249617864945580",
+  //       "error_loaded_policy_app_migrated": true
+  //     },
+  //   },
+  //   "app_agnostic_ml_state": {
+  //       "ML_last_time_install_ignored": "13249617864945580",
+  //       "ML_last_time_install_dismissed": "13249617864945580",
+  //       "ML_num_of_consecutive_not_accepted": 2,
+  //       "ML_all_promos_blocked_date": "13249617864945580",
+  //   },
+  //   "app_agnostic_iph_state": {
+  //     "IPH_num_of_consecutive_ignore": 3,
+  //     "IPH_last_ignore_time": "13249617864945500",
+  //   },
+  //   "app_agnostic_iph_link_capturing_state": {
+  //     "IPH_link_capturing_consecutive_not_accepted_num": 3,
+  //     "IPH_link_capturing_last_time_ignored": "13249617864945500",
+  //     "IPH_link_capturing_blocked_date": "13249617864945500",
+  //     "IPH_link_capturing_block_reason":
+  //     "app_specific_ignore_count_hit:app_id"
+  //   }
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   ~WebAppPrefGuardrails();
   WebAppPrefGuardrails(const WebAppPrefGuardrails& other) = delete;
@@ -99,6 +146,15 @@ class WebAppPrefGuardrails {
   bool IsGlobalBlockActive();
   void LogGlobalBlockReason(ScopedDictPrefUpdate& global_update,
                             const std::string& reason);
+
+  // Pref update functions.
+  void UpdateTimeWebAppPref(const webapps::AppId& app_id,
+                            base::StringPiece path,
+                            base::Time value);
+
+  void UpdateIntWebAppPref(const webapps::AppId& app_id,
+                           base::StringPiece path,
+                           int value);
 
   raw_ptr<PrefService> pref_service_;
   const raw_ref<const GuardrailData> guardrail_data_;
