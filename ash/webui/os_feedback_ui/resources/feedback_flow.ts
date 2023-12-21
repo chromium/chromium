@@ -621,11 +621,13 @@ export class FeedbackFlowElement extends PolymerElement {
     return this.descriptionPlaceholderText;
   }
 
-
   getIsUserLoggedInForTesting(): boolean {
     return this.isUserLoggedIn;
   }
 
+  getFeedbackContextForTesting(): FeedbackContext|null {
+    return this.feedbackContext;
+  }
 
   getShouldShowWifiDebugLogsCheckboxForTesting(): boolean {
     return this.shouldShowWifiDebugLogsCheckbox;

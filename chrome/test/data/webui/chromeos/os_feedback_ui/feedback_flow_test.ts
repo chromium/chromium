@@ -2,36 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://os-feedback/confirmation_page.js';
+import 'chrome://os-feedback/search_page.js';
+import 'chrome://os-feedback/share_data_page.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
+import {ConfirmationPageElement} from 'chrome://os-feedback/confirmation_page.js';
 import {fakeFeedbackContext, fakeFeedbackContextWithoutLinkedCrossDevicePhone, fakeInternalUserFeedbackContext, fakePngData, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
-import {AdditionalContextQueryParam, FeedbackFlowElement, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
+import {AdditionalContextQueryParam, FeedbackFlowButtonClickEvent, FeedbackFlowElement, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {OS_FEEDBACK_TRUSTED_ORIGIN} from 'chrome://os-feedback/help_content.js';
 import {setFeedbackServiceProviderForTesting, setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPreSubmitAction, FeedbackContext, SendReportStatus} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
 import {SearchPageElement} from 'chrome://os-feedback/search_page.js';
+import {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
-import {eventToPromise, isVisible} from '../test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('FeedbackFlowTestSuite', () => {
-  /** @type {?FeedbackFlowElement} */
-  let page = null;
+  let page: FeedbackFlowElement;
 
-  /** @type {?FakeHelpContentProvider} */
-  let helpContentProvider = null;
+  let helpContentProvider: FakeHelpContentProvider;
 
-  /** @type {?FakeFeedbackServiceProvider} */
-  let feedbackServiceProvider = null;
+  let feedbackServiceProvider: FakeFeedbackServiceProvider;
 
   setup(() => {
-    document.body.innerHTML = trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Create helpContentProvider.
     helpContentProvider = new FakeHelpContentProvider();
     // Setup search response.
@@ -44,67 +48,46 @@ suite('FeedbackFlowTestSuite', () => {
     setFeedbackServiceProviderForTesting(feedbackServiceProvider);
   });
 
-  teardown(() => {
-    page.remove();
-    page = null;
-    helpContentProvider = null;
-    feedbackServiceProvider = null;
-  });
-
   function initializePage() {
-    assertFalse(!!page);
-    page =
-        /** @type {!FeedbackFlowElement} */ (
-            document.createElement('feedback-flow'));
+    page = document.createElement('feedback-flow');
     assertTrue(!!page);
     document.body.appendChild(page);
     return flushTasks();
   }
 
-  /**
-   * @param {!Element} element
-   * @param {string} selector
-   * @returns {Element|null}
-   */
-  function findChildElement(element, selector) {
-    return element.shadowRoot.querySelector(selector);
+  function findChildElement(element: Element, selector: string): Element|null {
+    return element.shadowRoot!.querySelector(selector);
   }
 
-  /**
-   * @suppress {visibility}
-   * @return {?FeedbackContext}
-   */
-  function getFeedbackContext_() {
-    assertTrue(!!page);
-
-    return page.feedbackContext;
+  function getFeedbackContext(): FeedbackContext {
+    return page!.getFeedbackContextForTesting() as FeedbackContext;
   }
 
-  /** @return {!SearchPageElement} */
-  function getSearchPage() {
-    assertTrue(!!page);
-
-    return /** @type {!SearchPageElement} */ (page.$['searchPage']);
+  function getSearchPage(): SearchPageElement {
+    return strictQuery('#searchPage', page!.shadowRoot, SearchPageElement);
   }
 
-  /**
-   * @param {boolean} isCalled
-   * @param {FeedbackAppExitPath} exitPath
-   * @private
-   */
-  function verifyRecordExitPathCalled(isCalled, exitPath) {
+  function getDescriptionElement(): HTMLTextAreaElement {
+    return strictQuery(
+        '#descriptionText', getSearchPage().shadowRoot, HTMLTextAreaElement);
+  }
+
+  type ActivePageElement =
+      SearchPageElement|ShareDataPageElement|ConfirmationPageElement;
+
+  function getActivePage<T extends ActivePageElement>(): T {
+    return page!.shadowRoot!.querySelector('.iron-selected') as T;
+  }
+
+  function verifyRecordExitPathCalled(
+      isCalled: boolean, exitPath: FeedbackAppExitPath) {
     isCalled ?
         assertTrue(feedbackServiceProvider.isRecordExitPathCalled(exitPath)) :
         assertFalse(feedbackServiceProvider.isRecordExitPathCalled(exitPath));
   }
 
-
-  /**
-   * @param {boolean} isCalled
-   * @param {FeedbackAppHelpContentOutcome} outcome
-   * @private
-   */
-  function verifyHelpContentOutcomeMetricCalled(isCalled, outcome) {
+  function verifyHelpContentOutcomeMetricCalled(
+      isCalled: boolean, outcome: FeedbackAppHelpContentOutcome) {
     isCalled ?
         assertTrue(feedbackServiceProvider.isHelpContentOutcomeMetricEmitted(
             outcome)) :
@@ -112,14 +95,9 @@ suite('FeedbackFlowTestSuite', () => {
             feedbackServiceProvider.isHelpContentOutcomeMetricEmitted(outcome));
   }
 
-  /**
-   * @param {FeedbackFlowState} exitPage
-   * @param {FeedbackAppExitPath} exitPath
-   * @param {boolean} helpContentClicked
-   * @private
-   */
   function verifyExitPathMetricsEmitted(
-      exitPage, exitPath, helpContentClicked) {
+      exitPage: FeedbackFlowState, exitPath: FeedbackAppExitPath,
+      helpContentClicked: boolean) {
     page.setCurrentStateForTesting(exitPage);
     page.setHelpContentClickedForTesting(helpContentClicked);
 
@@ -128,9 +106,6 @@ suite('FeedbackFlowTestSuite', () => {
     verifyRecordExitPathCalled(/*metric_emitted=*/ true, exitPath);
   }
 
-  /**
-   * @private
-   */
   function testWithInternalAccount() {
     feedbackServiceProvider = new FakeFeedbackServiceProvider();
     feedbackServiceProvider.setFakeFeedbackContext(
@@ -138,26 +113,19 @@ suite('FeedbackFlowTestSuite', () => {
     setFeedbackServiceProviderForTesting(feedbackServiceProvider);
   }
 
-  /**
-   * @private
-   */
-  function SetupTestWithoutLinkedCrossDevicePhone() {
+  function setupTestWithoutLinkedCrossDevicePhone() {
     feedbackServiceProvider = new FakeFeedbackServiceProvider();
     feedbackServiceProvider.setFakeFeedbackContext(
         fakeFeedbackContextWithoutLinkedCrossDevicePhone);
     setFeedbackServiceProviderForTesting(feedbackServiceProvider);
   }
 
-  /**
-   * @param {boolean} from_assistant
-   * @private
-   */
-  function setFromAssistantFlag(from_assistant) {
-    if (from_assistant) {
+  function setFromAssistantFlag(fromAssistant: boolean) {
+    if (fromAssistant) {
       const queryParams = new URLSearchParams(window.location.search);
-      const from_assistant = 'true';
+      const fromAssistant = 'true';
       queryParams.set(
-          AdditionalContextQueryParam.FROM_ASSISTANT, from_assistant);
+          AdditionalContextQueryParam.FROM_ASSISTANT, fromAssistant);
 
       window.history.replaceState(null, '', '?' + queryParams.toString());
     } else {
@@ -168,11 +136,7 @@ suite('FeedbackFlowTestSuite', () => {
     }
   }
 
-  /**
-   * @param {boolean} fromSettingsSearch
-   * @private
-   */
-  function setFromSettingsSearchFlag(fromSettingsSearch) {
+  function setFromSettingsSearchFlag(fromSettingsSearch: boolean) {
     if (fromSettingsSearch) {
       const queryParams = new URLSearchParams(window.location.search);
       const fromSettingsSearch = 'true';
@@ -193,20 +157,21 @@ suite('FeedbackFlowTestSuite', () => {
     await initializePage();
 
     // Find the element whose class is iron-selected.
-    const activePage = page.shadowRoot.querySelector('.iron-selected');
+    const activePage = getActivePage();
     assertTrue(!!activePage);
     assertEquals('searchPage', activePage.id);
 
     // Verify the title is in the page.
-    const title = activePage.shadowRoot.querySelector('.page-title');
+    const title =
+        strictQuery('.page-title', activePage.shadowRoot, HTMLElement);
     assertTrue(!!title);
-    assertEquals('Send feedback', title.textContent.trim());
+    assertEquals('Send feedback', title.textContent!.trim());
 
     // Verify the continue button is in the page.
     const buttonContinue =
-        activePage.shadowRoot.querySelector('#buttonContinue');
+        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement);
     assertTrue(!!buttonContinue);
-    assertEquals('Continue', buttonContinue.textContent.trim());
+    assertEquals('Continue', buttonContinue.textContent!.trim());
   });
 
 
@@ -215,24 +180,27 @@ suite('FeedbackFlowTestSuite', () => {
     await initializePage();
     page.setCurrentStateForTesting(FeedbackFlowState.SHARE_DATA);
 
-    const activePage = page.shadowRoot.querySelector('.iron-selected');
+    const activePage = getActivePage<ShareDataPageElement>();
     assertEquals('shareDataPage', activePage.id);
 
     assertTrue(!!activePage);
     // Verify the title is in the page.
-    const title = activePage.shadowRoot.querySelector('.page-title');
+    const title =
+        strictQuery('.page-title', activePage.shadowRoot, HTMLElement);
     assertTrue(!!title);
-    assertEquals('Send feedback', title.textContent.trim());
+    assertEquals('Send feedback', title.textContent!.trim());
 
     // Verify the back button is in the page.
-    const buttonBack = activePage.shadowRoot.querySelector('#buttonBack');
+    const buttonBack =
+        strictQuery('#buttonBack', activePage.shadowRoot, CrButtonElement);
     assertTrue(!!buttonBack);
-    assertEquals('Back', buttonBack.textContent.trim());
+    assertEquals('Back', buttonBack.textContent!.trim());
 
     // Verify the send button is in the page.
-    const buttonSend = activePage.shadowRoot.querySelector('#buttonSend');
+    const buttonSend =
+        strictQuery('#buttonSend', activePage.shadowRoot, CrButtonElement);
     assertTrue(!!buttonSend);
-    assertEquals('Send', buttonSend.textContent.trim());
+    assertEquals('Send', buttonSend.textContent!.trim());
   });
 
 
@@ -242,25 +210,27 @@ suite('FeedbackFlowTestSuite', () => {
     page.setCurrentStateForTesting(FeedbackFlowState.CONFIRMATION);
     page.setSendReportStatusForTesting(SendReportStatus.kSuccess);
 
-    const activePage = page.shadowRoot.querySelector('.iron-selected');
+    const activePage = getActivePage<ConfirmationPageElement>();
     assertTrue(!!activePage);
     assertEquals('confirmationPage', activePage.id);
 
     // Verify the title is in the page.
-    const title = activePage.shadowRoot.querySelector('.page-title');
+    const title =
+        strictQuery('.page-title', activePage.shadowRoot, HTMLElement);
     assertTrue(!!title);
-    assertEquals('Thanks for your feedback', title.textContent.trim());
+    assertEquals('Thanks for your feedback', title.textContent!.trim());
 
     // Verify the done button is in the page.
-    const buttonDone = activePage.shadowRoot.querySelector('#buttonDone');
+    const buttonDone =
+        strictQuery('#buttonDone', activePage.shadowRoot, CrButtonElement);
     assertTrue(!!buttonDone);
-    assertEquals('Done', buttonDone.textContent.trim());
+    assertEquals('Done', buttonDone.textContent!.trim());
 
     // Verify the startNewReport button is in the page.
-    const buttonNewReport =
-        activePage.shadowRoot.querySelector('#buttonNewReport');
+    const buttonNewReport = strictQuery(
+        '#buttonNewReport', activePage.shadowRoot, CrButtonElement);
     assertTrue(!!buttonNewReport);
-    assertEquals('Send new report', buttonNewReport.textContent.trim());
+    assertEquals('Send new report', buttonNewReport.textContent!.trim());
   });
 
   // Test the navigation from search page to share data page.
@@ -274,47 +244,49 @@ suite('FeedbackFlowTestSuite', () => {
 
     page.setHelpContentClickedForTesting(true);
 
-    let activePage = page.shadowRoot.querySelector('.iron-selected');
+    let activePage: ActivePageElement = getActivePage();
     assertTrue(!!activePage);
     assertEquals('searchPage', activePage.id);
 
-    const inputElement = activePage.shadowRoot.querySelector('textarea');
+    const inputElement =
+        strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement);
     const continueButton =
-        activePage.shadowRoot.querySelector('#buttonContinue');
+        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement);
 
     // Clear the description.
     inputElement.value = '';
     continueButton.click();
     await flushTasks();
     // Should stay on search page when click the continue button.
-    activePage = page.shadowRoot.querySelector('.iron-selected');
+    activePage = getActivePage();
     assertEquals('searchPage', activePage.id);
     assertEquals(0, feedbackServiceProvider.getScreenshotPngCallCount());
     feedbackServiceProvider.setFakeScreenshotPng(fakePngData);
 
     const clickPromise = eventToPromise('continue-click', page);
 
-    let eventDetail;
-    page.addEventListener('continue-click', (event) => {
-      eventDetail = event.detail;
-    });
+    let eventDetail: FeedbackFlowButtonClickEvent;
+    page.addEventListener(
+        'continue-click', (event: FeedbackFlowButtonClickEvent) => {
+          eventDetail = event;
+        });
 
     // Enter some text.
     inputElement.value = 'abc';
     continueButton.click();
     await clickPromise;
 
-    assertEquals(FeedbackFlowState.SEARCH, eventDetail.currentState);
-    assertEquals('abc', eventDetail.description);
+    assertEquals(FeedbackFlowState.SEARCH, eventDetail!.detail!.currentState);
+    assertEquals('abc', eventDetail!.detail!.description);
 
     // Should move to share data page when click the continue button.
-    activePage = page.shadowRoot.querySelector('.iron-selected');
+    activePage = getActivePage<ShareDataPageElement>();
     assertEquals('shareDataPage', activePage.id);
 
     // Verify that the getScreenshotPng is called once.
     assertEquals(1, feedbackServiceProvider.getScreenshotPngCallCount());
-    const screenshotImg =
-        activePage.shadowRoot.querySelector('#screenshotImage');
+    const screenshotImg = strictQuery(
+        '#screenshotImage', activePage.shadowRoot, HTMLImageElement);
     assertTrue(!!screenshotImg);
     assertTrue(!!screenshotImg.src);
     // Verify that the src of the screenshot image is set.
@@ -333,18 +305,19 @@ suite('FeedbackFlowTestSuite', () => {
     await initializePage();
     page.setCurrentStateForTesting(FeedbackFlowState.SHARE_DATA);
 
-    let activePage = page.shadowRoot.querySelector('.iron-selected');
+    let activePage = getActivePage();
     assertEquals('shareDataPage', activePage.id);
 
-    activePage.shadowRoot.querySelector('#buttonBack').click();
+    strictQuery('#buttonBack', activePage.shadowRoot, CrButtonElement).click();
     await flushTasks();
     // Should go back to share data page.
-    activePage = page.shadowRoot.querySelector('.iron-selected');
+    activePage = getActivePage();
     assertTrue(!!activePage);
     assertEquals('searchPage', activePage.id);
 
     // The description input element should have received focused.
-    const descriptionElement = activePage.shadowRoot.querySelector('textarea');
+    const descriptionElement =
+        strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement);
     assertEquals(descriptionElement, getDeepActiveElement());
   });
 
@@ -357,27 +330,28 @@ suite('FeedbackFlowTestSuite', () => {
     // share data page.
     page.setDescriptionForTesting('abc123');
 
-    let activePage = page.shadowRoot.querySelector('.iron-selected');
+    let activePage = getActivePage();
     assertEquals('shareDataPage', activePage.id);
 
     const clickPromise = eventToPromise('continue-click', page);
 
     let eventDetail;
     page.addEventListener('continue-click', (event) => {
-      eventDetail = event.detail;
+      eventDetail = event;
     });
 
     assertEquals(0, feedbackServiceProvider.getSendReportCallCount());
 
-    activePage.shadowRoot.querySelector('#buttonSend').click();
+    strictQuery('#buttonSend', activePage.shadowRoot, CrButtonElement).click();
     await clickPromise;
 
     // Verify the sendReport method was invoked.
     assertEquals(1, feedbackServiceProvider.getSendReportCallCount());
-    assertEquals(FeedbackFlowState.SHARE_DATA, eventDetail.currentState);
+    assertEquals(
+        FeedbackFlowState.SHARE_DATA, eventDetail!.detail!.currentState);
 
     // Should navigate to confirmation page.
-    activePage = page.shadowRoot.querySelector('.iron-selected');
+    activePage = getActivePage<ConfirmationPageElement>();
     assertTrue(!!activePage);
     assertEquals('confirmationPage', activePage.id);
     assertEquals(SendReportStatus.kSuccess, activePage.sendReportStatus);
@@ -391,36 +365,40 @@ suite('FeedbackFlowTestSuite', () => {
 
     // Check the bluetooth checkbox component hidden when input is not related
     // to bluetooth.
-    let activePage = page.shadowRoot.querySelector('.iron-selected');
+    let activePage = getActivePage();
     assertTrue(!!activePage);
     assertEquals('searchPage', activePage.id);
 
-    activePage.shadowRoot.querySelector('textarea').value = 'abc';
-    activePage.shadowRoot.querySelector('#buttonContinue').click();
+    strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement).value =
+        'abc';
+    strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
+        .click();
     await flushTasks();
 
-    activePage = page.shadowRoot.querySelector('.iron-selected');
+    activePage = getActivePage();
     assertEquals('shareDataPage', activePage.id);
-    const bluetoothCheckbox =
-        activePage.shadowRoot.querySelector('#bluetoothCheckboxContainer');
+    const bluetoothCheckbox = strictQuery(
+        '#bluetoothCheckboxContainer', activePage.shadowRoot, HTMLElement);
     assertTrue(!!bluetoothCheckbox);
     assertFalse(isVisible(bluetoothCheckbox));
 
-    activePage.shadowRoot.querySelector('#buttonBack').click();
+    strictQuery('#buttonBack', activePage.shadowRoot, CrButtonElement).click();
     await flushTasks();
 
     // Go back to search page and set description input related to bluetooth.
-    activePage = page.shadowRoot.querySelector('.iron-selected');
+    activePage = getActivePage();
     assertTrue(!!activePage);
     assertEquals('searchPage', activePage.id);
 
-    const descriptionElement = activePage.shadowRoot.querySelector('textarea');
+    const descriptionElement =
+        strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement);
     descriptionElement.value = 'bluetooth';
 
-    activePage.shadowRoot.querySelector('#buttonContinue').click();
+    strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
+        .click();
     await flushTasks();
 
-    activePage = page.shadowRoot.querySelector('.iron-selected');
+    activePage = getActivePage();
     assertTrue(!!activePage);
     assertEquals('shareDataPage', activePage.id);
 
@@ -434,16 +412,18 @@ suite('FeedbackFlowTestSuite', () => {
     await initializePage();
 
     // Set input description related to bluetooth.
-    let activePage = page.shadowRoot.querySelector('.iron-selected');
+    let activePage = getActivePage();
 
-    activePage.shadowRoot.querySelector('textarea').value = 'bluetooth';
-    activePage.shadowRoot.querySelector('#buttonContinue').click();
+    strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement).value =
+        'bluetooth';
+    strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
+        .click();
     await flushTasks();
 
-    activePage = page.shadowRoot.querySelector('.iron-selected');
+    activePage = getActivePage();
     assertEquals('shareDataPage', activePage.id);
-    const bluetoothCheckbox =
-        activePage.shadowRoot.querySelector('#bluetoothCheckboxContainer');
+    const bluetoothCheckbox = strictQuery(
+        '#bluetoothCheckboxContainer', activePage.shadowRoot, HTMLElement);
     assertTrue(!!bluetoothCheckbox);
     assertFalse(isVisible(bluetoothCheckbox));
   });
@@ -457,13 +437,17 @@ suite('FeedbackFlowTestSuite', () => {
 
     const searchPage = findChildElement(page, '.iron-selected');
     assertTrue(!!searchPage);
-    assertEquals('searchPage', searchPage.id);
+    assertEquals('searchPage', searchPage!.id);
 
-    findChildElement(searchPage, 'textarea').value =
-        'wifi wi-fi internet network hotspot';
+    const inputElement = findChildElement(searchPage as Element, 'textarea') as
+        HTMLTextAreaElement;
+    inputElement.value = 'wifi wi-fi internet network hotspot';
     // The flag ShouldShowWifiDebugLogsCheckBox_ is only updated when continue
     // button is clicked.
-    findChildElement(searchPage, '#buttonContinue').click();
+    const continueButton =
+        findChildElement(searchPage as Element, '#buttonContinue') as
+        CrButtonElement;
+    continueButton.click();
     await flushTasks();
 
     assertFalse(page.getShouldShowWifiDebugLogsCheckboxForTesting());
@@ -476,17 +460,22 @@ suite('FeedbackFlowTestSuite', () => {
   test('DoNotShowWifiDebugLogsCheckBox_NotAllowed', async () => {
     testWithInternalAccount();
     await initializePage();
-    assertFalse(getFeedbackContext_().wifiDebugLogsAllowed);
+    assertFalse(getFeedbackContext().wifiDebugLogsAllowed);
     assertFalse(page.getShouldShowWifiDebugLogsCheckboxForTesting());
 
     const searchPage = findChildElement(page, '.iron-selected');
     assertTrue(!!searchPage);
     assertEquals('searchPage', searchPage.id);
 
-    findChildElement(searchPage, 'textarea').value = 'wi-fi';
+    const inputElement = findChildElement(searchPage as Element, 'textarea') as
+        HTMLTextAreaElement;
+    inputElement.value = 'wi-fi';
     // The flag ShouldShowWifiDebugLogsCheckBox_ is only updated when continue
     // button is clicked.
-    findChildElement(searchPage, '#buttonContinue').click();
+    const continueButton =
+        findChildElement(searchPage as Element, '#buttonContinue') as
+        CrButtonElement;
+    continueButton.click();
     await flushTasks();
 
     assertFalse(page.getShouldShowWifiDebugLogsCheckboxForTesting());
@@ -499,17 +488,22 @@ suite('FeedbackFlowTestSuite', () => {
   test('ShowWifiDebugLogsCheckBox', async () => {
     testWithInternalAccount();
     await initializePage();
-    getFeedbackContext_().wifiDebugLogsAllowed = true;
+    getFeedbackContext().wifiDebugLogsAllowed = true;
     assertFalse(page.getShouldShowWifiDebugLogsCheckboxForTesting());
 
     const searchPage = findChildElement(page, '.iron-selected');
     assertTrue(!!searchPage);
     assertEquals('searchPage', searchPage.id);
 
-    findChildElement(searchPage, 'textarea').value = 'wi-fi';
+    const inputElement = findChildElement(searchPage as Element, 'textarea') as
+        HTMLTextAreaElement;
+    inputElement.value = 'wi-fi';
     // The flag ShouldShowWifiDebugLogsCheckBox_ is only updated when continue
     // button is clicked.
-    findChildElement(searchPage, '#buttonContinue').click();
+    const continueButton =
+        findChildElement(searchPage as Element, '#buttonContinue') as
+        CrButtonElement;
+    continueButton.click();
     await flushTasks();
 
     assertTrue(page.getShouldShowWifiDebugLogsCheckboxForTesting());
@@ -525,26 +519,29 @@ suite('FeedbackFlowTestSuite', () => {
 
         // Check the "Link Cross Device Dogfood Feedback" checkbox component is
         // hidden when input is not related to cross device.
-        let activePage = page.shadowRoot.querySelector('.iron-selected');
+        let activePage = getActivePage();
         assertTrue(!!activePage);
         assertEquals('searchPage', activePage.id);
 
-        activePage.shadowRoot.querySelector('textarea').value = 'abc';
-        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement)
+            .value = 'abc';
+        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
+            .click();
         await flushTasks();
 
         loadTimeData.overrideValues(
             {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
 
-        activePage = page.shadowRoot.querySelector('.iron-selected');
+        activePage = getActivePage();
         assertEquals('shareDataPage', activePage.id);
         const linkCrossDeviceDogfoodFeedbackCheckbox =
-            activePage.shadowRoot.querySelector(
+            activePage.shadowRoot!.querySelector(
                 '#linkCrossDeviceDogfoodFeedbackCheckboxContainer');
         assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
         assertFalse(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
 
-        activePage.shadowRoot.querySelector('#buttonBack').click();
+        strictQuery('#buttonBack', activePage.shadowRoot, CrButtonElement)
+            .click();
         await flushTasks();
 
         loadTimeData.overrideValues(
@@ -552,26 +549,28 @@ suite('FeedbackFlowTestSuite', () => {
 
         // Go back to search page and set description input related to cross
         // device.
-        activePage = page.shadowRoot.querySelector('.iron-selected');
+        activePage = getActivePage();
         assertTrue(!!activePage);
         assertEquals('searchPage', activePage.id);
 
         // Testing tetherRegEx
-        let descriptionElement =
-            activePage.shadowRoot.querySelector('textarea');
+        let descriptionElement = strictQuery(
+            'textarea', activePage.shadowRoot, HTMLTextAreaElement);
         descriptionElement.value = 'hotspot';
 
-        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
+            .click();
         await flushTasks();
 
-        activePage = page.shadowRoot.querySelector('.iron-selected');
+        activePage = getActivePage();
         assertTrue(!!activePage);
         assertEquals('shareDataPage', activePage.id);
 
         assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
         assertTrue(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
 
-        activePage.shadowRoot.querySelector('#buttonBack').click();
+        strictQuery('#buttonBack', activePage.shadowRoot, CrButtonElement)
+            .click();
         await flushTasks();
 
         loadTimeData.overrideValues(
@@ -579,25 +578,28 @@ suite('FeedbackFlowTestSuite', () => {
 
         // Go back to search page and set description input related to cross
         // device.
-        activePage = page.shadowRoot.querySelector('.iron-selected');
+        activePage = getActivePage();
         assertTrue(!!activePage);
         assertEquals('searchPage', activePage.id);
 
         // Testing phoneHubRegEx
-        descriptionElement = activePage.shadowRoot.querySelector('textarea');
+        descriptionElement = strictQuery(
+            'textarea', activePage.shadowRoot, HTMLTextAreaElement);
         descriptionElement.value = 'appstream';
 
-        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
+            .click();
         await flushTasks();
 
-        activePage = page.shadowRoot.querySelector('.iron-selected');
+        activePage = getActivePage();
         assertTrue(!!activePage);
         assertEquals('shareDataPage', activePage.id);
 
         assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
         assertTrue(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
 
-        activePage.shadowRoot.querySelector('#buttonBack').click();
+        strictQuery('#buttonBack', activePage.shadowRoot, CrButtonElement)
+            .click();
         await flushTasks();
 
         loadTimeData.overrideValues(
@@ -605,18 +607,20 @@ suite('FeedbackFlowTestSuite', () => {
 
         // Go back to search page and set description input related to cross
         // device.
-        activePage = page.shadowRoot.querySelector('.iron-selected');
+        activePage = getActivePage();
         assertTrue(!!activePage);
         assertEquals('searchPage', activePage.id);
 
         // Testing phoneHubRegEx variation.
-        descriptionElement = activePage.shadowRoot.querySelector('textarea');
+        descriptionElement = strictQuery(
+            'textarea', activePage.shadowRoot, HTMLTextAreaElement);
         descriptionElement.value = 'camera roll';
 
-        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
+            .click();
         await flushTasks();
 
-        activePage = page.shadowRoot.querySelector('.iron-selected');
+        activePage = getActivePage();
         assertTrue(!!activePage);
         assertEquals('shareDataPage', activePage.id);
 
@@ -636,15 +640,17 @@ suite('FeedbackFlowTestSuite', () => {
             {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
 
         // Set input description related to cross device.
-        let activePage = page.shadowRoot.querySelector('.iron-selected');
-        activePage.shadowRoot.querySelector('textarea').value = 'phone';
-        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        let activePage = getActivePage();
+        strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement)
+            .value = 'phone';
+        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
+            .click();
         await flushTasks();
 
-        activePage = page.shadowRoot.querySelector('.iron-selected');
+        activePage = getActivePage();
         assertEquals('shareDataPage', activePage.id);
         const linkCrossDeviceDogfoodFeedbackCheckbox =
-            activePage.shadowRoot.querySelector(
+            activePage.shadowRoot!.querySelector(
                 '#linkCrossDeviceDogfoodFeedbackCheckboxContainer');
         assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
         assertFalse(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
@@ -655,7 +661,7 @@ suite('FeedbackFlowTestSuite', () => {
   test(
       'LinkCrossDeviceDogfoodFeedbackHiddenWithoutLinkedCrossDevicePhone',
       async () => {
-        SetupTestWithoutLinkedCrossDevicePhone();
+        setupTestWithoutLinkedCrossDevicePhone();
 
         await initializePage();
 
@@ -664,16 +670,18 @@ suite('FeedbackFlowTestSuite', () => {
             {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
 
         // Set input description related to cross device.
-        let activePage = page.shadowRoot.querySelector('.iron-selected');
+        let activePage = getActivePage();
 
-        activePage.shadowRoot.querySelector('textarea').value = 'phone';
-        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement)
+            .value = 'phone';
+        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
+            .click();
         await flushTasks();
 
-        activePage = page.shadowRoot.querySelector('.iron-selected');
+        activePage = getActivePage();
         assertEquals('shareDataPage', activePage.id);
         const linkCrossDeviceDogfoodFeedbackCheckbox =
-            activePage.shadowRoot.querySelector(
+            activePage.shadowRoot!.querySelector(
                 '#linkCrossDeviceDogfoodFeedbackCheckboxContainer');
         assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
         assertFalse(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
@@ -690,39 +698,43 @@ suite('FeedbackFlowTestSuite', () => {
         {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
 
     // Set input description related to cross device.
-    let activePage = page.shadowRoot.querySelector('.iron-selected');
+    let activePage = getActivePage();
 
-    activePage.shadowRoot.querySelector('textarea').value = 'phone';
-    activePage.shadowRoot.querySelector('#buttonContinue').click();
+    strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement).value =
+        'phone';
+    strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
+        .click();
     await flushTasks();
 
-    activePage = page.shadowRoot.querySelector('.iron-selected');
+    activePage = getActivePage();
     assertEquals('shareDataPage', activePage.id);
     const linkCrossDeviceDogfoodFeedbackCheckbox =
-        activePage.shadowRoot.querySelector(
+        activePage.shadowRoot!.querySelector(
             '#linkCrossDeviceDogfoodFeedbackCheckboxContainer');
     assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
     assertTrue(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
 
-    activePage.shadowRoot.querySelector('#buttonBack').click();
+    strictQuery('#buttonBack', activePage.shadowRoot, CrButtonElement).click();
     await flushTasks();
 
     // Go back to search page and set description input related to cross device.
-    activePage = page.shadowRoot.querySelector('.iron-selected');
+    activePage = getActivePage();
     assertTrue(!!activePage);
     assertEquals('searchPage', activePage.id);
 
-    const descriptionElement = activePage.shadowRoot.querySelector('textarea');
+    const descriptionElement =
+        strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement);
     descriptionElement.value = 'phone';
 
     // Disable flag and check that the checkbox doesn't appear.
     loadTimeData.overrideValues(
         {'enableLinkCrossDeviceDogfoodFeedbackFlag': false});
 
-    activePage.shadowRoot.querySelector('#buttonContinue').click();
+    strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
+        .click();
     await flushTasks();
 
-    activePage = page.shadowRoot.querySelector('.iron-selected');
+    activePage = getActivePage();
     assertTrue(!!activePage);
     assertEquals('shareDataPage', activePage.id);
 
@@ -739,16 +751,16 @@ suite('FeedbackFlowTestSuite', () => {
     await initializePage();
     page.setCurrentStateForTesting(FeedbackFlowState.SHARE_DATA);
 
-    const feedbackContext = getFeedbackContext_();
+    const feedbackContext = getFeedbackContext();
     assertTrue(feedbackContext.isInternalAccount);
     assertTrue(feedbackContext.fromAssistant);
     // Check the assistant checkbox component visible when input is not
     // related to bluetooth.
-    const activePage = page.shadowRoot.querySelector('.iron-selected');
+    const activePage = getActivePage();
     assertEquals('shareDataPage', activePage.id);
 
-    const assistantCheckbox =
-        activePage.shadowRoot.querySelector('#assistantLogsContainer');
+    const assistantCheckbox = strictQuery(
+        '#assistantLogsContainer', activePage.shadowRoot, HTMLElement);
 
     assertTrue(!!assistantCheckbox);
     assertTrue(isVisible(assistantCheckbox));
@@ -762,15 +774,15 @@ suite('FeedbackFlowTestSuite', () => {
     await initializePage();
     page.setCurrentStateForTesting(FeedbackFlowState.SHARE_DATA);
 
-    const feedbackContext = getFeedbackContext_();
+    const feedbackContext = getFeedbackContext();
     assertFalse(feedbackContext.isInternalAccount);
     assertTrue(feedbackContext.fromAssistant);
-    let activePage = page.shadowRoot.querySelector('.iron-selected');
-    activePage = page.shadowRoot.querySelector('.iron-selected');
+    let activePage = getActivePage();
+    activePage = getActivePage();
 
     assertEquals('shareDataPage', activePage.id);
-    const assistantCheckbox =
-        activePage.shadowRoot.querySelector('#assistantLogsContainer');
+    const assistantCheckbox = strictQuery(
+        '#assistantLogsContainer', activePage.shadowRoot, HTMLElement);
     assertTrue(!!assistantCheckbox);
     assertFalse(isVisible(assistantCheckbox));
   });
@@ -785,16 +797,16 @@ suite('FeedbackFlowTestSuite', () => {
     await initializePage();
     page.setCurrentStateForTesting(FeedbackFlowState.SHARE_DATA);
 
-    const feedbackContext = getFeedbackContext_();
+    const feedbackContext = getFeedbackContext();
     assertTrue(feedbackContext.isInternalAccount);
     assertFalse(feedbackContext.fromAssistant);
     // Set input description related to bluetooth.
-    let activePage = page.shadowRoot.querySelector('.iron-selected');
-    activePage = page.shadowRoot.querySelector('.iron-selected');
+    let activePage = getActivePage();
+    activePage = getActivePage();
 
     assertEquals('shareDataPage', activePage.id);
-    const assistantCheckbox =
-        activePage.shadowRoot.querySelector('#assistantLogsContainer');
+    const assistantCheckbox = strictQuery(
+        '#assistantLogsContainer', activePage.shadowRoot, HTMLElement);
     assertTrue(!!assistantCheckbox);
     assertFalse(isVisible(assistantCheckbox));
     // Set the flag back to true.
@@ -810,25 +822,27 @@ suite('FeedbackFlowTestSuite', () => {
         // true.
         setFromSettingsSearchFlag(true);
         await initializePage();
-        const feedbackContext = getFeedbackContext_();
+        const feedbackContext = getFeedbackContext();
         assertTrue(feedbackContext.fromSettingsSearch);
 
-        let activePage = page.shadowRoot.querySelector('.iron-selected');
-        activePage.shadowRoot.querySelector('textarea').value = 'text';
-        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        const activePage = getActivePage<SearchPageElement>();
+        strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement)
+            .value = 'text';
+        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
+            .click();
         await flushTasks();
 
         // Check the sys info and metrics checkbox component is unchecked when
         // the feedback app has opened through settings search
-        activePage = page.shadowRoot.querySelector('.iron-selected');
-        assertEquals('shareDataPage', activePage.id);
+        const newActivePage = getActivePage<ShareDataPageElement>();
+        assertEquals('shareDataPage', newActivePage.id);
 
-        const sysInfoAndMetricsCheckboxContainer =
-            activePage.shadowRoot.querySelector('#sysInfoContainer');
+        const sysInfoAndMetricsCheckboxContainer = strictQuery(
+            '#sysInfoContainer', newActivePage.shadowRoot, HTMLElement);
         assertTrue(!!sysInfoAndMetricsCheckboxContainer);
 
-        const sysInfoAndMetricsCheckbox =
-            activePage.shadowRoot.querySelector('#sysInfoCheckbox');
+        const sysInfoAndMetricsCheckbox = strictQuery(
+            '#sysInfoCheckbox', newActivePage.shadowRoot, CrCheckboxElement);
         assertTrue(!!sysInfoAndMetricsCheckbox);
         assertFalse(sysInfoAndMetricsCheckbox.checked);
       });
@@ -842,23 +856,25 @@ suite('FeedbackFlowTestSuite', () => {
         // false.
         setFromSettingsSearchFlag(false);
         await initializePage();
-        const feedbackContext = getFeedbackContext_();
+        const feedbackContext = getFeedbackContext();
         assertFalse(feedbackContext.fromSettingsSearch);
 
-        let activePage = page.shadowRoot.querySelector('.iron-selected');
-        activePage.shadowRoot.querySelector('textarea').value = 'text';
-        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        const activePage = getActivePage<SearchPageElement>();
+        strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement)
+            .value = 'text';
+        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
+            .click();
         await flushTasks();
 
-        activePage = page.shadowRoot.querySelector('.iron-selected');
-        assertEquals('shareDataPage', activePage.id);
+        const newActivePage = getActivePage<ShareDataPageElement>();
+        assertEquals('shareDataPage', newActivePage.id);
 
-        const sysInfoAndMetricsContainer =
-            activePage.shadowRoot.querySelector('#sysInfoContainer');
+        const sysInfoAndMetricsContainer = strictQuery(
+            '#sysInfoContainer', newActivePage.shadowRoot, HTMLElement);
         assertTrue(!!sysInfoAndMetricsContainer);
 
-        const sysInfoAndMetricsCheckbox =
-            activePage.shadowRoot.querySelector('#sysInfoCheckbox');
+        const sysInfoAndMetricsCheckbox = strictQuery(
+            '#sysInfoCheckbox', newActivePage.shadowRoot, CrCheckboxElement);
         assertTrue(!!sysInfoAndMetricsCheckbox);
         assertTrue(sysInfoAndMetricsCheckbox.checked);
       });
@@ -869,32 +885,33 @@ suite('FeedbackFlowTestSuite', () => {
     await initializePage();
     page.setCurrentStateForTesting(FeedbackFlowState.CONFIRMATION);
     // Set text input in search page for testing.
-    const searchPage = page.shadowRoot.querySelector('#searchPage');
+    const searchPage = getSearchPage();
     searchPage.setDescription(/*text=*/ 'abc123');
 
-    let activePage = page.shadowRoot.querySelector('.iron-selected');
+    const activePage = getActivePage<ConfirmationPageElement>();
     assertEquals('confirmationPage', activePage.id);
 
     const clickPromise = eventToPromise('go-back-click', page);
 
-    let eventDetail;
-    page.addEventListener('go-back-click', (event) => {
-      eventDetail = event.detail;
-    });
+    let eventDetail: FeedbackFlowButtonClickEvent;
+    page.addEventListener(
+        'go-back-click', (event: FeedbackFlowButtonClickEvent) => {
+          eventDetail = event;
+        });
 
-    activePage.shadowRoot.querySelector('#buttonNewReport').click();
+    strictQuery('#buttonNewReport', activePage.shadowRoot, CrButtonElement)
+        .click();
     await clickPromise;
 
-    assertEquals(FeedbackFlowState.CONFIRMATION, eventDetail.currentState);
+    assertEquals(
+        FeedbackFlowState.CONFIRMATION, eventDetail!.detail!.currentState);
 
     // Should navigate to search page.
-    activePage = page.shadowRoot.querySelector('.iron-selected');
-    assertTrue(!!activePage);
-    assertEquals('searchPage', activePage.id);
+    const newActivePage = getActivePage<SearchPageElement>();
+    assertEquals('searchPage', newActivePage.id);
 
     // Search text should be empty.
-    const inputElement =
-        searchPage.shadowRoot.querySelector('#descriptionText');
+    const inputElement = getDescriptionElement();
     assertEquals(inputElement.value, '');
     // The description input element should have received focused.
     assertEquals(inputElement, getDeepActiveElement());
@@ -912,39 +929,40 @@ suite('FeedbackFlowTestSuite', () => {
     const continueClickPromise = eventToPromise('continue-click', page);
     const goBackClickPromise = eventToPromise('go-back-click', page);
 
-    let activePage = page.shadowRoot.querySelector('.iron-selected');
+    const activePage = getActivePage<ShareDataPageElement>();
     const shareDataPageSendButton =
-        activePage.shadowRoot.querySelector('#buttonSend');
-    activePage.shadowRoot.querySelector('#buttonSend').click();
+        strictQuery('#buttonSend', activePage.shadowRoot, CrButtonElement);
+    strictQuery('#buttonSend', activePage.shadowRoot, CrButtonElement).click();
     await continueClickPromise;
 
     // Should navigate to confirmation page.
-    activePage = page.shadowRoot.querySelector('.iron-selected');
-    assertTrue(!!activePage);
-    assertEquals('confirmationPage', activePage.id);
+    const confirmationPage = getActivePage<ConfirmationPageElement>();
+    assertEquals('confirmationPage', confirmationPage.id);
 
     // The send button in the share data page should be disabled after
     // sending the report and before send new report button is clicked
     assertTrue(shareDataPageSendButton.disabled);
 
     // Click send new report button.
-    activePage.shadowRoot.querySelector('#buttonNewReport').click();
+    strictQuery(
+        '#buttonNewReport', confirmationPage!.shadowRoot, CrButtonElement)
+        .click();
     await goBackClickPromise;
 
     // Should navigate to search page.
-    activePage = page.shadowRoot.querySelector('.iron-selected');
-    assertTrue(!!activePage);
-    assertEquals('searchPage', activePage.id);
+    const searchPage = getActivePage<SearchPageElement>();
+    assertTrue(!!searchPage);
+    assertEquals('searchPage', searchPage.id);
 
     // Add some text and clicks continue button.
-    activePage.setDescription(/*text=*/ 'abc123');
-    activePage.shadowRoot.querySelector('#buttonContinue').click();
+    searchPage.setDescription(/*text=*/ 'abc123');
+    strictQuery('#buttonContinue', searchPage!.shadowRoot, CrButtonElement)
+        .click();
     await continueClickPromise;
 
     // Should navigate to share data page.
-    activePage = page.shadowRoot.querySelector('.iron-selected');
-    assertTrue(!!activePage);
-    assertEquals('shareDataPage', activePage.id);
+    const shareDataPage = getActivePage<ShareDataPageElement>();
+    assertEquals('shareDataPage', shareDataPage.id);
 
     // The send button in the share data page should be re-enabled.
     assertFalse(shareDataPageSendButton.disabled);
@@ -979,9 +997,9 @@ suite('FeedbackFlowTestSuite', () => {
         queryParams.set(AdditionalContextQueryParam.CATEGORY_TAG, category_tag);
         const page_url = 'some%20page%20url';
         queryParams.set(AdditionalContextQueryParam.PAGE_URL, page_url);
-        const from_assistant = 'true';
+        const fromAssistant = 'true';
         queryParams.set(
-            AdditionalContextQueryParam.FROM_ASSISTANT, from_assistant);
+            AdditionalContextQueryParam.FROM_ASSISTANT, fromAssistant);
         const fromSettingsSearch = 'true';
         queryParams.set(
             AdditionalContextQueryParam.FROM_SETTINGS_SEARCH,
@@ -990,10 +1008,10 @@ suite('FeedbackFlowTestSuite', () => {
         window.history.replaceState(null, '', '?' + queryParams.toString());
         await initializePage();
         page.setCurrentStateForTesting(FeedbackFlowState.SEARCH);
-        const descriptionElement = getSearchPage().$['descriptionText'];
+        const descriptionElement = getDescriptionElement();
 
-        const feedbackContext = getFeedbackContext_();
-        assertEquals(page_url, feedbackContext.pageUrl.url);
+        const feedbackContext = getFeedbackContext();
+        assertEquals(page_url, feedbackContext.pageUrl!.url);
         assertEquals(fakeFeedbackContext.email, feedbackContext.email);
         assertEquals(
             decodeURIComponent(extra_diagnostics),
@@ -1025,9 +1043,11 @@ suite('FeedbackFlowTestSuite', () => {
                 '');
         await initializePage();
         page.setCurrentStateForTesting(FeedbackFlowState.SEARCH);
-        const descriptionElement = getSearchPage().$['descriptionText'];
+        const descriptionElement =
+            findChildElement(getSearchPage(), '#descriptionText') as
+            HTMLTextAreaElement;
 
-        const feedbackContext = getFeedbackContext_();
+        const feedbackContext = getFeedbackContext();
         // TODO(ashleydp): Update expectation when page_url passed.
         assertEquals(fakeFeedbackContext.pageUrl, feedbackContext.pageUrl);
         assertEquals(fakeFeedbackContext.email, feedbackContext.email);
@@ -1057,8 +1077,8 @@ suite('FeedbackFlowTestSuite', () => {
 
     // Get Search Page.
     const SearchPage = getSearchPage();
-    const iframe = /** @type {!HTMLIFrameElement} */ (
-        SearchPage.shadowRoot.querySelector('iframe'));
+    const iframe =
+        strictQuery('iframe', SearchPage.shadowRoot, HTMLIFrameElement);
 
     assertTrue(!!iframe);
     // Wait for the iframe completes loading.
@@ -1068,7 +1088,7 @@ suite('FeedbackFlowTestSuite', () => {
     // the help content.
     const expectedMessageEventCount = 2;
     let messageEventCount = 0;
-    const resolver = new PromiseResolver();
+    const resolver = new PromiseResolver<void>();
 
     window.addEventListener('message', event => {
       if ('help-content-clicked-for-testing' === event.data.id &&
@@ -1088,7 +1108,7 @@ suite('FeedbackFlowTestSuite', () => {
     const data = {
       id: 'help-content-clicked-for-testing',
     };
-    iframe.contentWindow.parent.postMessage(data, OS_FEEDBACK_TRUSTED_ORIGIN);
+    iframe.contentWindow!.parent!.postMessage(data, OS_FEEDBACK_TRUSTED_ORIGIN);
 
     // Wait for the "help-content-clicked" message has been received.
     await resolver.promise;
@@ -1201,12 +1221,13 @@ suite('FeedbackFlowTestSuite', () => {
         false, FeedbackAppHelpContentOutcome.kContinueNoHelpContentDisplayed);
 
     // Now on search page.
-    const activePage = page.shadowRoot.querySelector('.iron-selected');
+    const activePage = getActivePage();
     assertTrue(!!activePage);
     assertEquals('searchPage', activePage.id);
-    const inputElement = activePage.shadowRoot.querySelector('textarea');
+    const inputElement =
+        strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement);
     const continueButton =
-        activePage.shadowRoot.querySelector('#buttonContinue');
+        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement);
 
     // Enter some text.
     inputElement.value = 'abc';
@@ -1233,9 +1254,7 @@ suite('FeedbackFlowTestSuite', () => {
         assertTrue(link.href.includes(disabledUrl));
 
         // Reset app element.
-        document.body.innerHTML = trustedTypes.emptyHTML;
-        page.remove();
-        page = null;
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
         // Setup test for jelly enabled.
         loadTimeData.overrideValues({
@@ -1259,9 +1278,9 @@ suite('FeedbackFlowTestSuite', () => {
         // configuration.
         assertTrue(loadTimeData.getBoolean('isJellyEnabledForOsFeedback'));
 
-        const resolver = new PromiseResolver();
+        const resolver = new PromiseResolver<void>();
         let colorChangeUpdaterCalled = false;
-        const testMessageListener = (event) => {
+        const testMessageListener = (event: {data: {id: string}}) => {
           if (event.data.id === 'color-change-updater-started-for-testing') {
             colorChangeUpdaterCalled = true;
             resolver.resolve();
@@ -1283,7 +1302,7 @@ suite('FeedbackFlowTestSuite', () => {
     // Save the original chrome.getVariableValue function.
     const chromeGetVariableValue = chrome.getVariableValue;
     // Mock the chrome.getVariableValue to return dialogArguments.
-    const mockChromeGetVariableValue = (message) => {
+    const mockChromeGetVariableValue = (message: string) => {
       if (message === 'dialogArguments') {
         return '{' +
             '"autofillMetadata":{"fake key1": "fake value1"},' +
@@ -1310,10 +1329,10 @@ suite('FeedbackFlowTestSuite', () => {
 
     await initializePage();
 
-    const feedbackContext = getFeedbackContext_();
+    const feedbackContext = getFeedbackContext();
     assertEquals('Login', feedbackContext.categoryTag);
     assertEquals('fake extra log data', feedbackContext.extraDiagnostics);
-    assertEquals('chrome://flags/', feedbackContext.pageUrl.url);
+    assertEquals('chrome://flags/', feedbackContext.pageUrl!.url);
     assertEquals(
         '{"fake key1":"fake value1"}', feedbackContext.autofillMetadata);
     assertTrue(feedbackContext.fromAssistant);
@@ -1342,17 +1361,17 @@ suite('FeedbackFlowTestSuite', () => {
         // Save the original chrome.getVariableValue function.
         const chromeGetVariableValue = chrome.getVariableValue;
         // Mock the chrome.getVariableValue to return dialogArguments.
-        const mockChromeGetVariableValue = (message) => {
+        const mockChromeGetVariableValue = () => {
           return '{}';
         };
         chrome.getVariableValue = mockChromeGetVariableValue;
 
         await initializePage();
 
-        const feedbackContext = getFeedbackContext_();
+        const feedbackContext = getFeedbackContext();
         assertEquals('', feedbackContext.categoryTag);
         assertEquals('', feedbackContext.extraDiagnostics);
-        assertEquals('', feedbackContext.pageUrl.url);
+        assertEquals('', feedbackContext.pageUrl!.url);
         assertEquals('{}', feedbackContext.autofillMetadata);
         assertFalse(feedbackContext.fromAssistant);
         assertFalse(feedbackContext.fromAutofill);

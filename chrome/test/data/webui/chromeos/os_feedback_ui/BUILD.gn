@@ -16,12 +16,14 @@ build_webui_tests("build_webui_tests") {
 
   files = [
     "confirmation_page_test.ts",
-    "feedback_flow_test.js",
+    "feedback_flow_test.ts",
     "help_content_test.ts",
     "file_attachment_test.ts",
     "search_page_test.ts",
     "share_data_page_test.js",
   ]
+
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
