@@ -456,8 +456,9 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
             content::PAGE_TYPE_NORMAL);
 }
 
+// TODO(crbug.com/1513575): Flaky.
 IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
-                       DemoSWALaunchesOnSessionStartupWithoutPayload) {
+                       DISABLED_DemoSWALaunchesOnSessionStartupWithoutPayload) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   CreateTestCampaignsFile(R"({
