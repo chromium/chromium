@@ -424,7 +424,7 @@ export class XfNudge extends HTMLElement {
 /**
  * The direction a nudge should render relative to its anchor.
  */
-export const enum NudgeDirection {
+export enum NudgeDirection {
   /** Shows above the anchor and extends to the left in LTR. */
   TOP_STARTWARD = 'top-startward',
   /** Shows above the anchor and extends to the right in LTR. */
