@@ -158,13 +158,12 @@ trait for rare instances that desire distinct physical BrowserThreads.
 This is the //ios equivalent of `content::BrowserTaskEnvironment` to simulate
 `web::WebThread`.
 
-### Blink ?
+### blink::test::TaskEnvironment
 
-We would like to have something like `blink::BlinkTaskEnvironment` to simulate
-Blink's task posting infrastructure. We don't have it yet because Blink can be
-initialized only once and some things have to be reused across multiple unit
-tests which makes creating per-test task environment quite tricky. Contributions
-welcome!
+This is the same thing as base::test::TaskEnvironment with the addition of
+blink::MainThreadScheduler and blink::MainThreadIsolate support. You need this
+if-and-only-if the code under test is using blink::Thread::Current() or needs
+v8::Isolate::GetCurrent() to be a blink Isolate.
 
 ## Task Environment Traits and Abilities
 
