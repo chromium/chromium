@@ -66,16 +66,19 @@ DataObject* DataObject::CreateFromClipboard(ExecutionContext* context,
     mojom::blink::ClipboardFilesPtr files;
     if (type == kMimeTypeTextURIList) {
       files = system_clipboard->ReadFiles();
-      // Ignore ReadFiles() result if clipboard sequence number has changed.
-      if (system_clipboard->SequenceNumber() != sequence_number) {
-        files->files.clear();
-      }
-      for (const mojom::blink::DataTransferFilePtr& file : files->files) {
-        data_object->AddFilename(
-            context, FilePathToString(file->path),
-            FilePathToString(file->display_name), files->file_system_id,
-            base::MakeRefCounted<FileSystemAccessDropData>(
-                std::move(file->file_system_access_token)));
+      if (files) {
+        // Ignore ReadFiles() result if clipboard sequence number has changed.
+        if (system_clipboard->SequenceNumber() != sequence_number) {
+          files->files.clear();
+        } else {
+          for (const mojom::blink::DataTransferFilePtr& file : files->files) {
+            data_object->AddFilename(
+                context, FilePathToString(file->path),
+                FilePathToString(file->display_name), files->file_system_id,
+                base::MakeRefCounted<FileSystemAccessDropData>(
+                    std::move(file->file_system_access_token)));
+          }
+        }
       }
     }
     if (files && !files->files.empty()) {

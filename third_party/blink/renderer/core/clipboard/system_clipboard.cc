@@ -617,6 +617,10 @@ void SystemClipboard::Snapshot::SetCustomData(
 // static
 mojom::blink::ClipboardFilesPtr SystemClipboard::Snapshot::CloneFiles(
     mojom::blink::ClipboardFilesPtr& files) {
+  if (!files) {
+    return {};
+  }
+
   WTF::Vector<mojom::blink::DataTransferFilePtr> vec;
   for (auto& dtf : files->files) {
     auto clones = CloneFsaToken(std::move(dtf->file_system_access_token));
