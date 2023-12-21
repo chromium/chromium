@@ -261,6 +261,7 @@ constexpr const base::TimeDelta
 
 IndexedDBBucketContext::Delegate::Delegate()
     : on_fatal_error(base::DoNothing()),
+      on_corruption(base::DoNothing()),
       on_ready_for_destruction(base::DoNothing()),
       on_content_changed(base::DoNothing()),
       on_writing_transaction_complete(base::DoNothing()),
@@ -529,7 +530,7 @@ void IndexedDBBucketContext::RunTasks() {
         continue;
 
       case IndexedDBDatabase::RunTasksResult::kError:
-        delegate().on_fatal_error.Run(status);
+        delegate().on_fatal_error.Run(status, {});
         return;
 
       case IndexedDBDatabase::RunTasksResult::kCanBeDestroyed:
@@ -539,6 +540,67 @@ void IndexedDBBucketContext::RunTasks() {
   }
   if (CanClose() && closing_stage_ == ClosingState::kClosed) {
     return delegate().on_ready_for_destruction.Run();
+  }
+}
+
+void IndexedDBBucketContext::DeleteDatabase(
+    mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
+        pending_factory_client,
+    std::u16string name,
+    bool force_close,
+    base::OnceClosure on_deletion_complete) {
+  // First, check the databases that are already represented by
+  // `IndexedDBDatabase` objects. If one exists, schedule it to be deleted and
+  // we're done.
+  auto it = databases_.find(name);
+  if (it != databases_.end()) {
+    base::WeakPtr<IndexedDBDatabase> database = it->second->AsWeakPtr();
+    it->second->ScheduleDeleteDatabase(std::make_unique<IndexedDBFactoryClient>(
+                                           std::move(pending_factory_client)),
+                                       std::move(on_deletion_complete));
+    if (force_close) {
+      leveldb::Status status = database->ForceCloseAndRunTasks();
+      if (!status.ok()) {
+        delegate().on_fatal_error.Run(status, "Error aborting transactions.");
+      }
+    }
+    return;
+  }
+
+  // Otherwise, verify that a database with the given name exists in the backing
+  // store. If not, report success.
+  std::vector<std::u16string> names;
+  leveldb::Status s = backing_store()->GetDatabaseNames(&names);
+  if (!s.ok()) {
+    IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,
+                                 "Internal error opening backing store for "
+                                 "indexedDB.deleteDatabase.");
+    IndexedDBFactoryClient(std::move(pending_factory_client)).OnError(error);
+    if (s.IsCorruption()) {
+      delegate().on_corruption.Run(error);
+    }
+    return;
+  }
+
+  if (!base::Contains(names, name)) {
+    IndexedDBFactoryClient(std::move(pending_factory_client))
+        .OnDeleteSuccess(/*version=*/0);
+    return;
+  }
+
+  // If it exists but does not already have an `IndexedDBDatabase` object,
+  // create it and initiate deletion.
+  auto database = std::make_unique<IndexedDBDatabase>(
+      name, *this, IndexedDBDatabase::Identifier(bucket_locator(), name));
+  IndexedDBDatabase* database_ptr = AddDatabase(name, std::move(database));
+  database_ptr->ScheduleDeleteDatabase(std::make_unique<IndexedDBFactoryClient>(
+                                           std::move(pending_factory_client)),
+                                       std::move(on_deletion_complete));
+  if (force_close) {
+    leveldb::Status status = database_ptr->ForceCloseAndRunTasks();
+    if (!status.ok()) {
+      delegate().on_fatal_error.Run(status, "Error aborting transactions.");
+    }
   }
 }
 

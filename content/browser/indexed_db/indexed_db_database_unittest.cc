@@ -98,7 +98,9 @@ class IndexedDBDatabaseTest : public ::testing::Test {
 
   void TearDown() override { db_ = nullptr; }
 
-  void OnFatalError(leveldb::Status s) { error_called_ = true; }
+  void OnFatalError(leveldb::Status s, const std::string& error_message) {
+    error_called_ = true;
+  }
 
   void OnBucketContextReadyForDestruction() { bucket_context_.reset(); }
 

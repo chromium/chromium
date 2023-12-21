@@ -25,7 +25,7 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
-#include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
+#include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/common/content_export.h"
@@ -38,6 +38,7 @@ class QuotaManagerProxy;
 
 namespace content {
 class IndexedDBBackingStore;
+class IndexedDBBucketContextHandle;
 class IndexedDBDatabase;
 class IndexedDBDataItemReader;
 class IndexedDBFactory;
@@ -130,8 +131,13 @@ class CONTENT_EXPORT IndexedDBBucketContext
 
     // Called when a fatal error has occurred that should result in tearing down
     // the backing store. `IndexedDBBucketContext` *may* be synchronously
-    // destroyed after this is invoked.
-    base::RepeatingCallback<void(leveldb::Status)> on_fatal_error;
+    // destroyed after this is invoked. The string, if non-empty, is used as an
+    // error message.
+    base::RepeatingCallback<void(leveldb::Status, const std::string&)>
+        on_fatal_error;
+
+    // Called when the backing store has been corrupted.
+    base::RepeatingCallback<void(const IndexedDBDatabaseError&)> on_corruption;
 
     // Called when the bucket context is ready to be destroyed.
     base::RepeatingCallback<void()> on_ready_for_destruction;
@@ -271,6 +277,15 @@ class CONTENT_EXPORT IndexedDBBucketContext
     return file_system_access_context_.get();
   }
 
+  // `pending_factory_client` must be bound on the thread that uses it, hence it
+  // is not safe to bind it before passing here.
+  void DeleteDatabase(
+      mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
+          pending_factory_client,
+      std::u16string name,
+      bool force_close,
+      base::OnceClosure on_deletion_complete);
+
   // Finishes filling in `info` with data relevant to idb-internals and passes
   // the result back via `result`.
   void FillInMetadata(
@@ -369,6 +384,9 @@ class CONTENT_EXPORT IndexedDBBucketContext
   std::unique_ptr<IndexedDBBackingStore> backing_store_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
+  // Databases in the backing store which are already loaded/represented by
+  // IndexedDBDatabase objects. The backing store may have other databases which
+  // have not yet been loaded.
   DBMap databases_;
   // This is the refcount for the number of IndexedDBBucketContextHandle's
   // given out for this factory using OpenReference. This is used as closing
@@ -410,6 +428,9 @@ class CONTENT_EXPORT IndexedDBBucketContext
 
   // True if there's already a task queued to call `RunTasks()`.
   bool task_run_queued_ = false;
+
+  // Base directory for blobs and backing store files.
+  base::FilePath data_path_;
 
   base::WeakPtrFactory<IndexedDBBucketContext> weak_factory_{this};
 };

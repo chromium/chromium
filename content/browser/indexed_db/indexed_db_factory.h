@@ -192,7 +192,7 @@ class CONTENT_EXPORT IndexedDBFactory : public blink::mojom::IDBFactory {
   // Used to report fatal database errors.
   void OnDatabaseError(const storage::BucketLocator& bucket_locator,
                        leveldb::Status s,
-                       const char* message);
+                       const std::string& message);
 
   void OnDatabaseDeleted(const storage::BucketLocator& bucket_locator);
 

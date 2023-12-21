@@ -482,7 +482,7 @@ leveldb::Status IndexedDBTransaction::BlobWriteComplete(
               "Failed to write blobs (%s)",
               WriteBlobToFileResultToString(error).c_str()))));
       if (!status.ok())
-        bucket_context_->delegate().on_fatal_error.Run(status);
+        bucket_context_->delegate().on_fatal_error.Run(status, {});
       // The result is ignored.
       return leveldb::Status::OK();
     }
@@ -741,7 +741,7 @@ void IndexedDBTransaction::Timeout() {
       IndexedDBDatabaseError(blink::mojom::IDBException::kTimeoutError,
                              u"Transaction timed out due to inactivity."));
   if (!result.ok())
-    bucket_context_->delegate().on_fatal_error.Run(result);
+    bucket_context_->delegate().on_fatal_error.Run(result, {});
 }
 
 void IndexedDBTransaction::CloseOpenCursors() {
