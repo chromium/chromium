@@ -233,18 +233,12 @@ suite('<settings-storage> for device page', () => {
 
   test('drive offline size', async () => {
     interface Params {
-      enableDriveFsBulkPinning: boolean;
-      showGoogleDriveSettingsPage: boolean;
       isDriveEnabled: boolean;
       isVisible: boolean;
     }
 
     async function assertDriveOfflineSizeVisibility(params: Params):
         Promise<void> {
-      loadTimeData.overrideValues({
-        enableDriveFsBulkPinning: params.enableDriveFsBulkPinning,
-        showGoogleDriveSettingsPage: params.showGoogleDriveSettingsPage,
-      });
       await createStorageSubpage();
       storageSubpage.set('prefs.gdata.disabled.value', !params.isDriveEnabled);
       await flushTasks();
@@ -259,57 +253,11 @@ suite('<settings-storage> for device page', () => {
     }
 
     await assertDriveOfflineSizeVisibility({
-      enableDriveFsBulkPinning: false,
-      showGoogleDriveSettingsPage: false,
       isDriveEnabled: false,
       isVisible: false,
     });
 
     await assertDriveOfflineSizeVisibility({
-      enableDriveFsBulkPinning: false,
-      showGoogleDriveSettingsPage: false,
-      isDriveEnabled: true,
-      isVisible: false,
-    });
-
-    await assertDriveOfflineSizeVisibility({
-      enableDriveFsBulkPinning: false,
-      showGoogleDriveSettingsPage: true,
-      isDriveEnabled: false,
-      isVisible: false,
-    });
-
-    await assertDriveOfflineSizeVisibility({
-      enableDriveFsBulkPinning: true,
-      showGoogleDriveSettingsPage: false,
-      isDriveEnabled: false,
-      isVisible: false,
-    });
-
-    await assertDriveOfflineSizeVisibility({
-      enableDriveFsBulkPinning: true,
-      showGoogleDriveSettingsPage: true,
-      isDriveEnabled: false,
-      isVisible: false,
-    });
-
-    await assertDriveOfflineSizeVisibility({
-      enableDriveFsBulkPinning: false,
-      showGoogleDriveSettingsPage: true,
-      isDriveEnabled: true,
-      isVisible: true,
-    });
-
-    await assertDriveOfflineSizeVisibility({
-      enableDriveFsBulkPinning: true,
-      showGoogleDriveSettingsPage: false,
-      isDriveEnabled: true,
-      isVisible: true,
-    });
-
-    await assertDriveOfflineSizeVisibility({
-      enableDriveFsBulkPinning: true,
-      showGoogleDriveSettingsPage: true,
       isDriveEnabled: true,
       isVisible: true,
     });

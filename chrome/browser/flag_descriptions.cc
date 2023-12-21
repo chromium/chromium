@@ -6392,11 +6392,6 @@ const char kFileSystemProviderContentCacheDescription[] =
     "Enable the ability for individual FileSystemProvider extensions to "
     "leverage a content cache.";
 
-const char kFilesGoogleDriveSettingsPageName[] =
-    "Enable Google Drive settings page";
-const char kFilesGoogleDriveSettingsPageDescription[] =
-    "Enable a new page for the Google Drive settings.";
-
 const char kFirmwareUpdateJellyName[] =
     "Enable jelly colors for the Firmware Update App";
 const char kFirmwareUpdateJellyDescription[] =

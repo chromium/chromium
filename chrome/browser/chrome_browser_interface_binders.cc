@@ -1631,13 +1631,9 @@ void PopulateChromeWebUIFrameBinders(
         ash::settings::OSSettingsUI>(map);
   }
 
-  if (drive::util::IsDriveFsBulkPinningAvailable(profile) ||
-      base::FeatureList::IsEnabled(
-          ash::features::kFilesGoogleDriveSettingsPage)) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::settings::google_drive::mojom::PageHandlerFactory,
-        ash::settings::OSSettingsUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      ash::settings::google_drive::mojom::PageHandlerFactory,
+      ash::settings::OSSettingsUI>(map);
 
   if (base::FeatureList::IsEnabled(
           chromeos::features::kCrosWebAppInstallDialog) ||

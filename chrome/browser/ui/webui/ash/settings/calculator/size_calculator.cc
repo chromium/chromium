@@ -234,13 +234,6 @@ DriveOfflineSizeCalculator::DriveOfflineSizeCalculator(Profile* profile)
 DriveOfflineSizeCalculator::~DriveOfflineSizeCalculator() = default;
 
 void DriveOfflineSizeCalculator::PerformCalculation() {
-  if (!drive::util::IsDriveFsBulkPinningAvailable(profile_) &&
-      !base::FeatureList::IsEnabled(
-          ash::features::kFilesGoogleDriveSettingsPage)) {
-    NotifySizeCalculated(0);
-    return;
-  }
-
   drive::DriveIntegrationService* const service =
       drive::util::GetIntegrationServiceByProfile(profile_);
   if (!service) {

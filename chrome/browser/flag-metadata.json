@@ -4278,11 +4278,6 @@
     "expiry_milestone": 117
   },
   {
-    "name": "files-google-drive-settings-page",
-    "owners": [ "benreich@chromium.org", "fdegros@chromium.org" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "files-local-image-search",
     "owners": [ "majewski@chromium.org", "simmonsjosh@google.com" ],
     "expiry_milestone": 126

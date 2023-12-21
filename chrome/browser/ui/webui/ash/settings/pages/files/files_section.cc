@@ -104,20 +104,6 @@ const std::vector<SearchConcept>& GetFilesGoogleDriveSubpageSearchConcepts() {
   return *tags;
 }
 
-// If the Google Drive subpage is not enabled, returns search terms to navigate
-// to the existing Disconnect Google Drive setting.
-const std::vector<SearchConcept>&
-GetFilesGoogleDriveDisconnectSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
-      {{IDS_OS_SETTINGS_TAG_FILES_DISCONNECT_GOOGLE_DRIVE,
-        mojom::kFilesSectionPath,
-        mojom::SearchResultIcon::kGoogleDrive,
-        mojom::SearchResultDefaultRank::kMedium,
-        mojom::SearchResultType::kSetting,
-        {.setting = mojom::Setting::kGoogleDriveConnection}}});
-  return *tags;
-}
-
 }  // namespace
 
 FilesSection::FilesSection(Profile* profile,
@@ -134,13 +120,7 @@ FilesSection::FilesSection(Profile* profile,
     updater.AddSearchTags(GetFilesGoogleDriveFileSyncSearchConcepts());
   }
 
-  if (base::FeatureList::IsEnabled(
-          ash::features::kFilesGoogleDriveSettingsPage) ||
-      drive::util::IsDriveFsBulkPinningAvailable(profile)) {
-    updater.AddSearchTags(GetFilesGoogleDriveSubpageSearchConcepts());
-  } else {
-    updater.AddSearchTags(GetFilesGoogleDriveDisconnectSearchConcepts());
-  }
+  updater.AddSearchTags(GetFilesGoogleDriveSubpageSearchConcepts());
 }
 
 FilesSection::~FilesSection() = default;
@@ -293,10 +273,6 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "enableDriveFsBulkPinning",
       drive::util::IsDriveFsBulkPinningAvailable(profile()));
-
-  html_source->AddBoolean("showGoogleDriveSettingsPage",
-                          base::FeatureList::IsEnabled(
-                              ash::features::kFilesGoogleDriveSettingsPage));
 }
 
 void FilesSection::AddHandlers(content::WebUI* web_ui) {

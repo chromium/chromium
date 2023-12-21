@@ -69,16 +69,6 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
         value: true,
       },
 
-      showGoogleDriveSettingsPage_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showGoogleDriveSettingsPage'),
-      },
-
-      isDriveFsBulkPinningEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableDriveFsBulkPinning'),
-      },
-
       isEphemeralUser_: {
         type: Boolean,
         value() {
@@ -117,8 +107,6 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
   private isEphemeralUser_: boolean;
   private showCrostiniStorage_: boolean;
   private isDriveEnabled_: boolean;
-  private showGoogleDriveSettingsPage_: boolean;
-  private isDriveFsBulkPinningEnabled_: boolean;
   private isExternalStorageEnabled_: boolean;
   private showOtherUsers_: boolean;
   private sizeStat_: StorageSizeStat;
@@ -348,9 +336,7 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
    * Whether to show the Offline files row or not.
    */
   private shouldShowOfflineFilesRow_(): boolean {
-    return this.isDriveEnabled_ &&
-        (this.isDriveFsBulkPinningEnabled_ ||
-         this.showGoogleDriveSettingsPage_);
+    return this.isDriveEnabled_;
   }
 
   /**

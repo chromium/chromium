@@ -3671,9 +3671,6 @@ extern const char kFilesTrashDriveDescription[];
 extern const char kFileSystemProviderContentCacheName[];
 extern const char kFileSystemProviderContentCacheDescription[];
 
-extern const char kFilesGoogleDriveSettingsPageName[];
-extern const char kFilesGoogleDriveSettingsPageDescription[];
-
 extern const char kFirmwareUpdateJellyName[];
 extern const char kFirmwareUpdateJellyDescription[];
 

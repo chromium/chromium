@@ -52,7 +52,7 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set<Setting>([Setting.kGoogleDriveConnection]),
+        value: () => new Set<Setting>([]),
       },
 
       bulkPinningPrefEnabled_: Boolean,
@@ -106,15 +106,6 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
         },
       },
 
-      shouldShowGoogleDriveSettings_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean('showGoogleDriveSettingsPage') ||
-              loadTimeData.getBoolean('enableDriveFsBulkPinning');
-        },
-        readOnly: true,
-      },
-
       shouldShowOfficeSettings_: {
         type: Boolean,
         value: () => {
@@ -157,7 +148,6 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
   private smbBrowserProxy_: SmbBrowserProxy;
   private shouldShowAddSmbButton_: boolean;
   private shouldShowAddSmbDialog_: boolean;
-  private shouldShowGoogleDriveSettings_: boolean;
   private shouldShowOfficeSettings_: boolean;
 
 

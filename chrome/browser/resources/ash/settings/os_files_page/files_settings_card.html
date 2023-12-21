@@ -12,25 +12,15 @@
 </style>
 
 <settings-card header-text="$i18n{filesPageTitle}">
-  <template is="dom-if" if="[[!shouldShowGoogleDriveSettings_]]">
-    <settings-toggle-button id="disconnectGoogleDriveAccountToggle"
-        icon="[[rowIcons_.googleDrive]]"
-        pref="{{prefs.gdata.disabled}}"
-        label="$i18n{disconnectGoogleDriveAccount}"
-        deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
-    </settings-toggle-button>
-  </template>
-  <template is="dom-if" if="[[shouldShowGoogleDriveSettings_]]">
-    <cr-link-row id="googleDriveRow"
-        start-icon="[[rowIcons_.googleDrive]]"
-        on-click="onClickGoogleDrive_"
-        label="$i18n{googleDriveLabel}"
-        role-description="$i18n{subpageArrowRoleDescription}">
-        <div id="googleDriveSubLabel" slot="sub-label"
-            inner-h-t-m-l="[[getGoogleDriveSubLabelInnerHtml_(driveDisabled_, bulkPinningPrefEnabled_)]]">
-        </div>
-    </cr-link-row>
-  </template>
+  <cr-link-row id="googleDriveRow"
+      start-icon="[[rowIcons_.googleDrive]]"
+      on-click="onClickGoogleDrive_"
+      label="$i18n{googleDriveLabel}"
+      role-description="$i18n{subpageArrowRoleDescription}">
+      <div id="googleDriveSubLabel" slot="sub-label"
+          inner-h-t-m-l="[[getGoogleDriveSubLabelInnerHtml_(driveDisabled_, bulkPinningPrefEnabled_)]]">
+      </div>
+  </cr-link-row>
 
   <template is="dom-if" if="[[shouldShowOfficeSettings_]]">
     <cr-link-row id="oneDriveRow"

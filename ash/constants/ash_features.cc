@@ -1161,11 +1161,6 @@ BASE_FEATURE(kFilesTrashDrive,
              "FilesTrashDrive",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable the new Google Drive page in OS Settings.
-BASE_FEATURE(kFilesGoogleDriveSettingsPage,
-             "FilesGoogleDriveSettingsPage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, the jelly colors will be used in the firmware update app.
 // Requires jelly-colors flag to also be enabled.
 BASE_FEATURE(kFirmwareUpdateJelly,
