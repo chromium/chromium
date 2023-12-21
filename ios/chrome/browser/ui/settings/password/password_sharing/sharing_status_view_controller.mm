@@ -256,11 +256,12 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   [self.imagesSlidingOutAnimation startAnimation];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-  [super viewWillDisappear:animated];
+- (void)viewDidDisappear:(BOOL)animated {
+  // Stop the ongoing animations so that their completion is not called.
   [self.imagesSlidingOutAnimation stopAnimation:YES];
   [self.progressBarLoadingAnimation stopAnimation:YES];
   [self.imagesSlidingInAnimation stopAnimation:YES];
+  [super viewDidDisappear:animated];
 }
 
 #pragma mark - SharingStatusConsumer
