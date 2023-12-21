@@ -19,7 +19,9 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace autofill {
@@ -33,6 +35,13 @@ Suggestion CreatePasswordSuggestion(const std::u16string& main_text) {
   Suggestion suggestion(main_text, PopupItemId::kPasswordEntry);
   suggestion.icon = Suggestion::Icon::kKey;
   suggestion.additional_label = u"****";
+  return suggestion;
+}
+
+Suggestion CreateSuggestionWithChildren(const std::u16string& main_text,
+                                        std::vector<Suggestion> children) {
+  Suggestion suggestion(main_text, PopupItemId::kAddressEntry);
+  suggestion.children = std::move(children);
   return suggestion;
 }
 
@@ -64,8 +73,11 @@ const Suggestion kSuggestions[] = {
                "label",
                Suggestion::Icon::kGlobe,
                PopupItemId::kSeePromoCodeDetails),
-
 };
+const Suggestion kExpandableSuggestions[] = {CreateSuggestionWithChildren(
+    u"Address_entry",
+    {Suggestion(u"Username", PopupItemId::kUsernameEntry)})};
+
 }  // namespace
 
 // TODO(crbug.com/1491373): Add tests for RTL and dark mode.
@@ -75,6 +87,20 @@ using TestParams =
 class CreatePopupRowViewTest
     : public UiBrowserTest,
       public ::testing::WithParamInterface<TestParams> {
+ public:
+  static std::string GetTestName(
+      const testing::TestParamInfo<TestParams>& info) {
+    const std::string suggestion_part =
+        base::UTF16ToUTF8(std::get<Suggestion>(info.param).main_text.value);
+    const auto selection =
+        std::get<std::optional<PopupRowView::CellType>>(info.param);
+    const std::string selection_part =
+        !selection.has_value()                          ? "NotSelected"
+        : selection == PopupRowView::CellType::kContent ? "ContentSelected"
+                                                        : "ControlSelected";
+    return suggestion_part + "_" + selection_part;
+  }
+
  protected:
   MockAutofillPopupController& controller() { return controller_; }
 
@@ -90,6 +116,15 @@ class CreatePopupRowViewTest
   }
 
   void TearDownOnMainThread() override {
+    // TODO(crbug.com/1512898): Remove `EndPopupFocusOverride()` call. Select
+    // the control cell by the selection delegate, so that `PopupRowView`
+    // doesn't leave the override not ended. In the popup the override is ended
+    // in `PopupBaseView::DoHide`, but here in tests the popup is not used and
+    // the tests are crashed.
+    if (views::View* contents_view = widget_->GetContentsView()) {
+      contents_view->GetViewAccessibility().EndPopupFocusOverride();
+    }
+
     widget_.reset();
 
     UiBrowserTest::TearDownOnMainThread();
@@ -151,23 +186,24 @@ IN_PROC_BROWSER_TEST_P(CreatePopupRowViewTest, SuggestionRowUiTest) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    All,
+    Suggestions,
     CreatePopupRowViewTest,
     ::testing::Combine(::testing::ValuesIn(kSuggestions),
                        ::testing::ValuesIn({
                            std::optional<PopupRowView::CellType>(),
                            std::optional(PopupRowView::CellType::kContent),
                        })),
-    [](const testing::TestParamInfo<TestParams>& info) {
-      std::string suggestion_part =
-          base::UTF16ToUTF8(std::get<Suggestion>(info.param).main_text.value);
-      auto selection =
-          std::get<std::optional<PopupRowView::CellType>>(info.param);
-      std::string selection_part =
-          !selection.has_value()                          ? "NotSelected"
-          : selection == PopupRowView::CellType::kContent ? "ContentSelected"
-                                                          : "ControlSelected";
-      return suggestion_part + "_" + selection_part;
-    });
+    CreatePopupRowViewTest::GetTestName);
+
+INSTANTIATE_TEST_SUITE_P(
+    ExpandableSuggestions,
+    CreatePopupRowViewTest,
+    ::testing::Combine(::testing::ValuesIn(kExpandableSuggestions),
+                       ::testing::ValuesIn({
+                           std::optional<PopupRowView::CellType>(),
+                           std::optional(PopupRowView::CellType::kContent),
+                           std::optional(PopupRowView::CellType::kControl),
+                       })),
+    CreatePopupRowViewTest::GetTestName);
 
 }  // namespace autofill
