@@ -344,6 +344,8 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageTextLight] =
       IncreaseLightness(kColorNewTabPageText, 0.40);
 
+  mixer[kColorRealboxAnswerIconBackground] = {SkColorSetRGB(0xD3, 0xE3, 0xFD)};
+  mixer[kColorRealboxAnswerIconForeground] = {SkColorSetRGB(0x04, 0x1E, 0x49)};
   mixer[kColorRealboxBackground] = {SK_ColorWHITE};
   mixer[kColorRealboxBackgroundHovered] = {SK_ColorWHITE};
   mixer[kColorRealboxBorder] = {
@@ -359,7 +361,12 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorRealboxResultsControlBackgroundHovered] =
       ui::SetAlpha(gfx::kGoogleGrey900, /* 10% opacity */ 0.1 * SK_AlphaOPAQUE);
 
+  mixer[kColorRealboxResultsActionChip] = {SkColorSetRGB(0xA8, 0xC7, 0xFA)};
+  mixer[kColorRealboxResultsActionChipIcon] = {SkColorSetRGB(0x0B, 0x57, 0xD0)};
+  mixer[kColorRealboxResultsActionChipFocusOutline] = {
+      SkColorSetRGB(0x0B, 0x57, 0xD0)};
   mixer[kColorRealboxResultsDimSelected] = {gfx::kGoogleGrey700};
+  mixer[kColorRealboxResultsFocusIndicator] = {gfx::kGoogleBlue600};
   mixer[kColorRealboxResultsForeground] = {SK_ColorBLACK};
   mixer[kColorRealboxResultsForegroundDimmed] = {gfx::kGoogleGrey700};
   mixer[kColorRealboxResultsIconSelected] = {gfx::kGoogleGrey700};
