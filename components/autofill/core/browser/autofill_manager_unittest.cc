@@ -234,11 +234,6 @@ void OnFormsSeenWithExpectations(MockAutofillManager& manager,
 
 class AutofillManagerTest : public testing::Test {
  public:
-  AutofillManagerTest() {
-    scoped_feature_list_async_parse_form_.InitWithFeatureState(
-        features::kAutofillParseAsync, true);
-  }
-
   void SetUp() override {
     client_.SetPrefs(test::PrefServiceForTesting());
     driver_ = std::make_unique<NiceMock<MockAutofillDriver>>();
@@ -260,7 +255,6 @@ class AutofillManagerTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient client_;

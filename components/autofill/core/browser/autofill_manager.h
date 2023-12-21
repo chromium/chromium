@@ -485,12 +485,6 @@ class AutofillManager
       const FormData& form,
       base::OnceCallback<void(AutofillManager&, const FormData&)> callback);
 
-  // Parses the |form| with the server data retrieved from the |cached_form|
-  // (if any). Returns nullptr if the form should not be parsed. Otherwise, adds
-  // the returned form structure to the |form_structures_|.
-  FormStructure* ParseForm(const FormData& form,
-                           const FormStructure* cached_form);
-
   std::map<FormGlobalId, std::unique_ptr<FormStructure>>*
   mutable_form_structures() {
     return &form_structures_;

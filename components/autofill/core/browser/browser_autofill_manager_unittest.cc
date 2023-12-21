@@ -1388,10 +1388,6 @@ class BrowserAutofillManagerTest : public testing::Test {
     credit_card3.set_guid(MakeGuid(6));
     personal_data().AddCreditCard(credit_card3);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_{
-      features::kAutofillParseAsync};
 };
 
 class SuggestionMatchingTest : public BrowserAutofillManagerTest,

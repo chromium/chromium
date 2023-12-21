@@ -245,9 +245,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_DONT_PRESERVE_AUTOFILL_STATE,
                 "Retrieves is_autofilled state from blink instead of the cache"),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_PARSE_ASYNC,
-                "Parse forms asynchronously outside of the UI thread."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_PARSING_PATTERN_PROVIDER,
                 "Enables Autofill to use its new method to retrieve parsing patterns."),
         Flag.baseFeature(

@@ -40,8 +40,6 @@ using ::testing::UnorderedElementsAre;
 class MerchantPromoCodeManagerTest : public testing::Test {
  protected:
   MerchantPromoCodeManagerTest() {
-    scoped_feature_list_async_parse_form_.InitWithFeatureState(
-        features::kAutofillParseAsync, true);
     personal_data_manager_ = std::make_unique<TestPersonalDataManager>();
     merchant_promo_code_manager_ = std::make_unique<MerchantPromoCodeManager>();
     merchant_promo_code_manager_->Init(personal_data_manager_.get(),
@@ -74,7 +72,6 @@ class MerchantPromoCodeManagerTest : public testing::Test {
     out->focused_field = &autofill_field_;
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient autofill_client_;

@@ -492,14 +492,6 @@ BASE_FEATURE(kAutofillPageLanguageDetection,
              "AutofillPageLanguageDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, AutofillManager::ParseForm() isn't called synchronously.
-// Instead, all incoming events parse the form asynchronously and proceed
-// afterwards.
-// TODO(crbug.com/1309848) Remove once launched.
-BASE_FEATURE(kAutofillParseAsync,
-             "AutofillParseAsync",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, local heuristics fall back to interpreting the fields' name as an
 // autocomplete type.
 // TODO(crbug.com/1345879) Remove once launched.

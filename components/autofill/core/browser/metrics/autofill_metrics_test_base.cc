@@ -36,10 +36,7 @@ MockAutofillClient::MockAutofillClient() = default;
 MockAutofillClient::~MockAutofillClient() = default;
 
 AutofillMetricsBaseTest::AutofillMetricsBaseTest(bool is_in_any_main_frame)
-    : is_in_any_main_frame_(is_in_any_main_frame) {
-  scoped_feature_list_async_parse_form_.InitAndEnableFeature(
-      features::kAutofillParseAsync);
-}
+    : is_in_any_main_frame_(is_in_any_main_frame) {}
 
 AutofillMetricsBaseTest::~AutofillMetricsBaseTest() = default;
 

@@ -220,8 +220,6 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
   TestAutofillClient* autofill_client() { return &autofill_client_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_{
-      features::kAutofillParseAsync};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;

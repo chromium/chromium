@@ -1748,11 +1748,6 @@ bool BrowserAutofillManager::ShouldClearPreviewedForm() {
 void BrowserAutofillManager::OnSelectOrSelectListFieldOptionsDidChangeImpl(
     const FormData& form) {
   FormStructure* form_structure = FindCachedFormById(form.global_id());
-  if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
-    // If AutofillParseAsync is enabled, the form has just been parsed
-    // asynchronously if necessary.
-    form_structure = ParseForm(form, form_structure);
-  }
   if (!form_structure)
     return;
 

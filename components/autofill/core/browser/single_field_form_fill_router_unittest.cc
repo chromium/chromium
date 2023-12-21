@@ -37,9 +37,6 @@ using ::testing::SaveArg;
 class SingleFieldFormFillRouterTest : public testing::Test {
  protected:
   SingleFieldFormFillRouterTest() {
-    scoped_feature_list_async_parse_form_.InitWithFeatureState(
-        features::kAutofillParseAsync, true);
-
     prefs_ = test::PrefServiceForTesting();
 
     // Mock such that we don't trigger the cleanup.
@@ -65,7 +62,6 @@ class SingleFieldFormFillRouterTest : public testing::Test {
                                   FormControlType::kInputText);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient autofill_client_;

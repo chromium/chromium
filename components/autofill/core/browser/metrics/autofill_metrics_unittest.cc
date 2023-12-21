@@ -909,22 +909,15 @@ TEST_F(AutofillMetricsTest, TimingMetrics) {
   EXPECT_FALSE(
       histogram_tester.GetAllSamples("Autofill.Timing.DetermineHeuristicTypes")
           .empty());
-  if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
-    EXPECT_FALSE(
-        histogram_tester.GetAllSamples("Autofill.Timing.ParseForm").empty());
-  } else {
-    EXPECT_FALSE(
-        histogram_tester.GetAllSamples("Autofill.Timing.ParseFormsAsync")
-            .empty());
-    EXPECT_FALSE(
-        histogram_tester
-            .GetAllSamples("Autofill.Timing.ParseFormsAsync.RunHeuristics")
-            .empty());
-    EXPECT_FALSE(
-        histogram_tester
-            .GetAllSamples("Autofill.Timing.ParseFormsAsync.UpdateCache")
-            .empty());
-  }
+  EXPECT_FALSE(histogram_tester.GetAllSamples("Autofill.Timing.ParseFormsAsync")
+                   .empty());
+  EXPECT_FALSE(
+      histogram_tester
+          .GetAllSamples("Autofill.Timing.ParseFormsAsync.RunHeuristics")
+          .empty());
+  EXPECT_FALSE(histogram_tester
+                   .GetAllSamples("Autofill.Timing.ParseFormsAsync.UpdateCache")
+                   .empty());
 }
 
 // Test that we log UPI Virtual Payment Address.
