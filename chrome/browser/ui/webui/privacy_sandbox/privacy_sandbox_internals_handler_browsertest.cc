@@ -76,8 +76,8 @@ class PrivacySandboxInternalsMojoTest : public InProcessBrowserTest {
     waiter_.Notify();
   }
 
-  void ContentSettingsPatternToStringCallback(const std::string& s) {
-    content_settings_pattern_to_string_cb_data_ = s;
+  void StringCallback(const std::string& s) {
+    string_cb_data_ = s;
     waiter_.Notify();
   }
 
@@ -89,7 +89,7 @@ class PrivacySandboxInternalsMojoTest : public InProcessBrowserTest {
   CallbackWaiter waiter_;
 
   std::vector<ContentSettingPatternSource> get_cookie_content_settings_cb_data_;
-  std::string content_settings_pattern_to_string_cb_data_;
+  std::string string_cb_data_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,
@@ -115,13 +115,12 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, PatternPartsToString) {
        {"[*.]example.com", "http://example.net", "example.org"}) {
     ContentSettingsPattern pattern = ContentSettingsPattern::FromString(regex);
     remote_->ContentSettingsPatternToString(
-        pattern, base::BindOnce(&PrivacySandboxInternalsMojoTest::
-                                    ContentSettingsPatternToStringCallback,
-                                base::Unretained(this)));
+        pattern,
+        base::BindOnce(&PrivacySandboxInternalsMojoTest::StringCallback,
+                       base::Unretained(this)));
     waiter_.Wait();
     waiter_.Reset();
-    EXPECT_THAT(content_settings_pattern_to_string_cb_data_,
-                StrEq(pattern.ToString()));
+    EXPECT_THAT(string_cb_data_, StrEq(pattern.ToString()));
   }
 }
 }  // namespace
