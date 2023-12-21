@@ -50,7 +50,10 @@ public class SelectActionMenuHelperTest {
 
     private static class TestSelectionActionMenuDelegate implements SelectionActionMenuDelegate {
         @Override
-        public void modifyDefaultMenuItems(List<SelectionMenuItem.Builder> menuItemBuilders) {
+        public void modifyDefaultMenuItems(
+                List<SelectionMenuItem.Builder> menuItemBuilders,
+                boolean isSelectionPassword,
+                String selectedText) {
             for (SelectionMenuItem.Builder builder : menuItemBuilders) {
                 int menuItemOrder = getMenuItemOrder(builder.mId);
                 if (menuItemOrder == -1) continue;
@@ -120,7 +123,12 @@ public class SelectActionMenuHelperTest {
     @Features.EnableFeatures({ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION})
     public void testDefaultMenuItemsOrder() {
         SelectionMenuGroup menuGroup =
-                SelectActionMenuHelper.getDefaultItems(mContext, mDelegate, null);
+                SelectActionMenuHelper.getDefaultItems(
+                        mContext,
+                        mDelegate,
+                        null,
+                        /* isSelectionPassword= */ true,
+                        /* selectedText= */ "test");
         assertEquals(7, menuGroup.items.size());
         SelectionMenuItem[] items = menuGroup.items.toArray(new SelectionMenuItem[0]);
         assertEquals(items[0].id, R.id.select_action_menu_cut);
@@ -140,7 +148,11 @@ public class SelectActionMenuHelperTest {
                 new TestSelectionActionMenuDelegate();
         SelectionMenuGroup menuGroup =
                 SelectActionMenuHelper.getDefaultItems(
-                        mContext, mDelegate, selectionActionMenuDelegate);
+                        mContext,
+                        mDelegate,
+                        selectionActionMenuDelegate,
+                        /* isSelectionPassword= */ true,
+                        /* selectedText= */ "test");
         assertEquals(7, menuGroup.items.size());
         SelectionMenuItem[] items = menuGroup.items.toArray(new SelectionMenuItem[0]);
         assertEquals(items[0].id, R.id.select_action_menu_cut);

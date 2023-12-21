@@ -144,7 +144,13 @@ public class SelectActionMenuHelper {
             SelectActionMenuDelegate delegate,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
         SortedSet<SelectionMenuGroup> pasteMenuItems = new TreeSet<>();
-        pasteMenuItems.add(getDefaultItems(context, delegate, selectionActionMenuDelegate));
+        pasteMenuItems.add(
+                getDefaultItems(
+                        context,
+                        delegate,
+                        selectionActionMenuDelegate,
+                        /* isSelectionPassword= */ false,
+                        /* selectedText= */ ""));
 
         if (selectionActionMenuDelegate != null) {
             List<SelectionMenuItem> additionalMenuItems =
@@ -174,10 +180,17 @@ public class SelectActionMenuHelper {
             @Nullable SelectionClient.Result classificationResult,
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
+            String selectedText,
             @Nullable TextProcessingIntentHandler textProcessingIntentHandler,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
         SortedSet<SelectionMenuGroup> itemGroups = new TreeSet<>();
-        itemGroups.add(getDefaultItems(context, delegate, selectionActionMenuDelegate));
+        itemGroups.add(
+                getDefaultItems(
+                        context,
+                        delegate,
+                        selectionActionMenuDelegate,
+                        isSelectionPassword,
+                        selectedText));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             SelectionMenuGroup primaryAssistItem =
                     getPrimaryAssistItems(context, classificationResult);
@@ -230,8 +243,11 @@ public class SelectActionMenuHelper {
 
     @VisibleForTesting
     static SelectionMenuGroup getDefaultItems(
-            @Nullable Context context, SelectActionMenuDelegate delegate,
-            @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
+            @Nullable Context context,
+            SelectActionMenuDelegate delegate,
+            @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate,
+            boolean isSelectionPassword,
+            String selectedText) {
         SelectionMenuGroup defaultGroup =
                 new SelectionMenuGroup(
                         R.id.select_action_menu_default_items, GroupItemOrder.DEFAULT_ITEMS);
@@ -247,7 +263,8 @@ public class SelectActionMenuHelper {
         }
         if (ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION)
                 && selectionActionMenuDelegate != null) {
-            selectionActionMenuDelegate.modifyDefaultMenuItems(menuItemBuilders);
+            selectionActionMenuDelegate.modifyDefaultMenuItems(
+                    menuItemBuilders, isSelectionPassword, selectedText);
         }
         for (SelectionMenuItem.Builder builder : menuItemBuilders) {
             defaultGroup.addItem(builder.build());
