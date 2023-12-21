@@ -44,7 +44,7 @@ RecordUmaForPageLoadInternalSoftNavigationFromReferenceInvalidTiming(
 
 // This class contains the logic for calculating Single-Page-App soft navigation
 // heuristics. See https://github.com/WICG/soft-navigations
-class SoftNavigationHeuristics
+class CORE_EXPORT SoftNavigationHeuristics
     : public GarbageCollected<SoftNavigationHeuristics>,
       public Supplement<LocalDOMWindow>,
       public scheduler::TaskAttributionTracker::Observer {
@@ -86,6 +86,10 @@ class SoftNavigationHeuristics
   // If there are nested EventParameters, pop one, restore it to the
   // current_event_parameters_ and return true. Otherwise, return false.
   bool PopNestedEventParametersIfNeeded();
+
+  bool GetInitialInteractionEncounteredForTest() {
+    return initial_interaction_encountered_;
+  }
 
  private:
   enum FlagType : uint8_t {
