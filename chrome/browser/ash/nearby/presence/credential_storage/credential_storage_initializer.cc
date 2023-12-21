@@ -26,6 +26,7 @@ CredentialStorageInitializer::CredentialStorageInitializer(
           std::move(pending_receiver), proto_db_provider, profile_path);
 }
 
+// Test only constructor used to inject a NearbyPresenceCredentialStorageBase.
 CredentialStorageInitializer::CredentialStorageInitializer(
     std::unique_ptr<NearbyPresenceCredentialStorageBase>
         nearby_presence_credential_storage)

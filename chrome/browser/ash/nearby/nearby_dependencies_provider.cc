@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -12,6 +13,7 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider_factory.h"
+#include "chrome/browser/ash/nearby/presence/credential_storage/credential_storage_initializer.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chrome/browser/nearby_sharing/firewall_hole/nearby_connections_firewall_hole_factory.h"
@@ -169,6 +171,15 @@ NearbyDependenciesProvider::GetDependencies() {
     dependencies->bluetooth_adapter = mojo::NullRemote();
   }
 
+  // TOOD(b/317307931): Re-visit security considerations before enabling
+  // this feature by default/ramping up via Finch.
+  if (ash::features::IsNearbyPresenceEnabled()) {
+    dependencies->nearby_presence_credential_storage =
+        GetNearbyPresenceCredentialStoragePendingRemote();
+  } else {
+    dependencies->nearby_presence_credential_storage = mojo::NullRemote();
+  }
+
   dependencies->webrtc_dependencies = GetWebRtcDependencies();
   dependencies->wifilan_dependencies = GetWifiLanDependencies();
 
@@ -185,6 +196,8 @@ void NearbyDependenciesProvider::PrepareForShutdown() {
   if (bluetooth_manager_) {
     bluetooth_manager_->Shutdown();
   }
+
+  presence_credential_storage_initializer_.reset();
 }
 
 void NearbyDependenciesProvider::Shutdown() {
@@ -199,6 +212,21 @@ NearbyDependenciesProvider::GetBluetoothAdapterPendingRemote() {
   device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
       &BluetoothAdapterManager::Initialize, bluetooth_manager_->GetWeakPtr(),
       std::move(pending_receiver)));
+  return pending_remote;
+}
+
+mojo::PendingRemote<presence::mojom::NearbyPresenceCredentialStorage>
+NearbyDependenciesProvider::GetNearbyPresenceCredentialStoragePendingRemote() {
+  mojo::PendingReceiver<presence::mojom::NearbyPresenceCredentialStorage>
+      pending_receiver;
+  mojo::PendingRemote<presence::mojom::NearbyPresenceCredentialStorage>
+      pending_remote = pending_receiver.InitWithNewPipeAndPassRemote();
+
+  presence_credential_storage_initializer_ =
+      std::make_unique<presence::CredentialStorageInitializer>(
+          std::move(pending_receiver), profile_);
+  presence_credential_storage_initializer_->Initialize();
+
   return pending_remote;
 }
 
@@ -244,7 +272,7 @@ NearbyDependenciesProvider::GetWebRtcDependencies() {
 
 sharing::mojom::WifiLanDependenciesPtr
 NearbyDependenciesProvider::GetWifiLanDependencies() {
-  if (!base::FeatureList::IsEnabled(features::kNearbySharingWifiLan)) {
+  if (!base::FeatureList::IsEnabled(::features::kNearbySharingWifiLan)) {
     return nullptr;
   }
 

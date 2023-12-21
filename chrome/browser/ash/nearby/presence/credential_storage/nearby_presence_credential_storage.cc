@@ -70,6 +70,7 @@ NearbyPresenceCredentialStorage::NearbyPresenceCredentialStorage(
       remote_public_database_path, database_task_runner);
 }
 
+// Test only constructor used to inject databases without using a profile.
 NearbyPresenceCredentialStorage::NearbyPresenceCredentialStorage(
     mojo::PendingReceiver<mojom::NearbyPresenceCredentialStorage>
         pending_receiver,

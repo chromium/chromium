@@ -12,6 +12,8 @@ source_set("test_support") {
   sources = [
     "fake_adapter.cc",
     "fake_adapter.h",
+    "fake_nearby_presence_credential_storage.cc",
+    "fake_nearby_presence_credential_storage.h",
     "mock_webrtc_dependencies.cc",
     "mock_webrtc_dependencies.h",
   ]

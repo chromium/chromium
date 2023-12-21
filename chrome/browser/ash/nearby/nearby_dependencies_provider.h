@@ -26,6 +26,10 @@ namespace ash::nearby {
 
 class BluetoothAdapterManager;
 
+namespace presence {
+class CredentialStorageInitializer;
+}  // namespace presence
+
 // Provides dependencies required to initialize NearbyPresence and
 // NearbyConnections. Implemented as a KeyedService because WebRTC
 // dependencies are linked to the user's identity.
@@ -54,6 +58,9 @@ class NearbyDependenciesProvider : public KeyedService {
   mojo::PendingRemote<::bluetooth::mojom::Adapter>
   GetBluetoothAdapterPendingRemote();
 
+  mojo::PendingRemote<presence::mojom::NearbyPresenceCredentialStorage>
+  GetNearbyPresenceCredentialStoragePendingRemote();
+
   sharing::mojom::WebRtcDependenciesPtr GetWebRtcDependencies();
 
   sharing::mojom::WifiLanDependenciesPtr GetWifiLanDependencies();
@@ -61,6 +68,9 @@ class NearbyDependenciesProvider : public KeyedService {
   network::mojom::NetworkContext* GetNetworkContext();
 
   std::unique_ptr<BluetoothAdapterManager> bluetooth_manager_;
+
+  std::unique_ptr<presence::CredentialStorageInitializer>
+      presence_credential_storage_initializer_;
 
   bool shut_down_ = false;
 
