@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -925,9 +926,9 @@ TEST_F(FocusManagerTest, AdvanceFocusStaysInWidget) {
   UniqueWidgetPtr child_widget = std::make_unique<Widget>();
   std::unique_ptr<AdvanceFocusWidgetDelegate> delegate_owned =
       std::make_unique<AdvanceFocusWidgetDelegate>(child_widget.get());
-  AdvanceFocusWidgetDelegate* delegate = delegate_owned.get();
-  params.delegate = delegate_owned.release();
-  delegate->SetOwnedByWidget(true);
+  params.delegate = delegate_owned.get();
+  params.delegate->RegisterDeleteDelegateCallback(
+      base::DoNothingWithBoundArgs(std::move(delegate_owned)));
   child_widget->Init(std::move(params));
 
   View* view1 = new View;

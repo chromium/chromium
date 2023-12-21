@@ -468,8 +468,11 @@ TEST_F(NativeWidgetAuraTest, TestPropertiesWhenAddedToLayout) {
       std::make_unique<PropertyTestLayoutManager>());
   UniqueWidgetPtr widget = std::make_unique<TestWidget>();
   Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
-  params.delegate = new WidgetDelegate();
-  params.delegate->SetOwnedByWidget(true);
+
+  auto delegate_owned = std::make_unique<WidgetDelegate>();
+  params.delegate = delegate_owned.get();
+  params.delegate->RegisterDeleteDelegateCallback(
+      base::DoNothingWithBoundArgs(std::move(delegate_owned)));
   params.delegate->SetHasWindowSizeControls(true);
   params.parent = nullptr;
   params.context = root_window();
@@ -767,9 +770,9 @@ TEST_F(NativeWidgetAuraTest, OnWidgetMovedInvokedAfterAcquireLayer) {
   // is destroyed.
   // See WidgetDelegateView::WidgetDelegateView();
   auto delegate = std::make_unique<MoveTestWidgetDelegate>();
-  auto* delegate_ptr = delegate.get();
+  auto* delegate_ptr = delegate.release();
   UniqueWidgetPtr widget = base::WrapUnique(Widget::CreateWindowWithContext(
-      std::move(delegate), root_window(), gfx::Rect(10, 10, 100, 200)));
+      delegate_ptr, root_window(), gfx::Rect(10, 10, 100, 200)));
   widget->Show();
   delegate_ptr->ClearGotMove();
   // Simulate a maximize with animation.
@@ -842,8 +845,11 @@ TEST_F(NativeWidgetAuraTest, TransientChildModalWindowVisibility) {
   UniqueWidgetPtr child = std::make_unique<Widget>();
   Widget::InitParams child_params(Widget::InitParams::TYPE_WINDOW);
   child_params.parent = parent->GetNativeWindow();
-  child_params.delegate = new WidgetDelegate;
-  child_params.delegate->SetOwnedByWidget(true);
+
+  auto delegate_owned = std::make_unique<WidgetDelegate>();
+  child_params.delegate = delegate_owned.get();
+  child_params.delegate->RegisterDeleteDelegateCallback(
+      base::DoNothingWithBoundArgs(std::move(delegate_owned)));
   child_params.delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
   child->Init(std::move(child_params));
   child->SetBounds(gfx::Rect(0, 0, 200, 200));

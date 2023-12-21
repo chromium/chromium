@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -3575,21 +3576,6 @@ TEST_F(DesktopWidgetTest,
   EXPECT_EQ(bubble_counter.CallCount(), 0);
 }
 
-// Widget delegate that holds paint as active lock during its lifetime.
-class PaintAsActiveTestDesktopWidgetDelegate
-    : public TestDesktopWidgetDelegate {
- public:
-  PaintAsActiveTestDesktopWidgetDelegate() = default;
-  ~PaintAsActiveTestDesktopWidgetDelegate() override = default;
-
-  void LockWidgetPaintAsActive() {
-    paint_as_active_lock_ = GetWidget()->LockPaintAsActive();
-  }
-
- private:
-  std::unique_ptr<Widget::PaintAsActiveLock> paint_as_active_lock_;
-};
-
 // Tests that there is no crash when paint as active lock is removed for child
 // widget while its parent widget is being closed.
 TEST_F(DesktopWidgetTest, LockPaintAsActiveAndCloseParent) {
@@ -3599,13 +3585,12 @@ TEST_F(DesktopWidgetTest, LockPaintAsActiveAndCloseParent) {
   std::unique_ptr<Widget> parent = CreateTestWidget();
   parent->Show();
 
-  auto* delegate = new PaintAsActiveTestDesktopWidgetDelegate();
-  // Ensure that the delegate is destroyed in Widget::OnNativeWidgetDestroyed().
-  delegate->SetOwnedByWidget(true);
+  auto delegate = std::make_unique<TestDesktopWidgetDelegate>();
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
   params.parent = parent->GetNativeView();
   delegate->InitWidget(std::move(params));
-  delegate->LockWidgetPaintAsActive();
+  delegate->RegisterDeleteDelegateCallback(
+      base::DoNothingWithBoundArgs(delegate->GetWidget()->LockPaintAsActive()));
   base::WeakPtr<Widget> child = delegate->GetWidget()->GetWeakPtr();
   child->ShowInactive();
 

@@ -543,7 +543,6 @@ std::unique_ptr<WidgetDelegate> ColorChooser::MakeWidgetDelegate() {
   delegate->SetContentsView(BuildView());
   delegate->SetInitiallyFocusedView(textfield_);
   delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
-  delegate->SetOwnedByWidget(true);
   delegate->RegisterWindowClosingCallback(
       base::BindOnce(&ColorChooser::OnViewClosing, this->AsWeakPtr()));
 

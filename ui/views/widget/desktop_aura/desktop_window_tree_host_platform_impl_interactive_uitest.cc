@@ -184,10 +184,7 @@ class HitTestNonClientFrameView : public NativeFrameView {
 // This is used to return HitTestNonClientFrameView on create call.
 class HitTestWidgetDelegate : public WidgetDelegate {
  public:
-  HitTestWidgetDelegate() {
-    SetCanResize(true);
-    SetOwnedByWidget(true);
-  }
+  HitTestWidgetDelegate() { SetCanResize(true); }
 
   HitTestWidgetDelegate(const HitTestWidgetDelegate&) = delete;
   HitTestWidgetDelegate& operator=(const HitTestWidgetDelegate&) = delete;
@@ -262,7 +259,7 @@ class DesktopWindowTreeHostPlatformImplTest
  protected:
   Widget* BuildTopLevelDesktopWidget(const gfx::Rect& bounds) {
     Widget* toplevel = new Widget;
-    delegate_ = new HitTestWidgetDelegate();
+    delegate_ = std::make_unique<HitTestWidgetDelegate>();
     Widget::InitParams toplevel_params =
         CreateParams(Widget::InitParams::TYPE_WINDOW);
     auto* native_widget = new DesktopNativeWidgetAura(toplevel);
@@ -314,7 +311,7 @@ class DesktopWindowTreeHostPlatformImplTest
                                 base::TimeTicks::Now(), gesture_details);
   }
 
-  raw_ptr<HitTestWidgetDelegate, DanglingUntriaged> delegate_ = nullptr;
+  std::unique_ptr<HitTestWidgetDelegate> delegate_ = nullptr;
   raw_ptr<TestDesktopWindowTreeHostPlatformImpl, DanglingUntriaged> host_ =
       nullptr;
 };

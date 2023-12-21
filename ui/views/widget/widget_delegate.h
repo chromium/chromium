@@ -96,11 +96,6 @@ class VIEWS_EXPORT WidgetDelegate
     // all on Mac.
     ui::ModalType modal_type = ui::MODAL_TYPE_NONE;
 
-    // Whether this WidgetDelegate should delete itself when the Widget for
-    // which it is the delegate is about to be destroyed.
-    // See https://crbug.com/1119898 for more details.
-    bool owned_by_widget = false;
-
     // Whether to show a close button in the widget frame.
     bool show_close_button = true;
 
@@ -395,7 +390,7 @@ class VIEWS_EXPORT WidgetDelegate
                                        bool forward,
                                        bool enable_wrapping);
 
-  bool owned_by_widget() const { return params_.owned_by_widget; }
+  bool owned_by_widget() const { return owned_by_widget_; }
 
   void set_internal_name(std::string name) { params_.internal_name = name; }
   std::string internal_name() const { return params_.internal_name; }
@@ -422,12 +417,13 @@ class VIEWS_EXPORT WidgetDelegate
   raw_ptr<View, AcrossTasksDanglingUntriaged> unowned_contents_view_ = nullptr;
   std::unique_ptr<View> owned_contents_view_;
 
+  // Whether this WidgetDelegate should delete itself when the Widget for
+  // which it is the delegate is about to be destroyed.
+  // See https://crbug.com/1119898 for more details.
+  bool owned_by_widget_ = false;
+
   // Managed by Widget. Ensures |this| outlives its Widget.
   bool can_delete_this_ = true;
-
-  // Used to ensure that a client Delete callback doesn't actually destruct the
-  // WidgetDelegate if the client has given ownership to the Widget.
-  raw_ptr<bool> destructor_ran_ = nullptr;
 
   // This is stored as a unique_ptr to make it easier to check in the
   // registration methods whether a callback is being registered too late in the
