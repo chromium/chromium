@@ -404,6 +404,11 @@ const base::FeatureParam<bool> kIpPrivacyUseProxyChains{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyUseProxyChains",
     /*default_value=*/false};
 
+const base::FeatureParam<bool> kIpPrivacyIncludeOAuthTokenInGetProxyConfig{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyIncludeOAuthTokenInGetProxyConfig",
+    /*default_value=*/false};
+
 const base::FeatureParam<std::string> kIpPrivacyProxyAHostnameOverride{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyAHostnameOverride",
     /*default_value=*/""};

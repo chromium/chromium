@@ -193,7 +193,40 @@ TEST_F(IpProtectionConfigHttpTest, GetProxyConfigSuccess) {
 
   base::test::TestFuture<absl::StatusOr<ip_protection::GetProxyConfigResponse>>
       result_future;
-  http_fetcher_->GetProxyConfig(result_future.GetCallback(),
+  http_fetcher_->GetProxyConfig(std::nullopt, result_future.GetCallback(),
+                                /*for_testing=*/true);
+
+  absl::StatusOr<ip_protection::GetProxyConfigResponse> result =
+      result_future.Get();
+
+  ASSERT_TRUE(result.ok());
+  EXPECT_EQ(2, result->first_hop_hostnames_size());
+  EXPECT_EQ("host1", result->first_hop_hostnames(0));
+  EXPECT_EQ("host2", result->first_hop_hostnames(1));
+  EXPECT_EQ("proxyA", result->proxy_chain().at(0).proxy_a());
+  EXPECT_EQ("proxyB", result->proxy_chain().at(0).proxy_b());
+}
+
+TEST_F(IpProtectionConfigHttpTest, GetProxyConfigSuccessWithOAuthToken) {
+  ip_protection::GetProxyConfigResponse response_proto;
+  response_proto.add_first_hop_hostnames("host1");
+  response_proto.add_first_hop_hostnames("host2");
+  std::string oauth_token = "token";
+
+  ip_protection::GetProxyConfigResponse_ProxyChain* proxyChain =
+      response_proto.add_proxy_chain();
+  proxyChain->set_proxy_a("proxyA");
+  proxyChain->set_proxy_b("proxyB");
+  std::string response_str = response_proto.SerializeAsString();
+
+  auto head = network::mojom::URLResponseHead::New();
+  test_url_loader_factory_.AddResponse(
+      token_server_get_proxy_config_url_, std::move(head), response_str,
+      network::URLLoaderCompletionStatus(net::OK));
+
+  base::test::TestFuture<absl::StatusOr<ip_protection::GetProxyConfigResponse>>
+      result_future;
+  http_fetcher_->GetProxyConfig(oauth_token, result_future.GetCallback(),
                                 /*for_testing=*/true);
 
   absl::StatusOr<ip_protection::GetProxyConfigResponse> result =
@@ -218,7 +251,7 @@ TEST_F(IpProtectionConfigHttpTest, GetProxyConfigEmpty) {
 
   base::test::TestFuture<absl::StatusOr<ip_protection::GetProxyConfigResponse>>
       result_future;
-  http_fetcher_->GetProxyConfig(result_future.GetCallback(),
+  http_fetcher_->GetProxyConfig(std::nullopt, result_future.GetCallback(),
                                 /*for_testing=*/true);
 
   absl::StatusOr<ip_protection::GetProxyConfigResponse> result =
@@ -231,13 +264,14 @@ TEST_F(IpProtectionConfigHttpTest, GetProxyConfigEmpty) {
 
 TEST_F(IpProtectionConfigHttpTest, GetProxyConfigFails) {
   auto head = network::mojom::URLResponseHead::New();
+
   test_url_loader_factory_.AddResponse(
       token_server_get_proxy_config_url_, std::move(head), "uhoh",
       network::URLLoaderCompletionStatus(net::HTTP_BAD_REQUEST));
 
   base::test::TestFuture<absl::StatusOr<ip_protection::GetProxyConfigResponse>>
       result_future;
-  http_fetcher_->GetProxyConfig(result_future.GetCallback(),
+  http_fetcher_->GetProxyConfig(std::nullopt, result_future.GetCallback(),
                                 /*for_testing=*/true);
 
   absl::StatusOr<ip_protection::GetProxyConfigResponse> result =

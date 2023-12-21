@@ -427,6 +427,11 @@ NET_EXPORT extern const base::FeatureParam<std::string> kIpPrivacyProxyBPsk;
 // `first_hop_hostnames` (and thus always single-proxy chains).
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyUseProxyChains;
 
+// If true, pass OAuth token to Phosphor in GetProxyConfig API for IP
+// Protection.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kIpPrivacyIncludeOAuthTokenInGetProxyConfig;
+
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
 // false. This is needed as a workaround to set this value to true on Android
 // but not on WebView (until crbug.com/1430082 has been fixed).
