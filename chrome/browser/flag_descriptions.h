@@ -807,9 +807,6 @@ extern const char kDownloadNotificationServiceUnifiedAPIDescription[];
 extern const char kDownloadsMigrateToJobsAPIName[];
 extern const char kDownloadsMigrateToJobsAPIDescription[];
 
-extern const char kEnablePenetratingImageSelectionName[];
-extern const char kEnablePenetratingImageSelectionDescription[];
-
 extern const char kEnablePerfettoSystemTracingName[];
 extern const char kEnablePerfettoSystemTracingDescription[];
 

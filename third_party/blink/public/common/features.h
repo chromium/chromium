@@ -386,8 +386,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEarlyExitOnNoopClassOrStyleChange);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEditingNG);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnablePenetratingImageSelection);
-
 // Enables establishing the GPU channel asnchronously when requesting a new
 // layer tree frame sink.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEstablishGpuChannelAsync);
