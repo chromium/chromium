@@ -619,12 +619,10 @@ class WizardControllerFlowTest : public WizardControllerTest {
     wizard_controller->SetCurrentScreen(nullptr);
     WaitForOobeUI();
     wizard_controller->SetSharedURLLoaderFactoryForTesting(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_));
+        test_url_loader_factory_.GetSafeWeakWrapper());
     SimpleGeolocationProvider::GetInstance()
         ->SetSharedUrlLoaderFactoryForTesting(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_));
+            test_url_loader_factory_.GetSafeWeakWrapper());
 
     // Set up the mocks for all screens.
     mock_welcome_screen_ =
