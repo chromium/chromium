@@ -758,6 +758,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1513445")
     public void testMultipleFresBackButton() throws Exception {
         launchViewIntent(TEST_URL);
         FirstRunActivity firstFreActivity = waitForFirstRunActivity();
