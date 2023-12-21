@@ -16,11 +16,13 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,6 +34,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -134,11 +137,18 @@ public class AutofillLocalCardEditorTest {
     @Mock private ObservableSupplierImpl<ModalDialogManager> mModalDialogManagerSupplierMock;
     @Mock private PersonalDataManager mPersonalDataManagerMock;
     private AutofillTestHelper mAutofillTestHelper;
+    private UserActionTester mActionTester;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mAutofillTestHelper = new AutofillTestHelper();
+        mActionTester = new UserActionTester();
+    }
+
+    @After
+    public void tearDown() {
+        mActionTester.tearDown();
     }
 
     @Test
@@ -709,6 +719,134 @@ public class AutofillLocalCardEditorTest {
         verify(mPersonalDataManagerMock, times(1)).deleteCreditCard(guid);
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testRecordUserAction_whenNewCreditCardIsAddedWithCvc() throws Exception {
+        String validExpirationYear = AutofillTestHelper.nextYear();
+        String validExpirationMonth = "12";
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        setCardNumberOnEditor(autofillLocalCardEditorFragment, NON_AMEX_CARD_NUMBER);
+        setExpirationDateOnEditor(
+                autofillLocalCardEditorFragment,
+                String.format("%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
+        setSecurityCodeOnEditor(autofillLocalCardEditorFragment, /* code= */ "321");
+        performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
+
+        Assert.assertTrue(
+                "User action should be logged.",
+                mActionTester.getActions().contains("AutofillCreditCardsAddedWithCvc"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testRecordUserAction_whenExistingCreditCardWithoutCvcIsEditedAndCvcIsLeftBlank()
+            throws Exception {
+        String validExpirationYear = AutofillTestHelper.nextYear();
+        String validExpirationMonth = "12";
+        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
+
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        setExpirationDateOnEditor(
+                autofillLocalCardEditorFragment,
+                String.format("%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
+        performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
+
+        Assert.assertTrue(
+                "User action should be logged.",
+                mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasLeftBlank"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testRecordUserAction_whenExistingCreditCardWithoutCvcIsEditedAndCvcIsAdded()
+            throws Exception {
+        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
+
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        setSecurityCodeOnEditor(autofillLocalCardEditorFragment, /* code= */ "321");
+        performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
+
+        Assert.assertTrue(
+                "User action should be logged.",
+                mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasAdded"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testRecordUserAction_whenExistingCreditCardWithCvcIsEditedAndCvcIsRemoved()
+            throws Exception {
+        SAMPLE_LOCAL_CARD_WITH_CVC.setNumber(NON_AMEX_CARD_NUMBER);
+        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD_WITH_CVC);
+
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        setSecurityCodeOnEditor(autofillLocalCardEditorFragment, /* code= */ "");
+        performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
+
+        Assert.assertTrue(
+                "User action should be logged.",
+                mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasRemoved"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testRecordUserAction_whenExistingCreditCardWithCvcIsEditedAndCvcIsUpdated()
+            throws Exception {
+        SAMPLE_LOCAL_CARD_WITH_CVC.setNumber(NON_AMEX_CARD_NUMBER);
+        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD_WITH_CVC);
+
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        setSecurityCodeOnEditor(autofillLocalCardEditorFragment, /* code= */ "321");
+        performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
+
+        Assert.assertTrue(
+                "User action should be logged.",
+                mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasUpdated"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testRecordUserAction_whenExistingCreditCardWithCvcIsEditedAndCvcIsUnchanged()
+            throws Exception {
+        String validExpirationYear = AutofillTestHelper.nextYear();
+        String validExpirationMonth = "12";
+        SAMPLE_LOCAL_CARD_WITH_CVC.setNumber(NON_AMEX_CARD_NUMBER);
+        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD_WITH_CVC);
+
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        setExpirationDateOnEditor(
+                autofillLocalCardEditorFragment,
+                String.format("%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
+        performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
+
+        Assert.assertTrue(
+                "User action should be logged.",
+                mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasUnchanged"));
+    }
+
     private void openDeleteCreditCardConfirmationDialog(
             AutofillLocalCardEditor autofillLocalCardEditorFragment,
             ModalDialogManager modalDialogManager) {
@@ -805,6 +943,29 @@ public class AutofillLocalCardEditorTest {
                     Assert.fail("Failed to set the card number");
                 }
             });
+    }
+
+    private void setSecurityCodeOnEditor(
+            AutofillLocalCardEditor autofillLocalCardEditorFragment, String code) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    try {
+                        autofillLocalCardEditorFragment.mCvc.setText(code);
+                    } catch (Exception e) {
+                        Assert.fail("Failed to set the security code");
+                    }
+                });
+    }
+
+    private void performButtonClickOnEditor(Button button) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    try {
+                        button.performClick();
+                    } catch (Exception e) {
+                        Assert.fail("Failed to click the button");
+                    }
+                });
     }
 
     private void verifyCvcHintImage(
