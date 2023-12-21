@@ -1916,7 +1916,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2445484935443597917">Criar um novo perfil</translation>
 <translation id="2445726032315793326">Lupa parcial</translation>
 <translation id="244641233057214044">Produto relacionado à sua pesquisa</translation>
-<translation id="2447587550790814052">Agora você pode usar o Steam no Chromebook (Beta)</translation>
+<translation id="2447587550790814052">Agora você pode usar o Steam para Chromebook (Beta)</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2448810255793562605">Leitura automática do acesso com interruptor</translation>
 <translation id="2450021089947420533">Jornadas</translation>
@@ -8175,7 +8175,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="747114903913869239">Erro: Não foi possível decodificar a extensão</translation>
 <translation id="7471520329163184433">Mais lenta</translation>
 <translation id="747312361841682912">Excluir os dados exibidos</translation>
-<translation id="7473891865547856676">Agora não</translation>
+<translation id="7473891865547856676">Agora Não</translation>
 <translation id="747459581954555080">Restaurar todas</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Devolução imediata necessária}one{Devolva o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dia}other{Devolva o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dias}}</translation>
 <translation id="7475671414023905704">URL da senha perdida do Netscape</translation>
@@ -10236,7 +10236,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9057354806206861646">Atualizar programação</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Cerca de 1 notificação por dia}one{Cerca de {NUM_NOTIFICATION} notificação por dia}other{Cerca de {NUM_NOTIFICATION} notificações por dia}}</translation>
 <translation id="9058760336383947367">Veja o PPD da impressora</translation>
-<translation id="9061694916020926968">Você precisa estar conectado a uma Conta do Google para usar o Steam no Chromebook (Beta). Faça login e tente de novo.</translation>
+<translation id="9061694916020926968">Você precisa estar conectado a uma Conta do Google para usar o Steam para Chromebook (Beta). Faça login e tente de novo.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Erro da linha <ph name="ERROR_LINE_START" /> a <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Ativar o Preenchimento automático e preencher formulários com um clique</translation>

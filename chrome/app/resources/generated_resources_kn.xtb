@@ -2169,7 +2169,7 @@
 <translation id="264897126871533291">ಪ್ರೊಟನೊಮಾಲಿ</translation>
 <translation id="2649045351178520408">Base64-ಎನ್‌ಕೋಡ್ ಮಾಡಿದ ASCII, ಪ್ರಮಾಣಪತ್ರ ಸರಣಿ</translation>
 <translation id="265156376773362237">ಪ್ರಮಾಣಿತ ಮುಂಚಿತ ಲೋಡ್ ಮಾಡುವಿಕೆ</translation>
-<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಉಳಿಸಲಾಗಿದೆ. ಇದನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, <ph name="BEGIN_LINK" />ಇದನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ<ph name="END_LINK" />.}one{ಈ ಸಾಧನದಲ್ಲಿ {COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, <ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ<ph name="END_LINK" />.}other{ಈ ಸಾಧನದಲ್ಲಿ {COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, <ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ<ph name="END_LINK" />.}}</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಇದನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, <ph name="BEGIN_LINK" />ಇದನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ<ph name="END_LINK" />.}one{ಈ ಸಾಧನದಲ್ಲಿ {COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, <ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ<ph name="END_LINK" />.}other{ಈ ಸಾಧನದಲ್ಲಿ {COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, <ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2653266418988778031">ಪ್ರಮಾಣೀಕರಣ ಪ್ರಾಧಿಕಾರದ (CA) ಪ್ರಮಾಣಪತ್ರವನ್ನು ನೀವು ಅಳಿಸಿದ್ದೇ ಆದರೆ, ಆ ಬಳಿಕ CA ಬಿಡುಗಡೆ ಮಾಡುವ ಯಾವುದೇ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ನಿಮ್ಮ ಬ್ರೌಸರ್  ನಂಬುವುದಿಲ್ಲ.</translation>
 <translation id="2653275834716714682">ಪಠ್ಯ ಬದಲಿಸುವಿಕೆ</translation>
@@ -8168,7 +8168,7 @@
 <translation id="747114903913869239">ದೋಷ: ವಿಸ್ತರಣೆಯನ್ನು ಡಿಕೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="7471520329163184433">ನಿಧಾನವಾಗಿ</translation>
 <translation id="747312361841682912">ಡಿಸ್‌ಪ್ಲೇ ಮಾಡಲಾದ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
-<translation id="7473891865547856676">ಇಲ್ಲ, ಧನ್ಯವಾದಗಳು</translation>
+<translation id="7473891865547856676">ಬೇಡ</translation>
 <translation id="747459581954555080">ಎಲ್ಲವನ್ನು ಮರುಸಂಗ್ರಹಿಸಿ</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{ತಕ್ಷಣ ಹಿಂತಿರುಗಿಸುವ ಅಗತ್ಯವಿದೆ}one{{NUM_DAYS} ದಿನಗಳ ಒಳಗಾಗಿ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಹಿಂತಿರುಗಿಸಿ}other{{NUM_DAYS} ದಿನಗಳ ಒಳಗಾಗಿ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಹಿಂತಿರುಗಿಸಿ}}</translation>
 <translation id="7475671414023905704">Netscape ಕಳೆದು ಹೋದ ಪಾಸ್‌ವರ್ಡ್ URL</translation>
@@ -9222,7 +9222,7 @@
 <translation id="8276560076771292512">ಖಾಲಿ ಕ್ಯಾಷ್ ಮತ್ತು ಹಾರ್ಡ್ ಮರುಲೋಡ್</translation>
 <translation id="8276850948802942358">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗೆ ತಾತ್ಕಾಲಿಕ ಅನುಮತಿಯನ್ನು ನೀಡುವ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="828180235270931531">ಇತರ ಲಭ್ಯವಿರುವ ಪ್ರಿಂಟರ್‌ಗಳು</translation>
-<translation id="8281886186245836920">ಸ್ಕಿಪ್‌</translation>
+<translation id="8281886186245836920">ಸ್ಕಿಪ್‌ ಮಾಡಿ</translation>
 <translation id="8284279544186306258">ಎಲ್ಲಾ <ph name="WEBSITE_1" /> ಸೈಟ್‌ಗಳು</translation>
 <translation id="8284326494547611709">ಶೀರ್ಷಿಕೆಗಳು</translation>
 <translation id="8286036467436129157">ಸೈನ್ ಇನ್</translation>

@@ -8158,7 +8158,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="747114903913869239">Eroare: extensia nu poate fi decodificată</translation>
 <translation id="7471520329163184433">Mai mică</translation>
 <translation id="747312361841682912">Șterge datele afișate</translation>
-<translation id="7473891865547856676">Nu, mulțumesc</translation>
+<translation id="7473891865547856676">Nu, Mulțumesc</translation>
 <translation id="747459581954555080">Restabilește-le pe toate</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Este necesară returnarea imediată}few{Returnează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_DAYS} zile}other{Returnează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_DAYS} de zile}}</translation>
 <translation id="7475671414023905704">Adresă URL pentru parolă pierdută Netscape</translation>

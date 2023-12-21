@@ -825,7 +825,7 @@
 <translation id="7216409898977639127">ผู้ให้บริการเครือข่ายมือถือ</translation>
 <translation id="725133483556299729">เลือกอีเมล</translation>
 <translation id="7271040990581020067">เครื่องสแกนกำลังทำงานอยู่ ลองอีกครั้งในภายหลัง</translation>
-<translation id="7273347807225967898">แป้นพิมพ์ลัดไม่พร้อมใช้งาน โปรดกดแป้นพิมพ์ลัดใหม่โดยใช้คีย์ตัวปรับแต่ง (Ctrl, Alt, Shift, ค้นหา หรือ Launcher)</translation>
+<translation id="7273347807225967898">แป้นพิมพ์ลัดไม่พร้อมใช้งาน โปรดกดแป้นพิมพ์ลัดใหม่โดยใช้แป้นกดร่วม (Ctrl, Alt, Shift, ค้นหา หรือ Launcher)</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">สัมผัสสายลมเย็น</translation>
 <translation id="7287310195820267359">คอลเล็กชันภาพวอลเปเปอร์</translation>
@@ -934,7 +934,7 @@
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
 <translation id="8094062939584182041">อนุญาตให้ Google ส่งอีเมลถึงคุณเกี่ยวกับปัญหานี้</translation>
 <translation id="8104083085214006426">คุณกำลังใช้เครือข่ายแบบเปิดที่ไม่ปลอดภัย</translation>
-<translation id="8111706652656628199">แป้นพิมพ์ลัดไม่พร้อมใช้งาน กดแป้นพิมพ์ลัดใหม่โดยใช้ Shift และคีย์ตัวปรับแต่งอีก 1 รายการ (Ctrl, Alt, ค้นหา หรือ launcher)</translation>
+<translation id="8111706652656628199">แป้นพิมพ์ลัดไม่พร้อมใช้งาน กดแป้นพิมพ์ลัดใหม่โดยใช้ Shift และแป้นกดร่วมอีก 1 รายการ (Ctrl, Alt, ค้นหา หรือ launcher)</translation>
 <translation id="811820734797650957">(Android) ปิงเกตเวย์ได้</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">ขอตัวนับการรับส่งข้อมูล</translation>
@@ -1081,7 +1081,7 @@
 <translation id="9111102763498581341">ปลดล็อก</translation>
 <translation id="9122602430962285795">ไปที่การตั้งค่าเพื่อเชื่อมต่ออีกครั้ง</translation>
 <translation id="9126720536733509015">บันทึกหลายหน้าเป็น PDF ไฟล์เดียว</translation>
-<translation id="9133772297793293778">กดคีย์ตัวปรับแต่ง 1-4 รายการและคีย์อื่นๆ อีก 1 รายการบนแป้นพิมพ์ หากต้องการออกจากโหมแก้ไข ให้กด alt + esc</translation>
+<translation id="9133772297793293778">กดแป้นกดร่วม 1-4 รายการและคีย์อื่นๆ อีก 1 รายการบนแป้นพิมพ์ หากต้องการออกจากโหมดแก้ไข ให้กด alt + esc</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Shift ซ้าย</translation>
 <translation id="9149391708638971077">ทดสอบหน่วยความจำ</translation>

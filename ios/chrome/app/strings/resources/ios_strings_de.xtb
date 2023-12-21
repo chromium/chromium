@@ -685,7 +685,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4631335160486397366"><ph name="COUNT" /> wiederverwendete Passwörter</translation>
 <translation id="4634124774493850572">Passwort verwenden</translation>
 <translation id="4636930964841734540">Info</translation>
-<translation id="4642472735733036929">Preisbeobachtung gestoppt</translation>
+<translation id="4642472735733036929">Preis-Tracking gestoppt</translation>
 <translation id="4645575059429386691">Von deinen Eltern verwaltet</translation>
 <translation id="4650125387981512669">Weiter als <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Prüfe, ob deine Passwörter sicher sind, finde heraus, ob sie gehackt wurden, und informiere dich darüber, wie du dich im Internet besser schützen kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -1049,7 +1049,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6464397691496239022">Websites können Cookies verwenden, um dir das Surfen zu erleichtern; zum Beispiel, damit du angemeldet bleibst oder Artikel in deinem Einkaufswagen gespeichert bleiben.
 
 Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen.</translation>
-<translation id="6476253015009698798">Die Preisbeobachtung ist für diese Seite nicht verfügbar.</translation>
+<translation id="6476253015009698798">Preis-Tracking ist für diese Seite nicht verfügbar.</translation>
 <translation id="6476800141292307438">Die Seite wird in die Sprache <ph name="LANGUAGE" /> übersetzt. Optionen sind unten auf dem Bildschirm verfügbar.</translation>
 <translation id="648164694371393720">Authentifizierungsfehler</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> Lesezeichen gelöscht</translation>
@@ -1237,7 +1237,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7466693328838535498">Gib „Chrome“ in das Feld „Such-Widget“ ein</translation>
 <translation id="746684838091935575">3. Wähle Chrome aus</translation>
 <translation id="7472734401283673885">Unternehmensname</translation>
-<translation id="7473891865547856676">Nein, danke</translation>
+<translation id="7473891865547856676">Nein, Danke</translation>
 <translation id="7488874549363591659">Zugestellt</translation>
 <translation id="7491131399623468277">Zu den Einstellungen…</translation>
 <translation id="7492574581995589075">Deine Organisation hat die Möglichkeit deaktiviert, Chrome-Daten zu nutzen und in deinem Google-Konto zu speichern. Neue Lesezeichen, Passwörter und weitere Informationen werden nur auf diesem Gerät gespeichert.</translation>

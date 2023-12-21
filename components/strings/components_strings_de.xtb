@@ -150,7 +150,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1269516672602708785">Schnell eine neue Website in Google Sites erstellen</translation>
 <translation id="1270328905573953738">Umzüge</translation>
 <translation id="1270502636509132238">Abholoption</translation>
-<translation id="1273592791152866347">Preisbeobachtung deaktiviert</translation>
+<translation id="1273592791152866347">Preis-Tracking deaktiviert</translation>
 <translation id="127777513559587977">Fernseh-Talkshows</translation>
 <translation id="1281476433249504884">Stapelfach 1</translation>
 <translation id="1282358575813748144">Wasserfahrzeuge</translation>
@@ -2272,7 +2272,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5595485650161345191">Adresse bearbeiten</translation>
 <translation id="5596939519753369075">2 × 3,5 Zoll</translation>
 <translation id="560412284261940334">Verwaltung wird nicht unterstützt.</translation>
-<translation id="5605249000617390290">Weitere Informationen zur Preisbeobachtung</translation>
+<translation id="5605249000617390290">Weitere Informationen zum Preis-Tracking</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Verbindung prüfen</translation>
 <translation id="5610807607761827392"><ph name="BEGIN_LINK" />Karten und Adressen kannst du in den Einstellungen verwalten.<ph name="END_LINK" /></translation>
@@ -2600,7 +2600,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6295855836753816081">Wird gespeichert...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Dein Gerät startet jetzt neu}=1{Dein Gerät startet in 1 Sekunde neu}other{Dein Gerät startet in # Sekunden neu}}</translation>
-<translation id="6301104306974789820">Benachrichtigungen zur Preisbeobachtung erhalten</translation>
+<translation id="6301104306974789820">Benachrichtigungen zum Preis-Tracking erhalten</translation>
 <translation id="6304398603974202180">Multimedia-Software</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ist nicht erreichbar.</translation>
 <translation id="6306713302480826305">Diese Adresse wird von diesem Gerät und von deinen anderen angemeldeten Geräten gelöscht</translation>
@@ -3203,7 +3203,7 @@ Weitere Details:
 <translation id="7469935732330206581">Dieses Formular ist nicht sicher</translation>
 <translation id="7470854469646445678">Gib den Grund für das Kopieren an (erforderlich)</translation>
 <translation id="7471007961486718967">Gib den Grund für die Übertragung an (erforderlich)</translation>
-<translation id="7473891865547856676">Nein, danke</translation>
+<translation id="7473891865547856676">Nein, Danke</translation>
 <translation id="7481312909269577407">Vorwärts</translation>
 <translation id="7481603210197454575">Umschlag Italienisch</translation>
 <translation id="7483482939016730822">Schul- und Unterrichtsbedarf</translation>
