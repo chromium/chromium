@@ -1,0 +1,2 @@
+Tests focus event.
+Focus event fired
