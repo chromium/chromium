@@ -40,7 +40,6 @@ js_type_check("closure_compile_local") {
     ":guest_tos",
     ":hw_data_collection",
     ":managed_terms_of_service",
-    ":marketing_opt_in",
     ":offline_ad_login",
     ":oobe_reset",
     ":os_install",
@@ -236,23 +235,6 @@ js_library("managed_terms_of_service") {
     "$externs_path/webview_tag.js",
   ]
 
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("marketing_opt_in") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/marketing_opt_in.js" ]
-  deps = [
-    "../../components:display_manager_types",
-    "../../components:oobe_a11y_option",
-    "../../components:oobe_cr_lottie",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
   extra_deps = [ ":web_components" ]
 }
 
