@@ -4,6 +4,7 @@
 
 #include "components/viz/service/surfaces/surface_allocation_group.h"
 
+#include <numeric>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -212,7 +213,7 @@ SurfaceAllocationGroup::FindLatestSurfaceUpTo(
   int begin = 0;
   int end = surfaces_.size();
   while (end - begin > 1) {
-    int avg = (begin + end) / 2;
+    int avg = std::midpoint(begin, end);
     if (!surface_id.IsSameOrNewerThan(surfaces_[avg]->surface_id()))
       end = avg;
     else
