@@ -61,7 +61,7 @@ sk_sp<SkData> BufferCopyAsSkData(Iter iter, size_t available) {
 // Interface for ImageDecoder to read a SharedBuffer.
 class SharedBufferSegmentReader final : public SegmentReader {
  public:
-  explicit SharedBufferSegmentReader(scoped_refptr<SharedBuffer>);
+  explicit SharedBufferSegmentReader(scoped_refptr<const SharedBuffer>);
   SharedBufferSegmentReader(const SharedBufferSegmentReader&) = delete;
   SharedBufferSegmentReader& operator=(const SharedBufferSegmentReader&) =
       delete;
@@ -71,11 +71,11 @@ class SharedBufferSegmentReader final : public SegmentReader {
 
  private:
   ~SharedBufferSegmentReader() override = default;
-  scoped_refptr<SharedBuffer> shared_buffer_;
+  scoped_refptr<const SharedBuffer> shared_buffer_;
 };
 
 SharedBufferSegmentReader::SharedBufferSegmentReader(
-    scoped_refptr<SharedBuffer> buffer)
+    scoped_refptr<const SharedBuffer> buffer)
     : shared_buffer_(std::move(buffer)) {}
 
 size_t SharedBufferSegmentReader::size() const {
@@ -225,7 +225,7 @@ sk_sp<SkData> ROBufferSegmentReader::GetAsSkData() const {
 // SegmentReader ---------------------------------------------------------------
 
 scoped_refptr<SegmentReader> SegmentReader::CreateFromSharedBuffer(
-    scoped_refptr<SharedBuffer> buffer) {
+    scoped_refptr<const SharedBuffer> buffer) {
   return base::AdoptRef(new SharedBufferSegmentReader(std::move(buffer)));
 }
 

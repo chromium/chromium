@@ -35,7 +35,7 @@ class PLATFORM_EXPORT SegmentReader
   // underlying SharedBuffer. This class does not modify it, so that would
   // mean modifying it in another way.
   static scoped_refptr<SegmentReader> CreateFromSharedBuffer(
-      scoped_refptr<SharedBuffer>);
+      scoped_refptr<const SharedBuffer>);
 
   // These versions use thread-safe input, so they are always thread-safe.
   static scoped_refptr<SegmentReader> CreateFromSkData(sk_sp<SkData>);
