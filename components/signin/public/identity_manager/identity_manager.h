@@ -654,7 +654,7 @@ class IdentityManager : public KeyedService,
       account_manager_facade_;
 #endif
 
-  IdentityMutator identity_mutator_;
+  std::unique_ptr<IdentityMutator> identity_mutator_;
 
   // DiagnosticsProvider instance.
   std::unique_ptr<DiagnosticsProvider> diagnostics_provider_;
