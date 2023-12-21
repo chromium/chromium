@@ -42,7 +42,7 @@ struct UserAuthConfig {
   UserAuthConfig& WithLegacyPin(const std::string& pin,
                                 const std::string& pin_salt);
   UserAuthConfig& WithRecoveryFactor();
-  UserAuthConfig& RequireReauth();
+  UserAuthConfig& RequireReauth(bool require_reauth = true);
 
   AuthFactorsSet factors;
   std::string online_password;

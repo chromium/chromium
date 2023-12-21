@@ -6,11 +6,76 @@
 #define CHROME_BROWSER_ASH_LOGIN_TEST_AUTH_UI_UTILS_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 
+class AccountId;
+
 namespace ash::test {
+
+class FullScreenAuthSurface {
+ public:
+  FullScreenAuthSurface();
+  virtual ~FullScreenAuthSurface();
+
+  virtual void SelectUserPod(const AccountId& account_id) = 0;
+};
+
+class OobePageActor {
+ public:
+  OobePageActor(std::optional<OobeScreenId> screen,
+                std::optional<ash::test::UIPath> path);
+  virtual ~OobePageActor();
+
+  std::unique_ptr<test::TestConditionWaiter> UntilShown();
+
+ protected:
+  std::optional<OobeScreenId> screen_;
+  std::optional<ash::test::UIPath> path_;
+};
+
+class GaiaPageActor : public OobePageActor {
+ public:
+  GaiaPageActor();
+  ~GaiaPageActor() override;
+
+  virtual void ReauthConfirmEmail(const AccountId& account_id) = 0;
+  virtual void TypePassword(const std::string& password) = 0;
+  virtual void ContinueLogin() = 0;
+};
+
+class PasswordChangedPageActor : public OobePageActor {
+ public:
+  PasswordChangedPageActor();
+  ~PasswordChangedPageActor() override;
+
+  void TypePreviousPassword(const std::string& password);
+  void SubmitPreviousPassword();
+  [[nodiscard]] std::unique_ptr<test::TestConditionWaiter>
+  InvalidPasswordFeedback();
+  void ForgotPreviousPassword();
+};
+
+class PasswordUpdatedPageActor : public OobePageActor {
+ public:
+  PasswordUpdatedPageActor();
+  ~PasswordUpdatedPageActor() override;
+
+  void ExpectPasswordUpdateState();
+  void ConfirmPasswordUpdate();
+};
+
+std::unique_ptr<FullScreenAuthSurface> OnLoginScreen();
+
+[[nodiscard]] std::unique_ptr<GaiaPageActor> AwaitGaiaSigninUI();
+[[nodiscard]] std::unique_ptr<PasswordChangedPageActor>
+AwaitPasswordChangedUI();
+[[nodiscard]] std::unique_ptr<PasswordUpdatedPageActor>
+AwaitPasswordUpdatedUI();
 
 // Password change scenario
 // page for entering old password

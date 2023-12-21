@@ -77,9 +77,14 @@ UserAuthConfig& UserAuthConfig::WithRecoveryFactor() {
   return *this;
 }
 
-UserAuthConfig& UserAuthConfig::RequireReauth() {
-  token_status =
-      user_manager::User::OAuthTokenStatus::OAUTH2_TOKEN_STATUS_INVALID;
+UserAuthConfig& UserAuthConfig::RequireReauth(bool require_reauth /*=true*/) {
+  if (require_reauth) {
+    token_status =
+        user_manager::User::OAuthTokenStatus::OAUTH2_TOKEN_STATUS_INVALID;
+  } else {
+    token_status =
+        user_manager::User::OAuthTokenStatus::OAUTH2_TOKEN_STATUS_VALID;
+  }
   return *this;
 }
 
