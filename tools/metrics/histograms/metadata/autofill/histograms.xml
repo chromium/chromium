@@ -1540,6 +1540,20 @@ chromium-metrics-reviews@google.com.
   <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
 </histogram>
 
+<histogram name="Autofill.CvcInfoBar{AutofillSaveCreditCardPromptDestination}"
+    enum="AutofillCreditCardInfoBar" expires_after="2024-07-01">
+  <owner>yishuil@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The relative frequency with which users accept, deny, or ignore the Autofill
+    info bar prompt for saving card CVC
+    {AutofillSaveCreditCardPromptDestination}.
+  </summary>
+  <token key="AutofillSaveCreditCardPromptDestination"
+      variants="AutofillSaveCreditCardPromptDestination"/>
+</histogram>
+
 <histogram name="Autofill.CvcStorage.CvcFilling.{CardType}"
     enum="CvcFillingFlowType" expires_after="2024-07-01">
   <owner>jialihuang@google.com</owner>

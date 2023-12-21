@@ -184,6 +184,15 @@ void LogSaveCvcPromptResultMetric(SaveCardPromptResult metric,
       base::StrCat({base_histogram_name, destination, show}), metric);
 }
 
+void LogCvcInfoBarMetric(AutofillMetrics::InfoBarMetric metric,
+                         bool is_uploading) {
+  CHECK_LT(metric, AutofillMetrics::InfoBarMetric::NUM_INFO_BAR_METRICS);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"Autofill.CvcInfoBar", is_uploading ? ".Upload" : ".Local"}),
+      metric, AutofillMetrics::InfoBarMetric::NUM_INFO_BAR_METRICS);
+}
+
 void LogSaveCardRequestExpirationDateReasonMetric(
     SaveCardRequestExpirationDateReason reason) {
   DCHECK_LE(reason, SaveCardRequestExpirationDateReason::kMaxValue);
