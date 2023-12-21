@@ -284,22 +284,24 @@ TEST(FilterDataTest, FromJSON_RecordsMetrics) {
 
 TEST(FiltersTest, FromJSON) {
   for (auto& test_case : kParseTestCases) {
+    SCOPED_TRACE(test_case.description);
+
     absl::optional<base::Value> json_copy =
         test_case.json ? absl::make_optional(test_case.json->Clone())
                        : absl::nullopt;
     EXPECT_EQ(FiltersFromJSONForTesting(base::OptionalToPtr(json_copy)),
-              test_case.expected_filters)
-        << test_case.description;
+              test_case.expected_filters);
   }
 
   for (auto& test_case : kSizeTestCases) {
+    SCOPED_TRACE(test_case.description);
+
     absl::optional<base::Value> json_copy =
         test_case.json ? absl::make_optional(test_case.json->Clone())
                        : absl::nullopt;
 
     auto result = FiltersFromJSONForTesting(base::OptionalToPtr(json_copy));
-    EXPECT_TRUE(result.has_value())
-        << test_case.description << ": " << result.error();
+    EXPECT_TRUE(result.has_value()) << result.error();
   }
 
   {

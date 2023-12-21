@@ -104,7 +104,7 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
 
   for (auto& value : *list) {
     ASSIGN_OR_RETURN(T element, build_element(value));
-    vec.push_back(std::move(element));
+    vec.emplace_back(std::move(element));
   }
 
   return vec;

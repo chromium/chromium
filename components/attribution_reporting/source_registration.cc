@@ -31,6 +31,7 @@
 #include "components/attribution_reporting/trigger_config.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
 
@@ -98,18 +99,17 @@ SourceRegistration::Parse(base::Value::Dict registration,
       result.aggregation_keys,
       AggregationKeys::FromJSON(registration.Find(kAggregationKeys)));
 
-  absl::optional<uint64_t> source_event_id;
-  if (!ParseUint64(registration, kSourceEventId, source_event_id)) {
-    return base::unexpected(
-        SourceRegistrationError::kSourceEventIdValueInvalid);
-  }
-  result.source_event_id = source_event_id.value_or(0);
+  ASSIGN_OR_RETURN(result.source_event_id,
+                   ParseUint64(registration, kSourceEventId)
+                       .transform(&ValueOrZero<uint64_t>),
+                   [](absl::monostate) {
+                     return SourceRegistrationError::kSourceEventIdValueInvalid;
+                   });
 
-  absl::optional<int64_t> priority;
-  if (!ParsePriority(registration, priority)) {
-    return base::unexpected(SourceRegistrationError::kPriorityValueInvalid);
-  }
-  result.priority = priority.value_or(0);
+  ASSIGN_OR_RETURN(result.priority, ParsePriority(registration),
+                   [](absl::monostate) {
+                     return SourceRegistrationError::kPriorityValueInvalid;
+                   });
 
   if (const base::Value* value = registration.Find(kExpiry)) {
     ASSIGN_OR_RETURN(result.expiry,

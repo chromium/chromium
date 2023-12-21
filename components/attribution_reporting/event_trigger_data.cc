@@ -14,6 +14,7 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
 
@@ -34,28 +35,27 @@ EventTriggerData::FromJSON(base::Value& value) {
         TriggerRegistrationError::kEventTriggerDataWrongType);
   }
 
-  ASSIGN_OR_RETURN(auto filters, FilterPair::FromJSON(*dict));
+  EventTriggerData out;
 
-  absl::optional<uint64_t> data;
-  if (!ParseUint64(*dict, kTriggerData, data)) {
-    return base::unexpected(
-        TriggerRegistrationError::kEventTriggerDataValueInvalid);
-  }
+  ASSIGN_OR_RETURN(out.filters, FilterPair::FromJSON(*dict));
 
-  absl::optional<int64_t> priority;
-  if (!ParsePriority(*dict, priority)) {
-    return base::unexpected(
-        TriggerRegistrationError::kEventPriorityValueInvalid);
-  }
+  ASSIGN_OR_RETURN(
+      out.data,
+      ParseUint64(*dict, kTriggerData).transform(&ValueOrZero<uint64_t>),
+      [](absl::monostate) {
+        return TriggerRegistrationError::kEventTriggerDataValueInvalid;
+      });
 
-  absl::optional<uint64_t> dedup_key;
-  if (!ParseDeduplicationKey(*dict, dedup_key)) {
-    return base::unexpected(
-        TriggerRegistrationError::kEventDedupKeyValueInvalid);
-  }
+  ASSIGN_OR_RETURN(out.priority, ParsePriority(*dict), [](absl::monostate) {
+    return TriggerRegistrationError::kEventPriorityValueInvalid;
+  });
 
-  return EventTriggerData(data.value_or(0), priority.value_or(0), dedup_key,
-                          std::move(filters));
+  ASSIGN_OR_RETURN(
+      out.dedup_key, ParseDeduplicationKey(*dict), [](absl::monostate) {
+        return TriggerRegistrationError::kEventDedupKeyValueInvalid;
+      });
+
+  return out;
 }
 
 EventTriggerData::EventTriggerData() = default;

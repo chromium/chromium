@@ -9,6 +9,7 @@
 #include <cmath>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/abseil_string_number_conversions.h"
@@ -21,24 +22,50 @@
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
 
 namespace {
+
 constexpr char kDebugKey[] = "debug_key";
 constexpr char kDebugReporting[] = "debug_reporting";
 constexpr char kDeduplicationKey[] = "deduplication_key";
 constexpr char kPriority[] = "priority";
+
+template <typename T>
+base::expected<absl::optional<T>, absl::monostate> ParseIntegerFromString(
+    const base::Value::Dict& dict,
+    std::string_view key,
+    bool (*parse)(std::string_view, T*)) {
+  const base::Value* value = dict.Find(key);
+  if (!value) {
+    return absl::nullopt;
+  }
+
+  T parsed_val;
+  if (const std::string* str = value->GetIfString();
+      !str || !parse(*str, &parsed_val)) {
+    return base::unexpected(absl::monostate());
+  }
+  return parsed_val;
+}
+
 }  // namespace
 
-absl::optional<absl::uint128> StringToAggregationKeyPiece(
-    const std::string& s) {
-  if (!base::StartsWith(s, "0x", base::CompareCase::INSENSITIVE_ASCII))
-    return absl::nullopt;
+base::expected<absl::uint128, AggregationKeyPieceError>
+ParseAggregationKeyPiece(const base::Value& value) {
+  const std::string* str = value.GetIfString();
+  if (!str) {
+    return base::unexpected(AggregationKeyPieceError::kWrongType);
+  }
 
   absl::uint128 key_piece;
-  if (!base::HexStringToUInt128(s, &key_piece))
-    return absl::nullopt;
+
+  if (!base::StartsWith(*str, "0x", base::CompareCase::INSENSITIVE_ASCII) ||
+      !base::HexStringToUInt128(*str, &key_piece)) {
+    return base::unexpected(AggregationKeyPieceError::kWrongFormat);
+  }
 
   return key_piece;
 }
@@ -55,63 +82,30 @@ std::string HexEncodeAggregationKey(absl::uint128 value) {
   return out.str();
 }
 
-bool ParseUint64(const base::Value::Dict& dict,
-                 std::string_view key,
-                 absl::optional<uint64_t>& out) {
-  const base::Value* value = dict.Find(key);
-  if (!value) {
-    out = absl::nullopt;
-    return true;
-  }
-
-  const std::string* str = value->GetIfString();
-  if (!str) {
-    out = absl::nullopt;
-    return false;
-  }
-
-  uint64_t parsed_val;
-  out = base::StringToUint64(*str, &parsed_val)
-            ? absl::make_optional(parsed_val)
-            : absl::nullopt;
-  return out.has_value();
+base::expected<absl::optional<uint64_t>, absl::monostate> ParseUint64(
+    const base::Value::Dict& dict,
+    std::string_view key) {
+  return ParseIntegerFromString<uint64_t>(dict, key, &base::StringToUint64);
 }
 
-bool ParseInt64(const base::Value::Dict& dict,
-                std::string_view key,
-                absl::optional<int64_t>& out) {
-  const base::Value* value = dict.Find(key);
-  if (!value) {
-    out = absl::nullopt;
-    return true;
-  }
-
-  const std::string* str = value->GetIfString();
-  if (!str) {
-    out = absl::nullopt;
-    return false;
-  }
-
-  int64_t parsed_val;
-  out = base::StringToInt64(*str, &parsed_val) ? absl::make_optional(parsed_val)
-                                               : absl::nullopt;
-  return out.has_value();
+base::expected<absl::optional<int64_t>, absl::monostate> ParseInt64(
+    const base::Value::Dict& dict,
+    std::string_view key) {
+  return ParseIntegerFromString<int64_t>(dict, key, &base::StringToInt64);
 }
 
-bool ParsePriority(const base::Value::Dict& dict,
-                   absl::optional<int64_t>& out) {
-  return ParseInt64(dict, kPriority, out);
+base::expected<int64_t, absl::monostate> ParsePriority(
+    const base::Value::Dict& dict) {
+  return ParseInt64(dict, kPriority).transform(&ValueOrZero<int64_t>);
 }
 
 absl::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict) {
-  absl::optional<uint64_t> debug_key;
-  std::ignore = ParseUint64(dict, kDebugKey, debug_key);
-  return debug_key;
+  return ParseUint64(dict, kDebugKey).value_or(absl::nullopt);
 }
 
-bool ParseDeduplicationKey(const base::Value::Dict& dict,
-                           absl::optional<uint64_t>& out) {
-  return ParseUint64(dict, kDeduplicationKey, out);
+base::expected<absl::optional<uint64_t>, absl::monostate> ParseDeduplicationKey(
+    const base::Value::Dict& dict) {
+  return ParseUint64(dict, kDeduplicationKey);
 }
 
 bool ParseDebugReporting(const base::Value::Dict& dict) {
