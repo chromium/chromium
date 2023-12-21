@@ -5069,9 +5069,6 @@ crbug.com/1272203 [ Linux ] external/wpt/websockets/stream/tentative/backpressur
 # Times out flakily on all platforms. Previously marked slow, crbug.com/874695.
 crbug.com/1272801 http/tests/permissions/chromium/test-request-sharedworker.html [ Pass Timeout ]
 
-# Flaky with setTimeout without clamp
-crbug.com/1272955 http/tests/devtools/extensions/extensions-timeline-api.js [ Failure Pass ]
-
 # Test is very flaky (score of 223).
 crbug.com/1274919 http/tests/inspector-protocol/page/consecutive-navigate.js [ Failure Pass Timeout ]
 
