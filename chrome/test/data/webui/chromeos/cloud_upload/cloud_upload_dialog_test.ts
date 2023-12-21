@@ -15,6 +15,7 @@ import {WelcomePageElement} from 'chrome://cloud-upload/welcome_page.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {whenCheck} from 'chrome://webui-test/test_util.js';
 
 import {CloudUploadTestBrowserProxy, ProxyOptions} from './cloud_upload_test_browser_proxy.js';
 
@@ -402,9 +403,9 @@ suite('<cloud-upload>', () => {
 
   /**
    * Tests that the cancel button should show the cancel dialog on each page
-   * except the last page.
+   * except the last page, when there is no cancel button.
    */
-  [1, 2, 3].forEach(
+  [1, 2, 3, 4].forEach(
       page => test(`Close button on page ${page}`, async () => {
         const officeWebAppInstalled = false;
         const odfsMounted = false;
@@ -428,21 +429,97 @@ suite('<cloud-upload>', () => {
           await doPWAInstallPage();
         }
 
-        // Bring up the cancel dialog and dismiss it.
+        if (page > 3) {
+          await doSignInPage();
+          // No cancel button should be shown on the last page.
+          assertEquals(cloudUploadApp.$('.cancel-button'), null);
+          return;
+        }
+
+        // Bring up the cancel dialog with a Cancel click.
         cloudUploadApp.$('.cancel-button').click();
         const cancelDialog =
             cloudUploadApp.$<SetupCancelDialogElement>('setup-cancel-dialog')!;
         assertTrue(cancelDialog.open);
+
+        // Dismiss the cancel dialog with a Continue click.
         cancelDialog.$('.action-button').click();
         assertFalse(cancelDialog.open);
 
-        // Bring up the cancel dialog and cancel setup.
+        // Bring up the cancel dialog with a Cancel click.
         cloudUploadApp.$('.cancel-button').click();
         assertTrue(cancelDialog.open);
         assertEquals(
             0, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
 
+        // Cancel setup with Cancel click.
         cancelDialog.$('.cancel-button').click();
+        await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+        assertEquals(
+            1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+        assertDeepEquals(
+            [UserAction.kCancel],
+            testProxy.handler.getArgs('respondWithUserActionAndClose'));
+      }));
+
+  /**
+   * Tests that an Escape keydown should show the cancel dialog on each page
+   * except the last page, where the setup is cancelled directly.
+   */
+  [1, 2, 3, 4].forEach(
+      page => test(`Escape on page ${page}`, async () => {
+        const officeWebAppInstalled = false;
+        const odfsMounted = false;
+        await setUp({
+          fileNames: ['file.docx'],
+          officeWebAppInstalled,
+          installOfficeWebAppResult: true,
+          odfsMounted,
+          dialogSpecificArgs: {
+            oneDriveSetupDialogArgs: {
+              setOfficeAsDefaultHandler: true,
+            },
+          },
+        });
+
+        // Go to the specified page.
+        if (page > 1) {
+          await doWelcomePage(officeWebAppInstalled, odfsMounted);
+        }
+        if (page > 2) {
+          await doPWAInstallPage();
+        }
+
+        const cancelDialog =
+            cloudUploadApp.$<SetupCancelDialogElement>('setup-cancel-dialog')!;
+
+        if (page > 3) {
+          await doSignInPage();
+          // Escape on the last page should not bring up the cancel dialog, but
+          // it instead directly cancels the setup.
+          document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+          await whenCheck(cancelDialog, () => !cancelDialog.open);
+        } else {
+          // Bring up the cancel dialog with an Escape keydown.
+          document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+          await whenCheck(cancelDialog, () => cancelDialog.open);
+
+          // Dismiss the cancel dialog with an Escape keydown.
+          document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+          await whenCheck(cancelDialog, () => !cancelDialog.open);
+
+          // Bring up the cancel dialog with an Escape keydown.
+          document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+          await whenCheck(cancelDialog, () => cancelDialog.open);
+          assertEquals(
+              0,
+              testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+
+          // Cancel setup with Cancel click.
+          cancelDialog.$('.cancel-button').click();
+        }
+
+        // Check the setup was cancelled.
         await testProxy.handler.whenCalled('respondWithUserActionAndClose');
         assertEquals(
             1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));

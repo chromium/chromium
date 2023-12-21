@@ -34,6 +34,10 @@ export class CloudUploadElement extends HTMLElement {
   /** The modal dialog shown to confirm if the user wants to cancel setup. */
   private cancelDialog: SetupCancelDialogElement;
 
+  // Save reference to listener so it can be removed from the document in
+  // disconnectedCallback().
+  private boundKeyDownListener_: (e: KeyboardEvent) => void;
+
   /**
     True if the setup flow should end with setting Microsoft 365 as default
     handler. Note: This is usually done if no default file handlers have been
@@ -52,9 +56,17 @@ export class CloudUploadElement extends HTMLElement {
     this.cancelDialog = document.createElement('setup-cancel-dialog');
     shadow.appendChild(this.cancelDialog);
 
-    document.addEventListener('keydown', this.onKeyDown.bind(this));
+    this.boundKeyDownListener_ = this.onKeyDown.bind(this);
 
     this.initPromise = this.init();
+  }
+
+  connectedCallback(): void {
+    document.addEventListener('keydown', this.boundKeyDownListener_);
+  }
+
+  disconnectedCallback(): void {
+    document.removeEventListener('keydown', this.boundKeyDownListener_);
   }
 
   async init(): Promise<void> {
