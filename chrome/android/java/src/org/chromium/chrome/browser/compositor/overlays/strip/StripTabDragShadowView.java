@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
@@ -102,6 +103,10 @@ public class StripTabDragShadowView extends FrameLayout {
         mFaviconView.setPadding(padding, padding, padding, padding);
         mCardView.getBackground().mutate();
         mTitleView.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
+        RelativeLayout.LayoutParams layoutParams =
+                (RelativeLayout.LayoutParams) mTitleView.getLayoutParams();
+        layoutParams.setMarginEnd(padding);
+        mTitleView.setLayoutParams(layoutParams);
 
         mFaviconUpdateTabObserver =
                 new EmptyTabObserver() {
