@@ -76,7 +76,7 @@ enum class BannerImageSizeType {
 // When set to YES, the header will be hidden when the content is taller than
 // the scroll view. This can make the content fully visible or require less
 // scrolling when using a smaller form factor device or a larger font size.
-// Default to NO.
+// Once hidden, the header will not reappear. Default to NO.
 @property(nonatomic, assign) BOOL hideHeaderOnTallContent;
 
 // When set to YES, forces UIUserInterfaceStyleLight for the header views. This

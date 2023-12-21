@@ -1333,23 +1333,31 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 }
 
 - (void)hideHeaderOnTallContentIfNeeded {
-  if (!self.hideHeaderOnTallContent || !_canUpdateViewsOnScroll) {
+  // Once hidden, the header will not reappear.
+  if (!self.hideHeaderOnTallContent || !_canUpdateViewsOnScroll ||
+      _fullHeaderImageView.hidden) {
     return;
   }
   CHECK(self.headerImageType != PromoStyleImageType::kNone);
 
-  BOOL contentFits = [self isScrolledToBottom];
+  const BOOL contentFits = [self isScrolledToBottom];
+  if (contentFits) {
+    return;
+  }
 
-  _fullHeaderImageView.hidden = !contentFits;
-  _headerBackgroundImageView.hidden = !contentFits;
-  _headerImageView.hidden = !contentFits;
+  _fullHeaderImageView.hidden = YES;
+  _headerBackgroundImageView.hidden = YES;
+  _headerImageView.hidden = YES;
   if (!_titleLabelNoHeaderTopMargin) {
     _titleLabelNoHeaderTopMargin = [_titleLabel.topAnchor
         constraintEqualToAnchor:_scrollContentView.topAnchor
                        constant:kDefaultMargin];
   }
-  _titleLabelNoHeaderTopMargin.active = !contentFits;
-  _headerBackgroundImageViewTopMargin.active = contentFits;
+  _titleLabelNoHeaderTopMargin.active = YES;
+  _headerBackgroundImageViewTopMargin.active = NO;
+
+  [_scrollView layoutIfNeeded];
+  [self updateViewsOnScrollViewUpdate];
 }
 
 #pragma mark - UIScrollViewDelegate
