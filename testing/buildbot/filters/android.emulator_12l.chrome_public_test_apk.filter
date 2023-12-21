@@ -76,6 +76,8 @@
 
 # crbug.com/1416433
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithFileSchemeDoesNothing
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationWithFallbackURL
+
 
 # crbug.com/1432046
 -org.chromium.chrome.browser.DragAndDropLauncherActivityTest.testDragAndDropLauncherActivity_openInExistingTabbedActivity
@@ -100,6 +102,8 @@
 # crbug.com/1511804
 -org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_GroupActionAndUndo
 -org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionGroupsOnly
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionTabsOnly
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionTabsWithGroups
 -org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionView
 -org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testUndoToolbarGroup
 
@@ -114,6 +118,7 @@
 
 # crbug.com/1512251
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_INCOGNITO_CCT
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_INCOGNITO_TAB
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_REGULAR_CCT
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_REGULAR_TAB
 
@@ -141,3 +146,32 @@
 
 # crbug.com/1513303
 -org.chromium.chrome.browser.ui.system.StatusBarColorControllerTest.testStatusBarColorForTabStripRedesignFolioTablet
+
+# crbug.com/1513557
+-org.chromium.chrome.browser.NavigateTest.testTabObserverOnPageLoadStarted
+
+# crbug.com/1513561
+-org.chromium.chrome.browser.keyboard_accessory.ManualFillingIntegrationTest.testInfobarStaysHiddenWhileChangingFieldsWithOpenKeyboard
+
+# crbug.com/1513564
+-org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testChromePage
+
+# crbug.com/1513565
+-org.chromium.chrome.browser.permissions.GeolocationTest.testGeolocationWatchDialog
+-org.chromium.chrome.browser.permissions.MediaTest.testCombinedPermissionsPlumbingDialog
+-org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyAndNeverAskCamera
+
+# crbug.com/1513566
+-org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeTest.testNoticeShownOnlyOnSecurePage
+
+# crbug.com/1513568
+-org.chromium.chrome.browser.tab.InterceptNavigationDelegateTest.testExternalAppPrerenderingNavigation
+
+# crbug.com/1513570
+-org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testSuspendNullCurrentTab
+
+# crbug.com/1513571
+-org.chromium.chrome.browser.webshare.WebShareTest.testWebShareSeparator
+
+# crbug.com/1513573
+-org.chromium.chrome.features.start_surface.ShowNtpAtStartupTest.testThumbnailRecaptureForSingleTabCardAfterMostRecentTabClosed
