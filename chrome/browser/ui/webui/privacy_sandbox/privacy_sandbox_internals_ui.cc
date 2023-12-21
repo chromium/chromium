@@ -15,18 +15,13 @@
 #include "privacy_sandbox_internals_ui.h"
 
 namespace privacy_sandbox_internals {
-namespace {
 using ::privacy_sandbox_internals::mojom::Page;
 using ::privacy_sandbox_internals::mojom::PageHandler;
-
-// TODO(b/308167671): Relocate this to the constants file.
-const char kChromeUIPrivacySandboxInternalsHost[] = "privacy-sandbox-internals";
-}  // namespace
 
 PrivacySandboxInternalsUI::PrivacySandboxInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), kChromeUIPrivacySandboxInternalsHost);
+      Profile::FromWebUI(web_ui), chrome::kChromeUIPrivacySandboxInternalsHost);
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kPrivacySandboxInternalsResources,

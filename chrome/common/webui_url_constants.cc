@@ -179,6 +179,9 @@ const char kChromeUIPredictorsHost[] = "predictors";
 const char kChromeUIPrefsInternalsHost[] = "prefs-internals";
 const char kChromeUIPrefsInternalsURL[] = "chrome://prefs-internals";
 const char kChromeUIPrintURL[] = "chrome://print/";
+const char kChromeUIPrivacySandboxInternalsHost[] = "privacy-sandbox-internals";
+const char kChromeUIPrivacySandboxInternalsURL[] =
+    "chrome://privacy-sandbox-internals";
 const char kChromeUIPrivacySandboxDialogHost[] = "privacy-sandbox-dialog";
 const char kChromeUIPrivacySandboxDialogURL[] =
     "chrome://privacy-sandbox-dialog";
