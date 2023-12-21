@@ -1521,8 +1521,8 @@ VISIT_PROTO_FIELDS(const sync_pb::BankAccountDetails& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::CardBenefit& proto) {
   VISIT(benefit_id);
   VISIT(benefit_description);
-  VISIT(start_time_unix_epoch_nanos);
-  VISIT(end_time_unix_epoch_nanos);
+  VISIT(start_time_unix_epoch_milliseconds);
+  VISIT(end_time_unix_epoch_milliseconds);
   VISIT(flat_rate_benefit);
   VISIT(category_benefit);
   VISIT(merchant_benefit);

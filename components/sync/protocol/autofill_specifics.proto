@@ -263,8 +263,8 @@ message CardBenefit {
   optional string benefit_description = 1;
 
   // When the benefit should be displayed, in UTC time.
-  optional int64 start_time_unix_epoch_nanos = 2;
-  optional int64 end_time_unix_epoch_nanos = 3;
+  optional int64 start_time_unix_epoch_milliseconds = 2;
+  optional int64 end_time_unix_epoch_milliseconds = 3;
 
   // Proto containing data specific to a flat rate benefit. Empty as flat rate
   // benefits don't have unique fields. The actual benefit (e.g. "2% cash back")
