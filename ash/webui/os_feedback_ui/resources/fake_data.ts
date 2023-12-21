@@ -154,6 +154,21 @@ export const fakeFeedbackContextWithoutLinkedCrossDevicePhone:
       wifiDebugLogsAllowed: false,
     };
 
+export const fakeFeedbackContextWithExtraDiagnostics: FeedbackContext = {
+  assistantDebugInfoAllowed: false,
+  autofillMetadata: '',
+  categoryTag: '',
+  email: 'test.user@google.com',
+  extraDiagnostics: 'some extra info',
+  fromAssistant: true,
+  fromAutofill: false,
+  fromSettingsSearch: true,
+  hasLinkedCrossDevicePhone: false,
+  isInternalAccount: true,
+  pageUrl: {url: 'chrome://tab/'},
+  traceId: 1,
+  wifiDebugLogsAllowed: false,
+};
 export const fakePngData: number[] = [
   137, 80,  78, 71,  13,  10, 26, 10,  0,  0,  0,   13,  73,  72,  68,  82,
   0,   0,   0,  8,   0,   0,  0,  8,   8,  2,  0,   0,   0,   75,  109, 41,
