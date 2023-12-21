@@ -1032,6 +1032,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, PinAndUnpin) {
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
   test_task_runner->FastForwardBy(base::Seconds(15));
   EXPECT_TRUE(IsWidgetVisible());
+
+  SetTickClockForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, NonAsciiCharacter) {
@@ -1202,6 +1204,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   waiter.Wait();
   test_task_runner->FastForwardBy(base::Seconds(10));
   EXPECT_TRUE(IsWidgetVisible());
+
+  SetTickClockForTesting(nullptr);
 }
 
 // TODO(https://crbug.com/1207312): Flaky test.
@@ -1239,6 +1243,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   OnPartialTranscription("Killer whales");
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("Killer whales", GetLabelText());
+
+  SetTickClockForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
@@ -1289,6 +1295,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("", GetLabelText());
+
+  SetTickClockForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, LiveTranslateLabel) {
