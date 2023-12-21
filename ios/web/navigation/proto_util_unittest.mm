@@ -14,36 +14,6 @@ namespace {
 
 using NavigationProtoUtilTest = PlatformTest;
 
-// Tests that web::ReferrerPolicy round trip correctly when serialized to proto.
-TEST_F(NavigationProtoUtilTest, ReferrerPolicyRoundTrip) {
-  static const ReferrerPolicy kReferrerPolicies[] = {
-      ReferrerPolicyAlways,
-      ReferrerPolicyDefault,
-      ReferrerPolicyNoReferrerWhenDowngrade,
-      ReferrerPolicyNever,
-      ReferrerPolicyOrigin,
-      ReferrerPolicyOriginWhenCrossOrigin,
-      ReferrerPolicySameOrigin,
-      ReferrerPolicyStrictOrigin,
-      ReferrerPolicyStrictOriginWhenCrossOrigin,
-  };
-
-  for (ReferrerPolicy policy : kReferrerPolicies) {
-    EXPECT_EQ(policy, ReferrerPolicyFromProto(ReferrerPolicyToProto(policy)));
-  }
-}
-
-// Tests that web::Referrer round trip correctly when serialized to proto.
-TEST_F(NavigationProtoUtilTest, ReferrerRoundTrip) {
-  const Referrer referrer(GURL("https://example.com/referrer"),
-                          ReferrerPolicyDefault);
-
-  proto::ReferrerStorage storage;
-  SerializeReferrerToProto(referrer, storage);
-
-  EXPECT_EQ(referrer, ReferrerFromProto(storage));
-}
-
 // Tests that HttpRequestHeaders round trip correctly when serialized to proto.
 TEST_F(NavigationProtoUtilTest, HttpRequestHeadersRoundTrip) {
   NSDictionary<NSString*, NSString*>* http_request_headers = @{
