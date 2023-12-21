@@ -461,9 +461,10 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   base::ScopedBlockTestsWritingToSpecialDirs scoped_blocker(
       {
-        base::DIR_SRC_TEST_DATA_ROOT,
+          base::DIR_SRC_TEST_DATA_ROOT,
 #if BUILDFLAG(IS_WIN)
-            base::DIR_USER_STARTUP,
+          base::DIR_USER_STARTUP,
+          base::DIR_START_MENU,
 #endif  // BUILDFLAG(IS_WIN)
       },
       ([](const base::FilePath& path) {
