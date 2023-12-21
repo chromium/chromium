@@ -1850,6 +1850,20 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryMoved(
   }
 }
 
+void ChromeFileSystemAccessPermissionContext::
+    OnFileCreatedFromShowSaveFilePicker(const GURL& file_picker_binding_context,
+                                        const storage::FileSystemURL& url) {
+  file_created_from_show_save_file_picker_callback_list_.Notify(
+      file_picker_binding_context, url);
+}
+
+base::CallbackListSubscription ChromeFileSystemAccessPermissionContext::
+    AddFileCreatedFromShowSaveFilePickerCallback(
+        FileCreatedFromShowSaveFilePickerCallbackList::CallbackType callback) {
+  return file_created_from_show_save_file_picker_callback_list_.Add(
+      std::move(callback));
+}
+
 ChromeFileSystemAccessPermissionContext::Grants
 ChromeFileSystemAccessPermissionContext::ConvertObjectsToGrants(
     const std::vector<std::unique_ptr<Object>> objects) {

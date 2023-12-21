@@ -15,6 +15,12 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
 #include "url/origin.h"
 
+class GURL;
+
+namespace storage {
+class FileSystemURL;
+}  // namespace storage
+
 namespace content {
 
 // Entry point to an embedder implemented permission context for the File System
@@ -163,6 +169,14 @@ class FileSystemAccessPermissionContext {
   virtual void NotifyEntryMoved(const url::Origin& origin,
                                 const base::FilePath& old_path,
                                 const base::FilePath& new_path) = 0;
+
+  // Invoked on file creation events originating from
+  // `window.showSaveFilePicker()`.
+  //
+  // See `FileSystemAccessEntryFactory::BindingContext`.
+  virtual void OnFileCreatedFromShowSaveFilePicker(
+      const GURL& file_picker_binding_context,
+      const storage::FileSystemURL& url) = 0;
 
  protected:
   virtual ~FileSystemAccessPermissionContext() = default;

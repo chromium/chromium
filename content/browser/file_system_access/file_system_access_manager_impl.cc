@@ -1480,6 +1480,11 @@ void FileSystemAccessManagerImpl::DidCreateAndTruncateSaveFile(
     return;
   }
 
+  if (permission_context_) {
+    permission_context_->OnFileCreatedFromShowSaveFilePicker(
+        /*file_picker_binding_context=*/binding_context.url, url);
+  }
+
   SharedHandleState shared_handle_state =
       GetSharedHandleStateForPath(entry.path, binding_context.storage_key,
                                   HandleType::kFile, UserAction::kSave);
