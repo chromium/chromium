@@ -228,9 +228,9 @@ struct Suggestion {
   // `FieldType` used to build the suggestion's `main_text`.
   std::optional<FieldType> field_by_field_filling_type_used;
 
-  // Whether the user is able to select the suggestion by hovering on it or
+  // Whether the user is able to preview the suggestion by hovering on it or
   // accept it by clicking on it.
-  bool is_selectable = true;
+  bool is_acceptable = true;
 
   // Denotes whether this suggestion was hidden prior to the effects caused by
   // kAutofillUseAddressRewriterInProfileSubsetComparison.

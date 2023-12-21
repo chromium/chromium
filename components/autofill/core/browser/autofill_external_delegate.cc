@@ -394,7 +394,7 @@ void AutofillExternalDelegate::OnPopupHidden() {
 
 void AutofillExternalDelegate::DidSelectSuggestion(
     const Suggestion& suggestion) {
-  if (!suggestion.is_selectable) {
+  if (!suggestion.is_acceptable) {
     // TODO(crbug.com/1493361): Handle this in the popup controller.
     return;
   }
@@ -507,7 +507,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
 void AutofillExternalDelegate::DidAcceptSuggestion(
     const Suggestion& suggestion,
     const SuggestionPosition& position) {
-  if (!suggestion.is_selectable) {
+  if (!suggestion.is_acceptable) {
     // TODO(crbug.com/1493361): Handle this in the popup controller.
     return;
   }

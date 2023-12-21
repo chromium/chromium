@@ -2580,7 +2580,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // Only the name is displayed on the first line.
   EXPECT_EQ(server_card_suggestion.popup_item_id,
             PopupItemId::kCreditCardEntry);
-  EXPECT_FALSE(server_card_suggestion.is_selectable);
+  EXPECT_FALSE(server_card_suggestion.is_acceptable);
   // For Desktop, split the first line and populate the card name and
   // the last 4 digits separately.
   EXPECT_EQ(server_card_suggestion.main_text.value, u"Visa");

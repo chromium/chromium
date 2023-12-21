@@ -1733,7 +1733,7 @@ TEST_F(BrowserAutofillManagerTest,
     external_delegate()->CheckSuggestionCount(field.global_id(), 3);
     EXPECT_TRUE(base::ranges::all_of(external_delegate()->suggestions(),
                                      [](const Suggestion& suggestion) {
-                                       return !suggestion.is_selectable;
+                                       return !suggestion.is_acceptable;
                                      }));
   }
 }
