@@ -29,7 +29,7 @@ import {type DirectoryChangeTracker, DirectoryModel} from './directory_model.js'
 import {FileTransferController, PastePlan} from './file_transfer_controller.js';
 import {MetadataItem} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
-import {TaskController} from './task_controller.js';
+import {type DropdownItem, TaskController} from './task_controller.js';
 import {TaskHistory} from './task_history.js';
 import {DefaultTaskDialog} from './ui/default_task_dialog.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
@@ -827,8 +827,8 @@ export class FileTasks {
     }
 
     taskDialog.showDefaultTaskDialog(
-        title, message, items, defaultIdx, item => {
-          onSuccess(item.task);
+        title, message, items, defaultIdx, (item: DropdownItem) => {
+          onSuccess(item.task!);
         });
   }
 

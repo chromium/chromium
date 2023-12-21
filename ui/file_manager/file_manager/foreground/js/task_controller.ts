@@ -682,6 +682,8 @@ export interface DropdownItem {
   isPolicyDefault?: boolean;
   isGenericFileHandler?: boolean;
   isDlpBlocked?: boolean;
+  class
+  ?: string;
 }
 
 /**
