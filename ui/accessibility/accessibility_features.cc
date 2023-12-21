@@ -355,6 +355,14 @@ BASE_FEATURE(kScreenAIDebugMode,
 bool IsScreenAIDebugModeEnabled() {
   return base::FeatureList::IsEnabled(::features::kScreenAIDebugMode);
 }
+
+// This feature is only used in tests and must not be enabled by default.
+BASE_FEATURE(kScreenAITestMode,
+             "ScreenAITestMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsScreenAITestModeEnabled() {
+  return base::FeatureList::IsEnabled(::features::kScreenAITestMode);
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)

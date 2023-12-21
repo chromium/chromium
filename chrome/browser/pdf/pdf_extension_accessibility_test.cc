@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -63,6 +64,14 @@
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "chrome/browser/renderer_context_menu/pdf_ocr_menu_observer.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+#if BUILDFLAG(IS_LINUX)
+#include "base/scoped_observation.h"
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
+#include "chrome/common/pref_names.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
+#endif  // BUILDFLAG(IS_LINUX)
 
 namespace {
 
@@ -1164,3 +1173,110 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionAccessibilityPdfOcrTest);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+#if BUILDFLAG(IS_LINUX)
+
+class ScreenAIInstallStateObserver
+    : public screen_ai::ScreenAIInstallState::Observer {
+ public:
+  ScreenAIInstallStateObserver() {
+    component_ready_observer_.Observe(
+        screen_ai::ScreenAIInstallState::GetInstance());
+  }
+
+  ScreenAIInstallStateObserver(const ScreenAIInstallStateObserver&) = delete;
+  ScreenAIInstallStateObserver& operator=(const ScreenAIInstallStateObserver&) =
+      delete;
+
+  ~ScreenAIInstallStateObserver() override = default;
+
+  // screen_ai::ScreenAIInstallState::Observer:
+  void StateChanged(screen_ai::ScreenAIInstallState::State state) override {
+    if (state == screen_ai::ScreenAIInstallState::State::kReady) {
+      is_ready_ = true;
+      if (quit_closure_) {
+        std::move(quit_closure_).Run();
+      }
+    }
+  }
+
+  void WaitForReady() {
+    if (is_ready_) {
+      return;
+    }
+
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+ private:
+  bool is_ready_ = false;
+  base::OnceClosure quit_closure_;
+  base::ScopedObservation<screen_ai::ScreenAIInstallState,
+                          screen_ai::ScreenAIInstallState::Observer>
+      component_ready_observer_{this};
+};
+
+class PDFOCRIntegrationTest : public PDFExtensionAccessibilityTest {
+ public:
+  PDFOCRIntegrationTest() = default;
+  ~PDFOCRIntegrationTest() override = default;
+
+  // PDFExtensionAccessibilityTest:
+  void SetUpOnMainThread() override {
+    PDFExtensionAccessibilityTest::SetUpOnMainThread();
+
+    screen_ai::ScreenAIInstallState::GetInstance()
+        ->SetComponentFolderForTesting();
+
+    content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+    EnableScreenReader(true);
+  }
+
+  void TearDownOnMainThread() override {
+    EnableScreenReader(false);
+    PDFExtensionAccessibilityTest::TearDownOnMainThread();
+  }
+
+ protected:
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
+    auto enabled = PDFExtensionAccessibilityTest::GetEnabledFeatures();
+    enabled.push_back(::features::kPdfOcr);
+    enabled.push_back(::features::kScreenAITestMode);
+    return enabled;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    // `PDFExtensionAccessibilityTest` has `::features::kPdfOcr` in a list of
+    // disabled features. Now that `::features::kPdfOcr` is used in this test,
+    // just return an empty list to exclude the feature from the list.
+    return {};
+  }
+
+  void EnableScreenReader(bool enabled) {
+    // Spoof a screen reader.
+    if (enabled) {
+      content::BrowserAccessibilityState::GetInstance()
+          ->AddAccessibilityModeFlags(ui::AXMode::kScreenReader);
+    } else {
+      content::BrowserAccessibilityState::GetInstance()
+          ->RemoveAccessibilityModeFlags(ui::AXMode::kScreenReader);
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest, EnsureScreenAIInitializes) {
+  ScreenAIInstallStateObserver observer;
+
+  // Turn on PDF OCR by setting its pref to be true.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityPdfOcrAlwaysActive, true);
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kAccessibilityPdfOcrAlwaysActive));
+
+  observer.WaitForReady();
+  EXPECT_EQ(screen_ai::ScreenAIInstallState::State::kReady,
+            screen_ai::ScreenAIInstallState::GetInstance()->get_state());
+}
+#endif  // BUILDFLAG(IS_LINUX)

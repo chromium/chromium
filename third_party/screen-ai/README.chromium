@@ -1,0 +1,35 @@
+Name: ScreenAI Library
+Short Name: screen-ai
+URL: https://source.corp.google.com/piper///depot/google3/chrome/accessibility/machine_intelligence/chrome_screen_ai/README.md
+Version: 121.2
+Shipped: yes
+Security Critical: no
+
+Description:
+Provides ML models for Reading Mode and PDF OCR. Chrome downloads the binary of
+this library via Component Updater on Windows, Linux, and macOS, but Component
+Updater is not supported in browser tests. Only for browser tests on those
+platforms, the binary will be downloaded from CIPD and used in tests.
+
+Note that this binary is shipped to Chrome via Component Updater from
+(only Googler can access the following) go/chrome_screen_ai_source on Windows,
+Linux, and macOS, but metadata for credits is kept in this directory for license
+attribution.
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: Eigen
+Short Name: eigen
+URL: https://gitlab.com/libeigen/eigen
+Version: 3.4
+License: Apache 2.0
+License File: LICENSE
+Shipped: yes
+Security Critical: no
+
+Description:
+Eigen is a C++ template library for linear algebra, matrices, vectors,
+numerical solvers, and related algorithms.
+
+Local Modifications:
+(none)

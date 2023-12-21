@@ -274,6 +274,11 @@ vars = {
   # reclient CIPD package version
   'reclient_version': 're_client_version:0.125.0.f3883c2-gomaip',
 
+  # screen-ai CIPD package Linux version
+  # TODO(b/281483558): Use a tag to download the latest version of screen-ai
+  # (e.g. 'version:121.3') and find a way to automate updating //DEPS with it.
+  'screen_ai_linux': 'x8c4xOQj3V2uyBicjNa2YkN71brkj5FZg157RueHF_oC',
+
   # The path of the sysroots.json file.
   # This is used by vendor builds like Electron.
   'sysroots_json_path': 'build/linux/sysroot_scripts/sysroots.json',
@@ -4080,6 +4085,17 @@ deps = {
       'url': Var('chrome_git') + '/chrome/deps/khronos_glcts.git' + '@' +
         'eedb0baca9e88c53596874901ff5f6136102d20d',
       'condition': 'checkout_src_internal',
+  },
+
+  'src/third_party/screen-ai/linux': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/screen-ai/linux',
+              'version': Var('screen_ai_linux'),
+          },
+      ],
+      'condition': 'checkout_linux',
+      'dep_type': 'cipd',
   },
 
   'src/third_party/soda': {

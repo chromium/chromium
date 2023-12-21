@@ -24,6 +24,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/cpu.h"
+#include "base/files/file_util.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -246,6 +247,18 @@ bool ScreenAIInstallState::MayTryDownload() {
 void ScreenAIInstallState::ResetForTesting() {
   state_ = State::kNotDownloaded;
   component_binary_path_.clear();
+}
+
+void ScreenAIInstallState::SetComponentFolderForTesting() {
+  CHECK_IS_TEST();
+#if BUILDFLAG(IS_LINUX)
+  // Set the path to the ScreenAI test files. For more details, see the
+  // `screen_ai_test_files` rule in the accessibility_common BUILD file.
+  base::FilePath screenai_library_path =
+      screen_ai::GetLatestComponentBinaryPath();
+  CHECK(base::PathExists(screenai_library_path));
+  SetComponentFolder(screenai_library_path.DirName());
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 void ScreenAIInstallState::SetStateForTesting(State state) {

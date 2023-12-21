@@ -264,6 +264,11 @@ AX_BASE_EXPORT bool IsReadAnythingWithAlgorithmEnabled();
 // Write some ScreenAI library debug data in /tmp.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kScreenAIDebugMode);
 AX_BASE_EXPORT bool IsScreenAIDebugModeEnabled();
+
+// Enables to use the Screen AI component available for testing.
+// If enabled, ScreenAI library will be loaded from //third_party/screen-ai.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kScreenAITestMode);
+AX_BASE_EXPORT bool IsScreenAITestModeEnabled();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
