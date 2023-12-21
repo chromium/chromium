@@ -263,6 +263,12 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
         MatchSystemUIFont(font_description.Weight(), font_description.Style(),
                           font_description.Stretch(), size)
             .release());
+  } else if (RuntimeEnabledFeatures::FontMatchingCTMigrationEnabled()) {
+    matched_font = base::apple::CFToNSOwnershipCast(
+        MatchFontFamily(creation_params.Family(), font_description.Weight(),
+                        font_description.Style(), font_description.Stretch(),
+                        size)
+            .release());
   } else {
     matched_font = MatchNSFontFamily(creation_params.Family(), traits,
                                      font_description.Weight(), size);

@@ -12,16 +12,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 using base::apple::CFCast;
+using base::apple::GetValueFromDictionary;
 using base::apple::NSToCFPtrCast;
 using base::apple::ScopedCFTypeRef;
 
 namespace blink {
 
 namespace {
-
 struct FontName {
   const char* full_font_name;
   const char* postscript_name;
@@ -62,31 +63,57 @@ const FontName CommonFontNames[] = {
 const char* FamiliesWithBoldItalicFaces[] = {"Baskerville", "Cochin", "Georgia",
                                              "GillSans"};
 
+ScopedCFTypeRef<CTFontRef> MatchCTFontFamily(const AtomicString& font_name,
+                                             FontSelectionValue desired_weight,
+                                             FontSelectionValue desired_slant,
+                                             FontSelectionValue desired_width,
+                                             float size) {
+  if (RuntimeEnabledFeatures::FontMatchingCTMigrationEnabled()) {
+    return MatchFontFamily(font_name, desired_weight, desired_slant,
+                           desired_width, size);
+  }
+
+  NSFontTraitMask traits = 0;
+  if (desired_slant != kNormalSlopeValue) {
+    traits |= NSFontItalicTrait;
+  }
+  if (desired_width > kNormalWidthValue) {
+    traits |= NSFontExpandedTrait;
+  }
+  if (desired_width < kNormalWidthValue) {
+    traits |= NSFontCondensedTrait;
+  }
+
+  return ScopedCFTypeRef<CTFontRef>(NSToCFPtrCast(
+      MatchNSFontFamily(font_name, traits, desired_weight, size)));
+}
+
 void TestFontWithBoldAndItalicTraits(const AtomicString& font_name) {
-  NSFont* font_italic =
-      MatchNSFontFamily(font_name, NSFontItalicTrait, kNormalWeightValue, 11);
+  ScopedCFTypeRef<CTFontRef> font_italic = MatchCTFontFamily(
+      font_name, kNormalWeightValue, kItalicSlopeValue, kNormalWidthValue, 11);
   EXPECT_TRUE(font_italic);
 
   CTFontSymbolicTraits italic_font_traits =
-      CTFontGetSymbolicTraits(NSToCFPtrCast(font_italic));
-  EXPECT_TRUE(italic_font_traits & NSFontItalicTrait);
+      CTFontGetSymbolicTraits(font_italic.get());
+  EXPECT_TRUE(italic_font_traits & kCTFontTraitItalic);
 
-  NSFont* font_bold_italic =
-      MatchNSFontFamily(font_name, NSFontItalicTrait, kBoldWeightValue, 11);
+  ScopedCFTypeRef<CTFontRef> font_bold_italic = MatchCTFontFamily(
+      font_name, kBoldWeightValue, kItalicSlopeValue, kNormalWidthValue, 11);
   EXPECT_TRUE(font_bold_italic);
 
   CTFontSymbolicTraits bold_italic_font_traits =
-      CTFontGetSymbolicTraits(NSToCFPtrCast(font_bold_italic));
-  EXPECT_TRUE(bold_italic_font_traits & NSFontItalicTrait);
-  EXPECT_TRUE(bold_italic_font_traits & NSFontBoldTrait);
+      CTFontGetSymbolicTraits(font_bold_italic.get());
+  EXPECT_TRUE(bold_italic_font_traits & kCTFontTraitItalic);
+  EXPECT_TRUE(bold_italic_font_traits & kCTFontTraitBold);
 }
 
-void TestFontMatchingByNameByFamilyName(const char* font_name) {
-  NSFont* font =
-      MatchNSFontFamily(AtomicString(font_name), 0, kNormalWeightValue, 11);
+void TestFontMatchingByFamilyName(const char* font_name) {
+  ScopedCFTypeRef<CTFontRef> font =
+      MatchCTFontFamily(AtomicString(font_name), kNormalWeightValue,
+                        kNormalSlopeValue, kNormalWidthValue, 11);
   EXPECT_TRUE(font);
   ScopedCFTypeRef<CFStringRef> matched_family_name(
-      CTFontCopyFamilyName(base::apple::NSToCFPtrCast(font)));
+      CTFontCopyFamilyName(font.get()));
   ScopedCFTypeRef<CFStringRef> expected_family_name(
       CFStringCreateWithCString(nullptr, font_name, kCFStringEncodingUTF8));
   EXPECT_EQ(
@@ -95,12 +122,13 @@ void TestFontMatchingByNameByFamilyName(const char* font_name) {
       kCFCompareEqualTo);
 }
 
-void TestFontMatchingByNameByPostscriptName(const char* font_name) {
-  NSFont* font =
-      MatchNSFontFamily(AtomicString(font_name), 0, kNormalWeightValue, 11);
+void TestFontMatchingByPostscriptName(const char* font_name) {
+  ScopedCFTypeRef<CTFontRef> font =
+      MatchCTFontFamily(AtomicString(font_name), kNormalWeightValue,
+                        kNormalSlopeValue, kNormalWidthValue, 11);
   EXPECT_TRUE(font);
   ScopedCFTypeRef<CFStringRef> matched_postscript_name(
-      CTFontCopyPostScriptName(base::apple::NSToCFPtrCast(font)));
+      CTFontCopyPostScriptName(font.get()));
   ScopedCFTypeRef<CFStringRef> expected_postscript_name(
       CFStringCreateWithCString(nullptr, font_name, kCFStringEncodingUTF8));
   EXPECT_EQ(CFStringCompare(matched_postscript_name.get(),
@@ -189,10 +217,10 @@ TEST(FontMatcherMacTest, MatchSystemFontWithWidthVariations) {
 }
 
 TEST(FontMatcherMacTest, FontFamilyMatchingUnavailableFont) {
-  NSFont* font = MatchNSFontFamily(
+  ScopedCFTypeRef<CTFontRef> font = MatchCTFontFamily(
       AtomicString(
           "ThisFontNameDoesNotExist07F444B9-4DDF-4A41-8F30-C80D4ED4CCA2"),
-      0, kNormalWeightValue, 12);
+      kNormalWeightValue, kNormalSlopeValue, kNormalWidthValue, 12);
   EXPECT_FALSE(font);
 }
 
@@ -219,12 +247,12 @@ INSTANTIATE_TEST_SUITE_P(CommonFontMatcherMacTest,
 // crbug.com/641861.
 TEST_P(TestFontMatchingByName, MatchingByFamilyName) {
   const FontName font_name = TestFontMatchingByName::GetParam();
-  TestFontMatchingByNameByFamilyName(font_name.family_name);
+  TestFontMatchingByFamilyName(font_name.family_name);
 }
 
 TEST_P(TestFontMatchingByName, MatchingByPostscriptName) {
   const FontName font_name = TestFontMatchingByName::GetParam();
-  TestFontMatchingByNameByPostscriptName(font_name.postscript_name);
+  TestFontMatchingByPostscriptName(font_name.postscript_name);
 }
 
 TEST_P(TestFontMatchingByName, MatchUniqueFontByFullFontName) {
@@ -251,6 +279,44 @@ INSTANTIATE_TEST_SUITE_P(FontMatcherMacTest,
 TEST_P(TestFontWithTraitsMatching, FontFamilyMatchingWithBoldItalicTraits) {
   const char* font_name = TestFontWithTraitsMatching::GetParam();
   TestFontWithBoldAndItalicTraits(AtomicString(font_name));
+}
+
+TEST(FontMatcherMacTest, FontFamilyMatchingWithBoldCondensedTraits) {
+  AtomicString family_name = AtomicString("American Typewriter");
+  ScopedCFTypeRef<CTFontRef> font_condensed =
+      MatchCTFontFamily(family_name, kNormalWeightValue, kNormalSlopeValue,
+                        kCondensedWidthValue, 11);
+  EXPECT_TRUE(font_condensed);
+
+  CTFontSymbolicTraits condensed_font_traits =
+      CTFontGetSymbolicTraits(font_condensed.get());
+  EXPECT_TRUE(condensed_font_traits & NSFontCondensedTrait);
+
+  ScopedCFTypeRef<CTFontRef> font_bold_condensed =
+      MatchCTFontFamily(family_name, kBoldWeightValue, kNormalSlopeValue,
+                        kCondensedWidthValue, 11);
+  EXPECT_TRUE(font_bold_condensed.get());
+
+  CTFontSymbolicTraits bold_condensed_font_traits =
+      CTFontGetSymbolicTraits(font_bold_condensed.get());
+  EXPECT_TRUE(bold_condensed_font_traits & NSFontCondensedTrait);
+  EXPECT_TRUE(bold_condensed_font_traits & NSFontCondensedTrait);
+}
+
+TEST(FontMatcherMacTest, MatchFamilyWithWeightVariations) {
+  AtomicString family_name = AtomicString("Noto Sans Myanmar");
+  for (int weight = 100; weight < 900; weight += 100) {
+    ScopedCFTypeRef<CTFontRef> font =
+        MatchCTFontFamily(family_name, FontSelectionValue(weight),
+                          kNormalSlopeValue, kCondensedWidthValue, 11);
+    ScopedCFTypeRef<CFDictionaryRef> traits_dict(CTFontCopyTraits(font.get()));
+    CFNumberRef actual_weight_num = GetValueFromDictionary<CFNumberRef>(
+        traits_dict.get(), kCTFontWeightTrait);
+    float actual_ct_weight;
+    CFNumberGetValue(actual_weight_num, kCFNumberFloatType, &actual_ct_weight);
+    int actual_weight = ToCSSFontWeight(actual_ct_weight);
+    EXPECT_EQ(actual_weight, weight);
+  }
 }
 
 }  // namespace blink

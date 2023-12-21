@@ -1850,6 +1850,10 @@
       name: "FontationsFontBackend",
     },
     {
+      name: "FontMatchingCTMigration",
+      status: "test",
+    },
+    {
       name: "FontPaletteAnimation",
       status: "stable",
     },
