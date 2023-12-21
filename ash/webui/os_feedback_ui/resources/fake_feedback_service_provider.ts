@@ -155,12 +155,12 @@ export class FakeFeedbackServiceProvider implements
     }
   }
 
-  getRecordPreSubmitActionCallCount(action: FeedbackAppPostSubmitAction):
+  getRecordPreSubmitActionCallCount(action: FeedbackAppPreSubmitAction):
       number {
     return this.preSubmitActionMap.get(action) || 0;
   }
 
-  recordPreSubmitAction(action: FeedbackAppPostSubmitAction) {
+  recordPreSubmitAction(action: FeedbackAppPreSubmitAction) {
     this.preSubmitActionMap.set(
         action, this.getRecordPreSubmitActionCallCount(action) + 1);
   }

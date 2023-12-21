@@ -92,7 +92,7 @@ export class SearchPageElement extends SearchPageElementBase {
 
   static get properties() {
     return {
-      feedbackContext: {type: FeedbackContext, readOnly: false, notify: true},
+      feedbackContext: {type: Object, readOnly: false, notify: true},
       descriptionTemplate: {
         type: String,
         readonly: true,
