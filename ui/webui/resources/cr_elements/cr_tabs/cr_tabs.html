@@ -23,8 +23,13 @@
         transition: opacity 100ms cubic-bezier(.4, 0, 1, 1);
       }
 
+      :host-context([chrome-refresh-2023]) .tab {
+        opacity: 1;
+      }
+
       :host-context(.focus-outline-visible) .tab:focus {
         outline: var(--cr-tabs-focus-outline, auto);
+        outline-offset: var(--cr-tabs-focus-outline-offset, 0);
       }
 
       .selected {
