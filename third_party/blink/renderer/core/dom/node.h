@@ -956,8 +956,6 @@ class CORE_EXPORT Node : public EventTarget {
   PartsList* GetDOMParts() const {
     return HasRareData() ? RareData()->GetDOMParts() : nullptr;
   }
-  void UpdateForRemovedDOMParts(ContainerNode& insertion_point);
-  void UpdateForInsertedDOMParts(ContainerNode& insertion_point);
 
   // For the imperative slot distribution API.
   void SetManuallyAssignedSlot(HTMLSlotElement* slot);

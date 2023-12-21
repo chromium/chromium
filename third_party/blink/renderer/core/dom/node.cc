@@ -2199,28 +2199,6 @@ void Node::InvalidateIfHasEffectiveAppearance() const {
   layout_object->SetSubtreeShouldDoFullPaintInvalidation();
 }
 
-void Node::UpdateForRemovedDOMParts(ContainerNode& insertion_point) {
-  if (LIKELY(!RuntimeEnabledFeatures::DOMPartsAPIEnabled())) {
-    return;
-  }
-  if (auto* parts = GetDOMParts()) {
-    for (Part* part : *parts) {
-      part->PartDisconnected(*this);
-    }
-  }
-}
-
-void Node::UpdateForInsertedDOMParts(ContainerNode& insertion_point) {
-  if (LIKELY(!RuntimeEnabledFeatures::DOMPartsAPIEnabled())) {
-    return;
-  }
-  if (auto* parts = GetDOMParts()) {
-    for (Part* part : *parts) {
-      part->PartConnected(*this, insertion_point);
-    }
-  }
-}
-
 Node::InsertionNotificationRequest Node::InsertedInto(
     ContainerNode& insertion_point) {
   DCHECK(!ChildNeedsStyleInvalidation());
@@ -2233,7 +2211,6 @@ Node::InsertionNotificationRequest Node::InsertedInto(
     insertion_point.GetDocument().IncrementNodeCount();
 #endif
   }
-  UpdateForInsertedDOMParts(insertion_point);
   if (ParentOrShadowHostNode()->IsInShadowTree())
     SetFlag(kIsInShadowTreeFlag);
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
@@ -2254,7 +2231,6 @@ void Node::RemovedFrom(ContainerNode& insertion_point) {
     insertion_point.GetDocument().DecrementNodeCount();
 #endif
   }
-  UpdateForRemovedDOMParts(insertion_point);
   if (IsInShadowTree() && !ContainingTreeScope().RootNode().IsShadowRoot())
     ClearFlag(kIsInShadowTreeFlag);
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {

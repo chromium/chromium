@@ -1479,12 +1479,6 @@
       status: "experimental",
     },
     {
-      // If enabled, DOM Parts API tracks DOM mutations that cause part changes.
-      // If disabled, the parts list returned by getParts() can be stale.
-      name: "DOMPartsAPIActivePartTracking",
-      depends_on: ["DOMPartsAPI"],
-    },
-    {
       // Shipping in M121, so should be safe to remove in M126.
       name: "DontFireDblclickOnDisabledFormControls",
       status: "stable",
