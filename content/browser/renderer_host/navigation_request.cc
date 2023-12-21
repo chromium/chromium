@@ -2549,7 +2549,8 @@ void NavigationRequest::BeginNavigationImpl() {
   // the value set in CommitNavigationParams.
   if (IsServedFromBackForwardCache() &&
       GetRenderFrameHostRestoredFromBackForwardCache()
-              ->is_overriding_user_agent() !=
+              ->GetPage()
+              .is_overriding_user_agent() !=
           commit_params_->is_overriding_user_agent) {
     // Trigger an eviction, which will cancel this navigation and trigger a new
     // one to the same entry (but won't try to restore the entry from the

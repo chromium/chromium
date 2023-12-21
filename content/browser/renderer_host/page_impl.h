@@ -217,6 +217,11 @@ class CONTENT_EXPORT PageImpl : public Page {
   // and the page is being navigated away from. UMA stats will not be recorded.
   void CancelLoadingMemoryTracker();
 
+  bool is_overriding_user_agent() { return is_overriding_user_agent_; }
+  void set_is_overriding_user_agent(bool is_overriding_user_agent) {
+    is_overriding_user_agent_ = is_overriding_user_agent;
+  }
+
  private:
   void DidActivateAllRenderViewsForPrerenderingOrPreview(
       base::OnceCallback<void(base::TimeTicks)> completion_callback);
@@ -350,6 +355,9 @@ class CONTENT_EXPORT PageImpl : public Page {
   // stopped loading, or we navigate away from the page before it finishes
   // loading.
   std::unique_ptr<PeakGpuMemoryTracker> loading_memory_tracker_;
+
+  // Whether the page is overriding the user agent or not.
+  bool is_overriding_user_agent_ = false;
 
   base::WeakPtrFactory<PageImpl> weak_factory_{this};
 };

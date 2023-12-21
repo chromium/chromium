@@ -1860,7 +1860,8 @@ void NavigationControllerImpl::UpdateNavigationEntryDetails(
     entry->SetTransitionType(params.transition);
     entry->SetOriginalRequestURL(request ? request->GetOriginalRequestURL()
                                          : GURL::EmptyGURL());
-    DCHECK_EQ(rfh->is_overriding_user_agent(), params.is_overriding_user_agent);
+    DCHECK_EQ(rfh->GetPage().is_overriding_user_agent(),
+              params.is_overriding_user_agent);
     entry->SetIsOverridingUserAgent(params.is_overriding_user_agent);
   } else {
     // We are reusing the NavigationEntry. The site instance will normally be

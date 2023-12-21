@@ -12370,7 +12370,8 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
 
   // Same-document navigation should retain is_overriding_user_agent from the
   // last committed navigation.
-  bool is_overriding_user_agent = is_same_document && is_overriding_user_agent_;
+  bool is_overriding_user_agent =
+      is_same_document && GetPage().is_overriding_user_agent();
 
   return owner_->CreateNavigationRequestForSynchronousRendererCommit(
       this, is_same_document, url, origin, initiator_base_url, isolation_info,
@@ -13275,6 +13276,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     cookie_change_listener_ = navigation_request->TakeCookieChangeListener();
   }
 
+  // Note: The renderer never sets |params->is_overriding_user_agent| to true
+  // for subframes, even if the value was set to true in CommitParams in the
+  // browser process.
   if (!is_same_document_navigation) {
     DCHECK_EQ(navigation_request->is_overriding_user_agent() && is_main_frame(),
               params->is_overriding_user_agent);
@@ -13286,7 +13290,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     }
 
   } else {
-    DCHECK_EQ(is_overriding_user_agent_, params->is_overriding_user_agent);
+    DCHECK_EQ(is_main_frame() && GetPage().is_overriding_user_agent(),
+              params->is_overriding_user_agent);
   }
 
   if (is_main_frame()) {
@@ -13517,8 +13522,9 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   is_mhtml_document_ = navigation_request->IsWaitingToCommit() &&
                        navigation_request->IsMhtmlOrSubframe();
 
-  is_overriding_user_agent_ =
-      navigation_request->is_overriding_user_agent() && is_main_frame();
+  if (is_main_frame() && navigation_request->is_overriding_user_agent()) {
+    GetPage().set_is_overriding_user_agent(true);
+  }
 
   reload_type_ = navigation_request->GetReloadType();
 
@@ -14716,10 +14722,10 @@ void RenderFrameHostImpl::
       is_same_document_navigation, is_same_document_history_api_navigation);
 
   const bool browser_is_overriding_user_agent =
-      is_same_document_navigation
-          ? is_overriding_user_agent_
-          : (request->commit_params().is_overriding_user_agent &&
-             request->frame_tree_node()->IsMainFrame());
+      request->frame_tree_node()->IsMainFrame() &&
+      (is_same_document_navigation
+           ? GetPage().is_overriding_user_agent()
+           : request->commit_params().is_overriding_user_agent);
 
   const int browser_http_status_code =
       CalculateHTTPStatusCode(request, last_http_status_code_);
