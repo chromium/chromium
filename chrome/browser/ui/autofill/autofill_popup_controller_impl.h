@@ -237,10 +237,22 @@ class AutofillPopupControllerImpl
   base::WeakPtr<AutofillPopupView> view_;
   base::WeakPtr<AutofillPopupDelegate> delegate_;
 
-  struct {
-    content::GlobalRenderFrameHostId rfh;
-    content::RenderWidgetHost::KeyPressEventCallback handler;
-  } key_press_observer_;
+  // A helper class for capturing key press events associated with a
+  // `content::RenderFrameHost`.
+  class KeyPressObserver {
+   public:
+    explicit KeyPressObserver(AutofillPopupControllerImpl* observer);
+    ~KeyPressObserver();
+
+    bool IsObserving(content::GlobalRenderFrameHostId rfh) const;
+    void Observe(content::RenderFrameHost* rfh);
+    void Reset();
+
+   private:
+    const raw_ref<AutofillPopupControllerImpl> observer_;
+    content::GlobalRenderFrameHostId rfh_;
+    content::RenderWidgetHost::KeyPressEventCallback handler_;
+  } key_press_observer_{this};
 
   // The time the view was shown the last time. It is used to safeguard against
   // accepting suggestions too quickly after a the popup view was shown (see the
