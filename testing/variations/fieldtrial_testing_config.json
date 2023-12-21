@@ -12522,6 +12522,22 @@
             ]
         }
     ],
+    "OsSettingsRevampWayfindingStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OsSettingsRevampWayfinding"
+                    ]
+                }
+            ]
+        }
+    ],
     "OutOfProcessPrintDriversPrint": [
         {
             "platforms": [
