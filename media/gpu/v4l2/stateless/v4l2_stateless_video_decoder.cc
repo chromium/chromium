@@ -267,7 +267,15 @@ V4L2StatelessVideoDecoder::CreateSurface() {
   const uint32_t frame_id =
       frame_id_generator_.GenerateNextId().GetUnsafeValue();
 
-  return base::MakeRefCounted<StatelessDecodeSurface>(frame_id);
+  // This callback is used to enqueue the buffer. It is called by the
+  // |StatelessDecodeSurface| when it is no longer referenced and therefore
+  // usable for other frames.
+  auto enqueue_cb = base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &V4L2StatelessVideoDecoder::EnqueueDecodedOutputBufferByFrameID,
+      weak_ptr_factory_for_events_.GetWeakPtr(), frame_id));
+
+  return base::MakeRefCounted<StatelessDecodeSurface>(frame_id,
+                                                      std::move(enqueue_cb));
 }
 
 bool V4L2StatelessVideoDecoder::SubmitFrame(
@@ -397,20 +405,20 @@ void V4L2StatelessVideoDecoder::ServiceDisplayQueue() {
     wrapped_frame->set_color_space(surface->ColorSpace().ToGfxColorSpace());
     wrapped_frame->set_timestamp(surface->VideoFrameTimestamp());
 
-    // Add a reference to the video frame so that underlying resource will not
-    // be queued until both the video frame has been displayed and all of the
-    // references have been dropped.
-    surface->SetVideoFrame(wrapped_frame);
-
-    // When the |wrapped_frame| is done being used the underlying buffer is
-    // queued again. A reference needs to be held by the |surface| in the
-    // situation where this frame is used as a reference frame. The other
-    // reference held will be released when the image is displayed or processed
-    // by the image converter.
+    // The |wrapped_frame| is shipped off to be displayed (or converted via the
+    // image processor). If the display buffer queue is deep this could take
+    // some time. The |surface| can be a reference frame used to decode future
+    // frames.
+    //
+    // The buffer can not be enqueued until both the |wrapped_frame| and
+    // the |surface| are done with it. This destructor observer adds a reference
+    // to the |surface| to be held onto until the |wrapped_frame| is destroyed.
+    // On destruction of the |wrapped_frame| the reference to the |surface| is
+    // released. The |surface| destructor will then enqueue the buffer.
     wrapped_frame->AddDestructionObserver(
         base::BindPostTaskToCurrentDefault(base::BindOnce(
-            &V4L2StatelessVideoDecoder::EnqueueDecodedOutputBufferByFrameID,
-            weak_ptr_factory_for_events_.GetWeakPtr(), frame_id)));
+            [](scoped_refptr<StatelessDecodeSurface> surface_reference) {},
+            std::move(surface))));
 
     DVLOGF(3) << wrapped_frame->AsHumanReadableString();
 

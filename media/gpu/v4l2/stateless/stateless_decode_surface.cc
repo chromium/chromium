@@ -9,13 +9,15 @@
 
 namespace media {
 
-StatelessDecodeSurface::StatelessDecodeSurface(uint32_t frame_id)
-    : frame_id_(frame_id) {
-  DVLOGF(4) << "Creating surface with id : " << frame_id_;
+StatelessDecodeSurface::StatelessDecodeSurface(uint32_t frame_id,
+                                               base::OnceClosure enqueue_cb)
+    : frame_id_(frame_id), enqueue_cb_(std::move(enqueue_cb)) {
+  DVLOGF(3) << "Creating surface with id  : " << frame_id_;
 }
 
 StatelessDecodeSurface::~StatelessDecodeSurface() {
-  DVLOGF(4) << "Releasing surface with id : " << frame_id_;
+  DVLOGF(3) << "Releasing surface with id : " << frame_id_;
+  std::move(enqueue_cb_).Run();
 }
 
 void StatelessDecodeSurface::SetVisibleRect(const gfx::Rect& visible_rect) {
@@ -45,11 +47,6 @@ void StatelessDecodeSurface::SetReferenceSurfaces(
 
 void StatelessDecodeSurface::ClearReferenceSurfaces() {
   reference_surfaces_.clear();
-}
-
-void StatelessDecodeSurface::SetVideoFrame(
-    scoped_refptr<VideoFrame> video_frame) {
-  video_frame_ = video_frame;
 }
 
 }  // namespace media
