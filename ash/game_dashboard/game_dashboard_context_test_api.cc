@@ -15,6 +15,7 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
+#include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/unified/feature_tile.h"
 #include "base/timer/timer.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -127,6 +128,13 @@ IconButton* GameDashboardContextTestApi::GetMainMenuHelpButton() {
 IconButton* GameDashboardContextTestApi::GetMainMenuSettingsButton() {
   return views::AsViewClass<IconButton>(
       GetMainMenuViewById(VIEW_ID_GD_GENERAL_SETTINGS_BUTTON));
+}
+
+AnchoredNudge* GameDashboardContextTestApi::GetGameControlsSetupNudge() {
+  if (auto* main_menu = GetMainMenuView()) {
+    return main_menu->GetGameControlsSetupNudgeForTesting();
+  }
+  return nullptr;
 }
 
 void GameDashboardContextTestApi::OpenTheMainMenu() {

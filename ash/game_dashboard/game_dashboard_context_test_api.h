@@ -28,6 +28,7 @@ class Widget;
 
 namespace ash {
 
+class AnchoredNudge;
 class FeatureTile;
 class GameDashboardButton;
 class GameDashboardMainMenuView;
@@ -70,6 +71,9 @@ class GameDashboardContextTestApi {
   views::LabelButton* GetMainMenuFeedbackButton();
   IconButton* GetMainMenuHelpButton();
   IconButton* GetMainMenuSettingsButton();
+
+  // Returns the Game Controls setup nudge.
+  AnchoredNudge* GetGameControlsSetupNudge();
 
   // Opens the main menu.
   // Before opening the main menu, verifies that the main menu is closed.

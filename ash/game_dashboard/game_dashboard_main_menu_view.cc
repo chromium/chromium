@@ -810,8 +810,22 @@ void GameDashboardMainMenuView::ShowNudgeForSetupButton() {
   // TODO(b/274690042): Replace it with localized strings.
   nudge_data.title_text = u"This game uses your touchscreen";
   nudge_data.arrow = views::BubbleBorder::LEFT_CENTER;
+  nudge_data.background_color_id = cros_tokens::kCrosSysBaseHighlight;
+  nudge_data.image_background_color_id = cros_tokens::kCrosSysOnBaseHighlight;
+  nudge_data.duration = NudgeDuration::kMediumDuration;
 
   Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
+}
+
+AnchoredNudge*
+GameDashboardMainMenuView::GetGameControlsSetupNudgeForTesting() {
+  if (Shell::Get()->anchored_nudge_manager()->IsNudgeShown(kSetupNudgeId)) {
+    return Shell::Get()
+        ->anchored_nudge_manager()
+        ->GetShownNudgeForTest(  // IN-TEST
+            kSetupNudgeId);
+  }
+  return nullptr;
 }
 
 BEGIN_METADATA(GameDashboardMainMenuView, views::BubbleDialogDelegateView)

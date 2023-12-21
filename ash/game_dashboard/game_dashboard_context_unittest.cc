@@ -29,6 +29,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/switch.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
@@ -502,6 +503,22 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
       /*feature_switch_states=*/
       {/*expect_exists=*/true, /*expect_toggled=*/true},
       /*setup_exists=*/false);
+}
+
+TEST_F(GameDashboardContextTest, GameControlsSetupNudge) {
+  CreateGameWindow(/*is_arc_window=*/true);
+
+  game_window_->SetProperty(
+      kArcGameControlsFlagsKey,
+      static_cast<ArcGameControlsFlag>(
+          ArcGameControlsFlag::kKnown | ArcGameControlsFlag::kAvailable |
+          ArcGameControlsFlag::kEmpty | ArcGameControlsFlag::kEnabled));
+
+  test_api_->OpenTheMainMenu();
+  EXPECT_TRUE(test_api_->GetGameControlsSetupNudge());
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kNudgeMediumDuration);
+  EXPECT_FALSE(test_api_->GetGameControlsSetupNudge());
 }
 
 // Verifies Game Controls button logics.
