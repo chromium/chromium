@@ -11,8 +11,8 @@ import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {DlpMetadataProvider} from './dlp_metadata_provider.js';
 import {ExternalMetadataProvider} from './external_metadata_provider.js';
 import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
-import {MetadataCacheSet, MetadataModelMap} from './metadata_cache_set.js';
-import {MetadataItem, MetadataKey} from './metadata_item.js';
+import {MetadataCacheSet, type MetadataModelMap} from './metadata_cache_set.js';
+import {MetadataItem, type MetadataKey} from './metadata_item.js';
 import {MetadataProvider} from './metadata_provider.js';
 import {MultiMetadataProvider} from './multi_metadata_provider.js';
 

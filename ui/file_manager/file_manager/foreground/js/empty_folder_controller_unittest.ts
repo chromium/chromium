@@ -21,7 +21,7 @@ import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore} from '..
 import {getEmptyState, getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';
-import {EmptyFolderController, ScanFailedEvent} from './empty_folder_controller.js';
+import {EmptyFolderController, type ScanFailedEvent} from './empty_folder_controller.js';
 import {FileListModel} from './file_list_model.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';

@@ -18,7 +18,7 @@ import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {USER_CANCELLED, XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
 
-import {DirectoryChangeTracker, DirectoryModel} from './directory_model.js';
+import {type DirectoryChangeTracker, DirectoryModel} from './directory_model.js';
 import {FileManager} from './file_manager.js';
 import {FileTasks} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';

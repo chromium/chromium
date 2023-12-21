@@ -17,7 +17,7 @@ import {isTreeItem} from '../../widgets/xf_tree_util.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {renameEntry, validateEntryName} from './file_rename.js';
-import {WithContextMenu} from './ui/context_menu_handler.js';
+import type {WithContextMenu} from './ui/context_menu_handler.js';
 import {DirectoryItem, DirectoryTree, SubDirectoryItem} from './ui/directory_tree.js';
 import {FilesAlertDialog} from './ui/files_alert_dialog.js';
 

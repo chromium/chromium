@@ -14,7 +14,7 @@ import {getStore} from '../../state/store.js';
 
 import type {DirectoryChangeEvent} from './directory_model.js';
 import {DirectoryModel} from './directory_model.js';
-import {A11yAnnounce} from './ui/a11y_announce.js';
+import type {A11yAnnounce} from './ui/a11y_announce.js';
 
 /**
  * This class controls wires file-type filter UI and the filter settings in

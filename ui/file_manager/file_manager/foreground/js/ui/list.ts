@@ -7,12 +7,12 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 import type {ChangeEvent, PermutationEvent} from '../../../common/js/array_data_model.js';
-import {boolAttrSetter, crInjectTypeAndInit, PropertyChangeEvent} from '../../../common/js/cr_ui.js';
+import {boolAttrSetter, crInjectTypeAndInit, type PropertyChangeEvent} from '../../../common/js/cr_ui.js';
 import {isNullOrUndefined} from '../../../common/js/util.js';
 
 import {createListItem, ListItem} from './list_item.js';
 import {ListSelectionController} from './list_selection_controller.js';
-import {ListSelectionModel, SelectionChangeEvent} from './list_selection_model.js';
+import {ListSelectionModel, type SelectionChangeEvent} from './list_selection_model.js';
 import {ListSingleSelectionModel} from './list_single_selection_model.js';
 
 /**

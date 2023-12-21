@@ -4,7 +4,7 @@
 
 import {assertDeepEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {ChangedValues, storage} from './storage.js';
+import {type ChangedValues, storage} from './storage.js';
 import {waitUntil} from './test_error_reporting.js';
 
 /** Used to store the test listener calls. */

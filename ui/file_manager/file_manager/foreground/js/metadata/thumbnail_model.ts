@@ -5,7 +5,7 @@
 import {isAudio, isImage} from '../../../common/js/file_type.js';
 import type {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 
-import {ImageTransformation} from './metadata_item.js';
+import type {ImageTransformation} from './metadata_item.js';
 import {MetadataModel} from './metadata_model.js';
 
 /**

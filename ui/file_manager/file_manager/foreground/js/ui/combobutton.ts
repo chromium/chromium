@@ -9,10 +9,10 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {boolAttrSetter, crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
-import {DropdownItem} from '../task_controller.js';
+import type {DropdownItem} from '../task_controller.js';
 
 import {FilesMenuItem} from './files_menu.js';
-import {MenuItemActivationEvent} from './menu_item.js';
+import type {MenuItemActivationEvent} from './menu_item.js';
 import {MultiMenuButton} from './multi_menu_button.js';
 
 

@@ -25,7 +25,7 @@ import {deduplicatePath, FileTransferController, resolvePath, writeFile} from '.
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
 import {createFakeDirectoryModel} from './mock_directory_model.js';
-import {A11yAnnounce} from './ui/a11y_announce.js';
+import type {A11yAnnounce} from './ui/a11y_announce.js';
 import {Command} from './ui/command.js';
 import {DirectoryTree} from './ui/directory_tree.js';
 import {FileGrid} from './ui/file_grid.js';

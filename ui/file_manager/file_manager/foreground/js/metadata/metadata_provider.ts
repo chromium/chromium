@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {MetadataItem, MetadataKey} from './metadata_item.js';
+import {MetadataItem, type MetadataKey} from './metadata_item.js';
 import {MetadataRequest} from './metadata_request.js';
 
 export abstract class MetadataProvider {

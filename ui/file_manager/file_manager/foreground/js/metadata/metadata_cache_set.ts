@@ -8,7 +8,7 @@ import {entriesToURLs} from '../../../common/js/entry_utils.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 
 import {MetadataCacheItem} from './metadata_cache_item.js';
-import {MetadataItem, MetadataKey} from './metadata_item.js';
+import {MetadataItem, type MetadataKey} from './metadata_item.js';
 import {MetadataRequest} from './metadata_request.js';
 
 /**

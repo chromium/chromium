@@ -36,7 +36,7 @@ import type {FilesTooltip} from '../elements/files_tooltip.js';
 import {type ActionsModel, CommonActionId, InternalActionId} from './actions_model.js';
 import {MenuCommandsForUma, recordMenuItemSelected} from './command_handler.js';
 import {canExecuteVisibleOnDriveInNormalAppModeOnly, containsNonInteractiveEntry, currentVolumeIsInteractive, getCommandEntries, getCommandEntry, getElementVolumeInfo, getEventEntry, getOnlyOneSelectedDirectory, getParentEntry, getSharesheetLaunchSource, hasCapability, isDriveEntries, isFromSelectionMenu, isOnlyMyDriveEntries, isOnTrashRoot, isRootEntry, shouldIgnoreEvents, shouldShowMenuItemsForEntry} from './file_manager_commands_util.js';
-import {PasteWithDestDirectoryEvent} from './file_transfer_controller.js';
+import type {PasteWithDestDirectoryEvent} from './file_transfer_controller.js';
 import {getAllowedVolumeTypes, maybeStoreTimeOfFirstPin} from './holding_space_util.js';
 import {PathComponent} from './path_component.js';
 import {type CanExecuteEvent, Command, type CommandEvent} from './ui/command.js';

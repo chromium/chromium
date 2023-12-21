@@ -6,7 +6,7 @@ import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import type {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
 import {Menu} from './menu.js';
-import {MenuItem, MenuItemActivationEvent} from './menu_item.js';
+import {MenuItem, type MenuItemActivationEvent} from './menu_item.js';
 
 /**
  * Menu item with ripple animation.

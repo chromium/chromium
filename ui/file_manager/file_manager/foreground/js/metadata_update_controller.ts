@@ -4,7 +4,7 @@
 
 import {isFakeEntry, unwrapEntry} from '../../common/js/entry_utils.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {EntryMetadata, updateMetadata} from '../../state/ducks/all_entries.js';
+import {type EntryMetadata, updateMetadata} from '../../state/ducks/all_entries.js';
 import {getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';

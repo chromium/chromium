@@ -13,7 +13,7 @@ import type {FakeEntry} from '../externs/files_app_entry_interfaces.js';
 import {CurrentDirectory, PropStatus, SearchData, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
 import type {VolumeManager} from '../externs/volume_manager.js';
 import {PathComponent} from '../foreground/js/path_component.js';
-import {A11yAnnounce} from '../foreground/js/ui/a11y_announce.js';
+import type {A11yAnnounce} from '../foreground/js/ui/a11y_announce.js';
 import {changeDirectory} from '../state/ducks/current_directory.js';
 import {clearSearch, getDefaultSearchOptions, isSearchEmpty, updateSearch} from '../state/ducks/search.js';
 import type {FileKey} from '../state/file_key.js';

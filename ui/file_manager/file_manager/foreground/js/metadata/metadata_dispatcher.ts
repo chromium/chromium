@@ -6,7 +6,7 @@ import {ExifParser} from './exif_parser.js';
 import {Id3Parser} from './id3_parser.js';
 import {BmpParser, GifParser, IcoParser, PngParser, WebpParser} from './image_parsers.js';
 import {ParserMetadata} from './metadata_item.js';
-import {MetadataParser, MetadataParserLogger} from './metadata_parser.js';
+import {MetadataParser, type MetadataParserLogger} from './metadata_parser.js';
 import {MpegParser} from './mpeg_parser.js';
 
 // Helper function to type entries as FileEntry. We redefine it here because

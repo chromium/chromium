@@ -4,11 +4,11 @@
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {PermutationEvent, SpliceEvent} from '../../common/js/array_data_model.js';
+import type {PermutationEvent, SpliceEvent} from '../../common/js/array_data_model.js';
 import {str} from '../../common/js/translations.js';
 
-import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, GroupHeader} from './file_list_model.js';
-import {MetadataItem, MetadataKey} from './metadata/metadata_item.js';
+import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, type GroupHeader} from './file_list_model.js';
+import {MetadataItem, type MetadataKey} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 
 

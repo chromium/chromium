@@ -16,7 +16,7 @@ import {getEntryLabel, str} from '../../../common/js/translations.js';
 import type {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../../externs/volume_manager.js';
 import type {FilesTooltip} from '../../elements/files_tooltip.js';
-import {type FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, GroupValue} from '../file_list_model.js';
+import {type FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, type GroupValue} from '../file_list_model.js';
 import {ListThumbnailLoader, type ThumbnailLoadedEvent} from '../list_thumbnail_loader.js';
 import {type MetadataItem} from '../metadata/metadata_item.js';
 import {type MetadataModel} from '../metadata/metadata_model.js';

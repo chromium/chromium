@@ -8,7 +8,7 @@ import {strf} from '../../common/js/translations.js';
 import {TrashEntry} from '../../common/js/trash.js';
 import type {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
-import {FilesMetadataBox, RawIfd} from '../elements/files_metadata_box.js';
+import {FilesMetadataBox, type RawIfd} from '../elements/files_metadata_box.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
 
 import {MetadataItem} from './metadata/metadata_item.js';

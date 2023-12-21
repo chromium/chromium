@@ -6,7 +6,7 @@ import {dispatchPropertyChange} from 'chrome://resources/ash/common/cr_deprecate
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 
 import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
-import {CustomEventMap, FilesEventTarget} from '../../../common/js/files_event_target.js';
+import {type CustomEventMap, FilesEventTarget} from '../../../common/js/files_event_target.js';
 
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';

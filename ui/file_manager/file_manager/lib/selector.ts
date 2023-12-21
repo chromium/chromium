@@ -7,7 +7,7 @@
  * SelectorEmitter helper class that allows selectors to be efficiently updated.
  */
 
-import {ReactiveController, ReactiveControllerHost} from 'chrome://resources/mwc/lit/index.js';
+import type {ReactiveController, ReactiveControllerHost} from 'chrome://resources/mwc/lit/index.js';
 
 type Callback<T> = (value: T) => void;
 type Unsubscribe = () => void;

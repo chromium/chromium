@@ -10,7 +10,7 @@ import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeInfoList} from '../../externs/volume_info_list.js';
 import type {ArchiveOpenEvent, DeviceConnectionChangedEvent, ExternallyUnmountedEvent, VolumeAlreadyMountedEvent, VolumeManager, VolumeManagerEventMap} from '../../externs/volume_manager.js';
 
-import {ArrayDataModel, SpliceEvent} from './array_data_model.js';
+import {ArrayDataModel, type SpliceEvent} from './array_data_model.js';
 import {FilesEventTarget} from './files_event_target.js';
 import {isFuseBoxDebugEnabled} from './flags.js';
 import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, isNative, VolumeType} from './volume_manager_types.js';

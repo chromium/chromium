@@ -22,7 +22,7 @@ import {ICON_TYPES} from './constants.js';
 import type {DirectoryChangeEvent} from './directory_model.js';
 import {DirectoryModel} from './directory_model.js';
 import {EventType, FileSelectionHandler} from './file_selection.js';
-import {A11yAnnounce} from './ui/a11y_announce.js';
+import type {A11yAnnounce} from './ui/a11y_announce.js';
 import {Command} from './ui/command.js';
 import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 import {ListContainer} from './ui/list_container.js';

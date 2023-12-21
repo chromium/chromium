@@ -16,7 +16,7 @@ import {FileListModel} from '../file_list_model.js';
 import {MetadataItem} from '../metadata/metadata_item.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 
-import {A11yAnnounce} from './a11y_announce.js';
+import type {A11yAnnounce} from './a11y_announce.js';
 import {DragSelector} from './drag_selector.js';
 import {FileGridSelectionController} from './file_grid.js';
 import {FileListSelectionModel} from './file_list_selection_model.js';

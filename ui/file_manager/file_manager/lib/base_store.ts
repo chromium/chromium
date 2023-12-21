@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {type ActionsProducerGen, ConcurrentActionInvalidatedError, isActionsProducer} from './actions_producer.js';
-import {Selector, SelectorEmitter, SelectorNode} from './selector.js';
+import {type Selector, SelectorEmitter, SelectorNode} from './selector.js';
 
 /**
  * Actions are handled by the store according to their name and payload,

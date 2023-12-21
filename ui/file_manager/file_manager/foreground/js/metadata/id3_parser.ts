@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {ByteReader, SeekOrigin} from './byte_reader.js';
-import {Id3v2Frame, ParserMetadata} from './metadata_item.js';
-import {MetadataParser, MetadataParserLogger} from './metadata_parser.js';
+import type {Id3v2Frame, ParserMetadata} from './metadata_item.js';
+import {MetadataParser, type MetadataParserLogger} from './metadata_parser.js';
 
 /**
  * ID3 parser.

@@ -12,7 +12,7 @@ import {FileListModel} from '../file_list_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 import {MockMetadataModel} from '../metadata/mock_metadata.js';
 
-import {A11yAnnounce} from './a11y_announce.js';
+import type {A11yAnnounce} from './a11y_announce.js';
 import {FileListSelectionModel} from './file_list_selection_model.js';
 import {FileTable} from './file_table.js';
 import {FileTableList} from './file_table_list.js';

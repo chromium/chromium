@@ -9,9 +9,9 @@ import {isRecentRoot} from '../../common/js/entry_utils.js';
 import {str} from '../../common/js/translations.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 
-import {DirectoryChangeEvent, DirectoryModel} from './directory_model.js';
+import {type DirectoryChangeEvent, DirectoryModel} from './directory_model.js';
 import {ProvidersModel} from './providers_model.js';
-import {GearMenu, SpaceInfo} from './ui/gear_menu.js';
+import {GearMenu, type SpaceInfo} from './ui/gear_menu.js';
 import {MultiMenuButton} from './ui/multi_menu_button.js';
 import {ProvidersMenu} from './ui/providers_menu.js';
 

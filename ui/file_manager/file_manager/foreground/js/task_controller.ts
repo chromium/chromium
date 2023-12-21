@@ -26,7 +26,7 @@ import {FileTransferController} from './file_transfer_controller.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MetadataUpdateController} from './metadata_update_controller.js';
 import {EventType, TaskHistory} from './task_history.js';
-import {ComboButtonSelectEvent} from './ui/combobutton.js';
+import type {ComboButtonSelectEvent} from './ui/combobutton.js';
 import {Command} from './ui/command.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 

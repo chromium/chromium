@@ -4,7 +4,7 @@
 
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 
-import {MetadataKey} from './metadata_item.js';
+import type {MetadataKey} from './metadata_item.js';
 
 export class MetadataRequest {
   /**

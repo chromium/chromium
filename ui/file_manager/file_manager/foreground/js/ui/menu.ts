@@ -7,7 +7,7 @@ import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 
 import {convertToKebabCase, crInjectTypeAndInit, domAttrSetter} from '../../../common/js/cr_ui.js';
 
-import {MenuItem, MenuItemActivationEvent} from './menu_item.js';
+import {MenuItem, type MenuItemActivationEvent} from './menu_item.js';
 
 export interface ShownPosition {
   mouseDownPos?: {

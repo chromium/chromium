@@ -6,7 +6,7 @@ import {assertDeepEquals, assertNotReached, assertTrue} from 'chrome://webui-tes
 
 import {Id3Parser} from './id3_parser.js';
 import {ParserMetadata} from './metadata_item.js';
-import {MetadataParserLogger} from './metadata_parser.js';
+import type {MetadataParserLogger} from './metadata_parser.js';
 
 class ConsoleLogger implements MetadataParserLogger {
   verbose = true;

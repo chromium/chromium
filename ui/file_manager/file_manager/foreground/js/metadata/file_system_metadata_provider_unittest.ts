@@ -5,7 +5,7 @@
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
-import {MetadataKey} from './metadata_item.js';
+import type {MetadataKey} from './metadata_item.js';
 import {MetadataRequest} from './metadata_request.js';
 
 const entryA: Entry = {

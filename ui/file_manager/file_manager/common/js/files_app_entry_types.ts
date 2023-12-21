@@ -22,7 +22,7 @@
  * https://developer.mozilla.org/en-US/docs/Web/API/FileSystemDirectoryReader
  */
 
-import {ErrorCallback, FakeEntry, FileEntryCallback, FileErrorCallback, FilesAppDirEntry, FilesAppEntry, MetadataCallback} from '../../externs/files_app_entry_interfaces.js';
+import {type ErrorCallback, FakeEntry, type FileEntryCallback, type FileErrorCallback, FilesAppDirEntry, FilesAppEntry, type MetadataCallback} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 
 import {isSameEntry} from './entry_utils.js';

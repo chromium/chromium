@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {isEncrypted} from '../../common/js/file_type.js';
-import {CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
+import {type CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 import {isDlpEnabled} from '../../common/js/flags.js';
 import {AllowedPaths} from '../../common/js/volume_manager_types.js';
 import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';

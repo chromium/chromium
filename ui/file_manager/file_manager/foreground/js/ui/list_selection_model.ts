@@ -5,7 +5,7 @@
 import {dispatchPropertyChange} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {CustomEventMap, FilesEventTarget} from '../../../common/js/files_event_target.js';
+import {type CustomEventMap, FilesEventTarget} from '../../../common/js/files_event_target.js';
 
 export type SelectionChangeEvent =
     CustomEvent<{changes: Array<{index: number, selected: boolean}>}>;
