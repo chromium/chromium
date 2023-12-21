@@ -173,6 +173,8 @@
 
   /* Uses a dimmed color for description for entities. */
   :host([is-entity-suggestion]) #description,
+  /* Description ellipsis color to match the description text color */
+  #description:has(.dim),
   .dim {
     color: var(--color-realbox-results-foreground-dimmed);
   }
@@ -183,6 +185,8 @@
     color: var(--color-realbox-results-dim-selected);
   }
 
+  /* URL ellipsis color to match the URL text color */
+  #description:has(.url),
   .url {
     color: var(--color-realbox-results-url);
   }
