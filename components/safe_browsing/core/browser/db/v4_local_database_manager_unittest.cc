@@ -119,9 +119,7 @@ class GetHashProtocolManagerFactoryWithTestUrlLoader
  public:
   GetHashProtocolManagerFactoryWithTestUrlLoader(
       network::TestURLLoaderFactory* test_url_loader_factory) {
-    test_shared_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            test_url_loader_factory);
+    test_shared_loader_factory_ = test_url_loader_factory->GetSafeWeakWrapper();
   }
 
   std::unique_ptr<V4GetHashProtocolManager> CreateProtocolManager(

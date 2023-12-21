@@ -245,8 +245,7 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
     test_url_loader_factory_map_[profile] =
         std::make_unique<network::TestURLLoaderFactory>();
     test_shared_loader_factory_map_[profile] =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            test_url_loader_factory_map_[profile].get());
+        test_url_loader_factory_map_[profile]->GetSafeWeakWrapper();
   }
 
   int download_report_count() { return download_report_count_; }
