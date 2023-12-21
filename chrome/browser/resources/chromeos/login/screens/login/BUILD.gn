@@ -12,7 +12,6 @@ js_type_check("closure_compile") {
   deps = [
     ":arc_vm_data_migration",
     ":checking_downloading_update",
-    ":encryption_migration",
     ":lacros_data_backward_migration",
     ":lacros_data_migration",
     ":management_transition",
@@ -30,18 +29,6 @@ js_library("arc_vm_data_migration") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("encryption_migration") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/encryption_migration.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_loading_dialog",

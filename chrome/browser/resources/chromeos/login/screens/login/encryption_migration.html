@@ -56,7 +56,7 @@ found in the LICENSE file.
       aria-live="polite" hidden="[[isEnoughBattery]]">
     <div class="message-container">
       <div class="warning">
-        [[computeBatteryWarningLabel_(locale, batteryPercent)]]
+        [[computeBatteryWarningLabel(locale, batteryPercent)]]
       </div>
       <template is="dom-if" if="[[isCharging]]">
         <div>[[i18nDynamic(locale,'migrationChargingLabel')]]</div>
@@ -65,17 +65,17 @@ found in the LICENSE file.
         <div>[[i18nDynamic(locale,'migrationAskChargeMessage')]]</div>
       </template>
       <div>
-        [[computeNecessaryBatteryLevelLabel_(locale,
+        [[computeNecessaryBatteryLevelLabel(locale,
                                             necessaryBatteryPercent)]]
       </div>
     </div>
   </div>
   <div slot="bottom-buttons" hidden="[[isResuming]]">
-    <oobe-text-button border id="skip-button" on-click="onSkip_"
-        hidden="[[isSkipHidden_()]]" text-key="migrationButtonSkip">
+    <oobe-text-button border id="skip-button" on-click="onSkipClicked"
+        hidden="[[isSkipHidden()]]" text-key="migrationButtonSkip">
     </oobe-text-button>
-    <oobe-text-button inverse id="upgrade-button" on-click="onUpgrade_"
-        disabled="[[isUpdateDisabled_(isEnoughBattery, isSkipped)]]"
+    <oobe-text-button inverse id="upgrade-button" on-click="onUpgradeClicked"
+        disabled="[[isUpdateDisabled(isEnoughBattery, isSkipped)]]"
         text-key="migrationButtonUpdate"></oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
@@ -92,11 +92,11 @@ found in the LICENSE file.
   <div slot="content" class="flex layout vertical center-justified">
     <paper-progress id="migration-progress"
         value="[[progress]]" max="1" step="0.001"
-        indeterminate="[[isProgressIndeterminate_(progress)]]">
+        indeterminate="[[isProgressIndeterminate(progress)]]">
     </paper-progress>
-    <template is="dom-if" if="[[!isProgressIndeterminate_(progress)]]">
+    <template is="dom-if" if="[[!isProgressIndeterminate(progress)]]">
       <div aria-live="polite">
-        [[computeProgressLabel_(locale, progress)]]
+        [[computeProgressLabel(locale, progress)]]
       </div>
     </template>
   </div>
@@ -116,11 +116,11 @@ found in the LICENSE file.
   </div>
   <div slot="bottom-buttons">
 <if expr="_google_chrome">
-    <oobe-text-button border on-click="onReportAnIssue_"
+    <oobe-text-button border on-click="onReportAnIssueClicked"
         text-key="migrationButtonReportAnIssue"></oobe-text-button>
 </if>
     <oobe-text-button inverse id="restart-button"
-        on-click="onRestartOnFailure_" text-key="migrationButtonRestart">
+        on-click="onRestartOnFailureClicked" text-key="migrationButtonRestart">
     </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
@@ -142,21 +142,21 @@ found in the LICENSE file.
       </div>
       <div>[[i18nDynamic(locale,'migrationAskFreeSpaceMessage')]]</div>
       <div>
-        [[computeAvailableSpaceLabel_(locale, availableSpaceInString)]]
+        [[computeAvailableSpaceLabel(locale, availableSpaceInString)]]
       </div>
       <div>
-        [[computeNecessarySpaceLabel_(locale, necessarySpaceInString)]]
+        [[computeNecessarySpaceLabel(locale, necessarySpaceInString)]]
       </div>
     </div>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button inverse id="insufficient-space-skip-button"
         hidden="[[isResuming]]"
-        on-click="onSkip_" text-key="migrationButtonContinue">
+        on-click="onSkipClicked" text-key="migrationButtonContinue">
     </oobe-text-button>
     <oobe-text-button inverse id="insufficient-space-restart-button"
         hidden="[[!isResuming]]"
-        on-click="onRestartOnLowStorage_"
+        on-click="onRestartOnLowStorageClicked"
         text-key="migrationButtonRestart">
     </oobe-text-button>
   </div>

@@ -188,7 +188,7 @@ foreach(f, common_screens_html_files) {
 login_screens_js_files = [
   "screens/login/arc_vm_data_migration.js",
   "screens/login/checking_downloading_update.js",
-  "screens/login/encryption_migration.js",
+  "screens/login/encryption_migration.ts",
   "screens/login/lacros_data_backward_migration.js",
   "screens/login/lacros_data_migration.js",
   "screens/login/management_transition.js",
@@ -198,7 +198,13 @@ login_screens_js_files = [
 
 login_screens_html_files = []
 foreach(f, login_screens_js_files) {
-  login_screens_html_files += [ string_replace(f, ".js", ".html") ]
+  # TODO(b/314761865): remove this check once all screens are migrated.
+  extension = get_path_info(f, "extension")
+  if (extension == "js") {
+    login_screens_html_files += [ string_replace(f, ".js", ".html") ]
+  } else {
+    login_screens_html_files += [ string_replace(f, ".ts", ".html") ]
+  }
 }
 
 login_screens_html_wrapped_files = []
