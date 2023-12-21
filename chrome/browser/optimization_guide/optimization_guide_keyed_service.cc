@@ -646,16 +646,25 @@ void OptimizationGuideKeyedService::UploadModelQualityLogs(
     return;
   }
 
+  optimization_guide::proto::ModelExecutionFeature feature =
+      optimization_guide::GetModelExecutionFeature(
+          log_entry->log_ai_data_request()->feature_case());
+
   // Model quality logging requires user consent. Skip upload if consent is
   // missing.
   if (!g_browser_process->GetMetricsServicesManager()
            ->IsMetricsConsentGiven()) {
-    optimization_guide::proto::ModelExecutionFeature feature =
-        optimization_guide::GetModelExecutionFeature(
-            log_entry->log_ai_data_request()->feature_case());
     RecordUploadStatusHistogram(
         feature,
         optimization_guide::ModelQualityLogsUploadStatus::kNoMetricsConsent);
+    return;
+  }
+
+  // Don't upload logs if logging is disabled by enterprise policy.
+  if (!ShouldFeatureBeCurrentlyAllowedForLogging(feature)) {
+    RecordUploadStatusHistogram(
+        feature, optimization_guide::ModelQualityLogsUploadStatus::
+                     kDisabledDueToEnterprisePolicy);
     return;
   }
 

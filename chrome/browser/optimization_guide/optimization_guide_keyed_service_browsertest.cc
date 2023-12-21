@@ -31,6 +31,7 @@
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -41,6 +42,9 @@
 #include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/test_hints_component_creator.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/active_field_trials.h"
@@ -212,6 +216,8 @@ class OptimizationGuideKeyedServiceBrowserTest
     cmd->AppendSwitch(optimization_guide::switches::kPurgeHintsStore);
   }
 
+  void SetUp() override { InProcessBrowserTest::SetUp(); }
+
   void SetUpOnMainThread() override {
     OptimizationGuideKeyedServiceDisabledBrowserTest::SetUpOnMainThread();
 
@@ -372,6 +378,7 @@ class OptimizationGuideKeyedServiceBrowserTest
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -1479,3 +1486,113 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
       optimization_guide::ModelQualityLogsUploadStatus::kNoMetricsConsent, 1);
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+
+class OptimizationGuideKeyedServiceEnterpriseBrowserTest
+    : public OptimizationGuideKeyedServiceBrowserTest {
+ public:
+  void SetUp() override {
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+    OptimizationGuideKeyedServiceBrowserTest::SetUp();
+  }
+
+ protected:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+};
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
+                       CheckUploadWithEnterprisePolicy) {
+  // Enable metrics consent and sign in.
+  SetMetricsConsent(true);
+  EnableSignIn();
+
+  auto* profile = browser()->profile();
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  auto compose_feature = optimization_guide::proto::ModelExecutionFeature::
+      MODEL_EXECUTION_FEATURE_COMPOSE;
+  auto* prefs = profile->GetPrefs();
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(compose_feature),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+  ogks->SimulateBrowserRestartForControllerTesting();
+
+  policy::PolicyMap policies;
+
+  // Disable logging via via the enterprise policy to state
+  // kAllowWithoutLogging.
+  policies.Set(
+      policy::key::kComposeAllowed, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+      base::Value(static_cast<int>(
+          optimization_guide::model_execution::prefs::
+              ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging)),
+      nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(
+      ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+
+  // Create a new ModelQualityLogEntry and pass it to the
+  // UploadModelQualityLogs.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry_1 =
+      GetModelQualityLogEntryForCompose();
+
+  ogks->UploadModelQualityLogs(std::move(log_entry_1));
+
+  // Disable logging via via the enterprise policy to kDisable state.
+  policies.Set(policy::key::kComposeAllowed, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(static_cast<int>(
+                   optimization_guide::model_execution::prefs::
+                       ModelExecutionEnterprisePolicyValue::kDisable)),
+               nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(
+      ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+
+  // Create a new ModelQualityLogEntry and pass it to the
+  // UploadModelQualityLogs.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entr_2 =
+      GetModelQualityLogEntryForCompose();
+
+  ogks->UploadModelQualityLogs(std::move(log_entr_2));
+
+  // Enable logging via via the enterprise policy to state kAllow this shouldn't
+  // stop upload.
+  policies.Set(policy::key::kComposeAllowed, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(static_cast<int>(
+                   optimization_guide::model_execution::prefs::
+                       ModelExecutionEnterprisePolicyValue::kAllow)),
+               nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+
+  // Create a new ModelQualityLogEntry and pass it to the
+  // UploadModelQualityLogs.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry_3 =
+      GetModelQualityLogEntryForCompose();
+
+  ogks->UploadModelQualityLogs(std::move(log_entry_3));
+
+  // Upload should be disabled twice when logging is disabled via enterprise
+  // policy, total count should be 2.
+  histogram_tester()->ExpectBucketCount(
+      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      optimization_guide::ModelQualityLogsUploadStatus::
+          kDisabledDueToEnterprisePolicy,
+      2);
+}
+
+#endif  //  !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)

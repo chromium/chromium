@@ -318,12 +318,14 @@ enum class ModelQualityLogsUploadStatus {
   kNetError = 3,
   // Upload is disabled due to user's metrics consent.
   kNoMetricsConsent = 4,
+  // Upload is disabled due to enterprise policy.
+  kDisabledDueToEnterprisePolicy = 5,
 
   // Insert new values before this line.
   // This enum must remain synchronized with the enum
   // |OptimizationGuideModelQualityLogsUploadStatus| in
   // tools/metrics/histograms/enums.xml.
-  kMaxValue = kNoMetricsConsent,
+  kMaxValue = kDisabledDueToEnterprisePolicy,
 };
 
 // Performance class of this device.
