@@ -777,11 +777,7 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
   if (!speculative_render_frame_host_) {
     // There's no speculative RenderFrameHost so it must be that the current
     // RenderFrameHost completed a navigation.
-    // TODO(danakj): Make this a CHECK and stop handling it. Then make it a
-    // DCHECK when we're sure.
-    DCHECK_EQ(render_frame_host_.get(), render_frame_host);
-    if (render_frame_host != render_frame_host_.get())
-      return;
+    CHECK_EQ(render_frame_host_.get(), render_frame_host);
   }
 
   if (render_frame_host == speculative_render_frame_host_.get()) {
