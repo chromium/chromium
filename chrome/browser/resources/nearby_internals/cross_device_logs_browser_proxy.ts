@@ -2,34 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import {LogMessage} from './types.js';
+import {LogMessage} from './types';
 
 /**
  * JavaScript hooks into the native WebUI handler to pass LogMessages to the
  * logging tab.
  */
 export class NearbyLogsBrowserProxy {
-  /**
-   * @return {!Promise<!Array<!LogMessage>>}
-   */
-  getLogMessages() {
+  getLogMessages(): Promise<LogMessage[]> {
     return sendWithPromise('getLogMessages');
   }
 
-  /**
-   * @return {!Promise<!Array<!LogMessage>>}
-   */
-  getQuickPairLogMessages() {
+  getQuickPairLogMessages(): Promise<LogMessage[]> {
     return sendWithPromise('getQuickPairLogMessages');
   }
 
-  /** @return {!NearbyLogsBrowserProxy} */
-  static getInstance() {
+  static getInstance(): NearbyLogsBrowserProxy {
     return instance || (instance = new NearbyLogsBrowserProxy());
   }
 }
 
-/** @type {?NearbyLogsBrowserProxy} */
-let instance = null;
+let instance: NearbyLogsBrowserProxy|null = null;

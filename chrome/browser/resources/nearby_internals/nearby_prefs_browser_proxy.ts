@@ -14,11 +14,10 @@ export class NearbyPrefsBrowserProxy {
     chrome.send('clearNearbyPrefs');
   }
 
-  /** @return {!NearbyPrefsBrowserProxy} */
-  static getInstance() {
+
+  static getInstance(): NearbyPrefsBrowserProxy {
     return instance || (instance = new NearbyPrefsBrowserProxy());
   }
 }
 
-/** @type {?NearbyPrefsBrowserProxy} */
-let instance = null;
+let instance: NearbyPrefsBrowserProxy|null = null;

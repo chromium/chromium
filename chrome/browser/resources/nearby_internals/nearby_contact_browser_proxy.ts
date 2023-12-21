@@ -17,11 +17,9 @@ export class NearbyContactBrowserProxy {
     chrome.send('downloadContacts');
   }
 
-  /** @return {!NearbyContactBrowserProxy} */
-  static getInstance() {
+  static getInstance(): NearbyContactBrowserProxy {
     return instance || (instance = new NearbyContactBrowserProxy());
   }
 }
 
-/** @type {?NearbyContactBrowserProxy} */
-let instance = null;
+let instance: NearbyContactBrowserProxy|null = null;

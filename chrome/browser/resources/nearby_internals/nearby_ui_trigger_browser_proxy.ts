@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
-import {NearbyShareStates, StatusCode} from './types.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 /**
  * JavaScript hooks into the native WebUI handler to pass information to the
@@ -23,7 +22,7 @@ export class NearbyUiTriggerBrowserProxy {
    * @param {string} id
    * @return {!Promise<!StatusCode>}
    */
-  sendText(id) {
+  sendText(id: string) {
     return sendWithPromise('sendText', id);
   }
 
@@ -32,7 +31,7 @@ export class NearbyUiTriggerBrowserProxy {
    * ShareTarget |id|
    * @param {string} id
    */
-  cancel(id) {
+  cancel(id: string) {
     chrome.send('cancel', [id]);
   }
 
@@ -41,7 +40,7 @@ export class NearbyUiTriggerBrowserProxy {
    * ShareTarget |id|
    * @param {string} id
    */
-  accept(id) {
+  accept(id: string) {
     chrome.send('accept', [id]);
   }
 
@@ -50,7 +49,7 @@ export class NearbyUiTriggerBrowserProxy {
    * ShareTarget |id|
    * @param {string} id
    */
-  reject(id) {
+  reject(id: string) {
     chrome.send('reject', [id]);
   }
 
@@ -59,7 +58,7 @@ export class NearbyUiTriggerBrowserProxy {
    * ShareTarget |id|
    * @param {string} id
    */
-  open(id) {
+  open(id: string) {
     chrome.send('open', [id]);
   }
 
@@ -168,11 +167,9 @@ export class NearbyUiTriggerBrowserProxy {
     chrome.send('notifyFastPairAssociateAccount');
   }
 
-  /** @return {!NearbyUiTriggerBrowserProxy} */
-  static getInstance() {
+  static getInstance(): NearbyUiTriggerBrowserProxy {
     return instance || (instance = new NearbyUiTriggerBrowserProxy());
   }
 }
 
-/** @type {?NearbyUiTriggerBrowserProxy} */
-let instance = null;
+let instance: NearbyUiTriggerBrowserProxy|null = null;

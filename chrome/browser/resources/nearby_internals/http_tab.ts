@@ -8,94 +8,87 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import './http_message_object.js';
 import './shared_style.css.js';
 
-import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './http_tab.html.js';
 import {NearbyHttpBrowserProxy} from './nearby_http_browser_proxy.js';
 import {HttpMessage} from './types.js';
 
-Polymer({
-  is: 'http-tab',
+const HttpTabElementBase = WebUiListenerMixin(PolymerElement);
 
-  _template: getTemplate(),
+class HttpTabElement extends HttpTabElementBase {
+  static get is() {
+    return 'http-tab';
+  }
 
-  behaviors: [
-    WebUIListenerBehavior,
-  ],
+  static get template() {
+    return getTemplate();
+  }
 
-  properties: {
+  static get properties() {
+    return {
 
-    /**
-     * @private {!Array<!HttpMessage>}
-     */
-    httpMessageList_: {
-      type: Array,
-      value: [],
-    },
-  },
+      httpMessageList_: {
+        type: Array,
+        value: () => [],
+      },
 
-  /** @private {?NearbyHttpBrowserProxy} */
-  browserProxy_: null,
+    };
+  }
 
-  /**
-   * Set |browserProxy_|.
-   * @override
-   */
-  created() {
-    this.browserProxy_ = NearbyHttpBrowserProxy.getInstance();
-  },
+  private browserProxy_: NearbyHttpBrowserProxy =
+      NearbyHttpBrowserProxy.getInstance();
+  private httpMessageList_: HttpMessage[];
 
   /**
    * When the page is initialized, notify the C++ layer to allow JavaScript and
    * initialize WebUI Listeners.
-   * @override
    */
-  attached() {
-    this.addWebUIListener(
-        'http-message-added', message => this.onHttpMessageAdded_(message));
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.addWebUiListener(
+        'http-message-added',
+        (message: HttpMessage) => this.onHttpMessageAdded_(message));
     this.browserProxy_.initialize();
-  },
+  }
 
   /**
    * Triggers UpdateDevice RPC.
-   * @private
    */
-  onUpdateDeviceClicked_() {
+  private onUpdateDeviceClicked_(): void {
     this.browserProxy_.updateDevice();
-  },
+  }
 
   /**
    * Triggers ListContactPeople RPC.
-   * @private
    */
-  onListContactPeopleClicked_() {
+  private onListContactPeopleClicked_(): void {
     this.browserProxy_.listContactPeople();
-  },
+  }
 
   /**
    * Triggers ListPublicCertificates RPC.
-   * @private
    */
-  onListPublicCertificatesClicked_() {
+  private onListPublicCertificatesClicked_(): void {
     this.browserProxy_.listPublicCertificates();
-  },
+  }
 
   /**
    * Clears the |httpMessageList_| messages displayed on the page.
-   * @private
    */
-  onClearMessagesButtonClicked_() {
+  private onClearMessagesButtonClicked_(): void {
     this.httpMessageList_ = [];
-  },
+  }
 
   /**
    * Adds a HTTP message to the javascript message list displayed. Called from
    * the C++ WebUI handler when a HTTP message is created in response to a Rpc.
-   * @param {!HttpMessage} message
-   * @private
    */
-  onHttpMessageAdded_(message) {
+  private onHttpMessageAdded_(message: HttpMessage): void {
     this.unshift('httpMessageList_', message);
-  },
-});
+  }
+}
+
+customElements.define(HttpTabElement.is, HttpTabElement);

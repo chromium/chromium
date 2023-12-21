@@ -13,7 +13,7 @@ export class NearbyPresenceBrowserProxy {
   /**
    * Triggers NearbyPresenceService to start a scan.
    */
-  SendStartScan() {
+  sendStartScan() {
     chrome.send('StartPresenceScan');
   }
 
@@ -21,14 +21,14 @@ export class NearbyPresenceBrowserProxy {
    * Triggers NearbyPresenceService to stop a scan if a scan is currently
    * running.
    */
-  SendStopScan() {
+  sendStopScan() {
     chrome.send('StopPresenceScan');
   }
 
   /**
    * Tells NearbyPresenceService to sync Presence credentials.
    */
-  SendSyncCredentials() {
+  sendSyncCredentials() {
     chrome.send('SyncPresenceCredentials');
   }
 
@@ -36,19 +36,18 @@ export class NearbyPresenceBrowserProxy {
    * Tells NearbyPresenceService to start a first time flow for retreiving
    * credentials.
    */
-  SendFirstTimeFlow() {
+  sendFirstTimeFlow() {
     chrome.send('FirstTimePresenceFlow');
   }
 
-  ConnectToPresenceDevice(endpointId) {
+  connectToPresenceDevice(endpointId: string) {
     chrome.send('ConnectToPresenceDevice', [endpointId]);
   }
 
-  /** @return {!NearbyPresenceBrowserProxy} */
-  static getInstance() {
+
+  static getInstance(): NearbyPresenceBrowserProxy {
     return instance || (instance = new NearbyPresenceBrowserProxy());
   }
 }
 
-/** @type {?NearbyPresenceBrowserProxy} */
-let instance = null;
+let instance: NearbyPresenceBrowserProxy|null = null;

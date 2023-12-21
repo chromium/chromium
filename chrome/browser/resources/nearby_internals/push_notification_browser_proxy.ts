@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+let instance: PushNotificationBrowserProxy|null = null;
+
 export class PushNotificationBrowserProxy {
   /**
    * Initializes web contents in the WebUI handler.
@@ -11,18 +13,13 @@ export class PushNotificationBrowserProxy {
   }
 
   /**
-   * Triggers adding the push notification handler as a push notification
-   * client.
+   * Triggers adding the push notification handler as a PushNotificationClient.
    */
-  SendAddPushNotificationClient() {
+  sendAddPushNotificationClient() {
     chrome.send('AddPushNotificationClient');
   }
 
-  /** @return {!PushNotificationBrowserProxy} */
-  static getInstance() {
+  static getInstance(): PushNotificationBrowserProxy {
     return instance || (instance = new PushNotificationBrowserProxy());
   }
 }
-
-/** @type {?PushNotificationBrowserProxy} */
-let instance = null;

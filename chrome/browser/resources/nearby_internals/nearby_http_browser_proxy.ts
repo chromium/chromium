@@ -35,11 +35,9 @@ export class NearbyHttpBrowserProxy {
     chrome.send('listPublicCertificates');
   }
 
-  /** @return {!NearbyHttpBrowserProxy} */
-  static getInstance() {
+  static getInstance(): NearbyHttpBrowserProxy {
     return instance || (instance = new NearbyHttpBrowserProxy());
   }
 }
 
-/** @type {?NearbyHttpBrowserProxy} */
-let instance = null;
+let instance: NearbyHttpBrowserProxy|null = null;

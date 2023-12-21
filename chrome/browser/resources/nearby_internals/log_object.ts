@@ -2,32 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './log_object.html.js';
 import {LogMessage, Severity} from './types.js';
 
-Polymer({
-  is: 'log-object',
 
-  _template: getTemplate(),
+/** @polymer */
+class LogObjectElement extends PolymerElement {
+  static get is() {
+    return 'log-object';
+  }
 
-  properties: {
-    /**
-     * Log whose metadata is displayed within this element.
-     * @type {!LogMessage}
-     */
-    logMessage: {
-      type: Object,
-      observer: 'logMessageChanged_',
-    },
-  },
+  static get template() {
+    return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      /**
+       * Log whose metadata is displayed within this element.
+       */
+      logMessage: {
+        type: Object,
+        observer: 'logMessageChanged_',
+      },
+    };
+  }
+
+  logMessage: LogMessage;
 
   /**
    * Sets the log message style based on severity level.
-   * @private
    */
-  logMessageChanged_() {
+  private logMessageChanged_(): void {
     switch (this.logMessage.severity) {
       case Severity.WARNING:
         this.className = 'warning-log';
@@ -42,13 +50,9 @@ Polymer({
         this.className = 'default-log';
         break;
     }
-  },
+  }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getFilenameWithLine_() {
+  private getFilenameWithLine(): string {
     if (!this.logMessage) {
       return '';
     }
@@ -56,5 +60,7 @@ Polymer({
     // The filename is prefixed with "../../", so replace it with "//".
     const filename = this.logMessage.file.replace('../../', '//');
     return filename + ':' + this.logMessage.line;
-  },
-});
+  }
+}
+
+customElements.define(LogObjectElement.is, LogObjectElement);

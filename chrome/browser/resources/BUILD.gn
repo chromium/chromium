@@ -162,7 +162,6 @@ if (is_chromeos_ash && enable_js_type_check) {
       "chromeos:closure_compile",
       "chromeos/contact_center_insights:closure_compile",
       "gaia_auth_host:closure_compile",
-      "nearby_internals:closure_compile",
     ]
   }
 }

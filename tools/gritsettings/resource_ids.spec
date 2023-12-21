@@ -321,7 +321,7 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [3380],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/nearby_internals/nearby_internals_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/nearby_internals/resources.grd": {
     "META": {"sizes": {"includes": [40]}},
     "includes": [3400],
   },
