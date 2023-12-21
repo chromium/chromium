@@ -39,6 +39,7 @@ namespace {
 constexpr int kPaddingBetweenTrayItems = 8;
 constexpr int kPaddingBetweenTrayItemsTabletMode = 6;
 constexpr int kPaddingBetweenPrimaryTraySetItems = kPaddingBetweenTrayItems - 4;
+constexpr int kPaddingBetweenPrimaryTraySetItemsInApp = -4;
 
 class StatusAreaWidgetDelegateAnimationSettings
     : public ui::ScopedLayerAnimationSettings {
@@ -88,11 +89,12 @@ class OverflowGradientBackground : public views::Background {
 
 int PaddingBetweenTrayItems(const bool is_in_primary_tray_set) {
   if (is_in_primary_tray_set) {
+    // In in-app mode, a negative padding is set. This is because it is set to 6
+    // in `TrayContainer`, and this is easier then rewriting TrayContainer to
+    // react to `ShelfLayoutManager` state changes. See https://b/310272268.
     return (ShelfConfig::Get()->in_tablet_mode() &&
             ShelfConfig::Get()->is_in_app())
-               ? kPaddingBetweenTrayItemsTabletMode -
-                     2 * ShelfConfig::Get()
-                             ->in_app_control_button_height_inset()
+               ? kPaddingBetweenPrimaryTraySetItemsInApp
                : kPaddingBetweenPrimaryTraySetItems;
   }
 
@@ -270,6 +272,8 @@ void StatusAreaWidgetDelegate::ChildVisibilityChanged(View* child) {
 
 void StatusAreaWidgetDelegate::SetBorderOnChild(views::View* child,
                                                 bool is_child_on_edge) {
+  // TODO(https://b/310272268): Setting padding both here and in `TrayContainer`
+  // is a bit confusing. This is fragile, and we should rewrite this.
   const int vertical_padding =
       (ShelfConfig::Get()->shelf_size() - kTrayItemSize) / 2;
 
