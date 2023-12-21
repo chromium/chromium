@@ -276,13 +276,18 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, DISABLED_Uninstall) {
 
 namespace {
 
-constexpr char kCalculatorAppUrl[] = "https://calculator.apps.chrome/";
-
 constexpr char kPreventCloseForCalculatorTemplate[] = R"([
   {
     "manifest_id": "https://calculator.apps.chrome/",
     "run_on_os_login": "run_windowed",
     "prevent_close_after_run_on_os_login": %s
+  }
+])";
+
+constexpr char kCalculatorForceInstalled[] = R"([
+  {
+    "url": "https://calculator.apps.chrome/",
+    "default_launch_container": "window"
   }
 ])";
 
@@ -312,6 +317,13 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseCrosapiBrowserTest,
 
   {
     base::test::TestFuture<bool> waiter;
+    GetStandaloneBrowserTestController()->SetWebAppInstallForceListPref(
+        kCalculatorForceInstalled, waiter.GetCallback());
+    EXPECT_TRUE(waiter.Wait());
+  }
+
+  {
+    base::test::TestFuture<bool> waiter;
     GetStandaloneBrowserTestController()->SetWebAppSettingsPref(
         base::StringPrintf(kPreventCloseForCalculatorTemplate,
                            IsPreventCloseEnabled() ? "true" : "false"),
@@ -319,9 +331,7 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseCrosapiBrowserTest,
     EXPECT_TRUE(waiter.Wait());
   }
 
-  const auto app_id =
-      InstallWebApp(kCalculatorAppUrl, apps::WindowMode::kWindow);
-  EXPECT_EQ(app_id, web_app::kCalculatorAppId);
+  apps::AppReadinessWaiter(GetAshProfile(), web_app::kCalculatorAppId).Await();
 
   EXPECT_FALSE(ash::ShelfModel::Get()->ItemByID(
       ash::ShelfID(web_app::kCalculatorAppId)));
@@ -336,7 +346,7 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseCrosapiBrowserTest,
 
   bool can_close = true;
   AppServiceProxy()->AppRegistryCache().ForOneApp(
-      app_id, [&can_close](const apps::AppUpdate& update) {
+      web_app::kCalculatorAppId, [&can_close](const apps::AppUpdate& update) {
         can_close = update.AllowClose().value_or(true);
       });
 
@@ -361,17 +371,15 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseCrosapiBrowserTest,
       GetContextMenuForApp(web_app::kCalculatorAppId);
 
   if (!IsPreventCloseEnabled()) {
-    ASSERT_EQ(5u, items.size());
+    ASSERT_EQ(4u, items.size());
     EXPECT_EQ(items[0], "New window");
     EXPECT_EQ(items[1], "Pin");
     EXPECT_EQ(items[2], "Close");
-    EXPECT_EQ(items[3], "Uninstall");
-    EXPECT_EQ(items[4], "App info");
+    EXPECT_EQ(items[3], "App info");
   } else {
-    ASSERT_EQ(3u, items.size());
+    ASSERT_EQ(2u, items.size());
     EXPECT_EQ(items[0], "Pin");
-    EXPECT_EQ(items[1], "Uninstall");
-    EXPECT_EQ(items[2], "App info");
+    EXPECT_EQ(items[1], "App info");
   }
 
   {

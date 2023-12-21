@@ -166,12 +166,6 @@ class WebAppsPreventCloseChromeOsBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest, CheckMenuModel) {
-  InstallPWA(GURL(kCalculatorAppUrl), web_app::kCalculatorAppId);
-  PinAppWithIDToShelf(web_app::kCalculatorAppId);
-
-  Browser* const browser = LaunchWebAppBrowser(web_app::kCalculatorAppId);
-  ASSERT_TRUE(browser);
-
   // Set up policy values.
   profile()->GetPrefs()->SetList(
       prefs::kWebAppSettings,
@@ -180,6 +174,13 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest, CheckMenuModel) {
               .Set(web_app::kManifestId, kCalculatorAppUrl)
               .Set(web_app::kRunOnOsLogin, web_app::kRunWindowed)
               .Set(web_app::kPreventClose, IsPreventCloseEnabled())));
+  profile()->GetPrefs()->SetList(
+      prefs::kWebAppInstallForceList,
+      base::Value::List().Append(
+          base::Value::Dict()
+              .Set(web_app::kUrlKey, kCalculatorAppUrl)
+              .Set(web_app::kDefaultLaunchContainerKey,
+                   web_app::kDefaultLaunchContainerWindowValue)));
 
   // Wait until prefs are propagated and App `allow_close` field is updated to
   // expected value.
@@ -192,6 +193,11 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest, CheckMenuModel) {
           },
           !IsPreventCloseEnabled()));
   waiter.Await();
+
+  PinAppWithIDToShelf(web_app::kCalculatorAppId);
+
+  Browser* const browser = LaunchWebAppBrowser(web_app::kCalculatorAppId);
+  ASSERT_TRUE(browser);
 
   ash::ShelfModel* const shelf_model = ash::ShelfModel::Get();
   ASSERT_TRUE(shelf_model);

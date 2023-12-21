@@ -329,6 +329,16 @@ void SetWebAppSettingsListPref(Profile* profile, const base::StringPiece pref) {
   profile->GetPrefs()->Set(prefs::kWebAppSettings, std::move(result));
 }
 
+void SetWebAppInstallForceListPref(Profile* profile,
+                                   const base::StringPiece pref) {
+  ASSERT_OK_AND_ASSIGN(
+      auto result,
+      base::JSONReader::ReadAndReturnValueWithError(
+          pref, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS));
+  ASSERT_TRUE(result.is_list());
+  profile->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(result));
+}
+
 }  // namespace
 
 class WebAppPolicyManagerTestBase : public ChromeRenderViewHostTestHarness {
@@ -1515,11 +1525,6 @@ TEST_P(WebAppPolicyManagerPreventCloseTest, WebAppSettingsPreventClose) {
       "prevent_close_after_run_on_os_login": true
     },
     {
-      "manifest_id": "https://windowed.example/",
-      "run_on_os_login": "run_windowed",
-      "prevent_close_after_run_on_os_login": true
-    },
-    {
       "manifest_id": "https://tabbed.example/",
       "run_on_os_login": "blocked",
       "prevent_close_after_run_on_os_login": true
@@ -1533,28 +1538,96 @@ TEST_P(WebAppPolicyManagerPreventCloseTest, WebAppSettingsPreventClose) {
       "manifest_id": "https://allowed.example/",
       "run_on_os_login": "allowed",
       "prevent_close_after_run_on_os_login": true
+    },
+    {
+      "manifest_id": "https://windowed-only-manually.example/",
+      "run_on_os_login": "run_windowed",
+      "prevent_close_after_run_on_os_login": true
+    },
+    {
+      "manifest_id": "https://windowed-also-manually.example/",
+      "run_on_os_login": "run_windowed",
+      "prevent_close_after_run_on_os_login": true
+    },
+    {
+      "manifest_id": "https://windowed.example/",
+      "run_on_os_login": "run_windowed",
+      "prevent_close_after_run_on_os_login": true
+    }
+  ])";
+  const char kWebAppForceInstallList[] = R"([
+    {
+      "url": "https://wildcard.example/",
+      "default_launch_container": "window"
+    },
+    {
+      "url": "https://tabbed.example/",
+      "default_launch_container": "window"
+    },
+    {
+      "url": "https://no-container.example/",
+      "default_launch_container": "window"
+    },
+    {
+      "url": "https://allowed.example/",
+      "default_launch_container": "window"
+    },
+    {
+      "url": "https://windowed-also-manually.example/",
+      "default_launch_container": "window"
+    },
+    {
+      "url": "https://windowed.example/",
+      "default_launch_container": "window"
     }
   ])";
   const char kWildcardUrl[] = "https://wildcard.example/";
   const char kAllowedUrl[] = "https://allowed.example/";
+  const char kWindowedOnlyManuallyInstalled[] =
+      "https://windowed-only-manually.example/";
+  const char kWindowedAlsoManuallyInstalled[] =
+      "https://windowed-also-manually.example/";
 
-  // Make sure that WebAppRegistrar::GetComputedManifestId does not fail.
-  InstallPwa(kWildcardUrl);
-  InstallPwa(kWindowedUrl);
-  InstallPwa(kTabbedUrl);
-  InstallPwa(kNoContainerUrl);
-  InstallPwa(kAllowedUrl);
+  {
+    base::RunLoop loop;
+    policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
+        loop.QuitClosure());
+    SetWebAppSettingsListPref(profile(), kWebAppSettingConfiguration);
+    loop.Run();
+  }
 
-  base::RunLoop loop;
-  policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
-      loop.QuitClosure());
-  SetWebAppSettingsListPref(profile(), kWebAppSettingConfiguration);
-  loop.Run();
+  {
+    base::RunLoop loop;
+    policy_manager().SetOnAppsSynchronizedCompletedCallbackForTesting(
+        loop.QuitClosure());
+    SetWebAppInstallForceListPref(profile(), kWebAppForceInstallList);
+    loop.Run();
+  }
+
+  // We need to verify that prevent close feature works for app that has
+  // multiple install sources and one of them has to be policy. This specific
+  // app is already installed by policy and we have to add another install
+  // source for that app.
+  {
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
+
+    absl::optional<webapps::AppId> app_id =
+        app_registrar().LookUpAppIdByInstallUrl(
+            GURL(kWindowedAlsoManuallyInstalled));
+    ASSERT_TRUE(app_id.has_value());
+
+    WebApp* windowed_install_app = update->UpdateApp(app_id.value());
+    ASSERT_TRUE(windowed_install_app);
+    windowed_install_app->AddSource(WebAppManagement::kSync);
+  }
+
+  InstallPwa(kWindowedOnlyManuallyInstalled);
 
   EXPECT_FALSE(IsPreventCloseEnabled(kWildcardUrl));
   EXPECT_FALSE(IsPreventCloseEnabled(kTabbedUrl));
   EXPECT_FALSE(IsPreventCloseEnabled(kNoContainerUrl));
   EXPECT_FALSE(IsPreventCloseEnabled(kAllowedUrl));
+  EXPECT_FALSE(IsPreventCloseEnabled(kWindowedOnlyManuallyInstalled));
 
   bool expected_windowed_url_status = false;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1563,6 +1636,8 @@ TEST_P(WebAppPolicyManagerPreventCloseTest, WebAppSettingsPreventClose) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  EXPECT_EQ(IsPreventCloseEnabled(kWindowedAlsoManuallyInstalled),
+            expected_windowed_url_status);
   EXPECT_EQ(IsPreventCloseEnabled(kWindowedUrl), expected_windowed_url_status);
 }
 

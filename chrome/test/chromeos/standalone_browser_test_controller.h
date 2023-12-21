@@ -70,6 +70,10 @@ class StandaloneBrowserTestController
       mojo::PendingRemote<crosapi::mojom::DomMessageObserver> observer,
       ObserveDomMessagesCallback callback) override;
 
+  void SetWebAppInstallForceListPref(
+      const std::string& web_app_settings_json,
+      SetWebAppInstallForceListPrefCallback callback) override;
+
  private:
   class LacrosUtteranceEventDelegate;
 

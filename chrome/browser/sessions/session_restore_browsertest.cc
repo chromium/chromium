@@ -127,6 +127,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/json/json_reader.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 using sessions::ContentTestHelper;
@@ -3489,26 +3491,42 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_BasicAppSessionRestore) {
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontTrackUnclosableApp) {
   Profile* profile = browser()->profile();
-  auto example_url = GURL("http://www.example.com");
-
-  // Open a PWA.
-  webapps::AppId app_id = InstallPWA(profile, example_url);
 
   // Make sure the app is unclosable when before it is launched to influence the
   // tracking for session restore.
-  base::Value::List web_app_settings = base::JSONReader::Read(R"([
   {
-    "manifest_id": "http://www.example.com",
-    "run_on_os_login": "run_windowed",
-    "prevent_close_after_run_on_os_login": true
-  }
-  ])")
-                                           ->GetList()
-                                           .Clone();
-  profile->GetPrefs()->SetList(prefs::kWebAppSettings,
-                               std::move(web_app_settings));
+    web_app::WebAppTestInstallObserver observer(profile);
+    observer.BeginListening({web_app::kCalculatorAppId});
 
-  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+    base::Value::List web_app_settings = base::JSONReader::Read(R"([
+    {
+      "manifest_id": "https://calculator.apps.chrome/",
+      "run_on_os_login": "run_windowed",
+      "prevent_close_after_run_on_os_login": true
+    }
+    ])")
+                                             ->GetList()
+                                             .Clone();
+    profile->GetPrefs()->SetList(prefs::kWebAppSettings,
+                                 std::move(web_app_settings));
+
+    base::Value::List web_app_install_list = base::JSONReader::Read(R"([
+    {
+      "url": "https://calculator.apps.chrome/",
+      "default_launch_container": "window"
+    }
+    ])")
+                                                 ->GetList()
+                                                 .Clone();
+    profile->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(web_app_install_list));
+
+    observer.Wait();
+  }
+
+  // Open a PWA.
+  Browser* app_browser =
+      web_app::LaunchWebAppBrowserAndWait(profile, web_app::kCalculatorAppId);
 
   // Pretend to 'close the browser'.
   // Just shutdown the services as we would if the browser is shutting down for
@@ -3551,11 +3569,29 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontTrackUnclosableApp) {
 
 IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontRestoreUnclosableApp) {
   Profile* profile = browser()->profile();
-  auto example_url = GURL("http://www.example.com");
+
+  {
+    web_app::WebAppTestInstallObserver observer(profile);
+    observer.BeginListening({web_app::kCalculatorAppId});
+
+    base::Value::List web_app_install_list = base::JSONReader::Read(R"([
+    {
+      "url": "https://calculator.apps.chrome/",
+      "default_launch_container": "window"
+    }
+    ])")
+                                                 ->GetList()
+                                                 .Clone();
+
+    profile->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(web_app_install_list));
+
+    observer.Wait();
+  }
 
   // Open a PWA.
-  webapps::AppId app_id = InstallPWA(profile, example_url);
-  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+  Browser* app_browser =
+      web_app::LaunchWebAppBrowserAndWait(profile, web_app::kCalculatorAppId);
 
   // Pretend to 'close the browser'.
   // Just shutdown the services as we would if the browser is shutting down for
@@ -3577,17 +3613,19 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontRestoreUnclosableApp) {
   // We need to start up the services again before restoring.
   StartupServices(profile);
 
-  base::Value::List web_app_settings = base::JSONReader::Read(R"([
   {
-    "manifest_id": "http://www.example.com",
-    "run_on_os_login": "run_windowed",
-    "prevent_close_after_run_on_os_login": true
+    base::Value::List web_app_settings = base::JSONReader::Read(R"([
+    {
+      "manifest_id": "https://calculator.apps.chrome/",
+      "run_on_os_login": "run_windowed",
+      "prevent_close_after_run_on_os_login": true
+    }
+    ])")
+                                             ->GetList()
+                                             .Clone();
+    profile->GetPrefs()->SetList(prefs::kWebAppSettings,
+                                 std::move(web_app_settings));
   }
-  ])")
-                                           ->GetList()
-                                           .Clone();
-  profile->GetPrefs()->SetList(prefs::kWebAppSettings,
-                               std::move(web_app_settings));
 
   SessionRestore::RestoreSession(profile, nullptr,
                                  SessionRestore::SYNCHRONOUS |

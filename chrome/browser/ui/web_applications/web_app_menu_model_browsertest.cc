@@ -109,6 +109,13 @@ constexpr char kPreventCloseEnabledForCalculator[] = R"([
   }
 ])";
 
+constexpr char kCalculatorForceInstalled[] = R"([
+  {
+    "url": "https://calculator.apps.chrome/",
+    "default_launch_container": "window"
+  }
+])";
+
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr bool kShouldPreventClose = true;
 #else
@@ -122,7 +129,9 @@ using WebAppModelMenuPreventCloseTest = PreventCloseTestBase;
 IN_PROC_BROWSER_TEST_F(WebAppModelMenuPreventCloseTest,
                        PreventCloseEnforedByPolicy) {
   InstallPWA(GURL(kCalculatorAppUrl), web_app::kCalculatorAppId);
-  SetWebAppSettings(kPreventCloseEnabledForCalculator);
+  SetPoliciesAndWaitUntilInstalled(web_app::kCalculatorAppId,
+                                   kPreventCloseEnabledForCalculator,
+                                   kCalculatorForceInstalled);
 
   Browser* const browser =
       LaunchPWA(web_app::kCalculatorAppId, /*launch_in_window=*/true);

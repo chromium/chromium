@@ -32,7 +32,12 @@ class PreventCloseTestBase : public policy::PolicyTest {
   void SetUpInProcessBrowserTestFixture() override;
   void TearDownInProcessBrowserTestFixture() override;
 
-  void SetWebAppSettings(base::StringPiece config);
+  void SetPolicies(base::StringPiece web_app_settings,
+                   base::StringPiece web_app_install_force_list);
+  void SetPoliciesAndWaitUntilInstalled(
+      const webapps::AppId& app_id,
+      base::StringPiece web_app_settings,
+      base::StringPiece web_app_install_force_list);
   void ClearWebAppSettings();
   void InstallPWA(const GURL& app_url, const webapps::AppId& app_id);
   Browser* LaunchPWA(const webapps::AppId& app_id, bool launch_in_window);

@@ -849,6 +849,16 @@ bool WebAppRegistrar::IsInstalledByDefaultManagement(
   return web_app->GetSources().Has(WebAppManagement::kDefault);
 }
 
+bool WebAppRegistrar::IsInstalledByPolicy(const webapps::AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  if (!web_app) {
+    return false;
+  }
+
+  WebAppManagementTypes sources = web_app->GetSources();
+  return sources.Has(WebAppManagement::Type::kPolicy);
+}
+
 bool WebAppRegistrar::WasInstalledByDefaultOnly(
     const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);

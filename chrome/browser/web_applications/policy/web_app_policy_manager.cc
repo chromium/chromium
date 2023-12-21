@@ -769,6 +769,10 @@ bool WebAppPolicyManager::IsPreventCloseEnabled(
     return false;
   }
 
+  if (!provider_->registrar_unsafe().IsInstalledByPolicy(app_id)) {
+    return false;
+  }
+
   const webapps::ManifestId manifest_id =
       provider_->registrar_unsafe().GetComputedManifestId(app_id);
   auto it = settings_by_url_.find(manifest_id.spec());
