@@ -60,6 +60,7 @@
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
@@ -2063,8 +2064,8 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
   }
 
   client().GetCrowdsourcingManager()->StartUploadRequest(
-      /*upload_contents=*/submitted_form->EncodeUploadRequest(
-          non_empty_types, was_autofilled,
+      /*upload_contents=*/EncodeUploadRequest(
+          *submitted_form, non_empty_types, was_autofilled,
           /*login_form_signature=*/{}, observed_submission),
       submitted_form->submission_source(), submitted_form->active_field_count(),
       client().GetPrefs());

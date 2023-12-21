@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
@@ -585,10 +586,9 @@ bool VotesUploader::UploadPasswordVote(
                             password_attributes);
   }
 
-  std::vector<AutofillUploadContents> upload_contents =
-      form_structure.EncodeUploadRequest(
-          available_field_types, /*form_was_autofilled=*/false,
-          login_form_signature, /*observed_submission=*/true);
+  std::vector<AutofillUploadContents> upload_contents = EncodeUploadRequest(
+      form_structure, available_field_types, /*form_was_autofilled=*/false,
+      login_form_signature, /*observed_submission=*/true);
   CHECK(!upload_contents.empty());
   upload_contents[0].set_passwords_revealed(
       should_set_passwords_were_revealed && has_passwords_revealed_vote_);
@@ -954,9 +954,9 @@ bool VotesUploader::StartUploadRequest(
   form_to_upload.set_randomized_encoder(
       RandomizedEncoder::Create(client_->GetPrefs()));
   return crowdsourcing_manager->StartUploadRequest(
-      form_to_upload.EncodeUploadRequest(
-          available_field_types, /*form_was_autofilled=*/false,
-          login_form_signature, /*observed_submission=*/true),
+      EncodeUploadRequest(form_to_upload, available_field_types,
+                          /*form_was_autofilled=*/false, login_form_signature,
+                          /*observed_submission=*/true),
       form_to_upload.submission_source(), form_to_upload.active_field_count(),
       /*pref_service=*/nullptr);
 }
