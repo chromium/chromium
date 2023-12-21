@@ -20,6 +20,11 @@ export class ConnectOneDriveElement extends HTMLElement {
   private proxy: CloudUploadBrowserProxy =
       CloudUploadBrowserProxy.getInstance();
 
+  // Save reference to listener so it can be removed from the document in
+  // disconnectedCallback().
+  private boundKeyDownListener_: (e: KeyboardEvent) => void;
+
+
   constructor() {
     super();
 
@@ -31,6 +36,15 @@ export class ConnectOneDriveElement extends HTMLElement {
 
     connectButton.addEventListener('click', () => this.onConnectButtonClick());
     closeButton.addEventListener('click', () => this.onCloseButtonClick());
+    this.boundKeyDownListener_ = this.onKeyDown.bind(this);
+  }
+
+  connectedCallback(): void {
+    document.addEventListener('keydown', this.boundKeyDownListener_);
+  }
+
+  disconnectedCallback(): void {
+    document.removeEventListener('keydown', this.boundKeyDownListener_);
   }
 
   $<T extends HTMLElement>(query: string): T {
@@ -59,6 +73,16 @@ export class ConnectOneDriveElement extends HTMLElement {
 
   private onCloseButtonClick(): void {
     this.proxy.handler.respondWithUserActionAndClose(UserAction.kCancel);
+  }
+
+  private onKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      // Handle Escape as a "cancel".
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      this.onCloseButtonClick();
+      return;
+    }
   }
 }
 

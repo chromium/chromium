@@ -1321,18 +1321,8 @@ ui::ModalType CloudUploadDialog::GetDialogModalType() const {
 }
 
 bool CloudUploadDialog::ShouldCloseDialogOnEscape() const {
-  // TODO(b/315727684): Handle escape for all dialogs to ensure dialog is
-  // properly closed.
-  // The One Drive setup, File Handler and Move Confirmation dialogs handle
-  // escape.
-  CHECK(dialog_args_);
-  return !(
-      dialog_args_->dialog_specific_args->is_one_drive_setup_dialog_args() ||
-      dialog_args_->dialog_specific_args->is_file_handler_dialog_args() ||
-      dialog_args_->dialog_specific_args
-          ->is_move_confirmation_google_drive_dialog_args() ||
-      dialog_args_->dialog_specific_args
-          ->is_move_confirmation_one_drive_dialog_args());
+  // All the dialogs handle an Escape keydown.
+  return false;
 }
 
 bool CloudUploadDialog::ShouldShowCloseButton() const {
