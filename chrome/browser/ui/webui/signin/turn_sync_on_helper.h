@@ -277,12 +277,12 @@ class TurnSyncOnHelper {
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<ProfilePickerLacrosSignInProvider> lacros_sign_in_provider_;
+#endif
 
   // The initial primary account is restored if the flow aborts. This is only
-  // needed on Lacros, because the `SigninManager` does it automatically on
-  // DICE platforms.
+  // needed on Lacros or if UNO Desktop is enabled, because the `SigninManager`
+  // does it automatically on DICE platforms.
   CoreAccountId initial_primary_account_;
-#endif
   base::CallbackListSubscription shutdown_subscription_;
   bool enterprise_account_confirmed_ = false;
 
