@@ -19,7 +19,7 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          module_name='play-services-tasks',
                          file_ext='aar',
                          patch_version='cr1',
-                         version_override='18.0.2',
+                         version_override=None,
                          version_filter=None)
 
 
