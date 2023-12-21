@@ -294,6 +294,10 @@ class Pointer : public SurfaceTreeHost,
   float last_force_ = std::numeric_limits<float>::quiet_NaN();
   gfx::Vector2dF last_tilt_;
 
+  // Bitmask of the button event flags that started the drag and drop operation.
+  // Used to send the release events upon drop.
+  int button_flags_on_drag_drop_start_ = 0;
+
   // Weak pointer factory used for cursor capture callbacks.
   base::WeakPtrFactory<Pointer> cursor_capture_weak_ptr_factory_{this};
 };

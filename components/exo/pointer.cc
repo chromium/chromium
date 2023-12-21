@@ -461,6 +461,15 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
   // asynchronously.
   if (seat_->IsDragDropOperationInProgress()) {
     return;
+  } else if (button_flags_on_drag_drop_start_) {
+    // Send release events for buttons that are released during the drag and
+    // drop operation.
+    int released_button_flags =
+        button_flags_on_drag_drop_start_ & ~event->button_flags();
+    delegate_->OnPointerButton(event->time_stamp(), released_button_flags,
+                               false);
+    delegate_->OnPointerFrame();
+    button_flags_on_drag_drop_start_ = 0;
   }
 
   // Nothing to report to a client nor have to update the pointer when capture
@@ -709,6 +718,9 @@ void Pointer::OnGestureEvent(ui::GestureEvent* event) {
 ////////////////////////////////////////////////////////////////////////////////
 // aura::client::DragDropClientObserver overrides:
 void Pointer::OnDragStarted() {
+  button_flags_on_drag_drop_start_ =
+      aura::Env::GetInstance()->mouse_button_flags();
+
   // Drag 'n drop operations driven by sources different than pointer/mouse
   // should have not effect here.
   WMHelper* helper = WMHelper::GetInstance();

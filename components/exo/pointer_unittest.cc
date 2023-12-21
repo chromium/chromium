@@ -1092,11 +1092,23 @@ TEST_P(PointerTest, DragDropAndPointerEnterLeaveEvents) {
 
   // Pointer leave should be called only once upon start.
   EXPECT_CALL(delegate, OnPointerLeave(_)).Times(1);
+  EXPECT_CALL(delegate, OnPointerFrame()).Times(1);
   EXPECT_CALL(delegate, OnPointerEnter(_, _, _)).Times(0);
   EXPECT_CALL(delegate, OnPointerButton(testing::_, testing::_, testing::_))
       .Times(0);
 
   base::RunLoop().RunUntilIdle();
+  ::testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  // Mouse release event happened during drag and drop will be issued on next
+  // mouse event.
+  EXPECT_CALL(delegate,
+              OnPointerButton(testing::_, ui::EF_LEFT_MOUSE_BUTTON, false))
+      .Times(1);
+  EXPECT_CALL(delegate, OnPointerFrame()).Times(1);
+
+  generator.MoveMouseBy(1, 1);
+
   ::testing::Mock::VerifyAndClearExpectations(&delegate);
 
   EXPECT_CALL(delegate, CanAcceptPointerEventsForSurface(origin))
