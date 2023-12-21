@@ -9,8 +9,10 @@
 #include "components/grit/components_scaled_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-// This code is generated using `generate_search_engine_icons.py`. Don't modify
-// it manually.
+// This code is generated
+// using`tools/search_engine_choice/generate_search_engine_icons.py`. Don't
+// modify it manually.
+
 void AddGeneratedIconResources(content::WebUIDataSource* source,
                                const std::string& directory) {
   CHECK(source);

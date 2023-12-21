@@ -17,6 +17,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
@@ -68,61 +69,6 @@ bool IsSearchEngineChoiceScreenAllowedByPolicy(
     }
   }
   return false;
-}
-
-base::flat_set<int> GetEeaChoiceCountries() {
-  using country_codes::CountryCharsToCountryID;
-
-  // Google-internal reference: http://go/geoscope-comparisons.
-  return base::flat_set<int>({
-      CountryCharsToCountryID('A', 'T'),  // Austria
-      CountryCharsToCountryID('A', 'X'),  // Åland Islands
-      CountryCharsToCountryID('B', 'E'),  // Belgium
-      CountryCharsToCountryID('B', 'G'),  // Bulgaria
-      CountryCharsToCountryID('B', 'L'),  // St. Barthélemy
-      CountryCharsToCountryID('C', 'Y'),  // Cyprus
-      CountryCharsToCountryID('C', 'Z'),  // Czech Republic
-      CountryCharsToCountryID('D', 'E'),  // Germany
-      CountryCharsToCountryID('D', 'K'),  // Denmark
-      CountryCharsToCountryID('E', 'A'),  // Ceuta & Melilla
-      CountryCharsToCountryID('E', 'E'),  // Estonia
-      CountryCharsToCountryID('E', 'S'),  // Spain
-      CountryCharsToCountryID('F', 'I'),  // Finland
-      CountryCharsToCountryID('F', 'R'),  // France
-      CountryCharsToCountryID('G', 'F'),  // French Guiana
-      CountryCharsToCountryID('G', 'P'),  // Guadeloupe
-      CountryCharsToCountryID('G', 'R'),  // Greece
-      CountryCharsToCountryID('H', 'R'),  // Croatia
-      CountryCharsToCountryID('H', 'U'),  // Hungary
-      CountryCharsToCountryID('I', 'C'),  // Canary Islands
-      CountryCharsToCountryID('I', 'E'),  // Ireland
-      CountryCharsToCountryID('I', 'S'),  // Iceland
-      CountryCharsToCountryID('I', 'T'),  // Italy
-      CountryCharsToCountryID('L', 'I'),  // Liechtenstein
-      CountryCharsToCountryID('L', 'T'),  // Lithuania
-      CountryCharsToCountryID('L', 'U'),  // Luxembourg
-      CountryCharsToCountryID('L', 'V'),  // Latvia
-      CountryCharsToCountryID('M', 'F'),  // St. Martin
-      CountryCharsToCountryID('M', 'Q'),  // Martinique
-      CountryCharsToCountryID('M', 'T'),  // Malta
-      CountryCharsToCountryID('N', 'C'),  // New Caledonia
-      CountryCharsToCountryID('N', 'L'),  // Netherlands
-      CountryCharsToCountryID('N', 'O'),  // Norway
-      CountryCharsToCountryID('P', 'F'),  // French Polynesia
-      CountryCharsToCountryID('P', 'L'),  // Poland
-      CountryCharsToCountryID('P', 'M'),  // St. Pierre & Miquelon
-      CountryCharsToCountryID('P', 'T'),  // Portugal
-      CountryCharsToCountryID('R', 'E'),  // Réunion
-      CountryCharsToCountryID('R', 'O'),  // Romania
-      CountryCharsToCountryID('S', 'E'),  // Sweden
-      CountryCharsToCountryID('S', 'I'),  // Slovenia
-      CountryCharsToCountryID('S', 'J'),  // Svalbard & Jan Mayen
-      CountryCharsToCountryID('S', 'K'),  // Slovakia
-      CountryCharsToCountryID('T', 'F'),  // French Southern Territories
-      CountryCharsToCountryID('V', 'A'),  // Vatican City
-      CountryCharsToCountryID('W', 'F'),  // Wallis & Futuna
-      CountryCharsToCountryID('Y', 'T'),  // Mayotte
-  });
 }
 
 SearchEngineType GetDefaultSearchEngineType(
@@ -347,7 +293,7 @@ int GetSearchEngineChoiceCountryId(PrefService* profile_prefs) {
 }
 
 bool IsEeaChoiceCountry(int country_id) {
-  return GetEeaChoiceCountries().contains(country_id);
+  return kEeaChoiceCountriesIds.contains(country_id);
 }
 
 void RecordChoiceScreenProfileInitCondition(

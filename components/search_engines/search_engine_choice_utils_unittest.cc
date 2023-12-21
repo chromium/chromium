@@ -4,6 +4,9 @@
 
 #include "components/search_engines/search_engine_choice_utils.h"
 
+#include <memory>
+#include <vector>
+
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -12,16 +15,20 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "components/country_codes/country_codes.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/search_engines/template_url_data_util.h"
+#include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -39,11 +46,8 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
   SearchEngineChoiceUtilsTest()
       : template_url_service_(/*initializers=*/nullptr, /*count=*/0) {
     feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
-    country_codes::RegisterProfilePrefs(pref_service_.registry());
     TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
-    pref_service_.registry()->RegisterListPref(prefs::kSearchProviderOverrides);
-    pref_service_.registry()->RegisterBooleanPref(
-        prefs::kDefaultSearchProviderChoicePending, false);
+    TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
 
     // Override the country checks to simulate being in Belgium.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -797,5 +801,44 @@ constexpr RepromptTestParam kRepromptTestParams[] = {
 INSTANTIATE_TEST_SUITE_P(,
                          SearchEngineChoiceUtilsParamTest,
                          ::testing::ValuesIn(kRepromptTestParams));
+
+#if !BUILDFLAG(IS_ANDROID)
+
+class SearchEngineChoiceUtilsResourceIdsTest : public ::testing::Test {
+ public:
+  SearchEngineChoiceUtilsResourceIdsTest() {
+    TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
+    TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
+  }
+
+  ~SearchEngineChoiceUtilsResourceIdsTest() override = default;
+  PrefService* pref_service() { return &pref_service_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{switches::kSearchEngineChoice};
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
+};
+
+// Verifies that all prepopulated search engines associated with EEA countries
+// have an icon.
+TEST_F(SearchEngineChoiceUtilsResourceIdsTest, GetIconResourceId) {
+  // Make sure the country is not forced.
+  ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kSearchEngineChoiceCountry));
+
+  for (int country_id : search_engines::kEeaChoiceCountriesIds) {
+    pref_service()->SetInteger(country_codes::kCountryIDAtInstall, country_id);
+    std::vector<std::unique_ptr<TemplateURLData>> urls =
+        TemplateURLPrepopulateData::GetPrepopulatedEngines(pref_service(),
+                                                           nullptr);
+    for (const std::unique_ptr<TemplateURLData>& url : urls) {
+      EXPECT_GE(search_engines::GetIconResourceId(url->keyword()), 0)
+          << "Missing icon for " << url->keyword() << ". Try re-running "
+          << "`tools/search_engine_choice/generate_search_engine_icons.py`.";
+    }
+  }
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace search_engines
