@@ -720,6 +720,11 @@ void NavigationSimulatorImpl::Commit() {
   // point. Overwrite it here with the desired value to correctly mock the
   // DidCommitProvisionalLoadParams.
   navigation_url_ = request_->GetURL();
+  if (navigation_url_.is_empty()) {
+    // Blink treats empty URLs as about:blank. Simulate that in the commit IPC
+    // so that the RenderFrameHost does not reject the commit.
+    navigation_url_ = GURL(url::kAboutBlankURL);
+  }
 
   auto params = BuildDidCommitProvisionalLoadParams(
       same_document_ /* same_document */, false /* failed_navigation */,

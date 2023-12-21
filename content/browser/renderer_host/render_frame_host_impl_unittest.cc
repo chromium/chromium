@@ -164,6 +164,22 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
   EXPECT_EQ(initial_rfh, main_rfh());
 }
 
+// Test that navigating to an invalid URL (which creates an empty GURL) causes
+// about:blank to commit.
+TEST_F(RenderFrameHostImplTest, InvalidURL) {
+  // Start from a valid commit.
+  NavigateAndCommit(GURL("https://test.example.com"));
+
+  // Attempt to navigate to a non-empty invalid URL, which GURL treats as an
+  // empty invalid URL. Blink treats navigations to an empty URL as navigations
+  // to about:blank.
+  GURL invalid_url("invalidurl");
+  EXPECT_TRUE(invalid_url.is_empty());
+  EXPECT_FALSE(invalid_url.is_valid());
+  NavigateAndCommit(invalid_url);
+  EXPECT_EQ(GURL(url::kAboutBlankURL), main_rfh()->GetLastCommittedURL());
+}
+
 // Ensures that IsolationInfo's SiteForCookies is empty and
 // that it correctly generates a StorageKey with a kCrossSite
 // AncestorChainBit when frames are nested in an A->B->A

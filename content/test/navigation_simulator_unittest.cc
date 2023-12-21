@@ -147,6 +147,15 @@ class ResponseHeadersCheckingNavigationSimulatorTest
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
 };
 
+// Test that NavigationSimulator accurately commits about:blank if the browser
+// requests a navigation to an empty URL.
+TEST_F(NavigationSimulatorTest, EmptyURL) {
+  std::unique_ptr<NavigationSimulator> simulator =
+      NavigationSimulator::CreateBrowserInitiated(GURL(), contents());
+  simulator->Commit();
+  EXPECT_EQ(GURL(url::kAboutBlankURL), main_rfh()->GetLastCommittedURL());
+}
+
 TEST_F(NavigationSimulatorTest, AutoAdvanceOff) {
   std::unique_ptr<NavigationSimulator> simulator =
       NavigationSimulator::CreateRendererInitiated(
