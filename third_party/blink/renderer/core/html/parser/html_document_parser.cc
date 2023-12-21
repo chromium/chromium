@@ -29,9 +29,11 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_util.h"
@@ -66,6 +68,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/html_parser_script_runner.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -78,6 +81,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
@@ -331,6 +335,37 @@ HTMLDocumentParserState::HTMLDocumentParserState(
       preload_processing_mode_(GetPreloadProcessingMode()),
       budget_(budget) {}
 
+// Wrap pending preloads in a thread safe and ref-counted object since the
+// vector is added to from a background thread and taken from from the main
+// thread.
+class HTMLDocumentParser::PendingPreloads
+    : public ThreadSafeRefCounted<PendingPreloads> {
+ public:
+  PendingPreloads() = default;
+
+  Vector<std::unique_ptr<PendingPreloadData>> Take() {
+    base::AutoLock auto_lock(lock_);
+    return std::move(preloads_);
+  }
+
+  // Returns the number of items pending preload after `preload_data` has been
+  // added.
+  size_t Add(std::unique_ptr<PendingPreloadData> preload_data) {
+    base::AutoLock auto_lock(lock_);
+    preloads_.push_back(std::move(preload_data));
+    return preloads_.size();
+  }
+
+  bool IsEmpty() {
+    base::AutoLock auto_lock(lock_);
+    return preloads_.empty();
+  }
+
+ private:
+  base::Lock lock_;
+  Vector<std::unique_ptr<PendingPreloadData>> preloads_ GUARDED_BY(lock_);
+};
+
 HTMLDocumentParser::HTMLDocumentParser(HTMLDocument& document,
                                        ParserSynchronizationPolicy sync_policy,
                                        ParserPrefetchPolicy prefetch_policy)
@@ -394,6 +429,7 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
            document.Url().IsLocalFile())
               ? kInfiniteTokenizationBudget
               : kDefaultMaxTokenizationBudget)),
+      pending_preloads_(base::MakeRefCounted<PendingPreloads>()),
       scheduler_(sync_policy == kAllowDeferredParsing
                      ? Thread::Current()->Scheduler()
                      : nullptr) {
@@ -1508,7 +1544,7 @@ void HTMLDocumentParser::ScanInBackground(const String& source) {
           this, options_, GetPreloadScannerThread()->GetTaskRunner(),
           CrossThreadBindRepeating(
               &HTMLDocumentParser::AddPreloadDataOnBackgroundThread,
-              WrapCrossThreadWeakPersistent(this),
+              MakeCrossThreadWeakHandle(this), this->pending_preloads_,
               GetDocument()->GetTaskRunner(TaskType::kInternalLoading)));
 
       background_scan_fn_ = CrossThreadBindRepeating(
@@ -1545,29 +1581,27 @@ void HTMLDocumentParser::ScanInBackground(const String& source) {
 
 // static
 void HTMLDocumentParser::AddPreloadDataOnBackgroundThread(
-    CrossThreadWeakPersistent<HTMLDocumentParser> weak_parser,
+    CrossThreadWeakHandle<HTMLDocumentParser> parser_handle,
+    scoped_refptr<PendingPreloads> pending_preloads,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::unique_ptr<PendingPreloadData> preload_data) {
   DCHECK(!IsMainThread());
-  auto parser = weak_parser.Lock();
-  if (!parser)
-    return;
 
-  bool should_post_task = false;
-  {
-    base::AutoLock lock(parser->pending_preload_lock_);
-    // Only post a task if the preload data is empty. Otherwise, a task has
-    // already been posted and will consume the new data.
-    should_post_task = parser->pending_preload_data_.empty();
-    parser->pending_preload_data_.push_back(std::move(preload_data));
-  }
+  size_t num_pending_preloads = pending_preloads->Add(std::move(preload_data));
 
-  if (should_post_task) {
+  // Only post a task if the preload data was empty before we added this data.
+  // Otherwise, a task has already been posted and will consume the new data.
+  if (num_pending_preloads == 1) {
     PostCrossThreadTask(
         *task_runner, FROM_HERE,
-        CrossThreadBindOnce(&HTMLDocumentParser::FlushPendingPreloads,
-                            std::move(parser)));
+        CrossThreadBindOnce(
+            &HTMLDocumentParser::FlushPendingPreloads,
+            MakeUnwrappingCrossThreadWeakHandle(std::move(parser_handle))));
   }
+}
+
+bool HTMLDocumentParser::HasPendingPreloads() {
+  return pending_preloads_->IsEmpty();
 }
 
 void HTMLDocumentParser::FlushPendingPreloads() {
@@ -1579,15 +1613,11 @@ void HTMLDocumentParser::FlushPendingPreloads() {
     return;
 
   // Do this in a loop in case more preloads are added in the background.
-  while (HasPendingPreloads()) {
-    Vector<std::unique_ptr<PendingPreloadData>> preload_data;
-    {
-      base::AutoLock lock(pending_preload_lock_);
-      preload_data = std::move(pending_preload_data_);
-    }
-
-    for (auto& preload : preload_data)
+  Vector<std::unique_ptr<PendingPreloadData>> preload_data;
+  while (!(preload_data = pending_preloads_->Take()).empty()) {
+    for (auto& preload : preload_data) {
       ProcessPreloadData(std::move(preload));
+    }
   }
 }
 
