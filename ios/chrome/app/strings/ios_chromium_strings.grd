@@ -716,6 +716,13 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_TITLE" desc="The title for the UIAlert that redirects the user to iOS' application settings for Chrome.">
           Allow Chromium notifications to get price drop alerts
       </message>
+      <message name="IDS_IOS_PRIVACY_ACCOUNT_SETTINGS_AND_GOOGLE_SERVICES_FOOTER" desc="Footer to invite the user to open the Account Settings and Google Services settings.">
+        You can <ph name="BEGIN_LINK">BEGIN_LINK</ph>manage what Chromium data is saved<ph name="END_LINK">END_LINK</ph> in your Google Account.
+For more settings that use data to improve your Chromium experience, go to <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Services<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_PRIVACY_SIGNED_OUT_FOOTER" desc="Footer to invite the signed out user to open the Google Services settings.">
+        For more settings that use data to improve your Chromium experience, go to <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Services<ph name="END_LINK">END_LINK</ph>.
+      </message>
       <message name="IDS_IOS_PRODUCT_NAME" desc="The Chrome application name" translateable="false">
         Chromium
       </message>

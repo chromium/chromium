@@ -716,8 +716,15 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_TITLE" desc="The title for the UIAlert that redirects the user to iOS' application settings for Chrome.">
           Allow Chrome notifications to get price drop alerts
       </message>
+      <message name="IDS_IOS_PRIVACY_ACCOUNT_SETTINGS_AND_GOOGLE_SERVICES_FOOTER" desc="Footer to invite the user to open the Account Settings and Google Services settings.">
+        You can <ph name="BEGIN_LINK">BEGIN_LINK</ph>manage what Chrome data is saved<ph name="END_LINK">END_LINK</ph> in your Google Account.
+For more settings that use data to improve your Chrome experience, go to <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Services<ph name="END_LINK">END_LINK</ph>.
+      </message>
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY_PROXY" desc="Friendlier summary for Privacy Safe Browsing standard protection mode.">
         Protects against sites, downloads, and extensions that are known to be dangerous. When you visit a site, Chrome sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site does something suspicious, full URLs and bits of page content are also sent.
+      </message>
+      <message name="IDS_IOS_PRIVACY_SIGNED_OUT_FOOTER" desc="Footer to invite the signed out user to open the Google Services settings.">
+        For more settings that use data to improve your Chrome experience, go to <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Services<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_PRODUCT_NAME" desc="The Chrome application name">
         Google Chrome
