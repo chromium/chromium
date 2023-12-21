@@ -143,9 +143,11 @@ void ChromeLoginPerformer::LoadAndApplyEarlyPrefs(
   CHECK(success);
   early_prefs_dir = early_prefs_dir.Append(context->GetUserIDHash());
 
+  // Use TaskPriority::HIGHEST as this operation blocks
+  // user login flow.
   early_prefs_reader_ = std::make_unique<EarlyPrefsReader>(
       early_prefs_dir, base::ThreadPool::CreateSequencedTaskRunner(
-                           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+                           {base::MayBlock(), base::TaskPriority::HIGHEST,
                             base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
   early_prefs_reader_->ReadFile(base::BindOnce(
       &ChromeLoginPerformer::OnEarlyPrefsRead, weak_factory_.GetWeakPtr(),
