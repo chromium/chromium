@@ -95,7 +95,7 @@ public final class RemoteObjectHostImplTest {
         public Boolean methodExists;
 
         @Override
-        public void call(Boolean result) {
+        public void call(boolean result) {
             methodExists = result;
         }
     }

@@ -41,7 +41,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
-import org.chromium.payments.mojom.DigitalGoods.GetDetails_Response;
 import org.chromium.payments.mojom.ItemDetails;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.url.GURL;
@@ -131,17 +130,14 @@ public class DigitalGoodsTest {
         CallbackHelper helper = new CallbackHelper();
         impl.getDetails(
                 new String[] {"id1"},
-                new GetDetails_Response() {
-                    @Override
-                    public void call(Integer responseCode, ItemDetails[] details) {
-                        assertEquals(0, responseCode.intValue());
-                        assertEquals("id1", details[0].itemId);
-                        assertEquals("Item 1", details[0].title);
-                        assertEquals("Desc 1", details[0].description);
-                        assertEquals("GBP", details[0].price.currency);
-                        assertEquals("10", details[0].price.value);
-                        helper.notifyCalled();
-                    }
+                (int responseCode, ItemDetails[] details) -> {
+                    assertEquals(0, responseCode);
+                    assertEquals("id1", details[0].itemId);
+                    assertEquals("Item 1", details[0].title);
+                    assertEquals("Desc 1", details[0].description);
+                    assertEquals("GBP", details[0].price.currency);
+                    assertEquals("10", details[0].price.value);
+                    helper.notifyCalled();
                 });
         helper.waitForFirst();
     }

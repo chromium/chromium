@@ -107,7 +107,7 @@ public class InternalAuthenticator {
                         InternalAuthenticatorJni.get()
                                 .invokeMakeCredentialResponse(
                                         mNativeInternalAuthenticatorAndroid,
-                                        status.intValue(),
+                                        status,
                                         response == null ? null : response.serialize());
                     }
                 });
@@ -130,7 +130,7 @@ public class InternalAuthenticator {
                         InternalAuthenticatorJni.get()
                                 .invokeGetAssertionResponse(
                                         mNativeInternalAuthenticatorAndroid,
-                                        status.intValue(),
+                                        status,
                                         response == null ? null : response.serialize());
                     }
                 });

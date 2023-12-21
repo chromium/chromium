@@ -226,13 +226,10 @@ public class LinkToTextHelper {
     public static void requestSelector(
             TextFragmentReceiver producer, RequestSelectorCallback callback) {
         producer.requestSelector(
-                new TextFragmentReceiver.RequestSelector_Response() {
-                    @Override
-                    public void call(String selector, Integer error, Integer readyStatus) {
-                        LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
-                                LinkToTextMetricsHelper.LinkToTextDiagnoseStatus.SELECTOR_RECEIVED);
-                        callback.apply(selector, error, readyStatus);
-                    }
+                (String selector, int error, int readyStatus) -> {
+                    LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
+                            LinkToTextMetricsHelper.LinkToTextDiagnoseStatus.SELECTOR_RECEIVED);
+                    callback.apply(selector, error, readyStatus);
                 });
     }
 
