@@ -1178,11 +1178,11 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
   } else if (user_response == kUserActionCancelOneDrive) {
     cloud_open_metrics_->LogTaskResult(
         OfficeTaskResult::kCancelledAtConfirmation);
-  } else {
-    // TODO(b/315727684): mark an empty user response case NOTREACHED() once
-    // Escape is handled for all dialogs.
+  } else if (!user_response.empty()) {
     cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kLocalFileTask);
     LaunchLocalFileTask(user_response);
+  } else {
+    LOG(ERROR) << "Empty user response";
   }
 }
 
@@ -1323,11 +1323,16 @@ ui::ModalType CloudUploadDialog::GetDialogModalType() const {
 bool CloudUploadDialog::ShouldCloseDialogOnEscape() const {
   // TODO(b/315727684): Handle escape for all dialogs to ensure dialog is
   // properly closed.
-  // The One Drive setup and File Handler dialogs handle escape.
+  // The One Drive setup, File Handler and Move Confirmation dialogs handle
+  // escape.
   CHECK(dialog_args_);
   return !(
       dialog_args_->dialog_specific_args->is_one_drive_setup_dialog_args() ||
-      dialog_args_->dialog_specific_args->is_file_handler_dialog_args());
+      dialog_args_->dialog_specific_args->is_file_handler_dialog_args() ||
+      dialog_args_->dialog_specific_args
+          ->is_move_confirmation_google_drive_dialog_args() ||
+      dialog_args_->dialog_specific_args
+          ->is_move_confirmation_one_drive_dialog_args());
 }
 
 bool CloudUploadDialog::ShouldShowCloseButton() const {

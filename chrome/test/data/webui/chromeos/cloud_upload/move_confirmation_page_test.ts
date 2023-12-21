@@ -628,4 +628,58 @@ suite('<move-confirmation-page>', () => {
         moveConfirmationPageApp.$<HTMLElement>('.action-button')!;
     assertEquals('Copy and open', actionButton.innerText);
   });
+
+  /**
+   * Test that clicking the cancel button triggers the right
+   * `respondWithUserActionAndClose` mojo request.
+   */
+  test('Cancel', async () => {
+    await setUp({
+      fileNames: ['text.docx'],
+      officeWebAppInstalled: true,
+      installOfficeWebAppResult: true,
+      odfsMounted: true,
+      dialogSpecificArgs: {
+        moveConfirmationGoogleDriveDialogArgs: {
+          operationType: OperationType.kCopy,
+        },
+      },
+      officeMoveConfirmationShownForDrive: true,
+    });
+
+    moveConfirmationPageApp.$('.cancel-button').click();
+    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(
+        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    assertDeepEquals(
+        [UserAction.kCancelGoogleDrive],
+        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+  });
+
+  /**
+   * Test that an Escape keydown triggers the right
+   * `respondWithUserActionAndClose` mojo request.
+   */
+  test('Escape', async () => {
+    await setUp({
+      fileNames: ['text.docx'],
+      officeWebAppInstalled: true,
+      installOfficeWebAppResult: true,
+      odfsMounted: true,
+      dialogSpecificArgs: {
+        moveConfirmationGoogleDriveDialogArgs: {
+          operationType: OperationType.kCopy,
+        },
+      },
+      officeMoveConfirmationShownForDrive: true,
+    });
+
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(
+        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    assertDeepEquals(
+        [UserAction.kCancelGoogleDrive],
+        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+  });
 });
