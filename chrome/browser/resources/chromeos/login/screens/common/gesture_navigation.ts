@@ -10,95 +10,95 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/buttons/oobe_text_button.js';
+import '../../components/oobe_cr_lottie.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import type {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 
 import {getTemplate} from './gesture_navigation.html.js';
 
 
 /**
  * Enum to represent each page in the gesture navigation screen.
- * @enum {string}
  */
-const GesturePage = {
-  INTRO: 'gestureIntro',
-  HOME: 'gestureHome',
-  OVERVIEW: 'gestureOverview',
-  BACK: 'gestureBack',
-};
+enum GesturePage {
+  INTRO = 'gestureIntro',
+  HOME = 'gestureHome',
+  OVERVIEW = 'gestureOverview',
+  BACK = 'gestureBack',
+}
 
 /**
  * Available user actions.
- * @enum {string}
  */
-const UserAction = {
-  SKIP: 'skip',
-  EXIT: 'exit',
-  PAGE_CHANGE: 'gesture-page-change',
-};
+enum UserAction {
+  SKIP = 'skip',
+  EXIT = 'exit',
+  PAGE_CHANGE = 'gesture-page-change',
+}
 
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- */
-const GestureScreenElementBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
+export const GestureScreenElementBase =
+    mixinBehaviors(
+        [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+        PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
+    };
 
-class GestureNavigation extends GestureScreenElementBase {
+export class GestureNavigation extends GestureScreenElementBase {
   static get is() {
-    return 'gesture-navigation-element';
+    return 'gesture-navigation-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {};
   }
 
   constructor() {
     super();
-    this.UI_STEPS = GesturePage;
   }
 
-  /** @override */
-  get EXTERNAL_API() {
+  override get UI_STEPS() {
+    return GesturePage;
+  }
+
+
+  override get EXTERNAL_API(): string[] {
     return [];
   }
 
-  /** @override */
-  defaultUIStep() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep(): GesturePage {
     return GesturePage.INTRO;
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('GestureNavigationScreen');
   }
 
   /**
    * This is the 'on-tap' event handler for the skip button.
-   * @private
    */
-  onSkip_() {
+  private onSkip_(): void {
     this.userActed(UserAction.SKIP);
   }
 
   /**
    * This is the 'on-tap' event handler for the 'next' or 'get started' button.
-   * @private
    */
-  onNext_() {
+  private onNext_(): void {
     switch (this.uiStep) {
       case GesturePage.INTRO:
         this.setCurrentPage_(GesturePage.HOME);
@@ -121,9 +121,8 @@ class GestureNavigation extends GestureScreenElementBase {
 
   /**
    * This is the 'on-tap' event handler for the 'back' button.
-   * @private
    */
-  onBack_() {
+  private onBack_(): void {
     switch (this.uiStep) {
       case GesturePage.HOME:
         this.setCurrentPage_(GesturePage.INTRO);
@@ -140,10 +139,8 @@ class GestureNavigation extends GestureScreenElementBase {
   /**
    * Set the new page, making sure to stop the animation for the old page and
    * start the animation for the new page.
-   * @param {GesturePage} newPage The target page.
-   * @private
    */
-  setCurrentPage_(newPage) {
+  private setCurrentPage_(newPage: GesturePage): void {
     this.setPlayCurrentScreenAnimation(false);
     this.setUIStep(newPage);
     this.userActed([UserAction.PAGE_CHANGE, newPage]);
@@ -152,14 +149,20 @@ class GestureNavigation extends GestureScreenElementBase {
 
   /**
    * This will play or stop the current screen's lottie animation.
-   * @param {boolean} enabled Whether the animation should play or not.
-   * @private
+   * param enabled Whether the animation should play or not.
    */
-  setPlayCurrentScreenAnimation(enabled) {
-    const animation = this.$[this.uiStep].querySelector('.gesture-animation');
+  private setPlayCurrentScreenAnimation(enabled: boolean): void {
+    const animation =
+        this.shadowRoot!.querySelector<OobeCrLottie>('.gesture-animation');
     if (animation) {
       animation.playing = enabled;
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [GestureNavigation.is]: GestureNavigation;
   }
 }
 
