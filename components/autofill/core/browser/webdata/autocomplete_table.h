@@ -27,7 +27,7 @@ struct FormFieldData;
 // is for historical reasons unfortunately named "autofill".
 //
 // Note: The database stores time in seconds, UTC.
-//
+// -----------------------------------------------------------------------------
 // autofill             This table contains autocomplete history data (not
 //                      structured information).
 //
@@ -40,7 +40,7 @@ struct FormFieldData;
 //                      |value| into a field of name |name|.
 //   count              How many times the user has entered the string |value|
 //                      in a field of name |name|.
-//
+// -----------------------------------------------------------------------------
 class AutocompleteTable : public WebDatabaseTable {
  public:
   AutocompleteTable();

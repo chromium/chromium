@@ -23,9 +23,13 @@ namespace autofill {
 // database passed to the constructor. It expects the following schemas:
 //
 // Note: The database stores time in seconds, UTC.
-//
+// -----------------------------------------------------------------------------
 // contact_info         This table contains Autofill profile data synced from a
 //                      remote source.
+//
+//                      It has all the same fields as the local_addresses table,
+//                      below.
+// -----------------------------------------------------------------------------
 // local_addresses      This table contains kLocalOrSyncable Autofill profiles.
 //                      It has the same layout as the contact_info table.
 //
@@ -49,11 +53,15 @@ namespace autofill {
 //   last_modifier_id   The application that performed the last non-metadata
 //                      modification of the profile.
 //                      Represented as an integer. See AutofillProfile.
-//
+// -----------------------------------------------------------------------------
 // contact_info_type_tokens
 //                      Contains the values for all relevant FieldTyps of a
 //                      contact_info entry. At most one entry per (guid, type)
 //                      pair exists.
+//
+//                      It has all the same fields as the
+//                      local_addresses_type_tokens table, below.
+// -----------------------------------------------------------------------------
 // local_addresses_type_tokens
 //                      Like contact_info_type_tokens, but for local_addresses.
 //
@@ -70,6 +78,7 @@ namespace autofill {
 //  observations        An encoding of the observations stored for this `type`.
 //                      See `ProfileTokenConfidence::
 //                      SerializeObservationsForStoredType()`.
+// -----------------------------------------------------------------------------
 class AddressAutofillTable : public WebDatabaseTable {
  public:
   AddressAutofillTable();

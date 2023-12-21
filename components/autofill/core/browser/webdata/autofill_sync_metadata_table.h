@@ -20,7 +20,7 @@ namespace autofill {
 // This class acts as a SyncMetadataStore for components/autofill. It stores the
 // metadata in two tables inside the SQLite database passed to the constructor.
 // It expects the following schemas:
-//
+// -----------------------------------------------------------------------------
 // autofill_sync_metadata
 //                      Sync-specific metadata for autofill records.
 //
@@ -29,7 +29,7 @@ namespace autofill {
 //   storage_key        A string that uniquely identifies the metadata record
 //                      as well as the corresponding autofill record.
 //   value              The serialized EntityMetadata record.
-//
+// -----------------------------------------------------------------------------
 // autofill_model_type_state
 //                      Contains sync ModelTypeStates for autofill model types.
 //
@@ -38,7 +38,7 @@ namespace autofill {
 //                      for one model type, there was an id column with value 1
 //                      for the single entry.
 //   value              The serialized ModelTypeState record.
-//
+// -----------------------------------------------------------------------------
 class AutofillSyncMetadataTable : public WebDatabaseTable,
                                   public syncer::SyncMetadataStore {
  public:

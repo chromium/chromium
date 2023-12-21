@@ -78,16 +78,16 @@ struct PaymentInstrumentFields {
 // database passed to the constructor. It expects the following schemas:
 //
 // Note: The database stores time in seconds, UTC.
-//
+// -----------------------------------------------------------------------------
 // credit_cards         This table contains credit card data added by the user
 //                      with the Autofill dialog.  Most of the columns are
 //                      standard entries in a credit card form.
 //
 //   guid               A guid string to uniquely identify the credit card.
 //                      Added in version 31.
-//   name_on_card
-//   expiration_month
-//   expiration_year
+//   name_on_card       The cardholder's name, if available.
+//   expiration_month   Expiration month: 1-12
+//   expiration_year    Four-digit year: 2017
 //   card_number_encrypted
 //                      Stores encrypted credit card number.
 //   use_count          The number of times this card has been used to fill
@@ -104,7 +104,7 @@ struct PaymentInstrumentFields {
 //                      CreditCard. Added in version 66.
 //   nickname           A nickname for the card, entered by the user. Added in
 //                      version 87.
-//
+// -----------------------------------------------------------------------------
 // masked_credit_cards
 //                      This table contains "masked" credit card information
 //                      about credit cards stored on the server. It consists
@@ -119,7 +119,7 @@ struct PaymentInstrumentFields {
 //                      to the client.
 //   status             Server's status of this card.
 //                      TODO(brettw) define constants for this.
-//   name_on_card
+//   name_on_card       The cardholder's name, if available.
 //   network            Issuer network of the card. For example, "VISA". Renamed
 //                      from "type" in version 72.
 //   last_four          Last four digits of the card number. For de-duping
@@ -152,7 +152,7 @@ struct PaymentInstrumentFields {
 //                      kNetwork denotes that it is a network-level enrollment.
 //   product_terms_url  Issuer terms of service to be displayed on the settings
 //                      page.
-//
+// -----------------------------------------------------------------------------
 // unmasked_credit_cards
 //                      When a masked credit credit card is unmasked and the
 //                      full number is downloaded or when the full number is
@@ -165,7 +165,7 @@ struct PaymentInstrumentFields {
 //                      Full card number, encrypted.
 //   unmask_date        The date this card was unmasked in units of
 //                      Time::ToInternalValue. Added in version 64.
-//
+// -----------------------------------------------------------------------------
 // server_card_cloud_token_data
 //                      Stores data related to Cloud Primary Account Number
 //                      (CPAN) of server credit cards. Each card can have
@@ -179,7 +179,7 @@ struct PaymentInstrumentFields {
 //   card_art_url       URL of the card art to be displayed for CPAN.
 //   instrument_token   Opaque identifier for the cloud token associated with
 //                      the payment instrument.
-//
+// -----------------------------------------------------------------------------
 // server_card_metadata
 //                      Metadata (currently, usage data) about server credit
 //                      cards. This will be synced.
@@ -194,7 +194,7 @@ struct PaymentInstrumentFields {
 //                      billing address for this card. Can be null in the
 //                      database, but always returned as an empty string in
 //                      CreditCard. Added in version 71.
-//
+// -----------------------------------------------------------------------------
 // local_ibans          This table contains International Bank Account
 //                      Numbers (IBANs) added by the user. The columns are
 //                      standard entries in an Iban form. Those are local IBANs
@@ -208,8 +208,7 @@ struct PaymentInstrumentFields {
 //   value_encrypted    Actual value of the IBAN (the bank account number),
 //                      encrypted.
 //   nickname           A nickname for the IBAN, entered by the user.
-//
-//
+// -----------------------------------------------------------------------------
 // masked_ibans         This table contains "masked" International Bank Account
 //                      Numbers (IBANs) added by the user. Those are server
 //                      IBANs saved on GPay server and are available across all
@@ -223,7 +222,7 @@ struct PaymentInstrumentFields {
 //                      shown when in a masked format.
 //   length             Length of the full IBAN value.
 //   nickname           A nickname for the IBAN, entered by the user.
-//
+// -----------------------------------------------------------------------------
 // masked_ibans_metadata
 //                      Metadata (currently, usage data) about server IBANS.
 //                      This will be synced from Chrome sync.
@@ -234,12 +233,12 @@ struct PaymentInstrumentFields {
 //                      a form.
 //   use_date           The date this IBAN was last used to fill a form,
 //                      in time_t.
-//
+// -----------------------------------------------------------------------------
 // payments_customer_data
 //                      Contains Google Payments customer data.
 //
 //   customer_id        A string representing the Google Payments customer id.
-//
+// -----------------------------------------------------------------------------
 // offer_data           The data for Autofill offers which will be presented in
 //                      payments autofill flows.
 //
@@ -259,7 +258,7 @@ struct PaymentInstrumentFields {
 //   usage_instructions_text
 //                      Server-driven UI string to instruct the user on how they
 //                      can redeem the offer.
-//
+// -----------------------------------------------------------------------------
 // offer_eligible_instrument
 //                      Contains the mapping of credit cards and card linked
 //                      offers.
@@ -268,7 +267,7 @@ struct PaymentInstrumentFields {
 //                      offer_id in the offer_data table.
 //   instrument_id      The new form of instrument id of the card. Will not be
 //                      used for now.
-//
+// -----------------------------------------------------------------------------
 // offer_merchant_domain
 //                      Contains the mapping of merchant domains and card linked
 //                      offers.
@@ -277,42 +276,42 @@ struct PaymentInstrumentFields {
 //                      offer_id in the offer_data table.
 //   merchant_domain    List of full origins for merchant websites on which
 //                      this offer would apply.
-//
+// -----------------------------------------------------------------------------
 // virtual_card_usage_data
 //                      Contains data related to retrieval attempts of a virtual
 //                      card on a particular merchant domain
 //
-//  id                  Unique identifier for retrieval data. Generated
+//   id                 Unique identifier for retrieval data. Generated
 //                      originally in chrome sync server.
-//  instrument_id       The instrument id of the actual card that the virtual
+//   instrument_id      The instrument id of the actual card that the virtual
 //                      card is related to.
-//  merchant_domain     The merchant domain the usage data is linked to.
-//  last_four           The last four digits of the virtual card number. This is
+//   merchant_domain    The merchant domain the usage data is linked to.
+//   last_four          The last four digits of the virtual card number. This is
 //                      tied to the usage data because the virtual card number
 //                      may vary depending on merchants.
-//
+// -----------------------------------------------------------------------------
 // local_stored_cvc     This table contains credit card CVC data stored locally
 //                      in Chrome.
 //
-//  guid                A guid string to identify the corresponding locally
+//   guid               A guid string to identify the corresponding locally
 //                      stored credit card in the credit_cards table.
-//  value_encrypted     Encrypted CVC value of the card. May be 3 digits or 4
+//   value_encrypted    Encrypted CVC value of the card. May be 3 digits or 4
 //                      digits depending on the card issuer.
-//  last_updated_timestamp
+//   last_updated_timestamp
 //                      The timestamp of the most recent update to the data
 //                      entry.
-//
+// -----------------------------------------------------------------------------
 // server_stored_cvc    This table contains credit card CVC data stored synced
 //                      to Chrome Sync's Kansas server.
 //
-//  instrument_id       A server generated id to identify the corresponding
+//   instrument_id      A server generated id to identify the corresponding
 //                      credit cards stored in the masked_credit_cards table.
-//  value_encrypted     Encrypted CVC value of the card. May be 3 digits or 4
+//   value_encrypted    Encrypted CVC value of the card. May be 3 digits or 4
 //                      digits depending on the card issuer.
-//  last_updated_timestamp
+//   last_updated_timestamp
 //                      The timestamp of the most recent update to the data
 //                      entry.
-//
+// -----------------------------------------------------------------------------
 // payment_instruments  This table contains basic details that apply to all
 //                      payment instruments synced from Payments backend via
 //                      Chrome Sync. This does not apply to credit cards or IBAN
@@ -320,15 +319,15 @@ struct PaymentInstrumentFields {
 //                      The pair of (`instrument_id`, `instrument_type`) are the
 //                      composite primary key for this table
 //
-//  instrument_id       The server-generated id for the payment instrument.
-//  instrument_type     The type of payment instrument. This is an integer
+//   instrument_id      The server-generated id for the payment instrument.
+//   instrument_type    The type of payment instrument. This is an integer
 //                      mapping to one of the following types: {BankAccount}.
 //                      This determines which table to query for fetching the
 //                      instrument details.
-//  nickname            The nickname set by the user for the payment instrument.
-//  display_icon_url    The URL for the icon to be displayed when showing the
+//   nickname           The nickname set by the user for the payment instrument.
+//   display_icon_url   The URL for the icon to be displayed when showing the
 //                      payment instrument to the user.
-//
+// -----------------------------------------------------------------------------
 // payment_instruments_metadata
 //                      Metadata (currently, usage data) about payment
 //                      instruments. This will be synced.
@@ -336,13 +335,13 @@ struct PaymentInstrumentFields {
 //                      composite primary key for this table and can be used as
 //                      the foreign key to the `payment_instruments` table.
 //
-//  instrument_id       The server-generated id for the payment instrument.
-//  instrument_type     The type of payment instrument. This is an integer
+//   instrument_id      The server-generated id for the payment instrument.
+//   instrument_type    The type of payment instrument. This is an integer
 //                      mapping to one of the following types: {BankAccount}.
-//  use_count           The number of times this payment instrument has been
+//   use_count          The number of times this payment instrument has been
 //                      used.
-//  use_date            The date this payment instrument was last used.
-//
+//   use_date           The date this payment instrument was last used.
+// -----------------------------------------------------------------------------
 // payment_instrument_supported_rails
 //                      This table stores the mapping of what payment instrument
 //                      is supported for which payment rails, where a rail can
@@ -356,51 +355,50 @@ struct PaymentInstrumentFields {
 //                      `instrument_type`) can be used as foreign key to the
 //                      `payment_instruments` table.
 //
-//  instrument_id       The server-generated id for the payment instrument.
-//  instrument_type     The type of payment instrument. This is an integer
+//   instrument_id      The server-generated id for the payment instrument.
+//   instrument_type    The type of payment instrument. This is an integer
 //                      mapping to one of the following types: {BankAccount}.
-//  payment_rail        This is an integer mapping to one of the following
+//   payment_rail       This is an integer mapping to one of the following
 //                      types: {Pix}.
-//
+// -----------------------------------------------------------------------------
 // bank_accounts        This table contains the bank account data synced via
 //                      Chrome Sync.
 //
-//  instrument_id       The identifier assigned by the GPay server to this bank
+//   instrument_id      The identifier assigned by the GPay server to this bank
 //                      account. This is intended to be a unique field.
-//  bank_name           The name of the bank where the account is registered.
-//  account_number_suffix
+//   bank_name          The name of the bank where the account is registered.
+//   account_number_suffix
 //                      The last four digits of the bank account, with which the
 //                      user can identify the account.
-//  account_type        The type of bank account. This is an integer mapping to
+//   account_type       The type of bank account. This is an integer mapping to
 //                      one of the following types: {Checking, Savings, Current,
 //                      Salary, Transacting}
-//
+// -----------------------------------------------------------------------------
 // masked_credit_card_benefits
-//                       This table contains the multi-valued benefits fields
-//                       associated with a credit card, i.e., credit-card-linked
-//                       benefits that help users save money on online
-//                       purchases.
+//                      This table contains the multi-valued benefits fields
+//                      associated with a credit card, i.e., credit-card-linked
+//                      benefits that help users save money on online purchases.
 //
-//  benefit_id           The unique ID for this benefit data. Generated
-//                       originally in Chrome Sync server.
-//  instrument_id        The instrument id string that identifies the credit
-//                       card to which the benefit belongs to. Identical to
-//                       `instrument_id` field in `masked_credit_cards`.
-//  benefit_type         The type of benefit. Either category, merchant, or
-//                       flat rate.
-//  benefit_category     The category that the benefit applies to. Only set
-//                       when `benefit_type` == category.
-//  benefit_description  A description of what the credit card benefit offers
-//                       the user for purchases. Shown in the Autofill
-//                       suggestion UI.
-//  start_time           Timestamp when the benefit is active and should be
-//                       displayed. Empty if no time range is specific for
-//                       the benefit.
-//  end_time             Timestamp When the benefit is no longer active and
-//                       should no longer be displayed. This field is only
-//                       set for benefits with an expiration date. Empty if
-//                       the benefit will last indefinitely.
-//
+//   benefit_id         The unique ID for this benefit data. Generated
+//                      originally in Chrome Sync server.
+//   instrument_id      The instrument id string that identifies the credit card
+//                      to which the benefit belongs to. Identical to
+//                      `instrument_id` field in `masked_credit_cards`.
+//   benefit_type       The type of benefit. Either category, merchant, or flat
+//                      rate.
+//   benefit_category   The category that the benefit applies to. Only set when
+//                      `benefit_type` == category.
+//   benefit_description
+//                      A description of what the credit card benefit offers the
+//                      user for purchases. Shown in the Autofill suggestion UI.
+//   start_time         Timestamp when the benefit is active and should be
+//                      displayed. Empty if no time range is specific for the
+//                      benefit.
+//   end_time           Timestamp When the benefit is no longer active and
+//                      should no longer be displayed. This field is only set
+//                      for benefits with an expiration date. Empty if the
+//                      benefit will last indefinitely.
+// -----------------------------------------------------------------------------
 // benefit_merchant_domains
 //                      Contains the mapping of non-personalized credit card
 //                      merchant benefits to eligible merchant domains. A
@@ -411,7 +409,7 @@ struct PaymentInstrumentFields {
 //                      `benefit_id` in the `masked_credit_card_benefits` table.
 //   merchant_domain    Origin for merchant websites on which this benefit
 //                      would apply.
-//
+// -----------------------------------------------------------------------------
 class PaymentsAutofillTable : public WebDatabaseTable {
  public:
   PaymentsAutofillTable();
