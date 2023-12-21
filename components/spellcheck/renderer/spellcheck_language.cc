@@ -33,17 +33,13 @@ bool SpellcheckLanguage::InitializeIfNeeded() {
 }
 
 SpellcheckLanguage::SpellcheckWordResult SpellcheckLanguage::SpellCheckWord(
-    const char16_t* text_begin,
-    size_t position_in_text,
-    size_t text_length,
+    std::u16string_view text,
     spellcheck::mojom::SpellCheckHost& host,
     size_t* skip_or_misspelling_start,
     size_t* skip_or_misspelling_len,
     std::vector<std::u16string>* optional_suggestions) {
-  DCHECK_GE(text_length, position_in_text);
   DCHECK(skip_or_misspelling_start && skip_or_misspelling_len)
       << "Out vars must be given.";
-  size_t remaining_text_len = text_length - position_in_text;
 
   // Do nothing if we need to delay initialization. (Rather than blocking,
   // report the word as correctly spelled.)
@@ -56,8 +52,9 @@ SpellcheckLanguage::SpellcheckWordResult SpellcheckLanguage::SpellCheckWord(
 
   *skip_or_misspelling_start = 0;
   *skip_or_misspelling_len = 0;
-  if (remaining_text_len == 0)
+  if (text.empty()) {
     return IS_CORRECT;  // No input means always spelled correctly.
+  }
 
   std::u16string word;
   size_t word_start;
@@ -69,8 +66,7 @@ SpellcheckLanguage::SpellcheckWordResult SpellcheckLanguage::SpellCheckWord(
       return IS_CORRECT;
   }
 
-  text_iterator_.SetText(
-      std::u16string_view(text_begin + position_in_text, remaining_text_len));
+  text_iterator_.SetText(text);
   DCHECK(platform_spelling_engine_);
   for (SpellcheckWordIterator::WordIteratorStatus status =
            text_iterator_.GetNextWord(&word, &word_start, &word_length);
@@ -79,7 +75,7 @@ SpellcheckLanguage::SpellcheckWordResult SpellcheckLanguage::SpellCheckWord(
     // Found a character that is not able to be spellchecked so determine how
     // long the sequence of uncheckable characters is and then return.
     if (status == SpellcheckWordIterator::IS_SKIPPABLE) {
-      *skip_or_misspelling_start = position_in_text + word_start;
+      *skip_or_misspelling_start = word_start;
       while (status == SpellcheckWordIterator::IS_SKIPPABLE) {
         *skip_or_misspelling_len += word_length;
         status = text_iterator_.GetNextWord(&word, &word_start, &word_length);
@@ -99,7 +95,7 @@ SpellcheckLanguage::SpellcheckWordResult SpellcheckLanguage::SpellCheckWord(
       continue;
     }
 
-    *skip_or_misspelling_start = position_in_text + word_start;
+    *skip_or_misspelling_start = word_start;
     *skip_or_misspelling_len = word_length;
 
     // Get the list of suggested words.

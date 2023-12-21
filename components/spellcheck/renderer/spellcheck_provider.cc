@@ -265,7 +265,6 @@ void SpellCheckProvider::CheckSpelling(
     size_t& length,
     blink::WebVector<blink::WebString>* optional_suggestions) {
   std::u16string word = text.Utf16();
-  const int kWordStart = 0;
 
   if (optional_suggestions) {
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
@@ -275,8 +274,7 @@ void SpellCheckProvider::CheckSpelling(
     // suggestions are retrieved in SpellingMenuObserver::InitMenu on the
     // browser process side to avoid a blocking IPC.
     spellcheck::PerLanguageSuggestions per_language_suggestions;
-    spellcheck_->SpellCheckWord(word.c_str(), kWordStart, word.size(),
-                                GetSpellCheckHost(), &offset, &length,
+    spellcheck_->SpellCheckWord(word, GetSpellCheckHost(), &offset, &length,
                                 &per_language_suggestions);
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
@@ -295,8 +293,7 @@ void SpellCheckProvider::CheckSpelling(
     spellcheck_renderer_metrics::RecordCheckedTextLengthWithSuggestions(
         base::saturated_cast<int>(word.size()));
   } else {
-    spellcheck_->SpellCheckWord(word.c_str(), kWordStart, word.size(),
-                                GetSpellCheckHost(), &offset, &length,
+    spellcheck_->SpellCheckWord(word, GetSpellCheckHost(), &offset, &length,
                                 /* optional suggestions vector */ nullptr);
     spellcheck_renderer_metrics::RecordCheckedTextLengthNoSuggestions(
         base::saturated_cast<int>(word.size()));
