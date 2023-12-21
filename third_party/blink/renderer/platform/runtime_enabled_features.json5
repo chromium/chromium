@@ -3700,10 +3700,6 @@
       status: "stable",
     },
     {
-      name: "SvgRasterOptimizations",
-      status: "stable",
-    },
-    {
       name: "SvgTextFixHittestAfterScale",
       status: "stable",
     },
