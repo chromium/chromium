@@ -594,13 +594,11 @@ public class NavigateTest {
         HistogramWatcher startSurfaceHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         histogram,
-                        BackPressManager.getHistogramValueForTesting(
-                                BackPressHandler.Type.START_SURFACE));
+                        BackPressManager.getHistogramValue(BackPressHandler.Type.START_SURFACE));
         HistogramWatcher tabSwitcherHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         histogram,
-                        BackPressManager.getHistogramValueForTesting(
-                                BackPressHandler.Type.TAB_SWITCHER));
+                        BackPressManager.getHistogramValue(BackPressHandler.Type.TAB_SWITCHER));
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabUiTestHelper.enterTabSwitcher(cta);
@@ -675,8 +673,8 @@ public class NavigateTest {
                     webServer.setResponseWithRunnableAction(
                             "/mockme.html",
                             "<html>  <head>    <meta name=\"viewport\"       "
-                                    + " content=\"initial-scale=0.75,maximum-scale=0.75,user-scalable=no\">"
-                                    + "  </head>  <body>Real</body></html>",
+                                + " content=\"initial-scale=0.75,maximum-scale=0.75,user-scalable=no\">"
+                                + "  </head>  <body>Real</body></html>",
                             null,
                             checkAction);
 
@@ -684,9 +682,9 @@ public class NavigateTest {
             mActivityTestRule.loadUrl(
                     UrlUtils.encodeHtmlDataUri(
                             "<head>  <meta name=\"viewport\"     "
-                                    + " content=\"initial-scale=0.5,maximum-scale=0.5,user-scalable=no\"></head><script>"
-                                    + "  function spoof() {    var w = open();    w.opener = null;   "
-                                    + " w.document.write('Spoofed');    w.location = '"
+                                + " content=\"initial-scale=0.5,maximum-scale=0.5,user-scalable=no\"></head><script>"
+                                + "  function spoof() {    var w = open();    w.opener = null;   "
+                                + " w.document.write('Spoofed');    w.location = '"
                                     + mockedUrl
                                     + "'"
                                     + "  }"

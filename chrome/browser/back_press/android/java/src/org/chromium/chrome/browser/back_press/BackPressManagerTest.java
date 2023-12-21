@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.back_press;
 
+import androidx.activity.BackEventCompat;
 import androidx.test.filters.SmallTest;
 
 import org.junit.AfterClass;
@@ -155,11 +156,11 @@ public class BackPressManagerTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 BackPressManager.FAILURE_HISTOGRAM,
-                                BackPressManager.getHistogramValueForTesting(
+                                BackPressManager.getHistogramValue(
                                         BackPressHandler.Type.VR_DELEGATE))
                         .expectIntRecord(
                                 BackPressManager.HISTOGRAM,
-                                BackPressManager.getHistogramValueForTesting(
+                                BackPressManager.getHistogramValue(
                                         BackPressHandler.Type.XR_DELEGATE))
                         .build();
         triggerBackPressWithoutAssertionError(manager);
@@ -184,7 +185,7 @@ public class BackPressManagerTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 BackPressManager.FAILURE_HISTOGRAM,
-                                BackPressManager.getHistogramValueForTesting(
+                                BackPressManager.getHistogramValue(
                                         BackPressHandler.Type.VR_DELEGATE))
                         .build();
         triggerBackPressWithoutAssertionError(manager);
@@ -222,6 +223,161 @@ public class BackPressManagerTest {
         histogramWatcher.assertExpected(
                 "The interval histogram should be recorded if two back press events have been"
                         + " intercepted");
+    }
+
+    @Test
+    @SmallTest
+    public void testNoRecordWhenBackIsCancelled() {
+        BackPressManager manager = new BackPressManager();
+
+        EmptyBackPressHandler h1 =
+                TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+
+        var record =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.BackPress.SwipeEdge")
+                        .expectNoRecords("Android.BackPress.Intercept")
+                        .expectNoRecords("Android.BackPress.Intercept.LeftEdge")
+                        .expectNoRecords("Android.BackPress.Intercept.RightEdge")
+                        .expectNoRecords("Android.BackPress.SwipeEdge.TabHistoryNavigation")
+                        .build();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    manager.addHandler(h1, BackPressHandler.Type.TAB_HISTORY);
+                    h1.getHandleBackPressChangedSupplier().set(true);
+
+                    var backEvent = new BackEventCompat(0, 0, 0, BackEventCompat.EDGE_LEFT);
+                    manager.getCallback().handleOnBackStarted(backEvent);
+                    backEvent = new BackEventCompat(1, 0, .5f, BackEventCompat.EDGE_LEFT);
+                    manager.getCallback().handleOnBackProgressed(backEvent);
+
+                    manager.getCallback().handleOnBackCancelled();
+                });
+
+        record.assertExpected("No record when back gesture is cancelled.");
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordSwipeEdge() {
+        BackPressManager manager = new BackPressManager();
+
+        EmptyBackPressHandler h1 =
+                TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+        EmptyBackPressHandler h2 =
+                TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+
+        var edgeRecords =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.BackPress.SwipeEdge", 0) // from left
+                        .expectIntRecord(
+                                "Android.BackPress.Intercept.LeftEdge",
+                                BackPressManager.getHistogramValue(
+                                        BackPressHandler.Type.XR_DELEGATE))
+                        .expectNoRecords("Android.BackPress.Intercept.RightEdge")
+                        .expectNoRecords("Android.BackPress.SwipeEdge.TabHistoryNavigation")
+                        .build();
+        // Trigger XR delegate back press handler from left side.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    manager.addHandler(h1, BackPressHandler.Type.VR_DELEGATE);
+                    manager.addHandler(h2, BackPressHandler.Type.XR_DELEGATE);
+                    h1.getHandleBackPressChangedSupplier().set(false);
+                    h2.getHandleBackPressChangedSupplier().set(true);
+
+                    var backEvent = new BackEventCompat(0, 0, 0, BackEventCompat.EDGE_LEFT);
+                    manager.getCallback().handleOnBackStarted(backEvent);
+                    backEvent = new BackEventCompat(1, 0, .5f, BackEventCompat.EDGE_LEFT);
+                    manager.getCallback().handleOnBackProgressed(backEvent);
+
+                    manager.getCallback().handleOnBackPressed();
+                });
+
+        edgeRecords.assertExpected("Wrong histogram records for XR delegate.");
+
+        var edgeRecords2 =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.BackPress.SwipeEdge", 1) // from right
+                        .expectIntRecord(
+                                "Android.BackPress.Intercept.RightEdge",
+                                BackPressManager.getHistogramValue(
+                                        BackPressHandler.Type.VR_DELEGATE))
+                        .expectNoRecords("Android.BackPress.Intercept.LeftEdge")
+                        .expectNoRecords("Android.BackPress.SwipeEdge.TabHistoryNavigation")
+                        .build();
+        // Trigger VR delegate back press handler from left side.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    h1.getHandleBackPressChangedSupplier().set(true);
+                    h2.getHandleBackPressChangedSupplier().set(true);
+
+                    var backEvent = new BackEventCompat(0, 0, 0, BackEventCompat.EDGE_RIGHT);
+                    manager.getCallback().handleOnBackStarted(backEvent);
+                    backEvent = new BackEventCompat(1, 0, .5f, BackEventCompat.EDGE_RIGHT);
+                    manager.getCallback().handleOnBackProgressed(backEvent);
+
+                    manager.getCallback().handleOnBackPressed();
+                });
+
+        edgeRecords2.assertExpected("Wrong histogram records for VR delegate.");
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordSwipeEdgeOfTabHistoryNavigation() {
+        BackPressManager manager = new BackPressManager();
+
+        EmptyBackPressHandler h1 =
+                TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+
+        var edgeRecords =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.BackPress.SwipeEdge", 0) // from left
+                        .expectIntRecord("Android.BackPress.SwipeEdge.TabHistoryNavigation", 0)
+                        .expectIntRecord(
+                                "Android.BackPress.Intercept.LeftEdge",
+                                BackPressManager.getHistogramValue(
+                                        BackPressHandler.Type.TAB_HISTORY))
+                        .expectNoRecords("Android.BackPress.Intercept.RightEdge")
+                        .build();
+        // Trigger tab history navigation from left side.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    manager.addHandler(h1, BackPressHandler.Type.TAB_HISTORY);
+                    h1.getHandleBackPressChangedSupplier().set(true);
+
+                    var backEvent = new BackEventCompat(0, 0, 0, BackEventCompat.EDGE_LEFT);
+                    manager.getCallback().handleOnBackStarted(backEvent);
+                    backEvent = new BackEventCompat(1, 0, .5f, BackEventCompat.EDGE_LEFT);
+                    manager.getCallback().handleOnBackProgressed(backEvent);
+
+                    manager.getCallback().handleOnBackPressed();
+                });
+
+        edgeRecords.assertExpected("Wrong histogram records for tab history navigation.");
+
+        var edgeRecords2 =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.BackPress.SwipeEdge", 1) // from right
+                        .expectIntRecord("Android.BackPress.SwipeEdge.TabHistoryNavigation", 1)
+                        .expectIntRecord(
+                                "Android.BackPress.Intercept.RightEdge",
+                                BackPressManager.getHistogramValue(
+                                        BackPressHandler.Type.TAB_HISTORY))
+                        .expectNoRecords("Android.BackPress.Intercept.LeftEdge")
+                        .build();
+        // Trigger tab history navigation from right side.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var backEvent = new BackEventCompat(0, 0, 0, BackEventCompat.EDGE_RIGHT);
+                    manager.getCallback().handleOnBackStarted(backEvent);
+                    backEvent = new BackEventCompat(1, 0, .5f, BackEventCompat.EDGE_RIGHT);
+                    manager.getCallback().handleOnBackProgressed(backEvent);
+
+                    manager.getCallback().handleOnBackPressed();
+                });
+
+        edgeRecords2.assertExpected("Wrong histogram records for VR delegate.");
     }
 
     // Trigger back press ignoring built-in assertion errors.

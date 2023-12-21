@@ -1494,6 +1494,12 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Unknown reason for failure"/>
 </enum>
 
+<enum name="SwipeEdge">
+  <summary>The edge from which the gesture is swiped from.</summary>
+  <int value="0" label="LeftEdge"/>
+  <int value="1" label="RightEdge"/>
+</enum>
+
 <enum name="TabListEditorShareActionState">
   <int value="0" label="UNKNOWN_SHARE_STATE"/>
   <int value="1" label="SUCCESSFULLY_SHARED_TABS"/>
