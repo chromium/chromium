@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_BOOKMARKS_URL_AND_ID_H_
 #define CHROME_BROWSER_BOOKMARKS_URL_AND_ID_H_
 
-#include "base/uuid.h"
 #include "url/gurl.h"
 
 struct UrlAndId {
   GURL url;
-  base::Uuid id;
+  int64_t id = -1;
 };
 
 #endif  // CHROME_BROWSER_BOOKMARKS_URL_AND_ID_H_

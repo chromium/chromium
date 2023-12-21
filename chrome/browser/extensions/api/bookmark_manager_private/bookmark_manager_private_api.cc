@@ -630,7 +630,7 @@ BookmarkManagerPrivateOpenInNewTabFunction::RunOnReady() {
   ExtensionTabUtil::OpenTabParams options;
   options.url = node->url().spec();
   options.active = params->active;
-  options.bookmark_id = node->uuid();
+  options.bookmark_id = node->id();
 
   auto result =
       extensions::ExtensionTabUtil::OpenTab(this, options, user_gesture());
@@ -679,7 +679,7 @@ BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
       continue;  // The URL was filtered out; ignore this node.
     UrlAndId url_and_id;
     url_and_id.url = node->url();
-    url_and_id.id = node->uuid();
+    url_and_id.id = node->id();
     url_and_ids.push_back(url_and_id);
   }
   DCHECK_EQ(urls.size(), url_and_ids.size());

@@ -17,7 +17,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
-#include "base/uuid.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_context.h"
 #include "components/history/core/browser/keyword_search_term.h"
@@ -1211,7 +1210,7 @@ struct HistoryAddPageArgs {
                      absl::optional<std::u16string> title = absl::nullopt,
                      absl::optional<GURL> top_level_url = absl::nullopt,
                      absl::optional<Opener> opener = absl::nullopt,
-                     absl::optional<base::Uuid> bookmark_id = absl::nullopt,
+                     absl::optional<int64_t> bookmark_id = absl::nullopt,
                      absl::optional<VisitContextAnnotations::OnVisitFields>
                          context_annotations = absl::nullopt);
   HistoryAddPageArgs(const HistoryAddPageArgs& other);
@@ -1238,7 +1237,7 @@ struct HistoryAddPageArgs {
   // navigation originated from.
   absl::optional<GURL> top_level_url;
   absl::optional<Opener> opener;
-  absl::optional<base::Uuid> bookmark_id;
+  absl::optional<int64_t> bookmark_id;
   absl::optional<VisitContextAnnotations::OnVisitFields> context_annotations;
 };
 

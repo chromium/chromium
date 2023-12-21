@@ -11,7 +11,6 @@
 
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
-#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -68,7 +67,7 @@ class ExtensionTabUtil {
     absl::optional<bool> active;
     absl::optional<bool> pinned;
     absl::optional<int> index;
-    absl::optional<base::Uuid> bookmark_id;
+    absl::optional<int> bookmark_id;
   };
 
   // Opens a new tab given an extension function |function| and creation

@@ -74,9 +74,7 @@ std::vector<UrlAndId> GetURLsToOpen(
     content::BrowserContext* browser_context = nullptr,
     bool incognito_urls_only = false) {
   std::vector<UrlAndId> url_and_ids;
-  const auto AddUrlIfLegal = [browser_context, incognito_urls_only,
-                              &url_and_ids](const GURL& url,
-                                            const base::Uuid& id) {
+  const auto AddUrlIfLegal = [&](const GURL url, int64_t id) {
     if (!incognito_urls_only || IsURLAllowedInIncognito(url, browser_context)) {
       UrlAndId url_and_id;
       url_and_id.url = url;
@@ -86,13 +84,13 @@ std::vector<UrlAndId> GetURLsToOpen(
   };
   for (const BookmarkNode* node : nodes) {
     if (node->is_url()) {
-      AddUrlIfLegal(node->url(), node->uuid());
+      AddUrlIfLegal(node->url(), node->id());
     } else {
       // If the node is not a URL, it is a folder. We want to add those of its
       // children which are URLs.
       for (const auto& child : node->children()) {
         if (child->is_url())
-          AddUrlIfLegal(child->url(), child->uuid());
+          AddUrlIfLegal(child->url(), child->id());
       }
     }
   }
@@ -211,7 +209,7 @@ OpenedWebContentsSet OpenAllHelper(
           ->SetLaunchAction(launch_action.value(), disposition);
     }
 
-    if (url_and_id_it->id.is_valid()) {
+    if (url_and_id_it->id != -1) {
       ChromeNavigationUIData* ui_data =
           static_cast<ChromeNavigationUIData*>(handle->GetNavigationUIData());
       if (ui_data)

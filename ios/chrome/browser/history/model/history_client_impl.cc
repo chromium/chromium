@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -78,23 +79,11 @@ HistoryClientImpl::CreateBackendClient() {
   return std::make_unique<HistoryBackendClientImpl>(std::move(model_loaders));
 }
 
-void HistoryClientImpl::UpdateBookmarkLastUsedTime(
-    const base::Uuid& bookmark_node_uuid,
-    base::Time time) {
-  for (bookmarks::BookmarkModel* bookmark_model :
-       {local_or_syncable_bookmark_model_, account_bookmark_model_}) {
-    if (!bookmark_model) {
-      continue;
-    }
-    const bookmarks::BookmarkNode* node =
-        bookmark_model->GetNodeByUuid(bookmark_node_uuid);
-    if (!node) {
-      continue;
-    }
-    // In the unlikely scenario where the two bookmark models have a bookmark
-    // node with the same UUID, they are both updated.
-    bookmark_model->UpdateLastUsedTime(node, time, /*just_opened=*/true);
-  }
+void HistoryClientImpl::UpdateBookmarkLastUsedTime(int64_t bookmark_node_id,
+                                                   base::Time time) {
+  // TODO(crbug.com/1511291): Implement this method when iOS is migrated to use
+  //                          single BookmarkModel instance.
+  NOTIMPLEMENTED();
 }
 
 void HistoryClientImpl::BookmarkModelChanged() {
