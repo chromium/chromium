@@ -274,6 +274,7 @@ public abstract class ChromeFeatureList {
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =
             "LookalikeUrlNavigationSuggestionsUI";
+    public static final String MAGIC_STACK_ANDROID = "MagicStackAndroid";
     public static final String MESSAGES_FOR_ANDROID_ADS_BLOCKED = "MessagesForAndroidAdsBlocked";
     public static final String MESSAGES_FOR_ANDROID_INFRASTRUCTURE =
             "MessagesForAndroidInfrastructure";
@@ -508,6 +509,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sInstantStart = new CachedFlag(INSTANT_START, false);
     public static final CachedFlag sHideTabOnTabSwitcher =
             new CachedFlag(HIDE_TAB_ON_TAB_SWITCHER, true);
+    public static final CachedFlag sMagicStackAndroid = new CachedFlag(MAGIC_STACK_ANDROID, false);
     public static final CachedFlag sNewTabSearchEngineUrlAndroid =
             new CachedFlag(NEW_TAB_SEARCH_ENGINE_URL_ANDROID, false);
     public static final CachedFlag sPriceChangeModule = new CachedFlag(PRICE_CHANGE_MODULE, false);
@@ -606,6 +608,7 @@ public abstract class ChromeFeatureList {
                     sIncognitoReauthenticationForAndroid,
                     sInstantStart,
                     sHideTabOnTabSwitcher,
+                    sMagicStackAndroid,
                     sNewTabSearchEngineUrlAndroid,
                     sPaintPreviewNewColdStartHeuristic,
                     sPriceChangeModule,

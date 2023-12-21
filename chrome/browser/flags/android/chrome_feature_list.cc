@@ -219,6 +219,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kInstantStart,
     &kLensCameraAssistedSearch,
     &kLensOnQuickActionSearchWidget,
+    &kMagicStackAndroid,
     &kNewTabSearchEngineUrlAndroid,
     &kNotificationPermissionVariant,
     &kNotificationPermissionBottomSheet,
@@ -629,6 +630,10 @@ BASE_FEATURE(kIncognitoScreenshot,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInstantStart, "InstantStart", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMagicStackAndroid,
+             "MagicStackAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabSearchEngineUrlAndroid,
              "NewTabSearchEngineUrlAndroid",

@@ -4096,6 +4096,11 @@ const char kInterestFeedV2Description[] =
 const char kInterestFeedV2HeartsName[] = "Interest Feed v2 Hearts";
 const char kInterestFeedV2HeartsDescription[] = "Enable hearts on Feedv2.";
 
+const char kMagicStackAndroidName[] = "Magic Stack Android";
+const char kMagicStackAndroidDescription[] =
+    "Show a magic stack which contains a list of modules on Start surface and "
+    "NTPs on Android.";
+
 const char kMediaPickerAdoptionStudyName[] = "Android Media Picker Adoption";
 const char kMediaPickerAdoptionStudyDescription[] =
     "Controls how to launch the Android Media Picker (note: This flag is "

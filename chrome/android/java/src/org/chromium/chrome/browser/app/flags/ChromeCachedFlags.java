@@ -116,7 +116,6 @@ public class ChromeCachedFlags {
                         StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO,
                         StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE,
                         StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT,
-                        StartSurfaceConfiguration.SURFACE_POLISH_USE_MAGIC_SPACE,
                         TabUiFeatureUtilities.ANIMATION_START_TIMEOUT_MS,
                         TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,
                         TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,

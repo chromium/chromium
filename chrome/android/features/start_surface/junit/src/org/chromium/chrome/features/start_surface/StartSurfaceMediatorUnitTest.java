@@ -29,7 +29,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.INSTANT_START;
-import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.SURFACE_POLISH_USE_MAGIC_SPACE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.BOTTOM_BAR_HEIGHT;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.EXPLORE_SURFACE_COORDINATOR;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_EXPLORE_SURFACE_VISIBLE;
@@ -1879,11 +1878,14 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR, ChromeFeatureList.SURFACE_POLISH})
+    @EnableFeatures({
+        ChromeFeatureList.START_SURFACE_REFACTOR,
+        ChromeFeatureList.SURFACE_POLISH,
+        ChromeFeatureList.MAGIC_STACK_ANDROID
+    })
     public void testObserverWithSurfacePolish() {
-        SURFACE_POLISH_USE_MAGIC_SPACE.setForTesting(true);
         Assert.assertTrue(ChromeFeatureList.sSurfacePolish.isEnabled());
-        Assert.assertTrue(SURFACE_POLISH_USE_MAGIC_SPACE.getValue());
+        Assert.assertTrue(ChromeFeatureList.sMagicStackAndroid.isEnabled());
 
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
@@ -1952,11 +1954,14 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR, ChromeFeatureList.SURFACE_POLISH})
+    @EnableFeatures({
+        ChromeFeatureList.START_SURFACE_REFACTOR,
+        ChromeFeatureList.SURFACE_POLISH,
+        ChromeFeatureList.MAGIC_STACK_ANDROID
+    })
     public void testShowAndOnHideWithSurfacePolish() {
-        SURFACE_POLISH_USE_MAGIC_SPACE.setForTesting(true);
         Assert.assertTrue(ChromeFeatureList.sSurfacePolish.isEnabled());
-        Assert.assertTrue(SURFACE_POLISH_USE_MAGIC_SPACE.getValue());
+        Assert.assertTrue(ChromeFeatureList.sMagicStackAndroid.isEnabled());
 
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();

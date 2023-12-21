@@ -3058,6 +3058,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-magic-stack-android",
+    "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-managed-configuration-web-api",
     "owners": [ "apotapchuk@chromium.org" ],
     "expiry_milestone": 92

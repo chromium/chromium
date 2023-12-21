@@ -2363,11 +2363,6 @@ const FeatureEntry::FeatureParam kSurfacePolish_mvp_2row_mvt[] = {
 const FeatureEntry::FeatureParam kSurfacePolish_logo_in_toolbar[] = {
     {"polish_omnibox_color", "true"}};
 
-const FeatureEntry::FeatureParam kSurfacePolish_use_magic_space[] = {
-    {"polish_omnibox_color", "true"},
-    {"move_down_logo", "true"},
-    {"use_magic_space", "true"}};
-
 const FeatureEntry::FeatureVariation kSurfacePolishVariations[] = {
     {"Arm 1: MVP", kSurfacePolish_mvp, std::size(kSurfacePolish_mvp), nullptr},
     {"Arm 2: White Omnibox", kSurfacePolish_white_omnibox,
@@ -2378,8 +2373,6 @@ const FeatureEntry::FeatureVariation kSurfacePolishVariations[] = {
      std::size(kSurfacePolish_mvp_2row_mvt), nullptr},
     {"Arm 5: Logo in toolbar", kSurfacePolish_logo_in_toolbar,
      std::size(kSurfacePolish_logo_in_toolbar), nullptr},
-    {"Use magic space", kSurfacePolish_use_magic_space,
-     std::size(kSurfacePolish_use_magic_space), nullptr},
 };
 
 const FeatureEntry::FeatureParam kFeedPositionAndroid_push_down_feed_small[] = {
@@ -6954,6 +6947,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kSurfacePolish,
                                     kSurfacePolishVariations,
                                     "SurfacePolish")},
+
+    {"enable-magic-stack-android", flag_descriptions::kMagicStackAndroidName,
+     flag_descriptions::kMagicStackAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kMagicStackAndroid)},
 
     {"enable-show-ntp-at-startup",
      flag_descriptions::kShowNtpAtStartupAndroidName,

@@ -30524,6 +30524,7 @@ from previous Chrome versions.
   <int value="-1259901957" label="VrBrowserKeyboard:disabled"/>
   <int value="-1259809702" label="Enable16Desks:enabled"/>
   <int value="-1259627326" label="AllowRepeatedUpdates:disabled"/>
+  <int value="-1258793847" label="MagicStackAndroid:disabled"/>
   <int value="-1258141852" label="ScrollUnification:enabled"/>
   <int value="-1257822114" label="ContextMenuPopupForAllScreenSizes:disabled"/>
   <int value="-1256823053" label="WebRtcHWVP9Encoding:enabled"/>
@@ -35155,6 +35156,7 @@ from previous Chrome versions.
   <int value="940705998" label="CrOSLateBootArcSwitchToKeyMintDaemon:disabled"/>
   <int value="940751405" label="IppFirstSetupForUsbPrinters:enabled"/>
   <int value="941036016" label="ContentSuggestionsSettings:disabled"/>
+  <int value="941703796" label="MagicStackAndroid:enabled"/>
   <int value="941883332" label="ProactiveTabFreezeAndDiscard:disabled"/>
   <int value="941948340" label="PlaybackSpeedButton:enabled"/>
   <int value="942357311" label="UpcomingSharingFeatures:disabled"/>
