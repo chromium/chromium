@@ -27,7 +27,7 @@ class HatsHandler : public SettingsPageUIHandler {
 
   void HandleTrustSafetyInteractionOccurred(const base::Value::List& args);
 
-  void HandleSecurityPageInteractionOccurred(const base::Value::List& args);
+  void HandleSecurityPageHatsRequest(const base::Value::List& args);
 
  private:
   friend class HatsHandlerTest;
@@ -35,7 +35,15 @@ class HatsHandler : public SettingsPageUIHandler {
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacySettingsHats);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacyGuideHats);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacySandboxHats);
-  FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, SecurityPageInteractions);
+  FRIEND_TEST_ALL_PREFIXES(
+      HatsHandlerTest,
+      HandleSecurityPageHatsRequestPassesArgumentsToHatsService);
+  FRIEND_TEST_ALL_PREFIXES(
+      HatsHandlerTest,
+      HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNotEnoughTime);
+  FRIEND_TEST_ALL_PREFIXES(
+      HatsHandlerTest,
+      HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNoInteraction);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, TrustSafetySentimentInteractions);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest, PrivacySettings);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest,
@@ -68,7 +76,8 @@ class HatsHandler : public SettingsPageUIHandler {
     RADIO_BUTTON_STANDARD_CLICK = 1,
     RADIO_BUTTON_DISABLE_CLICK = 2,
     EXPAND_BUTTON_ENHANCED_CLICK = 3,
-    EXPAND_BUTTON_STANDARD_CLICK = 4
+    EXPAND_BUTTON_STANDARD_CLICK = 4,
+    NO_INTERACTION = 5,
   };
 
   /**
