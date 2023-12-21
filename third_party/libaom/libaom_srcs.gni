@@ -219,6 +219,7 @@ aom_av1_encoder_intrin_neon = [
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/hybrid_fwd_txfm_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/ml_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/pickrst_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/pickrst_neon.h",
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/quantize_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/rdopt_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/reconinter_enc_neon.c",
