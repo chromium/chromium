@@ -167,6 +167,9 @@ void FocusModeChipCarousel::SetTasks(
             base::UTF8ToUTF16(task->title)));
     SetupChip(chip, /*first=*/(i == 0));
   }
+
+  // Scroll back to the beginning after repopulating the carousel.
+  scroll_view_->ScrollToOffset(gfx::PointF(0, 0));
 }
 
 void FocusModeChipCarousel::UpdateGradient() {
