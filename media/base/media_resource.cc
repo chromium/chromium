@@ -41,4 +41,10 @@ void MediaResource::ForwardDurationChangeToDemuxerHost(
   NOTREACHED();
 }
 
+void MediaResource::SetHeaders(
+    const base::flat_map<std::string, std::string>& headers) {
+  // Only implemented by MediaUrlDemuxer, for the MojoRendererService.
+  NOTREACHED();
+}
+
 }  // namespace media

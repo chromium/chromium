@@ -64,6 +64,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/data_url.h"
+#include "net/url_request/url_request_job.h"
 #include "services/device/public/mojom/battery_monitor.mojom-blink.h"
 #include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/common/media/watch_time_reporter.h"
@@ -2854,13 +2855,21 @@ void WebMediaPlayerImpl::StartPipeline() {
                      base::Unretained(compositor_.get()),
                      base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &WebMediaPlayerImpl::OnFirstFrame, weak_this_))));
+  base::flat_map<std::string, std::string> headers;
+  headers["Referrer"] =
+      net::URLRequestJob::ComputeReferrerForPolicy(
+          frame_->GetDocument().GetReferrerPolicy(),
+          GURL(frame_->GetDocument().OutgoingReferrer().Utf8()),
+          demuxer_manager_->LoadedUrl())
+          .spec();
 
   // base::Unretained(this) is safe here, since |CreateDemuxer| calls the bound
   // method directly and immediately.
   auto create_demuxer_error = demuxer_manager_->CreateDemuxer(
       load_type_ == kLoadTypeMediaSource, preload_, needs_first_frame_,
       base::BindOnce(&WebMediaPlayerImpl::OnDemuxerCreated,
-                     base::Unretained(this)));
+                     base::Unretained(this)), 
+      headers);
 
   if (!create_demuxer_error.is_ok()) {
     return OnError(std::move(create_demuxer_error));

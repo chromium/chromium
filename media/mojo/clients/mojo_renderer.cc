@@ -121,7 +121,7 @@ void MojoRenderer::InitializeRendererFromUrl(media::RendererClient* client) {
   mojom::MediaUrlParamsPtr media_url_params = mojom::MediaUrlParams::New(
       url_params.media_url, url_params.site_for_cookies,
       url_params.top_frame_origin, url_params.has_storage_access,
-      url_params.allow_credentials, url_params.is_hls);
+      url_params.allow_credentials, url_params.is_hls, url_params.headers);
   remote_renderer_->Initialize(client_receiver_.BindNewEndpointAndPassRemote(),
                                absl::nullopt, std::move(media_url_params),
                                base::BindOnce(&MojoRenderer::OnInitialized,

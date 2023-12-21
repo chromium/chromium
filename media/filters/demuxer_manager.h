@@ -144,10 +144,12 @@ class MEDIA_EXPORT DemuxerManager {
 
   // Returns a forwarded error/success from |on_demuxer_created|, or an error
   // if a demuxer couldn't be created.
-  PipelineStatus CreateDemuxer(bool load_media_source,
-                               DataSource::Preload preload,
-                               bool needs_first_frame,
-                               DemuxerCreatedCB on_demuxer_created);
+  PipelineStatus CreateDemuxer(
+      bool load_media_source,
+      DataSource::Preload preload,
+      bool needs_first_frame,
+      DemuxerCreatedCB on_demuxer_created,
+      base::flat_map<std::string, std::string> headers);
 
 #if BUILDFLAG(IS_ANDROID)
   void SetAllowMediaPlayerRendererCredentials(bool allow);
@@ -186,7 +188,9 @@ class MEDIA_EXPORT DemuxerManager {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<media::Demuxer> CreateMediaUrlDemuxer(bool hls_content);
+  std::unique_ptr<media::Demuxer> CreateMediaUrlDemuxer(
+      bool hls_content, 
+      base::flat_map<std::string, std::string> headers);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   void SetDemuxer(std::unique_ptr<Demuxer> demuxer);

@@ -56,6 +56,11 @@ void MediaUrlDemuxer::ForwardDurationChangeToDemuxerHost(
   host_->SetDuration(duration);
 }
 
+void MediaUrlDemuxer::SetHeaders(
+    const base::flat_map<std::string, std::string>& headers) {
+  params_.headers = std::move(headers);
+}
+
 void MediaUrlDemuxer::Initialize(DemuxerHost* host,
                                  PipelineStatusCallback status_cb) {
   DVLOG(1) << __func__;
