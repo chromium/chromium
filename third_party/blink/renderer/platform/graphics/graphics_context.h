@@ -261,7 +261,7 @@ class PLATFORM_EXPORT GraphicsContext {
   void SetDynamicRangeLimit(DynamicRangeLimit limit) {
     MutableState()->SetDynamicRangeLimit(limit);
   }
-  DynamicRangeLimit DynamicRangeLimit() const {
+  blink::DynamicRangeLimit DynamicRangeLimit() const {
     return ImmutableState()->GetDynamicRangeLimit();
   }
 
