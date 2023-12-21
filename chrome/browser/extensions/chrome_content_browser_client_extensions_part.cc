@@ -431,15 +431,15 @@ bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
     return true;
   }
 
-  // TODO(creis): We're seeing cases where an extension URL commits in an
-  // extension process but not one registered for it in ProcessMap. This is
-  // surprising and we do not yet have repro steps for it. We should fix this,
-  // but we're primarily concerned with preventing web processes from committing
-  // an extension URL, which is more severe. (Extensions currently share
-  // processes with each other anyway.) Allow it for now, as long as this is an
-  // extension and not a hosted app.
+  // TODO(creis, crbug.com/840857): In the past, there were cases where an
+  // extension URL committed in an extension process but not one registered for
+  // it in ProcessMap. Hence, the code below allows this case, as long as this
+  // is an extension process and not a hosted app process. Since extensions no
+  // longer share processes with each other, it is possible that this no longer
+  // occurs, so add a DumpWithoutCrashing() to confirm if this is still needed.
   if (GetProcessPrivilege(process_host, process_map, registry) ==
       PRIV_EXTENSION) {
+    base::debug::DumpWithoutCrashing();
     return true;
   }
 
