@@ -141,21 +141,12 @@ T* LeakySingleton<T, Constructor>::GetSlowPath() {
 class MainPartitionConstructor {
  public:
   static partition_alloc::PartitionRoot* New(void* buffer) {
-    constexpr partition_alloc::PartitionOptions::EnableToggle thread_cache =
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-        // Additional partitions may be created in ConfigurePartitions(). Since
-        // only one partition can have thread cache enabled, postpone the
-        // decision to turn the thread cache on until after that call.
-        // TODO(bartekn): Enable it here by default, once the "split-only" mode
-        // is no longer needed.
-        partition_alloc::PartitionOptions::kDisabled;
-#else   // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-        // Other tests, such as the ThreadCache tests create a thread cache,
-        // and only one is supported at a time.
-        partition_alloc::PartitionOptions::kDisabled;
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     partition_alloc::PartitionOptions opts;
-    opts.thread_cache = thread_cache;
+    // Only one partition can have thread cache enabled. Since, additional
+    // partitions are created in ReconfigureAfterFeatureListInit(), postpone
+    // the decision to turn the thread cache on until then.
+    // Also tests, such as the ThreadCache tests create a thread cache.
+    opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
     opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
     opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
     auto* new_root = new (buffer) partition_alloc::PartitionRoot(opts);
@@ -498,37 +489,16 @@ void ConfigurePartitions(
     EnableBrp enable_brp,
     EnableMemoryTagging enable_memory_tagging,
     partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode,
-    SplitMainPartition split_main_partition,
     size_t ref_count_size,
     BucketDistribution distribution,
     SchedulerLoopQuarantine scheduler_loop_quarantine,
     size_t scheduler_loop_quarantine_capacity_in_bytes,
     size_t scheduler_loop_quarantine_capacity_count,
     ZappingByFreeFlags zapping_by_free_flags) {
-  // BRP cannot be enabled without splitting the main partition. Furthermore, in
-  // the "before allocation" mode, it can't be enabled without further splitting
-  // out the aligned partition.
-  PA_CHECK(!enable_brp || split_main_partition);
-
   // Calling Get() is actually important, even if the return value isn't
   // used, because it has a side effect of initializing the variable, if it
   // wasn't already.
   auto* current_root = g_root.Get();
-
-  if (!split_main_partition) {
-    switch (distribution) {
-      case BucketDistribution::kNeutral:
-        // We start in the 'default' case.
-        break;
-      case BucketDistribution::kDenser:
-        current_root->SwitchToDenserBucketDistribution();
-        break;
-    }
-    PA_DCHECK(!enable_brp);
-    PA_DCHECK(!current_root->settings.with_thread_cache);
-    PA_CHECK(!g_roots_finalized.exchange(true));  // Ensure configured once.
-    return;
-  }
 
   // We've been bitten before by using a static local when initializing a
   // partition. For synchronization, static local variables call into the
@@ -540,6 +510,9 @@ void ConfigurePartitions(
       partition_alloc::PartitionAllocator>
       new_main_allocator([&]() {
         partition_alloc::PartitionOptions opts;
+        // The caller of ConfigurePartitions() will decide whether this or
+        // another partition will have the thread cache enabled, by calling
+        // EnableThreadCacheIfSupported().
         opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
         opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
         opts.backup_ref_ptr =

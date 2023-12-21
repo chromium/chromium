@@ -854,7 +854,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   CHECK(base::FeatureList::GetInstance());
 
   bool enable_brp = false;
-  bool split_main_partition = false;
   bool process_affected_by_brp_flag = false;
   size_t ref_count_size = 0;
 
@@ -900,7 +899,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
 
       case base::features::BackupRefPtrMode::kEnabled:
         enable_brp = true;
-        split_main_partition = true;
         break;
     }
 
@@ -926,7 +924,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
 
   return {
       enable_brp,
-      split_main_partition,
       process_affected_by_brp_flag,
       ref_count_size,
   };
@@ -1141,10 +1138,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   allocator_shim::ConfigurePartitions(
       allocator_shim::EnableBrp(brp_config.enable_brp),
       allocator_shim::EnableMemoryTagging(enable_memory_tagging),
-      memory_tagging_reporting_mode,
-      allocator_shim::SplitMainPartition(brp_config.split_main_partition ||
-                                         enable_memory_tagging),
-      brp_config.ref_count_size, bucket_distribution,
+      memory_tagging_reporting_mode, brp_config.ref_count_size,
+      bucket_distribution,
       allocator_shim::SchedulerLoopQuarantine(scheduler_loop_quarantine),
       scheduler_loop_quarantine_capacity_in_bytes,
       scheduler_loop_quarantine_capacity_count,

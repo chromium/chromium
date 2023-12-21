@@ -195,9 +195,6 @@ using EnableBrp =
 using EnableMemoryTagging =
     partition_alloc::internal::base::StrongAlias<class EnableMemoryTaggingTag,
                                                  bool>;
-using SplitMainPartition =
-    partition_alloc::internal::base::StrongAlias<class SplitMainPartitionTag,
-                                                 bool>;
 enum class BucketDistribution : uint8_t { kNeutral, kDenser };
 using SchedulerLoopQuarantine = partition_alloc::internal::base::
     StrongAlias<class SchedulerLoopQuarantineTag, bool>;
@@ -213,7 +210,6 @@ void ConfigurePartitions(
     EnableBrp enable_brp,
     EnableMemoryTagging enable_memory_tagging,
     partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode,
-    SplitMainPartition split_main_partition,
     size_t ref_count_size,
     BucketDistribution distribution,
     SchedulerLoopQuarantine scheduler_loop_quarantine,

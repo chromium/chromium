@@ -45,7 +45,6 @@ class BASE_EXPORT PartitionAllocSupport {
  public:
   struct BrpConfiguration {
     bool enable_brp = false;
-    bool split_main_partition = false;
     bool process_affected_by_brp_flag = false;
     size_t ref_count_size = 0;
   };

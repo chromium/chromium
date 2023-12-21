@@ -90,7 +90,6 @@ PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
       enable_memory_tagging
           ? partition_alloc::TagViolationReportingMode::kSynchronous
           : partition_alloc::TagViolationReportingMode::kDisabled;
-  auto split_main_partition = SplitMainPartition(true);
   size_t ref_count_size = 0;  // Means: use sizeof(PartitionRefCount).
   auto distribution = BucketDistribution::kNeutral;
   auto scheduler_loop_quarantine = SchedulerLoopQuarantine(false);
@@ -100,8 +99,8 @@ PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
 
   ConfigurePartitions(
       enable_brp, enable_memory_tagging, memory_tagging_reporting_mode,
-      split_main_partition, ref_count_size, distribution,
-      scheduler_loop_quarantine, scheduler_loop_quarantine_capacity_in_bytes,
+      ref_count_size, distribution, scheduler_loop_quarantine,
+      scheduler_loop_quarantine_capacity_in_bytes,
       scheduler_loop_quarantine_capacity_count, zapping_by_free_flags);
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
