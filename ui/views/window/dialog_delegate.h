@@ -279,6 +279,10 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // use is if the dialog's parent widget is closed.
   void SetCloseCallback(base::OnceClosure callback);
 
+  // By default the NativeWidget owns the Widget. Calling this method will
+  // instead cause the reverse. Must be called before creating the Widget.
+  void SetWidgetOwnsNativeWidget();
+
   // Returns ownership of the extra view for this dialog, if one was provided
   // via SetExtraView(). This is only for use by DialogClientView; don't call
   // it.
@@ -396,6 +400,8 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // returned true, *or* one of the Accept/Cancel methods have been called and
   // returned true.
   bool already_started_close_ = false;
+
+  bool widget_owns_native_widget_ = false;
 };
 
 // A DialogDelegate implementation that is-a View. Used to override GetWidget()

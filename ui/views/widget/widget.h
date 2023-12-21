@@ -1186,6 +1186,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // logically part of the same window as the parent.
   void SetCheckParentForFullscreen();
 
+  // Returns the current ownership model of the widget.
+  InitParams::Ownership ownership() const { return ownership_; }
+
  protected:
   // Creates the RootView to be used within this Widget. Subclasses may override
   // to create custom RootViews that do specialized event processing.

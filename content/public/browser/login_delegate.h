@@ -5,8 +5,10 @@
 #ifndef CONTENT_PUBLIC_BROWSER_LOGIN_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_LOGIN_DELEGATE_H_
 
+#include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "net/base/auth.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

@@ -1454,6 +1454,8 @@ source_set("ash") {
     "hats/hats_finch_helper.h",
     "hats/hats_notification_controller.cc",
     "hats/hats_notification_controller.h",
+    "http_auth_dialog.cc",
+    "http_auth_dialog.h",
     "idle_detector.cc",
     "idle_detector.h",
     "input_method/accessibility.cc",

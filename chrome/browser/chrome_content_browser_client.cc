@@ -430,6 +430,7 @@
 #include "chrome/browser/ash/fileapi/external_file_url_loader_factory.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fileapi/mtp_file_system_backend_delegate.h"
+#include "chrome/browser/ash/http_auth_dialog.h"
 #include "chrome/browser/ash/login/signin/merge_session_navigation_throttle.h"
 #include "chrome/browser/ash/login/signin/merge_session_throttling_utils.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
@@ -6682,8 +6683,16 @@ ChromeContentBrowserClient::CreateLoginDelegate(
     return system_proxy_manager->CreateLoginDelegate(
         std::move(auth_required_callback));
   }
+
+  if (ash::HttpAuthDialog::IsEnabled()) {
+    return ash::HttpAuthDialog::Create(auth_info, web_contents, url,
+                                       std::move(auth_required_callback));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  // Once Lacros ships this logic will no longer need to be included in
+  // ash-chrome.
+  //
   // For subresources, create a LoginHandler directly, which may show a login
   // prompt to the user. Main frame resources go through LoginTabHelper, which
   // manages a more complicated flow to avoid confusion about which website is
