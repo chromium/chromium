@@ -193,18 +193,6 @@ Iban IbanFromSpecifics(const sync_pb::WalletMaskedIban& iban) {
 
 }  // namespace
 
-std::string GetBase64EncodedId(const std::string& id) {
-  std::string encoded_id;
-  base::Base64Encode(id, &encoded_id);
-  return encoded_id;
-}
-
-std::string GetBase64DecodedId(const std::string& id) {
-  std::string decoded_id;
-  base::Base64Decode(id, &decoded_id);
-  return decoded_id;
-}
-
 std::string GetStorageKeyForWalletMetadataTypeAndSpecificsId(
     sync_pb::WalletMetadataSpecifics::Type type,
     const std::string& specifics_id) {
@@ -225,14 +213,15 @@ void SetAutofillWalletSpecificsFromServerCard(
       wallet_specifics->mutable_masked_card();
 
   if (enforce_utf8) {
-    wallet_card->set_id(GetBase64EncodedId(card.server_id()));
+    wallet_card->set_id(base::Base64Encode(card.server_id()));
+
     // The billing address id might refer to a local profile guid which doesn't
     // need to be encoded.
     if (base::IsStringUTF8(card.billing_address_id())) {
       wallet_card->set_billing_address_id(card.billing_address_id());
     } else {
       wallet_card->set_billing_address_id(
-          GetBase64EncodedId(card.billing_address_id()));
+          base::Base64Encode(card.billing_address_id()));
     }
   } else {
     wallet_card->set_id(card.server_id());
@@ -336,7 +325,7 @@ void SetAutofillWalletSpecificsFromCreditCardCloudTokenData(
 
   if (enforce_utf8) {
     mutable_cloud_token_data->set_masked_card_id(
-        GetBase64EncodedId(cloud_token_data.masked_card_id));
+        base::Base64Encode(cloud_token_data.masked_card_id));
   } else {
     mutable_cloud_token_data->set_masked_card_id(
         cloud_token_data.masked_card_id);
@@ -360,7 +349,7 @@ void SetAutofillWalletSpecificsFromMaskedIban(
       wallet_specifics->mutable_masked_iban();
   if (enforce_utf8) {
     wallet_iban->set_instrument_id(
-        GetBase64EncodedId(base::NumberToString(iban.instrument_id())));
+        base::Base64Encode(base::NumberToString(iban.instrument_id())));
   } else {
     wallet_iban->set_instrument_id(base::NumberToString(iban.instrument_id()));
   }

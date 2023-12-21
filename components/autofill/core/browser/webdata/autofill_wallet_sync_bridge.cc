@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -70,7 +71,7 @@ std::unique_ptr<EntityData> CreateEntityDataFromCard(const CreditCard& card,
                                                      bool enforce_utf8) {
   auto entity_data = std::make_unique<EntityData>();
   entity_data->name =
-      "Server card " + GetBase64EncodedId(GetClientTagFromCreditCard(card));
+      "Server card " + base::Base64Encode(GetClientTagFromCreditCard(card));
 
   AutofillWalletSpecifics* wallet_specifics =
       entity_data->specifics.mutable_autofill_wallet();
@@ -86,7 +87,7 @@ std::unique_ptr<EntityData> CreateEntityDataFromPaymentsCustomerData(
   auto entity_data = std::make_unique<EntityData>();
   entity_data->name =
       "Payments customer data " +
-      GetBase64EncodedId(GetClientTagFromPaymentsCustomerData(customer_data));
+      base::Base64Encode(GetClientTagFromPaymentsCustomerData(customer_data));
 
   AutofillWalletSpecifics* wallet_specifics =
       entity_data->specifics.mutable_autofill_wallet();
@@ -105,7 +106,7 @@ std::unique_ptr<EntityData> CreateEntityDataFromCreditCardCloudTokenData(
   auto entity_data = std::make_unique<EntityData>();
   entity_data->name =
       "Server card cloud token data " +
-      GetBase64EncodedId(
+      base::Base64Encode(
           GetClientTagFromCreditCardCloudTokenData(cloud_token_data));
 
   AutofillWalletSpecifics* wallet_specifics =
@@ -120,7 +121,7 @@ std::unique_ptr<EntityData> CreateEntityDataFromIban(const Iban& iban,
                                                      bool enforce_utf8) {
   auto entity_data = std::make_unique<EntityData>();
   entity_data->name =
-      "Server IBAN " + GetBase64EncodedId(GetClientTagFromIban(iban));
+      "Server IBAN " + base::Base64Encode(GetClientTagFromIban(iban));
 
   AutofillWalletSpecifics* wallet_specifics =
       entity_data->specifics.mutable_autofill_wallet();

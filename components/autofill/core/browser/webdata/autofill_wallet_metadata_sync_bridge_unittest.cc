@@ -115,7 +115,7 @@ WalletMetadataSpecifics CreateWalletMetadataSpecificsForCardWithDetails(
   specifics.set_use_date(use_date);
   // "" is the default value according to the constructor of AutofillProfile;
   // this field is Base64 encoded in the protobuf.
-  specifics.set_card_billing_address_id(GetBase64EncodedId(billing_address_id));
+  specifics.set_card_billing_address_id(base::Base64Encode(billing_address_id));
   return specifics;
 }
 
@@ -151,10 +151,14 @@ CreditCard CreateLocalCreditCardWithDetails(size_t use_count,
 
 CreditCard CreateServerCreditCardFromSpecifics(
     const WalletMetadataSpecifics& specifics) {
-  return CreateServerCreditCardWithDetails(
-      GetBase64DecodedId(specifics.id()), specifics.use_count(),
-      specifics.use_date(),
-      GetBase64DecodedId(specifics.card_billing_address_id()));
+  std::string specifics_id;
+  std::string specifics_card_billing_address_id;
+  base::Base64Decode(specifics.id(), &specifics_id);
+  base::Base64Decode(specifics.card_billing_address_id(),
+                     &specifics_card_billing_address_id);
+  return CreateServerCreditCardWithDetails(specifics_id, specifics.use_count(),
+                                           specifics.use_date(),
+                                           specifics_card_billing_address_id);
 }
 
 void ExtractWalletMetadataSpecificsFromDataBatch(

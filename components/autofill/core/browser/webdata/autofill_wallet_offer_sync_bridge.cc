@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -157,7 +158,7 @@ void AutofillWalletOfferSyncBridge::GetAllDataImpl(DataCallback callback) {
 
     entity_data->name =
         "Offer " +
-        GetBase64EncodedId(GetClientTagFromSpecifics(*offer_specifics));
+        base::Base64Encode(GetClientTagFromSpecifics(*offer_specifics));
 
     batch->Put(GetStorageKeyFromSpecifics(*offer_specifics),
                std::move(entity_data));

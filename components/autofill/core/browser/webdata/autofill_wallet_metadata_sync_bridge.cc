@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -64,14 +65,16 @@ std::string GetClientTagForSpecificsId(WalletMetadataSpecifics::Type type,
 std::string GetSpecificsIdForMetadataId(const std::string& metadata_id) {
   // Metadata id is in the raw format (like cards from WalletData) whereas the
   // specifics id is base64-encoded.
-  return GetBase64EncodedId(metadata_id);
+  return base::Base64Encode(metadata_id);
 }
 
 // Returns the wallet metadata id for the specified |specifics_id|.
 std::string GetMetadataIdForSpecificsId(const std::string& specifics_id) {
   // The specifics id is base64-encoded whereas the metadata id is in the raw
   // format (like cards from WalletData).
-  return GetBase64DecodedId(specifics_id);
+  std::string decoded_id;
+  base::Base64Decode(specifics_id, &decoded_id);
+  return decoded_id;
 }
 
 // Returns the wallet metadata specifics storage key for the specified |type|
@@ -123,7 +126,7 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillMetadata(
   if (type == WalletMetadataSpecifics::CARD) {
     // The strings must be in valid UTF-8 to sync.
     remote_metadata->set_card_billing_address_id(
-        GetBase64EncodedId(local_metadata.billing_address_id));
+        base::Base64Encode(local_metadata.billing_address_id));
   }
 
   return entity_data;
@@ -139,8 +142,8 @@ AutofillMetadata CreateAutofillMetadataFromWalletMetadataSpecifics(
       base::Microseconds(specifics.use_date()));
 
   if (specifics.type() == WalletMetadataSpecifics::CARD) {
-    metadata.billing_address_id =
-        GetBase64DecodedId(specifics.card_billing_address_id());
+    base::Base64Decode(specifics.card_billing_address_id(),
+                       &metadata.billing_address_id);
   }
 
   return metadata;
