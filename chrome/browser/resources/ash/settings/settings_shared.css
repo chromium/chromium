@@ -195,8 +195,13 @@ cr-radio-group {
   align-items: center;
   border-top: var(--cr-separator-line);
   display: flex;
-  min-height: var(--cr-section-min-height);
+  min-height: var(--settings-row-min-height);
   padding: 0 var(--cr-section-padding);
+}
+
+:host-context(body.revamp-wayfinding-enabled) cr-link-row,
+:host-context(body.revamp-wayfinding-enabled) settings-toggle-button {
+  min-height: var(--settings-row-min-height);
 }
 
 .settings-box.no-padding {

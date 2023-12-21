@@ -27,6 +27,8 @@ html {
   --settings-menu-width: 250px;
   --settings-menu-item-border-width: 2px;
 
+  --settings-row-min-height: var(--cr-section-min-height);
+
   --settings-subpage-min-height: calc(100vh - var(--settings-toolbar-height));
 
   --settings-toolbar-height: var(--cr-toolbar-height);
@@ -54,6 +56,8 @@ body.revamp-wayfinding-enabled {
   --settings-menu-width: calc(var(--settings-menu-item-width) +
       var(--settings-menu-padding-inline-end) +
       var(--settings-menu-padding-inline-start));
+
+  --settings-row-min-height: 64px;
 
   --settings-subpage-min-height: calc(100vh - var(--settings-toolbar-height) -
       var(--settings-container-padding-top));
