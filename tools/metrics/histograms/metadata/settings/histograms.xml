@@ -931,17 +931,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.TimeUntilInteractive" units="ms"
-    expires_after="2021-08-22">
-  <owner>dbeam@chromium.org</owner>
-  <owner>dpapad@chromium.org</owner>
-  <summary>
-    The time until the settings Web UI is loaded, rendered, and interactive for
-    users (as in they can change a setting). Automatically logged each time the
-    settings page is opened (if not closed before interactive).
-  </summary>
-</histogram>
-
 <histogram name="Settings.TrackedPreferenceChanged" enum="TrackedPreference"
     expires_after="2024-05-19">
   <owner>proberge@chromium.org</owner>
