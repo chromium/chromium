@@ -55,7 +55,7 @@ using remoting::features::kEnableCrdAdminRemoteAccessV2;
 namespace {
 
 // Time after which an access code is guaranteed to have expired.
-constexpr base::TimeDelta kMaxTimeUntilClientConnects = base::Minutes(15);
+constexpr base::TimeDelta kMaxTimeUntilClientConnects = base::Minutes(10);
 
 // Enables the security curtain upon construction, and disables it when
 // destroyed.
@@ -259,7 +259,7 @@ class SessionDurationObserver : public CrdSessionObserver {
   std::optional<base::Time> session_connected_time_;
 };
 
-// Rejects incoming sessions when there is more than 15 minutes between
+// Rejects incoming sessions when there is more than 10 minutes between
 // starting the CRD host and the remote admin connecting.
 // We should not need this since the server side already enforces a TTL of 5
 // minutes (at the time of writing), but we add this as a stopgap just in case a
@@ -400,10 +400,13 @@ class CrdAdminSessionController::CrdHostSession {
 // Launcher that starts a new CRD session.
 class CrdAdminSessionController::NewSessionLauncher : public SessionLauncher {
  public:
-  NewSessionLauncher(RemotingServiceProxy& remoting_service,
-                     std::unique_ptr<CrdOAuthTokenFetcher> oauth_token_fetcher,
-                     const SessionParameters& parameters)
+  NewSessionLauncher(
+      RemotingServiceProxy& remoting_service,
+      ash::curtain::SecurityCurtainController& curtain_controller,
+      std::unique_ptr<CrdOAuthTokenFetcher> oauth_token_fetcher,
+      const SessionParameters& parameters)
       : remoting_service_(remoting_service),
+        curtain_controller_(curtain_controller),
         oauth_token_fetcher_(std::move(oauth_token_fetcher)),
         parameters_(parameters) {}
 
@@ -444,7 +447,9 @@ class CrdAdminSessionController::NewSessionLauncher : public SessionLauncher {
     }
 
     ReportLaunchSuccess({.curtained = parameters_.curtain_local_user_session,
-                         .host_observer = std::move(response->get_observer())});
+                         .host_observer = std::move(response->get_observer()),
+                         .curtain = CreateCurtainMaybe(),
+                         .session_terminator = CreateSessionTerminatorMaybe()});
   }
 
   void ReportLaunchSuccess(SessionStartParameters parameters) {
@@ -455,8 +460,25 @@ class CrdAdminSessionController::NewSessionLauncher : public SessionLauncher {
     std::move(on_session_launched_).Run(base::unexpected(error));
   }
 
+  std::unique_ptr<ScopedCurtain> CreateCurtainMaybe() {
+    if (parameters_.curtain_local_user_session) {
+      return std::make_unique<ScopedCurtain>(
+          curtain_controller_.get(),
+          remoting::CurtainModeChromeOs::CreateInitParams());
+    }
+    return nullptr;
+  }
+
+  std::unique_ptr<ScopedSessionTerminator> CreateSessionTerminatorMaybe() {
+    if (parameters_.curtain_local_user_session) {
+      return std::make_unique<ScopedSessionTerminator>();
+    }
+    return nullptr;
+  }
+
   SessionLaunchedCallback on_session_launched_;
   raw_ref<RemotingServiceProxy> remoting_service_;
+  raw_ref<ash::curtain::SecurityCurtainController> curtain_controller_;
   std::unique_ptr<CrdOAuthTokenFetcher> oauth_token_fetcher_;
   const SessionParameters parameters_;
 
@@ -670,7 +692,7 @@ void CrdAdminSessionController::StartCrdHostAndGetCode(
       std::move(session_finished_callback)));
 
   active_session_->Launch(std::make_unique<NewSessionLauncher>(
-      *remoting_service_,
+      *remoting_service_, *curtain_controller_,
       CreateOAuthTokenFetcher(GetOAuthService(), oauth_token_for_test_),
       parameters));
 }

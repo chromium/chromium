@@ -58,6 +58,7 @@ using remoting::mojom::StartSupportSessionResponsePtr;
 using remoting::mojom::SupportHostObserver;
 using remoting::mojom::SupportSessionParamsPtr;
 using remoting::protocol::ErrorCode;
+using ::testing::Eq;
 
 constexpr char kTestUserName[] = "test-username";
 const SessionId kValidSessionId{678};
@@ -100,6 +101,13 @@ auto SaveParamAndInvokeCallback(remoting::ChromeOsEnterpriseParams* output) {
 // to the `GetReconnectableSessionId` call.
 auto ReplyWithSessionId(std::optional<SessionId> id) {
   return [id](auto callback) { std::move(callback).Run(id); };
+}
+
+ui::KeyEvent EventWithSource(int source_device_id) {
+  ui::KeyEvent result{ui::EventType::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_C,
+                      /*flags=*/0};
+  result.set_source_device_id(source_device_id);
+  return result;
 }
 
 class RemotingServiceMock
@@ -174,12 +182,18 @@ class SecurityCurtainControllerFake
       const SecurityCurtainControllerFake&) = delete;
   ~SecurityCurtainControllerFake() override = default;
 
-  void Enable(InitParams params) override { is_enabled_ = true; }
+  void Enable(InitParams params) override {
+    is_enabled_ = true;
+    last_init_params_ = params;
+  }
   void Disable() override { is_enabled_ = false; }
   bool IsEnabled() const override { return is_enabled_; }
 
+  InitParams last_init_params() const { return last_init_params_; }
+
  private:
   bool is_enabled_ = false;
+  InitParams last_init_params_;
 };
 
 // Represents the response to the CRD host request, which is
@@ -887,7 +901,7 @@ TEST_F(CrdAdminSessionControllerTest, ShouldBlockLateIncomingConnections) {
 
   observer.OnHostStateReceivedAccessCode("code", base::Days(1));
 
-  task_environment()->FastForwardBy(base::Seconds(15 * 60 + 1));
+  task_environment()->FastForwardBy(base::Seconds(10 * 60 + 1));
 
   observer.OnHostStateConnected("remote-user");
   FlushForTesting(observer);
@@ -902,14 +916,14 @@ TEST_F(CrdAdminSessionControllerTest, ShouldAcceptFastIncomingConnections) {
 
   observer.OnHostStateReceivedAccessCode("code", base::Days(1));
 
-  task_environment()->FastForwardBy(base::Seconds(15 * 60 - 1));
+  task_environment()->FastForwardBy(base::Seconds(10 * 60 - 1));
 
   observer.OnHostStateConnected("remote-user");
   FlushForTesting(observer);
 
   ASSERT_TRUE(delegate().HasActiveSession());
 
-  // Make sure we do not kill the session once the 15 minutes mark hit.
+  // Make sure we do not kill the session once the 10 minutes mark hit.
   task_environment()->FastForwardBy(base::Minutes(1));
   ASSERT_TRUE(delegate().HasActiveSession());
 }
@@ -946,7 +960,61 @@ class CrdAdminSessionControllerReconnectTest
         << "StartSession() was not called";
     return *observer_remote();
   }
+
+  void SimulateCrdClientConnects() {
+    observer_remote()->OnHostStateConnecting();
+    observer_remote()->OnHostStateConnected(kTestUserName);
+    FlushForTesting(*observer_remote());
+  }
+
+  void SimulateCrdClientDisconnects() {
+    observer_remote()->OnHostStateDisconnected(std::nullopt);
+    FlushForTesting(*observer_remote());
+  }
+
+  void SimulateCrdSessionWithClient(bool is_curtained) {
+    StartCrdHost(is_curtained);
+    SimulateCrdClientConnects();
+    SimulateCrdClientDisconnects();
+  }
+  void StartCrdHost(bool is_curtained) {
+    SessionParameters parameters;
+    parameters.curtain_local_user_session = is_curtained;
+    StartCrdHostAndBindObserver(parameters);
+  }
 };
+
+TEST_F(CrdAdminSessionControllerReconnectTest,
+       ShouldNotCurtainOffAnUncurtainedSession) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+  InitWithNoReconnectableSession(session_controller());
+
+  StartCrdHost(/*is_curtained=*/false);
+
+  EXPECT_FALSE(curtain_controller().IsEnabled());
+}
+
+TEST_F(CrdAdminSessionControllerReconnectTest,
+       ShouldCurtainOffCurtainedSession) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+  InitWithNoReconnectableSession(session_controller());
+
+  StartCrdHost(/*is_curtained=*/true);
+
+  EXPECT_TRUE(curtain_controller().IsEnabled());
+}
+
+TEST_F(CrdAdminSessionControllerReconnectTest,
+       ShouldUncurtainAndForceTerminateWhenCurtainedSessionEnds) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+  InitWithNoReconnectableSession(session_controller());
+
+  SimulateCrdSessionWithClient(/*is_curtained=*/true);
+
+  EXPECT_FALSE(curtain_controller().IsEnabled());
+
+  EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 1);
+}
 
 TEST_F(CrdAdminSessionControllerReconnectTest,
        ShouldResumeReconnectableSessionDuringInitIfAvailable) {
@@ -1105,7 +1173,25 @@ TEST_F(CrdAdminSessionControllerReconnectTest,
   EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 1);
 }
 
-class CrdAdminSessionControllerTestNotification
+TEST_F(CrdAdminSessionControllerReconnectTest,
+       CurtainedSessionShouldFilterNonRemoteEvents) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+  InitWithNoReconnectableSession(session_controller());
+
+  StartCrdHost(/*is_curtained=*/true);
+  SimulateCrdClientConnects();
+
+  ash::curtain::EventFilter event_filter =
+      curtain_controller().last_init_params().event_filter;
+
+  EXPECT_THAT(event_filter.Run(EventWithSource(ui::ED_REMOTE_INPUT_DEVICE)),
+              Eq(ash::curtain::FilterResult::kKeepEvent));
+
+  EXPECT_THAT(event_filter.Run(EventWithSource(5)),
+              Eq(ash::curtain::FilterResult::kSuppressEvent));
+}
+
+class CrdAdminSessionControllerNotificationTest
     : public CrdAdminSessionControllerReconnectTest {
  public:
   void SetUp() override {
@@ -1123,32 +1209,9 @@ class CrdAdminSessionControllerTestNotification
     session_controller().SetOAuthTokenForTesting("fake-oauth-token");
     SimulateLoginScreenIsVisible();
   }
-
-  void StartCrdHost(bool is_curtained) {
-    SessionParameters parameters;
-    parameters.curtain_local_user_session = is_curtained;
-    StartCrdHostAndBindObserver(parameters);
-  }
-
-  void SimulateCrdClientConnects() {
-    observer_remote()->OnHostStateConnecting();
-    observer_remote()->OnHostStateConnected(kTestUserName);
-    FlushForTesting(*observer_remote());
-  }
-
-  void SimulateCrdClientDisconnects() {
-    observer_remote()->OnHostStateDisconnected(std::nullopt);
-    FlushForTesting(*observer_remote());
-  }
-
-  void SimulateCrdSessionWithClient(bool is_curtained) {
-    StartCrdHost(is_curtained);
-    SimulateCrdClientConnects();
-    SimulateCrdClientDisconnects();
-  }
 };
 
-TEST_F(CrdAdminSessionControllerTestNotification,
+TEST_F(CrdAdminSessionControllerNotificationTest,
        ShouldNotShowActivityNotificationIfDisabledByFeature) {
   DisableFeature(kEnableCrdAdminRemoteAccessV2);
   // Ensure disabling the feature takes effect.
@@ -1160,7 +1223,7 @@ TEST_F(CrdAdminSessionControllerTestNotification,
   SimulateChromeRestart();
 }
 
-TEST_F(CrdAdminSessionControllerTestNotification,
+TEST_F(CrdAdminSessionControllerNotificationTest,
        ShouldShowActivityNotificationIfThePreviousSessionWasCurtained) {
   SimulateCrdSessionWithClient(/*is_curtained=*/true);
 
@@ -1168,7 +1231,7 @@ TEST_F(CrdAdminSessionControllerTestNotification,
   SimulateChromeRestart();
 }
 
-TEST_F(CrdAdminSessionControllerTestNotification,
+TEST_F(CrdAdminSessionControllerNotificationTest,
        ShouldNotShowActivityNotificationIfThePreviousSessionWasNotCurtained) {
   SimulateCrdSessionWithClient(/*is_curtained=*/false);
 
@@ -1176,7 +1239,7 @@ TEST_F(CrdAdminSessionControllerTestNotification,
   SimulateChromeRestart();
 }
 
-TEST_F(CrdAdminSessionControllerTestNotification,
+TEST_F(CrdAdminSessionControllerNotificationTest,
        ShouldShowActivityNotificationAgainIfUserDidNotDismissIt) {
   SimulateCrdSessionWithClient(/*is_curtained=*/true);
 
@@ -1189,7 +1252,7 @@ TEST_F(CrdAdminSessionControllerTestNotification,
   SimulateChromeRestart();
 }
 
-TEST_F(CrdAdminSessionControllerTestNotification,
+TEST_F(CrdAdminSessionControllerNotificationTest,
        ShouldNotShowActivityNotificationAgainIfUserDidNotDismissIt) {
   SimulateCrdSessionWithClient(/*is_curtained=*/true);
 
@@ -1204,8 +1267,8 @@ TEST_F(CrdAdminSessionControllerTestNotification,
   SimulateChromeRestart();
 }
 
-TEST_F(CrdAdminSessionControllerTestNotification,
-       ShouldHideActivityNotificationDuringACurtainedCrdSession) {
+TEST_F(CrdAdminSessionControllerNotificationTest,
+       ShouldHideActivityNotificationDuringCurtainedCrdSession) {
   SimulateCrdSessionWithClient(/*is_curtained=*/true);
 
   // The first time the notification is displayed.

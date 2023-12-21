@@ -114,7 +114,6 @@ source_set("common_headers") {
     "input_injector.h",
     "input_injector_metadata.h",
     "sas_injector.h",
-    "session_terminator.h",
     "usage_stats_consent.h",
     "worker_process_ipc_delegate.h",
   ]
@@ -645,7 +644,6 @@ static_library("common") {
       "input_injector_chromeos.cc",
       "input_injector_chromeos.h",
       "keyboard_layout_monitor_chromeos.cc",
-      "session_terminator_chromeos.cc",
     ]
     deps += [
       "//ash",
