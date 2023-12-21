@@ -2194,10 +2194,6 @@ BASE_FEATURE(kPolicyProvidedTrustAnchorsAllowedAtLockScreen,
              "PolicyProvidedTrustAnchorsAllowedAtLockScreen",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPostLoginGlanceables,
-             "PostLoginGlanceables",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables the preference of using constant frame rate for camera
 // when streaming.
 BASE_FEATURE(kPreferConstantFrameRate,
@@ -4054,10 +4050,6 @@ bool IsPipTiltEnabled() {
 
 bool IsPipTuckEnabled() {
   return base::FeatureList::IsEnabled(kPipTuck);
-}
-
-bool ArePostLoginGlanceablesEnabled() {
-  return base::FeatureList::IsEnabled(kPostLoginGlanceables);
 }
 
 bool IsPrinterSettingsPrinterStatusEnabled() {
