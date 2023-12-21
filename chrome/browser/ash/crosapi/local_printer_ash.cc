@@ -142,9 +142,7 @@ void OnPrinterAuthenticated(
 
     // If the printer is autoconf compatible or has a valid PPD reference then
     // continue with normal setup.
-    if (printer.ppd_reference().autoconf ||
-        !printer.ppd_reference().effective_make_and_model.empty() ||
-        !printer.ppd_reference().user_supplied_ppd_url.empty()) {
+    if (printer.ppd_reference().IsFilled()) {
       SetUpPrinter(printers_manager, printer, std::move(callback));
       return;
     }

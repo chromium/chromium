@@ -69,8 +69,8 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
     bool IsFilled() const;
 
     // If non-empty, this is the url of a specific PPD the user has specified
-    // for use with this printer.  The ppd can be gzipped or uncompressed.  This
-    // url must use a file:// scheme.
+    // for use with this printer.  The ppd can be gzipped or uncompressed.
+    // Supported schemes for this url are file://, http:// and https://.
     std::string user_supplied_ppd_url;
 
     // String that identifies which ppd to use from the ppd server.
