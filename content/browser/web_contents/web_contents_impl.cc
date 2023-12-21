@@ -3879,7 +3879,12 @@ void WebContentsImpl::ExitFullscreenMode(bool will_cause_resize) {
   }
 
   if (delegate_) {
+    // This may spin the message loop and destroy this object crbug.com/1506535
+    base::WeakPtr<WebContentsImpl> weak_ptr = weak_factory_.GetWeakPtr();
     delegate_->ExitFullscreenModeForTab(this);
+    if (!weak_ptr) {
+      return;
+    }
 
     if (keyboard_lock_widget_) {
       delegate_->CancelKeyboardLockRequest(this);
