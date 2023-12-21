@@ -891,16 +891,24 @@ VideoTrackRecorderImpl::CreateSoftwareVideoEncoder(
   switch (codec_profile.codec_id) {
 #if BUILDFLAG(RTC_USE_H264)
     case CodecId::kH264:
-      return std::make_unique<H264Encoder>(std::move(encoding_task_runner),
-                                           on_encoded_video_cb, codec_profile,
-                                           bits_per_second);
+      return std::make_unique<H264Encoder>(
+          std::move(encoding_task_runner), on_encoded_video_cb, codec_profile,
+          bits_per_second,
+          base::BindPostTask(
+              main_thread_task_runner_,
+              WTF::BindRepeating(&CallbackInterface::OnVideoEncodingError,
+                                 WrapWeakPersistent(callback_interface()))));
 #endif
     case CodecId::kVp8:
     case CodecId::kVp9:
       return std::make_unique<VpxEncoder>(
           std::move(encoding_task_runner),
           codec_profile.codec_id == CodecId::kVp9, on_encoded_video_cb,
-          bits_per_second);
+          bits_per_second,
+          base::BindPostTask(
+              main_thread_task_runner_,
+              WTF::BindRepeating(&CallbackInterface::OnVideoEncodingError,
+                                 WrapWeakPersistent(callback_interface()))));
 #if BUILDFLAG(ENABLE_LIBAOM)
     case CodecId::kAv1: {
       auto on_error_cb = base::BindPostTask(

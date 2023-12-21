@@ -29,7 +29,8 @@ class MODULES_EXPORT H264Encoder final : public VideoTrackRecorder::Encoder {
   H264Encoder(scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
               const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
               VideoTrackRecorder::CodecProfile codec_profile,
-              uint32_t bits_per_second);
+              uint32_t bits_per_second,
+              const VideoTrackRecorder::OnErrorCB on_error_cb);
   ~H264Encoder() override;
 
   H264Encoder(const H264Encoder&) = delete;
@@ -53,6 +54,8 @@ class MODULES_EXPORT H264Encoder final : public VideoTrackRecorder::Encoder {
 
   // TODO(inker): Move this field into VideoTrackRecorder::Encoder.
   const VideoTrackRecorder::CodecProfile codec_profile_;
+
+  const VideoTrackRecorder::OnErrorCB on_error_cb_;
 
   // |openh264_encoder_| is a special scoped pointer to guarantee proper
   // destruction, also when reconfiguring due to parameters change.

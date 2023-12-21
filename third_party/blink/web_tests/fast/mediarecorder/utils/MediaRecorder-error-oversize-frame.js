@@ -28,14 +28,14 @@ function genTest(mimeType, maxWidth) {
     let dataCount = 0;
     recorder.ondataavailable = t.step_func(event => {
       assert_equals(event.data.size, 0, 'Unexpected data when canvas stream is oversize.');
-      if (dataCount++ >= 2) t.done();
+    });
+    recorder.onerror = t.step_func(event => {
+      // Error is caused.
+      t.done();
     });
     recorder.start();
     t.add_cleanup(() => recorder.stop());
-    const genFrameInterval = setInterval(t.step_func(() => {
-      generateFrame();
-      recorder.requestData();
-    }), 100);
-    t.add_cleanup(() => clearInterval(genFrameInterval));
-  }, `Ignores frames when stream starts oversize with codec '${mimeType}'`);
+    generateFrame();
+    recorder.requestData();
+  }, `Causes an error when stream is oversize with codec '${mimeType}'`);
 }
