@@ -49,6 +49,10 @@ void AppInstallDialogUI::SetDialogArgs(mojom::DialogArgsPtr args) {
   dialog_args_ = std::move(args);
 }
 
+void AppInstallDialogUI::SetExpectedAppId(std::string expected_app_id) {
+  expected_app_id_ = expected_app_id;
+}
+
 void AppInstallDialogUI::SetDialogCallback(
     base::OnceCallback<void(bool accepted)> dialog_accepted_callback) {
   dialog_accepted_callback_ = std::move(dialog_accepted_callback);
@@ -73,7 +77,8 @@ void AppInstallDialogUI::CreatePageHandler(
     mojo::PendingReceiver<mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<AppInstallPageHandler>(
       Profile::FromWebUI(web_ui()), std::move(dialog_args_),
-      std::move(dialog_accepted_callback_), std::move(receiver),
+      std::move(expected_app_id_), std::move(dialog_accepted_callback_),
+      std::move(receiver),
       base::BindOnce(&AppInstallDialogUI::CloseDialog, base::Unretained(this)));
 }
 

@@ -119,14 +119,16 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, FailedInstall) {
   base::WeakPtr<AppInstallDialog> dialog_handle =
       AppInstallDialog::CreateDialog();
 
-  dialog_handle->Show(browser()->window()->GetNativeWindow(),
-                      ash::app_install::mojom::DialogArgs::New(),
-                      base::BindOnce(
-                          [](base::WeakPtr<AppInstallDialog> dialog_handle,
-                             bool dialog_accepted) {
-                            dialog_handle->SetInstallComplete(nullptr);
-                          },
-                          dialog_handle));
+  dialog_handle->Show(
+      browser()->window()->GetNativeWindow(),
+      /* dialog_args= */ ash::app_install::mojom::DialogArgs::New(),
+      /* expected_app_id= */ "",
+      base::BindOnce(
+          [](base::WeakPtr<AppInstallDialog> dialog_handle,
+             bool dialog_accepted) {
+            dialog_handle->SetInstallComplete(nullptr);
+          },
+          dialog_handle));
 
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());

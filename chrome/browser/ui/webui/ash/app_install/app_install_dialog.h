@@ -25,6 +25,7 @@ class AppInstallDialog : public SystemWebDialogDelegate {
   // Displays the dialog.
   void Show(gfx::NativeWindow parent,
             mojom::DialogArgsPtr args,
+            std::string expected_app_id,
             base::OnceCallback<void(bool accepted)> dialog_accepted_callback);
   // Callers must call this once the install has finished, passing in the app_id
   // if the installation succeeded or a nullptr if it failed.
@@ -44,6 +45,8 @@ class AppInstallDialog : public SystemWebDialogDelegate {
   base::WeakPtr<AppInstallDialog> GetWeakPtr();
 
   mojom::DialogArgsPtr dialog_args_;
+  std::string expected_app_id_;
+
   raw_ptr<AppInstallDialogUI> dialog_ui_ = nullptr;
   base::OnceCallback<void(bool accepted)> dialog_accepted_callback_;
 

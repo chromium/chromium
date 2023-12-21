@@ -20,6 +20,7 @@
 // TODO(crbug.com/1488697): Remove circular dependency.
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"  // nogncheck
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
@@ -152,6 +153,10 @@ void AppInstallServiceAsh::InstallFromFetchedData(
             // TODO(crbug.com/1488697): Install the app.
             dialog->Show(
                 nullptr, std::move(args),
+                web_app::GenerateAppIdFromManifestId(
+                    // expected_package_id.identifier() is the manifest ID for
+                    // web apps.
+                    GURL(expected_package_id.identifier())),
                 base::BindOnce(
                     [](base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
                        bool dialog_accepted) {

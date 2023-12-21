@@ -89,8 +89,10 @@ void OnManifestFetchedShowCrosDialog(
   args->name = base::UTF16ToUTF8(web_app_info->title);
   args->description = base::UTF16ToUTF8(web_app_info->description);
   args->icon_url = GetIconUrl(web_app_info->manifest_icons);
+
   dialog_handle->Show(
       initiator_web_contents->GetNativeView(), std::move(args),
+      web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id),
       base::BindOnce(
           [](std::unique_ptr<WebAppInstallInfo> web_app_info,
              WebAppInstallationAcceptanceCallback web_app_acceptance_callback,

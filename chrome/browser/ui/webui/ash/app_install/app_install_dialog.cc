@@ -26,7 +26,9 @@ base::WeakPtr<AppInstallDialog> AppInstallDialog::CreateDialog() {
 void AppInstallDialog::Show(
     gfx::NativeWindow parent,
     mojom::DialogArgsPtr args,
+    std::string expected_app_id,
     base::OnceCallback<void(bool accepted)> dialog_accepted_callback) {
+  expected_app_id_ = std::move(expected_app_id);
   dialog_accepted_callback_ = std::move(dialog_accepted_callback);
 
   dialog_args_ = std::move(args);
@@ -49,6 +51,7 @@ void AppInstallDialog::OnDialogShown(content::WebUI* webui) {
   SystemWebDialogDelegate::OnDialogShown(webui);
   dialog_ui_ = static_cast<AppInstallDialogUI*>(webui->GetController());
   dialog_ui_->SetDialogArgs(std::move(dialog_args_));
+  dialog_ui_->SetExpectedAppId(std::move(expected_app_id_));
   dialog_ui_->SetDialogCallback(std::move(dialog_accepted_callback_));
 }
 

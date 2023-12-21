@@ -26,6 +26,7 @@ class AppInstallPageHandler : public mojom::PageHandler {
   explicit AppInstallPageHandler(
       Profile* profile,
       mojom::DialogArgsPtr args,
+      std::string expected_app_id,
       base::OnceCallback<void(bool accepted)> dialog_accepted_callback,
       mojo::PendingReceiver<mojom::PageHandler> pending_page_handler,
       CloseDialogCallback close_dialog_callback);
@@ -46,6 +47,7 @@ class AppInstallPageHandler : public mojom::PageHandler {
  private:
   raw_ptr<Profile> profile_;
   mojom::DialogArgsPtr dialog_args_;
+  std::string expected_app_id_;
   base::OnceCallback<void(bool accepted)> dialog_accepted_callback_;
   mojo::Receiver<mojom::PageHandler> receiver_;
   CloseDialogCallback close_dialog_callback_;
