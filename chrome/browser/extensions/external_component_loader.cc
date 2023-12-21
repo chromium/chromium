@@ -49,7 +49,8 @@ void ExternalComponentLoader::StartLoading() {
                            prefs);
     }
 
-    if (chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile_)) {
+    if (chromeos::cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAllowed(
+            profile_)) {
       // Do not load in Ash if Lacros is enabled, otherwise all messages will be
       // routed to the extension in Ash.
       bool should_load = false;
