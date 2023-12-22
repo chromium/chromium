@@ -127,7 +127,7 @@ common_screens_js_files = [
   "screens/common/gaia_signin.js",
   "screens/common/gesture_navigation.ts",
   "screens/common/guest_tos.js",
-  "screens/common/hw_data_collection.js",
+  "screens/common/hw_data_collection.ts",
   "screens/common/local_state_error.ts",
   "screens/common/managed_terms_of_service.js",
   "screens/common/marketing_opt_in.ts",

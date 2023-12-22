@@ -36,7 +36,6 @@ js_type_check("closure_compile_local") {
     ":error_message",
     ":gaia_signin",
     ":guest_tos",
-    ":hw_data_collection",
     ":managed_terms_of_service",
     ":offline_ad_login",
     ":os_install",
@@ -178,16 +177,6 @@ js_library("guest_tos") {
     "$externs_path/webview_tag.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
-}
-
-js_library("hw_data_collection") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/hw_data_collection.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-  ]
-  extra_deps = [ ":web_components" ]
 }
 
 js_library("managed_terms_of_service") {

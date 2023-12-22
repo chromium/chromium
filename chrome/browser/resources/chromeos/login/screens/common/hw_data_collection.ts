@@ -16,46 +16,38 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
-import {html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 
 import {getTemplate} from './hw_data_collection.html.js';
 
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- */
-const HWDataCollectionScreenElementBase = mixinBehaviors(
-    [OobeDialogHostBehavior, OobeI18nBehavior, LoginScreenBehavior],
-    PolymerElement);
+const HwDataCollectionScreenElementBase =
+    mixinBehaviors(
+        [OobeI18nBehavior, LoginScreenBehavior, OobeDialogHostBehavior],
+        PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
+    };
 
-/**
- * Data that is passed to the screen during onBeforeShow.
- * @typedef {{
- *   hwDataUsageEnabled: boolean,
- * }}
- */
-let HWDataCollectionScreenData;
+interface HwDataCollectionScreenData {
+  hwDataUsageEnabled: boolean;
+}
 
-/**
- * @polymer
- */
-class HWDataCollectionScreen extends HWDataCollectionScreenElementBase {
+export class HwDataCollectionScreen extends HwDataCollectionScreenElementBase {
   static get is() {
-    return 'hw-data-collection-element';
+    return 'hw-data-collection-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       dataUsageChecked: {
         type: Boolean,
@@ -64,44 +56,47 @@ class HWDataCollectionScreen extends HWDataCollectionScreenElementBase {
     };
   }
 
+  private dataUsageChecked: boolean;
+
   constructor() {
     super();
   }
 
   /**
    * Event handler that is invoked just before the screen is shown.
-   * @param {HWDataCollectionScreenData} data Screen init payload
+   * param data Screen init payload
    */
-  onBeforeShow(data) {
+  override onBeforeShow(data: HwDataCollectionScreenData): void {
     this.dataUsageChecked =
         'hwDataUsageEnabled' in data && data.hwDataUsageEnabled;
   }
 
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('HWDataCollectionScreen');
   }
 
-  /**
-   * @param {string} locale
-   * @return {string}
-   * @private
-   */
-  getHWDataCollectionContent_(locale) {
-    return this.i18nAdvanced('HWDataCollectionContent', {tags: ['p']});
+  private getHwDataCollectionContent_(locale: string): string {
+    return this.i18nAdvancedDynamic(
+        locale, 'HWDataCollectionContent', {tags: ['p']});
   }
 
-  onAcceptButtonClicked_() {
+  private onAcceptButtonClicked_(): void {
     this.userActed('accept-button');
   }
 
   /**
    * On-change event handler for dataUsageChecked.
-   * @private
    */
-  onDataUsageChanged_() {
+  private onDataUsageChanged_(): void {
     this.userActed(['select-hw-data-usage', this.dataUsageChecked]);
   }
 }
 
-customElements.define(HWDataCollectionScreen.is, HWDataCollectionScreen);
+declare global {
+  interface HTMLElementTagNameMap {
+    [HwDataCollectionScreen.is]: HwDataCollectionScreen;
+  }
+}
+
+customElements.define(HwDataCollectionScreen.is, HwDataCollectionScreen);
