@@ -7,7 +7,7 @@
  * Forked from ui/webui/resources/cr_elements/cr_toast/cr_toast.ts
  */
 import '//resources/polymer/v3_0/paper-styles/color.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
+import '../cr_shared_vars.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

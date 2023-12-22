@@ -7,6 +7,11 @@
 
 typedef WebUIMochaBrowserTest AshCommonCrElementsTest;
 
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrA11yAnnouncer) {
+  RunTest("chromeos/ash_common/cr_elements/cr_a11y_announcer_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrButton) {
   RunTest("chromeos/ash_common/cr_elements/cr_button_test.js", "mocha.run()");
 }

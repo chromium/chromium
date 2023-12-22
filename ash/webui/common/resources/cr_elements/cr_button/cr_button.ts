@@ -10,8 +10,8 @@
  *
  * Forked from ui/webui/resources/cr_elements/cr_button/cr_button.ts
  */
-import '//resources/cr_elements/cr_hidden_style.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
+import '../cr_hidden_style.css.js';
+import '../cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/paper-styles/color.js';
 
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';

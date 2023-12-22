@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icons.css.js';
 
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assertInstanceof} from 'chrome://resources/js/assert.js';

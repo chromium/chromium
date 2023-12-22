@@ -46,7 +46,7 @@
  * the |ironIcon| property to a comma-delimited list of keys.
  */
 
-import '//resources/cr_elements/cr_shared_vars.css.js';
+import '../cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';

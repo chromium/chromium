@@ -10,9 +10,9 @@
  * Forked from
  * ui/webui/resources/cr_elements/cr_expand_button/cr_expand_button.ts
  */
-import '//resources/cr_elements/cr_actionable_row_style.css.js';
+import '../cr_actionable_row_style.css.js';
 import '../cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
+import '../cr_shared_vars.css.js';
 import '../icons.html.js';
 
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';

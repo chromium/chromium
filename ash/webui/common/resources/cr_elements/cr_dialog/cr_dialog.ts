@@ -22,9 +22,9 @@
  * Forked from ui/webui/resources/cr_elements/cr_dialog/cr_dialog.ts
  */
 import '../cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_icons.css.js';
-import '//resources/cr_elements/cr_hidden_style.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
+import '../cr_icons.css.js';
+import '../cr_hidden_style.css.js';
+import '../cr_shared_vars.css.js';
 
 import {CrContainerShadowMixin} from '//resources/cr_elements/cr_container_shadow_mixin.js';
 import {assert} from '//resources/js/assert.js';

@@ -11,6 +11,8 @@ build_webui("build") {
   grd_prefix = "ash_common_cr_elements"
 
   web_component_files = [
+    "cr_a11y_announcer/cr_a11y_announcer.ts",
+    "cr_action_menu/cr_action_menu.ts",
     "cr_button/cr_button.ts",
     "cr_checkbox/cr_checkbox.ts",
     "cr_dialog/cr_dialog.ts",
@@ -21,9 +23,19 @@ build_webui("build") {
     "cr_toast/cr_toast_manager.ts",
   ]
 
-  css_files = [ "cr_input/cr_input_style.css" ]
-
   icons_html_files = [ "icons.html" ]
+
+  css_files = [
+    "cros_color_overrides.css",
+    "cr_actionable_row_style.css",
+    "cr_hidden_style.css",
+    "cr_icons.css",
+    "cr_input/cr_input_style.css",
+    "cr_page_host_style.css",
+    "cr_shared_style.css",
+    "cr_shared_vars.css",
+    "md_select.css",
+  ]
 
   ts_out_dir =
       "$root_gen_dir/ash/webui/common/resources/preprocessed/cr_elements"
