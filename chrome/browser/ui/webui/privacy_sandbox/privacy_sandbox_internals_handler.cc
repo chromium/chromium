@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_handler.h"
 #include "base/logging.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern_parser.h"
 #include "privacy_sandbox_internals_handler.h"
@@ -20,14 +22,18 @@ PrivacySandboxInternalsHandler::PrivacySandboxInternalsHandler(
 
 PrivacySandboxInternalsHandler::~PrivacySandboxInternalsHandler() = default;
 
-void PrivacySandboxInternalsHandler::GetCookieContentSettings(
-    GetCookieContentSettingsCallback callback) {
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-  std::vector<ContentSettingPatternSource> content_settings =
-      map->GetSettingsForOneType(ContentSettingsType::COOKIES);
+void PrivacySandboxInternalsHandler::GetCookieSettings(
+    GetCookieSettingsCallback callback) {
+  content_settings::CookieSettings* cookie_settings =
+      CookieSettingsFactory::GetForProfile(profile_).get();
+  std::move(callback).Run(cookie_settings->GetCookieSettings());
+}
 
-  std::move(callback).Run(std::move(content_settings));
+void PrivacySandboxInternalsHandler::GetTpcdMetadataGrants(
+    GetTpcdMetadataGrantsCallback callback) {
+  content_settings::CookieSettings* cookie_settings =
+      CookieSettingsFactory::GetForProfile(profile_).get();
+  std::move(callback).Run(cookie_settings->GetTpcdMetadataGrants());
 }
 
 void PrivacySandboxInternalsHandler::ContentSettingsPatternToString(

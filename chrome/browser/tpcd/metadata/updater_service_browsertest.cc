@@ -159,7 +159,7 @@ class UpdaterServiceBrowserTest : public PlatformBrowserTest {
                                                    Profile* profile = nullptr) {
     std::vector<std::string> settings;
     for (const auto& setting :
-         GetCookieSettings(profile)->GetTpcdMetadataGrantsForTesting()) {
+         GetCookieSettings(profile)->GetTpcdMetadataGrants()) {
       settings.emplace_back(base::StringPrintf(
           "[%s,%s]:%d", setting.primary_pattern.ToString().c_str(),
           setting.secondary_pattern.ToString().c_str(),
@@ -207,14 +207,14 @@ class UpdaterServiceBrowserTest : public PlatformBrowserTest {
 IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
                        ContentSettingsForOneType_Empty) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(), 0u);
+  ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
 
   std::vector<MetadataPair> metadata_pairs;
   Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
   ASSERT_EQ(metadata.metadata_entries_size(), 0);
 
   MockComponentInstallation(metadata);
-  ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(), 0u);
+  ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
 
   const GURL kEmbedded = GURL("http://www.bar.com");
   const url::Origin kEmbedder = url::Origin::Create(GURL("http://www.foo.com"));
-  ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(), 0u);
+  ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
   EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
       kEmbedded, net::SiteForCookies(), kEmbedder, {}));
 
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
 
   MockComponentInstallation(metadata);
 
-  ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(), 1u);
+  ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 1u);
   EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
       kEmbedded, net::SiteForCookies(), kEmbedder, {}));
 }
@@ -262,15 +262,13 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
     Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
     ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
-    ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(),
-              0u);
+    ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
     EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
         kEmbedded1, net::SiteForCookies(), kEmbedder1, {}));
 
     MockComponentInstallation(metadata);
 
-    ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(),
-              1u);
+    ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 1u);
     EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
         kEmbedded1, net::SiteForCookies(), kEmbedder1, {}));
   }
@@ -284,8 +282,7 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
     Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
     ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
-    ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(),
-              1u);
+    ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 1u);
     EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
         kEmbedded1, net::SiteForCookies(), kEmbedder1, {}));
     EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
@@ -293,8 +290,7 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
 
     MockComponentInstallation(metadata);
 
-    ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(),
-              1u);
+    ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 1u);
     EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
         kEmbedded1, net::SiteForCookies(), kEmbedder1, {}));
     EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(

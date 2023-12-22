@@ -28,11 +28,11 @@ class PrivacySandboxInternalsHandler
   PrivacySandboxInternalsHandler& operator=(
       const PrivacySandboxInternalsHandler&) = delete;
 
-  void GetCookieContentSettings(
-      GetCookieContentSettingsCallback callback) override;
   void ContentSettingsPatternToString(
       const ContentSettingsPattern& pattern,
       ContentSettingsPatternToStringCallback callback) override;
+  void GetCookieSettings(GetCookieSettingsCallback callback) override;
+  void GetTpcdMetadataGrants(GetTpcdMetadataGrantsCallback callback) override;
 
  private:
   raw_ptr<Profile> profile_;

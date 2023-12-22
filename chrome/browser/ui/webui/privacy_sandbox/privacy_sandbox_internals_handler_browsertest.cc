@@ -70,9 +70,9 @@ class PrivacySandboxInternalsMojoTest : public InProcessBrowserTest {
         browser()->profile(), remote_.BindNewPipeAndPassReceiver());
   }
 
-  void GetCookieContentSettingsCallback(
+  void ContentSettingsCallback(
       const std::vector<ContentSettingPatternSource>& vec) {
-    get_cookie_content_settings_cb_data_ = vec;
+    content_settings_cb_data_ = vec;
     waiter_.Notify();
   }
 
@@ -88,26 +88,46 @@ class PrivacySandboxInternalsMojoTest : public InProcessBrowserTest {
   // Notified when _any_ callback from the mojo interface is made.
   CallbackWaiter waiter_;
 
-  std::vector<ContentSettingPatternSource> get_cookie_content_settings_cb_data_;
+  std::vector<ContentSettingPatternSource> content_settings_cb_data_;
   std::string string_cb_data_;
 };
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,
-                       GetCookieContentSettings) {
+IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetCookieSettings) {
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(browser()->profile()).get();
   settings->SetCookieSetting(GURL("https://example.com"),
                              CONTENT_SETTING_ALLOW);
 
-  remote_->GetCookieContentSettings(base::BindOnce(
-      &PrivacySandboxInternalsMojoTest::GetCookieContentSettingsCallback,
-      base::Unretained(this)));
+  remote_->GetCookieSettings(
+      base::BindOnce(&PrivacySandboxInternalsMojoTest::ContentSettingsCallback,
+                     base::Unretained(this)));
   waiter_.Wait();
   EXPECT_THAT(
-      get_cookie_content_settings_cb_data_,
+      content_settings_cb_data_,
       AllOf(
           UnorderedElementsAreArray(settings->GetCookieSettings()),
           SizeIs(Ge(1u))));  // Don't check exact size (default list may change)
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTpcdMetadataGrants) {
+  ContentSettingsForOneType tpcd_metadata_grants;
+
+  const auto primary_pattern =
+      ContentSettingsPattern::FromString("[*.]example.com");
+  const auto secondary_pattern = ContentSettingsPattern::FromString("*");
+  base::Value value(ContentSetting::CONTENT_SETTING_ALLOW);
+  tpcd_metadata_grants.emplace_back(primary_pattern, secondary_pattern,
+                                    std::move(value), std::string(), false);
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+  settings->SetContentSettingsFor3pcdMetadataGrants(tpcd_metadata_grants);
+  remote_->GetTpcdMetadataGrants(
+      base::BindOnce(&PrivacySandboxInternalsMojoTest::ContentSettingsCallback,
+                     base::Unretained(this)));
+  waiter_.Wait();
+  EXPECT_THAT(content_settings_cb_data_,
+              AllOf(SizeIs(1), UnorderedElementsAreArray(
+                                   settings->GetTpcdMetadataGrants())));
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, PatternPartsToString) {

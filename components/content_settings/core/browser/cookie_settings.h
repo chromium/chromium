@@ -167,7 +167,7 @@ class CookieSettings
     }
   }
 
-  ContentSettingsForOneType GetTpcdMetadataGrantsForTesting() {
+  ContentSettingsForOneType GetTpcdMetadataGrants() {
     base::AutoLock lock(tpcd_lock_);
     return settings_for_3pcd_metadata_grants_;
   }

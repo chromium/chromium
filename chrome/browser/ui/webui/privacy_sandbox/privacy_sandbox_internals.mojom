@@ -10,8 +10,13 @@ import "components/content_settings/core/common/content_settings.mojom";
 
 // Renderer -> Browser
 interface PageHandler {
-  // Return a list of ContentSettings for the current profile.
-  GetCookieContentSettings() => (
+  // Return a list of COOKIES ContentSettings for the current profile.
+  GetCookieSettings() => (
+    array<content_settings.mojom.ContentSettingPatternSource> content_settings);
+
+  // Return a list of TPCD_METADATA_GRANTS ContentSettings for the current
+  // profile.
+  GetTpcdMetadataGrants() => (
     array<content_settings.mojom.ContentSettingPatternSource> content_settings);
 
   // Convert PatternParts into a string representation.
