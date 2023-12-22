@@ -106,6 +106,11 @@ enum class RawPtrTraits : unsigned {
   // Don't use directly, use AllowPtrArithmetic instead.
   kAllowPtrArithmetic = (1 << 3),
 
+  // This pointer has BRP disabled for Vector-related raw_ptrs.
+  //
+  // Don't use directly, use VectorExperimental instead.
+  kVectorExperimental = (1 << 4),
+
   // Uninitialized pointers are discouraged and disabled by default.
   //
   // Don't use directly, use AllowUninitialized instead.
@@ -127,7 +132,8 @@ enum class RawPtrTraits : unsigned {
   kDummyForTest = (1 << 11),
 
   kAllMask = kMayDangle | kDisableHooks | kAllowPtrArithmetic |
-             kAllowUninitialized | kUseCountingImplForTest | kDummyForTest,
+             kVectorExperimental | kAllowUninitialized |
+             kUseCountingImplForTest | kDummyForTest,
 };
 // Template specialization to use |PA_DEFINE_OPERATORS_FOR_FLAGS| without
 // |kMaxValue| declaration.
@@ -220,7 +226,10 @@ template <RawPtrTraits Traits>
 using UnderlyingImplForTraits = internal::RawPtrBackupRefImpl<
     /*AllowDangling=*/partition_alloc::internal::ContainsFlags(
         Traits,
-        RawPtrTraits::kMayDangle)>;
+        RawPtrTraits::kMayDangle),
+    /*VectorExperimental=*/partition_alloc::internal::ContainsFlags(
+        Traits,
+        RawPtrTraits::kVectorExperimental)>;
 
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 template <RawPtrTraits Traits>
@@ -1044,9 +1053,12 @@ constexpr auto ExperimentalRenderer = base::RawPtrTraits::kMayDangle;
 // std::vector<raw_ptr<T>> and in order to temporarily bypass the dangling ptr
 // checks on the CQ. This alias will be removed gradually after the cl lands and
 // will be replaced by DanglingUntriaged where necessary.
-constexpr inline auto VectorExperimental = base::RawPtrTraits::kMayDangle;
+// Update: The alias now temporarily disables BRP. This is due to performance
+// issues. BRP will be re-enabled once the issues are identified and handled.
+constexpr inline auto VectorExperimental =
+    base::RawPtrTraits::kVectorExperimental;
 
-// Temporary workaround needed when using vector<raw_ptr<T, ExperimentalVector>
+// Temporary workaround needed when using vector<raw_ptr<T, VectorExperimental>
 // in Mocked method signatures as the macros don't allow commas within.
 template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
 using vector_experimental_raw_ptr =

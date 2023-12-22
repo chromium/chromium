@@ -38,7 +38,7 @@ void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address);
 // Note that `RawPtrBackupRefImpl` itself is not thread-safe. If multiple
 // threads modify the same raw_ptr object without synchronization, a data race
 // will occur.
-template <bool AllowDangling = false>
+template <bool AllowDangling = false, bool VectorExperimental = false>
 struct RawPtrBackupRefImpl {
   // These are needed for correctness, or else we may end up manipulating
   // ref-count where we shouldn't, thus affecting the BRP's integrity. Unlike
@@ -51,6 +51,11 @@ struct RawPtrBackupRefImpl {
 
  private:
   PA_ALWAYS_INLINE static bool UseBrp(uintptr_t address) {
+    // BRP is temporarily disabled for Pointers annotated with
+    // VectorExperimental.
+    if constexpr (VectorExperimental) {
+      return false;
+    }
     return partition_alloc::IsManagedByPartitionAllocBRPPool(address);
   }
 

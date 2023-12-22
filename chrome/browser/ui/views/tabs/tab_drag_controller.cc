@@ -1191,7 +1191,7 @@ void TabDragController::MoveAttached(const gfx::Point& point_in_screen,
   std::vector<raw_ptr<TabSlotView, VectorExperimental>> views(
       drag_data_.size());
   for (size_t i = 0; i < drag_data_.size(); ++i)
-    views[i] = drag_data_[i].attached_view;
+    views[i] = drag_data_[i].attached_view.get();
 
   bool did_layout = false;
 
@@ -1443,7 +1443,7 @@ void TabDragController::Attach(TabDragContext* attached_context,
   }
   DCHECK_EQ(views.size(), drag_data_.size());
   for (size_t i = 0; i < drag_data_.size(); ++i) {
-    drag_data_[i].attached_view = views[i];
+    drag_data_[i].attached_view = views[i].get();
     attached_views_.push_back(views[i]);
   }
 

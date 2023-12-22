@@ -262,7 +262,7 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
       result.StartCapturing();
     }
 
-    event_sinks_.push_back(result.web_contents);
+    event_sinks_.push_back(result.web_contents.get());
 
     return result;
   }

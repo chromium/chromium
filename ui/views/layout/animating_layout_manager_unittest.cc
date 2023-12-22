@@ -180,13 +180,13 @@ class AnimatingLayoutManagerTest : public testing::Test {
     // These can't be constructed statically since they depend on the child
     // views.
     layout1_ = {{100, 100},
-                {{children_[0], true, {5, 5, 10, 10}},
-                 {children_[1], false},
-                 {children_[2], true, {20, 20, 20, 20}}}};
+                {{children_[0].get(), true, {5, 5, 10, 10}},
+                 {children_[1].get(), false},
+                 {children_[2].get(), true, {20, 20, 20, 20}}}};
     layout2_ = {{200, 200},
-                {{children_[0], true, {10, 20, 20, 30}},
-                 {children_[1], false},
-                 {children_[2], true, {10, 100, 10, 10}}}};
+                {{children_[0].get(), true, {10, 20, 20, 30}},
+                 {children_[1].get(), false},
+                 {children_[2].get(), true, {10, 100, 10, 10}}}};
   }
 
   void TearDown() override {

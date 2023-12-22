@@ -208,7 +208,7 @@ void FakeUserManager::SwitchActiveUser(const AccountId& account_id) {
   for (UserList::const_iterator it = logged_in_users_.begin();
        it != logged_in_users_.end(); ++it) {
     if ((*it)->GetAccountId() == account_id) {
-      active_user_ = *it;
+      active_user_ = (*it).get();
       break;
     }
   }

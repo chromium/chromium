@@ -416,7 +416,7 @@ class DownloadNotificationTest : public DownloadNotificationTestBase {
     std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
     GetDownloadManager(browser)->GetAllDownloads(&downloads);
     EXPECT_EQ(1u, downloads.size());
-    download_item_ = downloads[0];
+    download_item_ = downloads[0].get();
     ASSERT_TRUE(download_item_);
 
     // Confirms that a notification is created.

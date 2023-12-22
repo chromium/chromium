@@ -556,7 +556,7 @@ void PaymentRequestState::SelectDefaultShippingAddressAndNotifyObservers() {
   if (!shipping_profiles().empty() && spec_ &&
       spec_->selected_shipping_option() &&
       profile_comparator()->IsShippingComplete(shipping_profiles_[0])) {
-    selected_shipping_profile_ = shipping_profiles()[0];
+    selected_shipping_profile_ = shipping_profiles()[0].get();
   }
   UpdateIsReadyToPayAndNotifyObservers();
 }
@@ -645,7 +645,7 @@ void PaymentRequestState::SetDefaultProfileSelections() {
   // the first one is the best default selection.
   if (!contact_profiles().empty() &&
       profile_comparator()->IsContactInfoComplete(contact_profiles_[0]))
-    selected_contact_profile_ = contact_profiles()[0];
+    selected_contact_profile_ = contact_profiles()[0].get();
 
   // Sort apps.
   PaymentApp::SortApps(&available_apps_);
