@@ -870,7 +870,7 @@ public class OptionalButtonViewTest {
         // Create two ButtonData objects for the same variant (NEW_TAB) with different icons.
         ButtonDataImpl newTabButtonData =
                 getDataForStaticNewTabIconButton(
-                        AppCompatResources.getDrawable(mActivity, R.drawable.btn_star));
+                        AppCompatResources.getDrawable(mActivity, R.drawable.star_outline_24dp));
         ButtonDataImpl updatedNewTabButtonData =
                 getDataForStaticNewTabIconButton(
                         AppCompatResources.getDrawable(mActivity, R.drawable.btn_star_filled));

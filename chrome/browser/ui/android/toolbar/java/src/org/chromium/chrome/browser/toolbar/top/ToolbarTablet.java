@@ -603,8 +603,8 @@ public class ToolbarTablet extends ToolbarLayout
                     mBookmarkButton, AppCompatResources.getColorStateList(getContext(), tint));
             mBookmarkButton.setContentDescription(getContext().getString(R.string.edit_bookmark));
         } else {
-            mBookmarkButtonImageRes = R.drawable.btn_star;
-            mBookmarkButton.setImageResource(R.drawable.btn_star);
+            mBookmarkButtonImageRes = R.drawable.star_outline_24dp;
+            mBookmarkButton.setImageResource(R.drawable.star_outline_24dp);
             ImageViewCompat.setImageTintList(mBookmarkButton, getTint());
             mBookmarkButton.setContentDescription(
                     getContext().getString(R.string.accessibility_menu_bookmark));

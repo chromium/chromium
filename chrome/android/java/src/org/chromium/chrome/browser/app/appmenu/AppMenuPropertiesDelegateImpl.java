@@ -1073,7 +1073,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             bookmarkMenuItemShortcut.setChecked(true);
             bookmarkMenuItemShortcut.setTitleCondensed(mContext.getString(R.string.edit_bookmark));
         } else {
-            bookmarkMenuItemShortcut.setIcon(R.drawable.btn_star);
+            bookmarkMenuItemShortcut.setIcon(R.drawable.star_outline_24dp);
             bookmarkMenuItemShortcut.setChecked(false);
             bookmarkMenuItemShortcut.setTitleCondensed(mContext.getString(R.string.menu_bookmark));
         }
