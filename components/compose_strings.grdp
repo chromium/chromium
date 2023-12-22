@@ -123,7 +123,7 @@
   <message name="IDS_COMPOSE_INSERT_BUTTON" desc="The button that inserts the result into the selected textfield.">
     Insert
   </message>
-  <message name="IDS_COMPOSE_REPLACE_BUTTON" desc="The button that replaces the highlighted text with the restult in the input textfield.">
+  <message name="IDS_COMPOSE_REPLACE_BUTTON" desc="The button that replaces the highlighted text with the result in the input textfield.">
   Replace
   </message>
   <message name="IDS_COMPOSE_THUMBS_DOWN" desc="Accessibility label for thumbs down button that opens a feedback form when pressed.">
