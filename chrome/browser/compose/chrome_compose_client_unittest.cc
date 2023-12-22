@@ -1889,6 +1889,100 @@ TEST_F(ChromeComposeClientTest, TestRegenerate) {
   EXPECT_EQ("Tomatoes", result->result);
 }
 
+TEST_F(ChromeComposeClientTest, TestToneChange) {
+  ShowDialogAndBindMojo();
+  std::string user_input = "a user typed this";
+  auto compose_matcher = EqualsProto(ComposeRequest(user_input));
+  EXPECT_CALL(session(), ExecuteModel(compose_matcher, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
+                nullptr);
+          })));
+  optimization_guide::proto::ComposeRequest request;
+  request.mutable_rewrite_params()->set_previous_response("Cucumbers");
+  request.mutable_rewrite_params()->set_tone(
+      optimization_guide::proto::ComposeTone::COMPOSE_FORMAL);
+  auto rewrite_matcher = EqualsProto(request);
+  EXPECT_CALL(session(), ExecuteModel(rewrite_matcher, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Tomatoes")),
+                nullptr);
+          })));
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillRepeatedly(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            test_future.SetValue(std::move(response));
+          }));
+
+  page_handler()->Compose(user_input, false);
+  compose::mojom::ComposeResponsePtr result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
+  EXPECT_EQ("Cucumbers", result->result);
+
+  page_handler()->Rewrite(
+      compose::mojom::StyleModifiers::NewTone(compose::mojom::Tone::kFormal));
+  result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
+  EXPECT_EQ("Tomatoes", result->result);
+}
+
+TEST_F(ChromeComposeClientTest, TestLengthChange) {
+  ShowDialogAndBindMojo();
+  std::string user_input = "a user typed this";
+  auto compose_matcher = EqualsProto(ComposeRequest(user_input));
+  EXPECT_CALL(session(), ExecuteModel(compose_matcher, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
+                nullptr);
+          })));
+  optimization_guide::proto::ComposeRequest request;
+  request.mutable_rewrite_params()->set_previous_response("Cucumbers");
+  request.mutable_rewrite_params()->set_length(
+      optimization_guide::proto::ComposeLength::COMPOSE_LONGER);
+  auto rewrite_matcher = EqualsProto(request);
+  EXPECT_CALL(session(), ExecuteModel(rewrite_matcher, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Tomatoes")),
+                nullptr);
+          })));
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillRepeatedly(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            test_future.SetValue(std::move(response));
+          }));
+
+  page_handler()->Compose(user_input, false);
+  compose::mojom::ComposeResponsePtr result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
+  EXPECT_EQ("Cucumbers", result->result);
+
+  page_handler()->Rewrite(compose::mojom::StyleModifiers::NewLength(
+      compose::mojom::Length::kLonger));
+  result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
+  EXPECT_EQ("Tomatoes", result->result);
+}
+
 #if defined(GTEST_HAS_DEATH_TEST)
 // Tests that the Compose client crashes the browser if a webcontents
 // tries to bind mojo without opening the dialog at a non Compose URL.
