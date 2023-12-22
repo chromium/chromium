@@ -363,7 +363,7 @@ std::optional<std::u16string> GetExpirationDateForInput(
 
 // Returns the appropriate `credit_card` value based on `field`'s type to fill
 // into the input `field`.
-std::optional<std::u16string> GetValueForCreditCardForInput(
+std::optional<std::u16string> GetFillingValueForCreditCardForInput(
     const CreditCard& credit_card,
     const std::u16string& cvc,
     const std::string& app_locale,
@@ -433,7 +433,7 @@ std::optional<std::u16string> GetValueForVirtualCardInputPreview(
     case CREDIT_CARD_EXP_4_DIGIT_YEAR:
     case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
     case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
-      return ReplaceDigitsWithCenterDots(GetValueForCreditCardForInput(
+      return ReplaceDigitsWithCenterDots(GetFillingValueForCreditCardForInput(
           virtual_card, /*cvc=*/std::u16string(), app_locale,
           /*action_persistence=*/mojom::ActionPersistence::kPreview, field,
           failure_to_fill));
@@ -443,7 +443,7 @@ std::optional<std::u16string> GetValueForVirtualCardInputPreview(
   }
 }
 
-std::optional<std::u16string> GetValueForCreditCardSelectControl(
+std::optional<std::u16string> GetFillingValueForCreditCardSelectControl(
     const std::u16string& value,
     const std::string& app_locale,
     const AutofillField& field,
@@ -465,7 +465,7 @@ std::optional<std::u16string> GetValueForCreditCardSelectControl(
 
 }  // namespace
 
-std::optional<std::u16string> GetValueForCreditCard(
+std::optional<std::u16string> GetFillingValueForCreditCard(
     const CreditCard& credit_card,
     const std::u16string& cvc,
     const std::string& app_locale,
@@ -478,13 +478,13 @@ std::optional<std::u16string> GetValueForCreditCard(
               action_persistence == mojom::ActionPersistence::kPreview
           ? GetValueForVirtualCardInputPreview(credit_card, app_locale, field,
                                                failure_to_fill)
-          : GetValueForCreditCardForInput(credit_card, cvc, app_locale,
-                                          action_persistence, field,
-                                          failure_to_fill);
+          : GetFillingValueForCreditCardForInput(credit_card, cvc, app_locale,
+                                                 action_persistence, field,
+                                                 failure_to_fill);
 
   return value && field.IsSelectOrSelectListElement()
-             ? GetValueForCreditCardSelectControl(*value, app_locale, field,
-                                                  failure_to_fill)
+             ? GetFillingValueForCreditCardSelectControl(*value, app_locale,
+                                                         field, failure_to_fill)
              : value;
 }
 

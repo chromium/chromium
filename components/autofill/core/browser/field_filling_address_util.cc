@@ -395,23 +395,27 @@ std::optional<std::u16string> GetValueForProfileSelectControl(
 
 }  // namespace
 
-std::optional<std::u16string> GetValueForProfile(
-    const AutofillProfile& profile,
-    const std::string& app_locale,
-    const AutofillType& field_type,
-    const FormFieldData& field_data,
-    AddressNormalizer* address_normalizer,
-    std::string* failure_to_fill) {
-  CHECK(IsAddressType(field_type.GetStorableType()));
+std::optional<std::pair<std::u16string, FieldType>>
+GetFillingValueAndTypeForProfile(const AutofillProfile& profile,
+                                 const std::string& app_locale,
+                                 const AutofillType& field_type,
+                                 const FormFieldData& field_data,
+                                 AddressNormalizer* address_normalizer,
+                                 std::string* failure_to_fill) {
+  FieldType filling_type = field_type.GetStorableType();
+  CHECK(IsAddressType(filling_type));
   std::optional<std::u16string> value = GetValueForProfileForInput(
       profile, app_locale, field_type, field_data, failure_to_fill);
 
-  return value && field_data.IsSelectOrSelectListElement()
-             ? GetValueForProfileSelectControl(
-                   profile, *value, app_locale, field_data.options,
-                   field_type.GetStorableType(), address_normalizer,
-                   failure_to_fill)
-             : value;
+  if (value && field_data.IsSelectOrSelectListElement()) {
+    value = GetValueForProfileSelectControl(
+        profile, *value, app_locale, field_data.options, filling_type,
+        address_normalizer, failure_to_fill);
+  }
+
+  return value ? std::make_optional<std::pair<std::u16string, FieldType>>(
+                     std::move(*value), filling_type)
+               : std::nullopt;
 }
 
 std::u16string GetPhoneNumberValueForInput(

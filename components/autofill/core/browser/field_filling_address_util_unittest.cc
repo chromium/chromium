@@ -48,6 +48,19 @@ AutofillField CreateTestSelectAutofillField(
   return field;
 }
 
+std::optional<std::u16string> GetValueForProfile(
+    const AutofillProfile& profile,
+    const std::string& app_locale,
+    const AutofillType& field_type,
+    const FormFieldData& field_data,
+    AddressNormalizer* address_normalizer) {
+  std::optional<std::pair<std::u16string, FieldType>> filling_value =
+      GetFillingValueAndTypeForProfile(profile, app_locale, field_type,
+                                       field_data, address_normalizer);
+  return filling_value ? std::optional(std::move(filling_value->first))
+                       : std::nullopt;
+}
+
 class FieldFillingAddressUtilTest : public testing::Test {
  public:
   FieldFillingAddressUtilTest() = default;

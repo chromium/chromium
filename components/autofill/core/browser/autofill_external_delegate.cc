@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/field_filling_address_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/address_rewriter_in_profile_subset_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
@@ -991,13 +992,15 @@ void AutofillExternalDelegate::FillFieldByFieldFillingSuggestion(
 void AutofillExternalDelegate::PreviewAddressFieldByFieldFillingSuggestion(
     const AutofillProfile& profile,
     const Suggestion& suggestion) {
-  if (const std::optional<std::u16string> value_to_fill = GetValueForProfile(
-          profile, manager_->app_locale(),
-          AutofillType(*suggestion.field_by_field_filling_type_used),
-          query_field_, manager_->client().GetAddressNormalizer())) {
+  if (const std::optional<std::pair<std::u16string, FieldType>>
+          filling_value_and_type = GetFillingValueAndTypeForProfile(
+              profile, manager_->app_locale(),
+              AutofillType(*suggestion.field_by_field_filling_type_used),
+              query_field_, manager_->client().GetAddressNormalizer())) {
+    const auto& [filling_value, filling_type] = *filling_value_and_type;
     manager_->FillOrPreviewField(
         mojom::ActionPersistence::kPreview, mojom::TextReplacement::kReplaceAll,
-        query_form_, query_field_, *value_to_fill, suggestion.popup_item_id);
+        query_form_, query_field_, filling_value, suggestion.popup_item_id);
   }
 }
 
@@ -1048,13 +1051,15 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
                                                          ->section] = {
       autofill_trigger_field->Type().GetStorableType()};
 
-  if (const std::optional<std::u16string> value_to_fill = GetValueForProfile(
-          profile, manager_->app_locale(),
-          AutofillType(*suggestion.field_by_field_filling_type_used),
-          query_field_, manager_->client().GetAddressNormalizer())) {
+  if (const std::optional<std::pair<std::u16string, FieldType>>
+          filling_value_and_type = GetFillingValueAndTypeForProfile(
+              profile, manager_->app_locale(),
+              AutofillType(*suggestion.field_by_field_filling_type_used),
+              query_field_, manager_->client().GetAddressNormalizer())) {
+    const auto& [filling_value, filling_type] = *filling_value_and_type;
     manager_->FillOrPreviewField(
         mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
-        query_form_, query_field_, *value_to_fill, suggestion.popup_item_id);
+        query_form_, query_field_, filling_value, suggestion.popup_item_id);
   }
 }
 

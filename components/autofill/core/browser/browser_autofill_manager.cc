@@ -2494,7 +2494,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     // fill a field if it had been autofilled or manually filled before, and
     // also returns true in such a case; however, such fields don't reach this
     // code.
-    const bool is_newly_autofilled = FillFieldWithValue(
+    const bool is_newly_autofilled = FillField(
         *autofill_field, profile_or_credit_card, forced_fill_values,
         result.fields[i], should_notify, optional_cvc ? *optional_cvc : u"",
         data_util::DetermineGroups(*form_structure), action_persistence,
@@ -2672,10 +2672,11 @@ bool BrowserAutofillManager::ShouldPreventAutofillFromOverridingPrefilledField(
       !sanitized_field_value.empty() && !is_initiating_field) {
     std::string unused_failure_to_fill;
     const std::u16string kEmptyCvc{};
-    std::u16string fill_value =
-        GetValueForProfile(profile, app_locale_, cached_field.Type(),
-                           field_data, client().GetAddressNormalizer())
-            .value_or(u"");
+    std::u16string fill_value = GetFillingValueAndTypeForProfile(
+                                    profile, app_locale_, cached_field.Type(),
+                                    field_data, client().GetAddressNormalizer())
+                                    .value_or(std::make_pair(u"", UNKNOWN_TYPE))
+                                    .first;
     std::u16string sanitized_fill_value =
         RemoveWhiteSpaceAndConjugatingCharacters(fill_value);
 
@@ -3219,7 +3220,7 @@ void BrowserAutofillManager::DisambiguateNameUploadTypes(
   }
 }
 
-bool BrowserAutofillManager::FillFieldWithValue(
+bool BrowserAutofillManager::FillField(
     AutofillField& autofill_field,
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
@@ -3232,19 +3233,22 @@ bool BrowserAutofillManager::FillFieldWithValue(
     std::string* failure_to_fill) {
   auto it = forced_fill_values.find(field_data.global_id());
   bool value_is_an_override = it != forced_fill_values.end();
-  std::u16string value_to_fill =
-      value_is_an_override ? it->second
+  const auto& [value_to_fill, filling_type] =
+      value_is_an_override
+          ? std::make_pair(it->second, autofill_field.Type().GetStorableType())
       : absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card)
-          ? GetValueForProfile(
+          ? GetFillingValueAndTypeForProfile(
                 *absl::get<const AutofillProfile*>(profile_or_credit_card),
                 app_locale_, autofill_field.Type(), field_data,
                 client().GetAddressNormalizer(), failure_to_fill)
-                .value_or(u"")
-          : GetValueForCreditCard(
-                *absl::get<const CreditCard*>(profile_or_credit_card), cvc,
-                app_locale_, action_persistence, autofill_field,
-                failure_to_fill)
-                .value_or(u"");
+                .value_or(std::make_pair(u"", UNKNOWN_TYPE))
+          : std::make_pair(
+                GetFillingValueForCreditCard(
+                    *absl::get<const CreditCard*>(profile_or_credit_card), cvc,
+                    app_locale_, action_persistence, autofill_field,
+                    failure_to_fill)
+                    .value_or(u""),
+                autofill_field.Type().GetStorableType());
 
   // Do not attempt to fill empty values as it would skew the metrics.
   if (value_to_fill.empty()) {
@@ -3267,8 +3271,7 @@ bool BrowserAutofillManager::FillFieldWithValue(
             absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
       autofill_field.set_autofill_source_profile_guid((*profile)->guid());
     }
-    // TODO(b/311604770): Update when fallback types are introduced.
-    autofill_field.set_autofilled_type(autofill_field.Type().GetStorableType());
+    autofill_field.set_autofilled_type(filling_type);
   }
 
   // Mark the field as autofilled when a non-empty value is assigned to
