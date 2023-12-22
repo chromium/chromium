@@ -5,15 +5,15 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/test/run_until.h"
+#include "chrome/browser/ash/http_auth_dialog.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/auth_notification_types.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -57,15 +57,13 @@ class ProxyAuthOnUserBoardScreenTest : public LoginManagerTest {
 IN_PROC_BROWSER_TEST_F(ProxyAuthOnUserBoardScreenTest,
                        ProxyAuthDialogOnUserBoardScreen) {
   ASSERT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
-  content::WindowedNotificationObserver auth_dialog_waiter(
-      chrome::NOTIFICATION_AUTH_NEEDED,
-      content::NotificationService::AllSources());
   ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
   test::OobeJS().TapOnPath({"user-creation", "selfButton"});
   test::OobeJS().TapOnPath({"user-creation", "nextButton"});
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
-  auth_dialog_waiter.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return HttpAuthDialog::GetAllDialogsForTest().size() == 1; }));
 }
 
 }  // namespace ash

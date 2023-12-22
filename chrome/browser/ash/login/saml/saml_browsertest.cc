@@ -28,6 +28,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/mock_machine_certificate_uploader.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
+#include "chrome/browser/ash/http_auth_dialog.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/saml/fake_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
@@ -58,7 +59,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_challenge_key_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
@@ -523,11 +523,11 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, IdpRequiresHttpAuth) {
                                 "", "[]");
 
   ASSERT_TRUE(base::test::RunUntil(
-      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
-  LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
+      []() { return HttpAuthDialog::GetAllDialogsForTest().size() == 1; }));
   // Note that the actual credentials don't matter because `fake_saml_idp()`
   // doesn't check those (only that something has been provided).
-  handler->SetAuth(u"user", u"pwd");
+  HttpAuthDialog::GetAllDialogsForTest().front()->SupplyCredentialsForTest(
+      u"user", u"pwd");
 
   // Now the SAML sign-in form should actually load.
   std::string message;
@@ -546,6 +546,9 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, IdpRequiresHttpAuth) {
 
   // Login should finish login and a session should start.
   test::WaitForPrimaryUserSessionStart();
+
+  // We should no longer be using the ash http auth dialog.
+  EXPECT_FALSE(HttpAuthDialog::IsEnabled());
 }
 
 // Tests the sign-in flow when the credentials passing API is used.

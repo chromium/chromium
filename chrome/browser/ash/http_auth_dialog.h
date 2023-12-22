@@ -78,20 +78,9 @@ class HttpAuthDialog : public content::LoginDelegate {
   // Exposed for testing.
   static std::vector<HttpAuthDialog*> GetAllDialogsForTest();
 
-  // Exposed for testing.
-  // In the production use-case, this method is called by views when the user
-  // clicks the OK button. The dialog is in the process of closing. This method
-  // merely needs to invoke `callback_`.
-  // When this method is called from tests, the dialog is not in the process of
-  // closing. Calling this method will invoke `callback_`, which will result in
-  // destruction of this object, which will close the dialog.
-  void SupplyCredentials(std::u16string_view username,
-                         std::u16string_view password);
-
-  // Exposed for testing.
-  // Similar to `SupplyCredentials` except this is the path for clicking the
-  // cancel button or otherwise dismissing the dialog.
-  void Cancel();
+  void SupplyCredentialsForTest(std::u16string_view username,
+                                std::u16string_view password);
+  void CancelForTest();
 
  private:
   // A basic view with username/password text fields.
@@ -104,6 +93,9 @@ class HttpAuthDialog : public content::LoginDelegate {
     // DialogView is destroyed.
     std::u16string GetUsername() const;
     std::u16string GetPassword() const;
+
+    void SetCredentialsForTest(std::u16string_view username,
+                               std::u16string_view password);
 
     views::View* GetInitiallyFocusedView();
 
@@ -118,6 +110,19 @@ class HttpAuthDialog : public content::LoginDelegate {
                  content::WebContents* web_contents,
                  const GURL& url,
                  LoginAuthRequiredCallback auth_required_callback);
+
+  // In the production use-case, this method is called by views when the user
+  // clicks the OK button. The dialog is in the process of closing. This method
+  // merely needs to invoke `callback_`.
+  // When this method is called from tests, the dialog is not in the process of
+  // closing. Calling this method will invoke `callback_`, which will result in
+  // destruction of this object, which will close the dialog.
+  void SupplyCredentials(std::u16string_view username,
+                         std::u16string_view password);
+
+  // Similar to `SupplyCredentials` except this is the path for clicking the
+  // cancel button or otherwise dismissing the dialog.
+  void Cancel();
 
   static void NotifyShownAsync(content::WebContents* web_contents);
   static void NotifySuppliedAsync(content::WebContents* web_contents);

@@ -136,45 +136,14 @@ std::vector<HttpAuthDialog*> HttpAuthDialog::GetAllDialogsForTest() {
   return GetAllDialogs();
 }
 
-void HttpAuthDialog::SupplyCredentials(std::u16string_view username,
-                                       std::u16string_view password) {
-  std::u16string username_string(username);
-  std::u16string password_string(password);
-  net::AuthCredentials credentials(username_string, password_string);
-  CHECK(!callback_.is_null());
-  NotifySuppliedAsync(web_contents_);
-
-  // Running `callback_` can result in synchronous destruction of this object.
-  // We dispatch the call to avoid re-entrancy, as this method itself can be
-  // synchronously invoked as a callback.
-  auto run_callback = base::BindOnce(
-      [](base::WeakPtr<HttpAuthDialog> dialog,
-         LoginAuthRequiredCallback callback, net::AuthCredentials credentials) {
-        if (dialog) {
-          std::move(callback).Run(std::move(credentials));
-        }
-      },
-      weak_factory_.GetWeakPtr(), std::move(callback_), std::move(credentials));
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, std::move(run_callback));
+void HttpAuthDialog::SupplyCredentialsForTest(std::u16string_view username,
+                                              std::u16string_view password) {
+  dialog_view_->SetCredentialsForTest(std::move(username), std::move(password));
+  dialog_delegate_.AcceptDialog();
 }
 
-void HttpAuthDialog::Cancel() {
-  NotifyCancelledAsync(web_contents_);
-
-  // Running `callback_` can result in synchronous destruction of this object.
-  // We dispatch the call to avoid re-entrancy, as this method itself can be
-  // synchronously invoked as a callback.
-  auto run_callback = base::BindOnce(
-      [](base::WeakPtr<HttpAuthDialog> dialog,
-         LoginAuthRequiredCallback callback) {
-        if (dialog) {
-          std::move(callback).Run(absl::nullopt);
-        }
-      },
-      weak_factory_.GetWeakPtr(), std::move(callback_));
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, std::move(run_callback));
+void HttpAuthDialog::CancelForTest() {
+  dialog_delegate_.CancelDialog();
 }
 
 HttpAuthDialog::DialogView::DialogView(std::u16string_view authority,
@@ -255,6 +224,15 @@ std::u16string HttpAuthDialog::DialogView::GetPassword() const {
   return password_field_->GetText();
 }
 
+void HttpAuthDialog::DialogView::SetCredentialsForTest(
+    std::u16string_view username,
+    std::u16string_view password) {
+  std::u16string username_string(username);
+  std::u16string password_string(password);
+  username_field_->SetText(username_string);
+  password_field_->SetText(password_string);
+}
+
 views::View* HttpAuthDialog::DialogView::GetInitiallyFocusedView() {
   return username_field_;
 }
@@ -307,6 +285,47 @@ HttpAuthDialog::HttpAuthDialog(const net::AuthChallengeInfo& auth_info,
       &dialog_delegate_, web_contents);
 
   NotifyShownAsync(web_contents_);
+}
+
+void HttpAuthDialog::SupplyCredentials(std::u16string_view username,
+                                       std::u16string_view password) {
+  std::u16string username_string(username);
+  std::u16string password_string(password);
+  net::AuthCredentials credentials(username_string, password_string);
+  CHECK(!callback_.is_null());
+  NotifySuppliedAsync(web_contents_);
+
+  // Running `callback_` can result in synchronous destruction of this object.
+  // We dispatch the call to avoid re-entrancy, as this method itself can be
+  // synchronously invoked as a callback.
+  auto run_callback = base::BindOnce(
+      [](base::WeakPtr<HttpAuthDialog> dialog,
+         LoginAuthRequiredCallback callback, net::AuthCredentials credentials) {
+        if (dialog) {
+          std::move(callback).Run(std::move(credentials));
+        }
+      },
+      weak_factory_.GetWeakPtr(), std::move(callback_), std::move(credentials));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(run_callback));
+}
+
+void HttpAuthDialog::Cancel() {
+  NotifyCancelledAsync(web_contents_);
+
+  // Running `callback_` can result in synchronous destruction of this object.
+  // We dispatch the call to avoid re-entrancy, as this method itself can be
+  // synchronously invoked as a callback.
+  auto run_callback = base::BindOnce(
+      [](base::WeakPtr<HttpAuthDialog> dialog,
+         LoginAuthRequiredCallback callback) {
+        if (dialog) {
+          std::move(callback).Run(absl::nullopt);
+        }
+      },
+      weak_factory_.GetWeakPtr(), std::move(callback_));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(run_callback));
 }
 
 // static
