@@ -172,7 +172,7 @@ class CAPTURE_EXPORT StreamBufferManager final {
   std::unordered_map<StreamType, std::unique_ptr<StreamContext>>
       stream_context_;
 
-  raw_ptr<CameraDeviceContext, ExperimentalAsh> device_context_;
+  raw_ptr<CameraDeviceContext> device_context_;
 
   bool video_capture_use_gmb_;
 

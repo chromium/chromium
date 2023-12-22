@@ -212,7 +212,7 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   mojo::RemoteSet<cros::mojom::CameraEventObserver> camera_event_observers_;
 
   base::Lock camera_device_context_lock_;
-  raw_ptr<CameraDeviceContext, ExperimentalAsh> camera_device_context_
+  raw_ptr<CameraDeviceContext> camera_device_context_
       GUARDED_BY(camera_device_context_lock_);
 
   base::Lock document_corners_observers_lock_;
