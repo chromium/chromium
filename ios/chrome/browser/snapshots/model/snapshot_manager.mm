@@ -59,7 +59,7 @@
   }
 }
 
-- (void)updateWKWebViewSnapshotWithCompletion:(void (^)(UIImage*))completion {
+- (void)updateSnapshotWithCompletion:(void (^)(UIImage*))completion {
   DCHECK(_snapshotGenerator);
 
   __weak SnapshotManager* weakSelf = self;
@@ -72,23 +72,7 @@
       completion(image);
     }
   };
-  [_snapshotGenerator
-      generateWKWebViewSnapshotWithCompletion:wrappedCompletion];
-}
-
-- (void)updateUIViewSnapshotWithCompletion:(void (^)(UIImage*))completion {
-  DCHECK(_snapshotGenerator);
-  UIImage* image = [_snapshotGenerator generateUIViewSnapshotWithOverlays];
-
-  // Update the snapshot storage with the latest snapshot. The old image is
-  // deleted it if `image` is nil.
-  [self updateSnapshotStorageWithImage:image];
-
-  // Post a task to the current thread (UI thread).
-  if (completion) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(completion, image));
-  }
+  [_snapshotGenerator generateSnapshotWithCompletion:wrappedCompletion];
 }
 
 - (UIImage*)generateUIViewSnapshot {
