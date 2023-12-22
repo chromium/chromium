@@ -54,10 +54,10 @@ class MessageBox::Core : public views::DialogDelegateView {
  private:
   const std::u16string title_label_;
   ResultCallback result_callback_;
-  raw_ptr<MessageBox, ExperimentalAsh> message_box_;
+  raw_ptr<MessageBox> message_box_;
 
   // Owned by the native widget hierarchy.
-  raw_ptr<views::MessageBoxView, ExperimentalAsh> message_box_view_;
+  raw_ptr<views::MessageBoxView> message_box_view_;
 };
 
 MessageBox::Core::Core(const std::u16string& title_label,

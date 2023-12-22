@@ -28,9 +28,8 @@ struct FrameData {
             std::vector<viz::HitTestRegion>& regions);
   ~FrameData();
 
-  const raw_ref<viz::CompositorFrame, ExperimentalAsh> frame;
-  const raw_ref<std::vector<viz::HitTestRegion>, ExperimentalAsh>
-      hit_test_regions;
+  const raw_ref<viz::CompositorFrame> frame;
+  const raw_ref<std::vector<viz::HitTestRegion>> hit_test_regions;
   base::flat_set<viz::SurfaceId> activation_dependencies;
   std::optional<uint32_t> deadline_in_frames;
   bool use_default_lower_bound_deadline = false;

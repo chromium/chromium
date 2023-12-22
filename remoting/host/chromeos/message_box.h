@@ -45,7 +45,7 @@ class MessageBox {
 
  private:
   class Core;
-  raw_ptr<Core, ExperimentalAsh> core_;
+  raw_ptr<Core> core_;
   base::ThreadChecker thread_checker_;
 };
 

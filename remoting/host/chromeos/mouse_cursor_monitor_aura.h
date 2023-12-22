@@ -28,7 +28,7 @@ class MouseCursorMonitorAura : public webrtc::MouseCursorMonitor {
  private:
   void NotifyCursorChanged(const ui::Cursor& cursor);
 
-  raw_ptr<Callback, ExperimentalAsh> callback_;
+  raw_ptr<Callback> callback_;
   Mode mode_;
   ui::Cursor last_cursor_;
   gfx::Point last_mouse_location_;

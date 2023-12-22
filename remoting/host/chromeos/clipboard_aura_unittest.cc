@@ -60,8 +60,7 @@ class ClipboardAuraTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-  raw_ptr<ClientClipboard, DanglingUntriaged | ExperimentalAsh>
-      client_clipboard_;
+  raw_ptr<ClientClipboard, DanglingUntriaged> client_clipboard_;
   std::unique_ptr<ClipboardAura> clipboard_;
 };
 

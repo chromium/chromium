@@ -69,7 +69,7 @@ namespace {
 
 struct CleanUpContext {
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner;
-  raw_ptr<SharedContextState, ExperimentalAsh> shared_context_state = nullptr;
+  raw_ptr<SharedContextState> shared_context_state = nullptr;
   std::unique_ptr<SkiaImageRepresentation> skia_representation;
   std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> skia_scoped_access;
 };

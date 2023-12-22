@@ -44,7 +44,7 @@ class FrameSinkDesktopCapturer : public webrtc::DesktopCapturer {
 
  private:
   std::optional<viz::ClientFrameSinkVideoCapturer> video_capturer_;
-  const raw_ref<AshProxy, ExperimentalAsh> ash_;
+  const raw_ref<AshProxy> ash_;
   AshMojomVideoConsumer video_consumer_;
   raw_ptr<DesktopCapturer::Callback> callback_ = nullptr;
 
