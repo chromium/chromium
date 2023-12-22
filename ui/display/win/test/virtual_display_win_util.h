@@ -34,11 +34,11 @@ class VirtualDisplayWinUtil : public display::DisplayObserver {
   // `id` is used to uniquely identify the virtual display. This function
   // returns the generated display::Display id, which can be used with the
   // Screen instance or passed to `RemoveDisplay`.
-  int64_t AddDisplay(unsigned short id, const DisplayParams& display_params);
+  int64_t AddDisplay(uint8_t id, const DisplayParams& display_params);
   // Remove a virtual display corresponding to the specified display ID.
   void RemoveDisplay(int64_t display_id);
-  // Reset and remove all virtual displays.
-  void RemoveAllDisplays();
+  // Remove all added virtual displays.
+  void ResetDisplays();
   static const DisplayParams k1920x1080;
   static const DisplayParams k1024x768;
 
@@ -54,10 +54,12 @@ class VirtualDisplayWinUtil : public display::DisplayObserver {
   void StopWaiting();
 
   raw_ptr<Screen> screen_;
+  // True if the environment was considered headless during initialization.
+  const bool is_headless_;
   std::unique_ptr<base::RunLoop> run_loop_;
   DisplayDriverController driver_controller_;
   // Contains the last configuration that was set.
-  std::optional<DriverProperties> current_config_;
+  DriverProperties current_config_;
   // Map of virtual display ID (product code) to corresponding display ID.
   base::flat_map<unsigned short, int64_t> virtual_displays_;
 };
