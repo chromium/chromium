@@ -111,7 +111,10 @@ enum class PhotosServiceUploadFailureType : NSUInteger {
   kUploadPhoto1TokenIsNil = 33,
   // An error occurred during the second step of a photo upload.
   kUploadPhoto2 = 40,
-  kMaxValue = kUploadPhoto2,
+  // Second step of a photo upload failed because the remaining storage in the
+  // user's account is not enough to store the photo.
+  kUploadPhoto2NotEnoughStorage = 41,
+  kMaxValue = kUploadPhoto2NotEnoughStorage,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 

@@ -514,6 +514,10 @@ chromium-metrics-reviews@google.com.
              (token could not be decoded)."/>
   <int value="40"
       label="Failure occurred during the second step of uploading a photo."/>
+  <int value="41"
+      label="Failure occurred during the second step of uploading a photo
+             because the remaining storage in the user's account is not
+             enough to perform this operation."/>
 </enum>
 
 <enum name="IOSPostRestoreDefaultBrowserActionOnPrompt">
