@@ -20,12 +20,14 @@
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
+#include "components/performance_manager/public/user_tuning/tab_revisit_tracker.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
 #include "url/gurl.h"
@@ -461,6 +463,18 @@ base::Value::Dict PageDiscardingHelper::DescribePageNodeData(
     ret.Set("opted_out", IsPageOptedOutOfDiscarding(node->GetBrowserContextID(),
                                                     node->GetMainFrameUrl()));
   }
+
+  TabPageDecorator::TabHandle* tab_handle =
+      TabPageDecorator::FromPageNode(node);
+  if (tab_handle) {
+    TabRevisitTracker* revisit_tracker =
+        graph_->GetRegisteredObjectAs<TabRevisitTracker>();
+    CHECK(revisit_tracker);
+    TabRevisitTracker::StateBundle state =
+        revisit_tracker->GetStateForTabHandle(tab_handle);
+    ret.Set("num_revisits", static_cast<int>(state.num_revisits));
+  }
+
   return ret;
 }
 
