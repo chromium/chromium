@@ -82,7 +82,7 @@ run_jsbundler("copied_files") {
     "sts-icon-48.png",
     "unchecked.png",
   ]
-  sources += get_target_outputs(":ts_build")
+  sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
     rebase_path("$tsc_out_dir/select_to_speak", root_build_dir) + ":",

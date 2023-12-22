@@ -120,7 +120,7 @@ run_jsbundler("copied_files") {
     "dictation/parse/speech_parser.js",
     "facegaze/camera_stream.html",
   ]
-  sources += get_target_outputs(":ts_build")
+  sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
     rebase_path("$tsc_out_dir/accessibility_common", root_build_dir) + ":",

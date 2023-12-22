@@ -120,7 +120,7 @@ run_jsbundler("copied_files") {
     "switch_access_predicate.js",
     "text_navigation_manager.js",
   ]
-  sources += get_target_outputs(":ts_build")
+  sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
     rebase_path("$tsc_out_dir/switch_access", root_build_dir) + ":",

@@ -65,7 +65,7 @@ run_jsbundler("copied_files") {
   ]
   dest_dir = enhanced_network_tts_dir
   sources = [ "background.html" ]
-  sources += get_target_outputs(":ts_build")
+  sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
     rebase_path("$tsc_out_dir/enhanced_network_tts", root_build_dir) + ":",

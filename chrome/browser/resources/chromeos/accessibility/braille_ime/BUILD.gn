@@ -47,11 +47,7 @@ run_jsbundler("copied_files") {
     "braille_ime.js",
     "main.js",
   ]
-
-  foreach(_ts_file, ts_modules) {
-    sources += [ "$tsc_out_dir/" + get_path_info(_ts_file, "dir") + "/" +
-                 get_path_info(_ts_file, "name") + ".js" ]
-  }
+  sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
     rebase_path(tsc_out_dir, root_build_dir) + ":",
