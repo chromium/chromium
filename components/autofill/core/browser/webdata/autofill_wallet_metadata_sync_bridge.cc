@@ -55,6 +55,7 @@ std::string GetClientTagForSpecificsId(WalletMetadataSpecifics::Type type,
     case WalletMetadataSpecifics::CARD:
       return "card-" + specifics_id;
     case WalletMetadataSpecifics::IBAN:
+      return "iban-" + specifics_id;
     case WalletMetadataSpecifics::UNKNOWN:
       NOTREACHED();
       return "";
@@ -240,6 +241,7 @@ bool AddServerMetadata(PaymentsAutofillTable* table,
     case WalletMetadataSpecifics::CARD:
       return table->AddServerCardMetadata(metadata);
     case WalletMetadataSpecifics::IBAN:
+      return table->AddOrUpdateServerIbanMetadata(metadata);
     // ADDRESS metadata syncing is deprecated.
     case WalletMetadataSpecifics::ADDRESS:
     case WalletMetadataSpecifics::UNKNOWN:
@@ -255,6 +257,7 @@ bool RemoveServerMetadata(PaymentsAutofillTable* table,
     case WalletMetadataSpecifics::CARD:
       return table->RemoveServerCardMetadata(id);
     case WalletMetadataSpecifics::IBAN:
+      return table->RemoveServerIbanMetadata(id);
     // ADDRESS metadata syncing is deprecated.
     case WalletMetadataSpecifics::ADDRESS:
     case WalletMetadataSpecifics::UNKNOWN:
@@ -270,6 +273,7 @@ bool UpdateServerMetadata(PaymentsAutofillTable* table,
     case WalletMetadataSpecifics::CARD:
       return table->UpdateServerCardMetadata(metadata);
     case WalletMetadataSpecifics::IBAN:
+      return table->AddOrUpdateServerIbanMetadata(metadata);
     // ADDRESS metadata syncing is deprecated.
     case WalletMetadataSpecifics::ADDRESS:
     case WalletMetadataSpecifics::UNKNOWN:
@@ -435,6 +439,13 @@ void AutofillWalletMetadataSyncBridge::CreditCardChanged(
   LocalMetadataChanged(WalletMetadataSpecifics::CARD, change);
 }
 
+void AutofillWalletMetadataSyncBridge::IbanChanged(const IbanChange& change) {
+  if (change.data_model().record_type() != Iban::RecordType::kServerIban) {
+    return;
+  }
+  LocalMetadataChanged(WalletMetadataSpecifics::IBAN, change);
+}
+
 PaymentsAutofillTable* AutofillWalletMetadataSyncBridge::GetAutofillTable() {
   return PaymentsAutofillTable::FromWebDatabase(
       web_data_backend_->GetDatabase());
@@ -456,14 +467,21 @@ void AutofillWalletMetadataSyncBridge::LoadDataCacheAndMetadata() {
 
   // Load the data cache.
   std::vector<AutofillMetadata> cards_metadata;
-  if (!GetAutofillTable()->GetServerCardsMetadata(cards_metadata)) {
+  std::vector<AutofillMetadata> ibans_metadata;
+  if (!GetAutofillTable()->GetServerCardsMetadata(cards_metadata) ||
+      !GetAutofillTable()->GetServerIbansMetadata(ibans_metadata)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed reading autofill data from WebDatabase."});
     return;
   }
-  for (const auto& metadata : cards_metadata) {
+  for (const AutofillMetadata& card_metadata : cards_metadata) {
     cache_[GetStorageKeyForWalletMetadataTypeAndId(
-        WalletMetadataSpecifics::CARD, metadata.id)] = metadata;
+        WalletMetadataSpecifics::CARD, card_metadata.id)] = card_metadata;
+  }
+
+  for (const AutofillMetadata& iban_metadata : ibans_metadata) {
+    cache_[GetStorageKeyForWalletMetadataTypeAndId(
+        WalletMetadataSpecifics::IBAN, iban_metadata.id)] = iban_metadata;
   }
 
   // Load the metadata and send to the processor.
@@ -491,18 +509,26 @@ void AutofillWalletMetadataSyncBridge::DeleteOldOrphanMetadata() {
   // Load up (metadata) ids for which data exists; we do not delete those.
   std::unordered_set<std::string> non_orphan_ids;
   std::vector<std::unique_ptr<CreditCard>> cards;
-  if (!GetAutofillTable()->GetServerCreditCards(cards)) {
+  std::vector<std::unique_ptr<Iban>> ibans;
+  if (!GetAutofillTable()->GetServerCreditCards(cards) ||
+      !GetAutofillTable()->GetServerIbans(ibans)) {
     return;
   }
+
+  non_orphan_ids.reserve(cards.size() + ibans.size());
   for (const std::unique_ptr<CreditCard>& card : cards) {
     non_orphan_ids.insert(card->server_id());
+  }
+
+  for (const std::unique_ptr<Iban>& iban : ibans) {
+    non_orphan_ids.insert(base::NumberToString(iban->instrument_id()));
   }
 
   // Identify storage keys of old orphans (we delete them below to avoid
   // modifying |cache_| while iterating).
   std::unordered_set<std::string> old_orphan_keys;
   for (const auto& [storage_key, metadata] : cache_) {
-    if (metadata.IsDeletable() && !non_orphan_ids.count(metadata.id)) {
+    if (metadata.IsDeletable() && !non_orphan_ids.contains(metadata.id)) {
       old_orphan_keys.insert(storage_key);
     }
   }
@@ -663,7 +689,15 @@ void AutofillWalletMetadataSyncBridge::LocalMetadataChanged(
     AutofillDataModelChange<DataType, KeyType> change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const std::string& metadata_id = change.key();
+  // TODO(crbug.com/1475085): Conversion logic is necessary once credit cards
+  // have migrated to use instrument IDs, then the branching can be removed.
+  std::string metadata_id;
+  if constexpr (std::same_as<DataType, Iban>) {
+    metadata_id = base::NumberToString(absl::get<int64_t>(change.key()));
+  } else {
+    metadata_id = change.key();
+  }
+
   std::string storage_key =
       GetStorageKeyForWalletMetadataTypeAndId(type, metadata_id);
   std::unique_ptr<MetadataChangeList> metadata_change_list =
