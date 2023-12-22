@@ -532,6 +532,10 @@ public final class ProductionSupportedFlagList {
                 "Disable the per-domain blocking for 3D APIs after GPU reset. "
                         + "This switch is intended only for tests."),
         Flag.baseFeature(
+                BlinkFeatures.MEDIA_RECORDER_USE_MEDIA_VIDEO_ENCODER,
+                "When enabled, media::VideoEncoder implementation is used in MediaRecorder API"
+                        + " instead of using MediaRecorder own video encoder implementation."),
+        Flag.baseFeature(
                 MetricsFeatures.METRICS_SERVICE_ALLOW_EARLY_LOG_CLOSE,
                 "Controls whether a log is allowed to be closed when Chrome"
                         + " is backgrounded/foregrounded early."),
