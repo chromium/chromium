@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 
@@ -31,30 +32,31 @@ ManageSuggestionType ToManageSuggestionType(PopupType popup_type) {
 }  // anonymous namespace
 
 void LogAutofillSuggestionAcceptedIndex(int index,
-                                        PopupType popup_type,
+                                        FillingProduct filling_product,
                                         bool off_the_record) {
   const int uma_index = std::min(index, kMaxBucketsCount);
   base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex", uma_index);
 
-  switch (popup_type) {
-    case PopupType::kCreditCards:
+  switch (filling_product) {
+    case FillingProduct::kCreditCard:
       base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.CreditCard",
                                uma_index);
       break;
-    case PopupType::kAddresses:
+    case FillingProduct::kAddress:
       base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.Profile",
                                uma_index);
       break;
-    case PopupType::kPasswords:
-    case PopupType::kUnspecified:
+    case FillingProduct::kPassword:
+    case FillingProduct::kNone:
       base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.Other",
                                uma_index);
       break;
-    case PopupType::kIbans:
-    case PopupType::kAutocomplete:
-      // It is NOTREACHED because it's a single field form fill type (the above
-      // types are all multi fields main Autofill type), and thus the logging
-      // will be handled separately by SingleFieldFormFiller.
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kIban:
+    case FillingProduct::kCompose:
+    case FillingProduct::kPlusAddresses:
+    case FillingProduct::kMerchantPromoCode:
+      // It is NOTREACHED because all other types should be handled separately.
       NOTREACHED_NORETURN();
   }
 

@@ -698,7 +698,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case PopupItemId::kAddressEntry:
       autofill_metrics::LogAutofillSuggestionAcceptedIndex(
-          position.row, popup_type_, manager_->client().IsOffTheRecord());
+          position.row,
+          GetFillingProductFromPopupItemId(PopupItemId::kAddressEntry),
+          manager_->client().IsOffTheRecord());
       autofill_metrics::LogFillingMethodUsed(
           autofill_metrics::AutofillFillingMethodMetric::kFullForm);
       autofill_metrics::LogUserAcceptedPreviouslyHiddenProfileSuggestion(
@@ -720,7 +722,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case PopupItemId::kCreditCardEntry:
       autofill_metrics::LogAutofillSuggestionAcceptedIndex(
-          position.row, popup_type_, manager_->client().IsOffTheRecord());
+          position.row,
+          GetFillingProductFromPopupItemId(PopupItemId::kCreditCardEntry),
+          manager_->client().IsOffTheRecord());
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,

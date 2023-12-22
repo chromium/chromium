@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,7 +29,7 @@ TEST(SuggestionsListMetricsTest, LogSuggestionAcceptedIndex_CreditCard) {
 
   base::HistogramTester histogram_tester;
   LogAutofillSuggestionAcceptedIndex(selected_suggestion_index,
-                                     PopupType::kCreditCards,
+                                     FillingProduct::kCreditCard,
                                      /*off_the_record=*/false);
   EXPECT_EQ(1u, GetTotalCountForPrefix(histogram_tester,
                                        "Autofill.SuggestionAcceptedIndex."));
@@ -42,7 +43,7 @@ TEST(SuggestionsListMetricsTest, LogSuggestionAcceptedIndex_Profile) {
 
   base::HistogramTester histogram_tester;
   LogAutofillSuggestionAcceptedIndex(selected_suggestion_index,
-                                     PopupType::kAddresses,
+                                     FillingProduct::kAddress,
                                      /*off_the_record=*/false);
 
   EXPECT_EQ(1u, GetTotalCountForPrefix(histogram_tester,
@@ -56,10 +57,10 @@ TEST(SuggestionsListMetricsTest, LogSuggestionAcceptedIndex_Other) {
   const int selected_suggestion_index = 0;
   base::HistogramTester histogram_tester;
   LogAutofillSuggestionAcceptedIndex(selected_suggestion_index,
-                                     PopupType::kUnspecified,
+                                     FillingProduct::kNone,
                                      /*off_the_record=*/false);
   LogAutofillSuggestionAcceptedIndex(selected_suggestion_index,
-                                     PopupType::kPasswords,
+                                     FillingProduct::kPassword,
                                      /*off_the_record=*/false);
 
   EXPECT_EQ(2u, GetTotalCountForPrefix(histogram_tester,

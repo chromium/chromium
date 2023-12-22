@@ -7,6 +7,7 @@
 
 namespace autofill {
 enum class PopupType;
+enum class FillingProduct;
 
 namespace autofill_metrics {
 
@@ -40,7 +41,7 @@ enum class ShowCardsFromGoogleAccountButtonEvent {
 
 // Log the index of the selected Autofill suggestion in the popup.
 void LogAutofillSuggestionAcceptedIndex(int index,
-                                        autofill::PopupType popup_type,
+                                        FillingProduct filling_product,
                                         bool off_the_record);
 
 // Logs that the user selected 'Manage...' settings entry in the popup.
