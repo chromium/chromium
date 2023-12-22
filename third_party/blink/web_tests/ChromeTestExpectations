@@ -43,6 +43,11 @@ crbug.com/1507773 external/wpt/webdriver/tests/classic/find_element_from_shadow_
 crbug.com/1507773 external/wpt/webdriver/tests/classic/forward/forward.py [ Failure Pass Timeout ]
 crbug.com/1507773 external/wpt/webdriver/tests/classic/get_element_attribute/get.py [ Failure Pass Timeout ]
 crbug.com/1507773 external/wpt/webdriver/tests/classic/is_element_enabled/enabled.py [ Failure Pass Timeout ]
+crbug.com/1499775 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/context.py [ Failure ]
+crbug.com/1499775 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/invalid.py [ Failure ]
+crbug.com/1499775 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/max_node_count.py [ Failure ]
+crbug.com/1499775 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/ownership.py [ Failure ]
+crbug.com/1499775 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/start_nodes.py [ Failure ]
 
 # Gardener 2023-12-19
 crbug.com/1512897 external/wpt/webdriver/tests/bidi/network/combined/network_events.py [ Failure ]
