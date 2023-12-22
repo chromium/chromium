@@ -116,7 +116,7 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
   // Valid = unexpired with valid number format.
   std::vector<CreditCard> cards_to_suggest =
       AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
-          &manager_->client(), /*suppress_disused_cards=*/true);
+          manager_->client(), /*suppress_disused_cards=*/true);
   if (base::ranges::none_of(cards_to_suggest,
                             &CreditCard::IsCompleteValidCard)) {
     return {TriggerOutcome::kNoValidCards, {}};

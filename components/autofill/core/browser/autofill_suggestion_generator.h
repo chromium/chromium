@@ -47,8 +47,8 @@ class AutofillSuggestionGenerator {
   // least 99% of all times the dropdown is shown.
   static constexpr size_t kMaxSuggestedProfilesCount = 50;
 
-  AutofillSuggestionGenerator(AutofillClient* autofill_client,
-                              PersonalDataManager* personal_data);
+  AutofillSuggestionGenerator(AutofillClient& autofill_client,
+                              PersonalDataManager& personal_data);
   ~AutofillSuggestionGenerator();
   AutofillSuggestionGenerator(const AutofillSuggestionGenerator&) = delete;
   AutofillSuggestionGenerator& operator=(const AutofillSuggestionGenerator&) =
@@ -128,7 +128,7 @@ class AutofillSuggestionGenerator {
   // cards which are expired and disused aren't included if
   // |suppress_disused_cards| is true.
   static std::vector<CreditCard> GetOrderedCardsToSuggest(
-      AutofillClient* autofill_client,
+      AutofillClient& autofill_client,
       bool suppress_disused_cards);
 
   // Generates suggestions for all available IBANs.
@@ -246,10 +246,10 @@ class AutofillSuggestionGenerator {
 
   // autofill_client_ and the generator are both one per tab, and have the same
   // lifecycle.
-  raw_ptr<AutofillClient> autofill_client_;
+  base::raw_ref<AutofillClient> autofill_client_;
 
   // personal_data_ should outlive the generator.
-  raw_ptr<PersonalDataManager> personal_data_;
+  base::raw_ref<PersonalDataManager> personal_data_;
 };
 
 }  // namespace autofill

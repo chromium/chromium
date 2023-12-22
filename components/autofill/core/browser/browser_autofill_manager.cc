@@ -613,8 +613,8 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
       app_locale_(app_locale),
       single_field_form_fill_router_(client->CreateSingleFieldFormFillRouter()),
       suggestion_generator_(std::make_unique<AutofillSuggestionGenerator>(
-          client,
-          client->GetPersonalDataManager())) {
+          *client,
+          *client->GetPersonalDataManager())) {
   address_form_event_logger_ =
       std::make_unique<autofill_metrics::AddressFormEventLogger>(
           driver->IsInAnyMainFrame(), form_interactions_ukm_logger(), client);

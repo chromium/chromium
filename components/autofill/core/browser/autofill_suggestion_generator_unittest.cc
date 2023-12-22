@@ -108,8 +108,8 @@ Matcher<Suggestion> EqualsIbanSuggestion(
 // AutofillSuggestionGenerator.
 class TestAutofillSuggestionGenerator : public AutofillSuggestionGenerator {
  public:
-  TestAutofillSuggestionGenerator(AutofillClient* autofill_client,
-                                  PersonalDataManager* personal_data)
+  TestAutofillSuggestionGenerator(AutofillClient& autofill_client,
+                                  PersonalDataManager& personal_data)
       : AutofillSuggestionGenerator(autofill_client, personal_data) {}
 
   Suggestion CreateCreditCardSuggestion(
@@ -130,20 +130,20 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
  public:
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
-    personal_data()->Init(/*profile_database=*/database_,
-                          /*account_database=*/nullptr,
-                          /*pref_service=*/autofill_client_.GetPrefs(),
-                          /*local_state=*/autofill_client_.GetPrefs(),
-                          /*identity_manager=*/nullptr,
-                          /*history_service=*/nullptr,
-                          /*sync_service=*/&sync_service_,
-                          /*strike_database=*/nullptr,
-                          /*image_fetcher=*/nullptr);
+    personal_data().Init(/*profile_database=*/database_,
+                         /*account_database=*/nullptr,
+                         /*pref_service=*/autofill_client_.GetPrefs(),
+                         /*local_state=*/autofill_client_.GetPrefs(),
+                         /*identity_manager=*/nullptr,
+                         /*history_service=*/nullptr,
+                         /*sync_service=*/&sync_service_,
+                         /*strike_database=*/nullptr,
+                         /*image_fetcher=*/nullptr);
     suggestion_generator_ = std::make_unique<TestAutofillSuggestionGenerator>(
-        &autofill_client_, personal_data());
+        autofill_client_, personal_data());
     autofill_client_.set_autofill_offer_manager(
         std::make_unique<AutofillOfferManager>(
-            personal_data(),
+            &personal_data(),
             /*coupon_service_delegate=*/nullptr, /*shopping_service=*/nullptr));
   }
 
@@ -211,11 +211,11 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
     return suggestion_generator_.get();
   }
 
-  TestPersonalDataManager* personal_data() {
-    return autofill_client_.GetPersonalDataManager();
+  TestPersonalDataManager& personal_data() {
+    return *autofill_client_.GetPersonalDataManager();
   }
 
-  const std::string& app_locale() { return personal_data()->app_locale(); }
+  const std::string& app_locale() { return personal_data().app_locale(); }
 
   TestAutofillClient* autofill_client() { return &autofill_client_; }
 
@@ -242,9 +242,9 @@ TEST_F(AutofillSuggestionGeneratorTest,
   AutofillProfile profile_2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile_1.SetRawInfo(EMAIL_ADDRESS, u"test@email.xyz");
   profile_2.SetRawInfo(EMAIL_ADDRESS, u"test1@email.xyz");
-  personal_data()->AddProfile(profile_1);
-  personal_data()->AddProfile(profile_2);
-  ASSERT_EQ(personal_data()->GetProfilesToSuggest().size(), 2u);
+  personal_data().AddProfile(profile_1);
+  personal_data().AddProfile(profile_2);
+  ASSERT_EQ(personal_data().GetProfilesToSuggest().size(), 2u);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>> profiles =
       suggestion_generator()->GetProfilesToSuggest(EMAIL_ADDRESS, u"Test@",
@@ -278,10 +278,10 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_HideSubsets) {
 
   // For easier results verification, make sure |profile| is suggested first.
   profile.set_use_count(5);
-  personal_data()->AddProfile(profile);
-  personal_data()->AddProfile(profile1);
-  personal_data()->AddProfile(profile2);
-  personal_data()->AddProfile(profile3);
+  personal_data().AddProfile(profile);
+  personal_data().AddProfile(profile1);
+  personal_data().AddProfile(profile2);
+  personal_data().AddProfile(profile3);
 
   // Simulate a form with street address, city and state.
   FieldTypeSet types = {ADDRESS_HOME_CITY, ADDRESS_HOME_STATE};
@@ -305,7 +305,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_SuggestionsLimit) {
                          "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox",
                          "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                          "Hollywood", "CA", "91601", "US", "12345678910");
-    personal_data()->AddProfile(profile);
+    personal_data().AddProfile(profile);
     profiles.push_back(profile);
   }
 
@@ -314,7 +314,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_SuggestionsLimit) {
           NAME_FIRST, u"Ma", false, {});
 
   ASSERT_EQ(2 * AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount,
-            personal_data()->GetProfiles().size());
+            personal_data().GetProfiles().size());
   ASSERT_EQ(AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount,
             suggested_profiles.size());
 }
@@ -338,7 +338,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
     profile.set_use_count(12);
     profile.set_use_date(AutofillClock::Now() - base::Days(1));
 
-    personal_data()->AddProfile(profile);
+    personal_data().AddProfile(profile);
     profiles.push_back(profile);
   }
 
@@ -350,14 +350,14 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
                        "Hollywood", "CA", "91601", "US", "12345678910");
   profile.set_use_count(1);
   profile.set_use_date(AutofillClock::Now() - base::Days(7));
-  personal_data()->AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       suggested_profiles = suggestion_generator()->GetProfilesToSuggest(
           NAME_FIRST, u"Ma", false, {});
 
   ASSERT_EQ(AutofillSuggestionGenerator::kMaxSuggestedProfilesCount + 1,
-            personal_data()->GetProfiles().size());
+            personal_data().GetProfiles().size());
   ASSERT_EQ(1U, suggested_profiles.size());
   EXPECT_EQ(suggested_profiles.front()->GetRawInfo(NAME_FIRST),
             profiles.front().GetRawInfo(NAME_FIRST));
@@ -375,7 +375,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
                        "Hollywood", "CA", "91601", "US", "12345678910");
   profile3.set_use_date(AutofillClock::Now() - base::Days(1));
   profile3.set_use_count(5);
-  personal_data()->AddProfile(profile3);
+  personal_data().AddProfile(profile3);
 
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile1, "Marion1", "Mitchell", "Morrison",
@@ -384,7 +384,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
                        "Hollywood", "CA", "91601", "US", "12345678910");
   profile1.set_use_date(AutofillClock::Now() - base::Days(1));
   profile1.set_use_count(10);
-  personal_data()->AddProfile(profile1);
+  personal_data().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "Marion2", "Mitchell", "Morrison",
@@ -393,7 +393,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
                        "Hollywood", "CA", "91601", "US", "12345678910");
   profile2.set_use_date(AutofillClock::Now() - base::Days(15));
   profile2.set_use_count(300);
-  personal_data()->AddProfile(profile2);
+  personal_data().AddProfile(profile2);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       suggested_profiles = suggestion_generator()->GetProfilesToSuggest(
@@ -413,21 +413,21 @@ TEST_F(AutofillSuggestionGeneratorTest,
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  personal_data()->AddProfile(profile1);
+  personal_data().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "Marion2", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  personal_data()->AddProfile(profile2);
+  personal_data().AddProfile(profile2);
 
   AutofillProfile profile3(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile3, "Marion3", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  personal_data()->AddProfile(profile3);
+  personal_data().AddProfile(profile3);
 
   // Verify that all the profiles are suggested.
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
@@ -443,12 +443,12 @@ TEST_F(AutofillSuggestionGeneratorTest,
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile1.SetRawInfo(NAME_FULL, u"First Middle Last");
   profile1.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+491601234567");
-  personal_data()->AddProfile(profile1);
+  personal_data().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile2.SetRawInfo(NAME_FULL, u"First Middle Last");
   profile2.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+491607654321");
-  personal_data()->AddProfile(profile2);
+  personal_data().AddProfile(profile2);
 
   {
     std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
@@ -492,7 +492,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
   profile1.set_use_date(AutofillClock::Now() - base::Days(200));
-  personal_data()->AddProfile(profile1);
+  personal_data().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "Marion2", "Mitchell", "Morrison",
@@ -500,7 +500,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
                        "456 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
   profile2.set_use_date(AutofillClock::Now() - base::Days(20));
-  personal_data()->AddProfile(profile2);
+  personal_data().AddProfile(profile2);
 
   // Query with empty string only returns profile2.
   {
@@ -543,8 +543,8 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_SingleDedupe) {
   AutofillProfile profile_1 = test::GetFullProfile();
   profile_1.set_use_count(10);
   AutofillProfile profile_2 = test::GetFullProfile();
-  personal_data()->AddProfile(profile_1);
-  personal_data()->AddProfile(profile_2);
+  personal_data().AddProfile(profile_1);
+  personal_data().AddProfile(profile_2);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest = suggestion_generator()->GetProfilesToSuggest(
@@ -561,16 +561,16 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_MultipleDedupe) {
   profiles[0].SetRawInfo(NAME_FIRST, u"Bob");
   profiles[0].SetRawInfo(NAME_LAST, u"Morrison");
   profiles[0].set_use_count(10);
-  personal_data()->AddProfile(profiles[0]);
+  personal_data().AddProfile(profiles[0]);
 
   profiles[1].SetRawInfo(NAME_FIRST, u"Bob");
   profiles[1].SetRawInfo(NAME_LAST, u"Parker");
   profiles[1].set_use_count(5);
-  personal_data()->AddProfile(profiles[1]);
+  personal_data().AddProfile(profiles[1]);
 
   profiles[2].SetRawInfo(NAME_FIRST, u"Mary");
   profiles[2].SetRawInfo(NAME_LAST, u"Parker");
-  personal_data()->AddProfile(profiles[2]);
+  personal_data().AddProfile(profiles[2]);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest = suggestion_generator()->GetProfilesToSuggest(
@@ -592,7 +592,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_DedupeLimit) {
     profile.set_use_count(
         AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount + 10 - i);
     profiles.push_back(profile);
-    personal_data()->AddProfile(profile);
+    personal_data().AddProfile(profile);
   }
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
@@ -624,7 +624,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   AutofillProfile profile_1(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile_1.SetRawInfo(NAME_FULL, u"First Last");
   profile_1.set_source_for_testing(AutofillProfile::Source::kAccount);
-  personal_data()->AddProfile(profile_1);
+  personal_data().AddProfile(profile_1);
 
   AutofillProfile profile_2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile_2.SetRawInfo(NAME_FULL, u"First Last");
@@ -632,7 +632,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   // Set high use count for profile 2 so that it has greater ranking than
   // profile_1
   profile_2.set_use_count(100);
-  personal_data()->AddProfile(profile_2);
+  personal_data().AddProfile(profile_2);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest = suggestion_generator()->GetProfilesToSuggest(
@@ -649,12 +649,12 @@ TEST_F(AutofillSuggestionGeneratorTest,
   AutofillProfile marion_profile(
       i18n_model_definition::kLegacyHierarchyCountryCode);
   marion_profile.SetRawInfo(NAME_FIRST, u"Marion");
-  personal_data()->AddProfile(marion_profile);
+  personal_data().AddProfile(marion_profile);
 
   AutofillProfile bob_profile(
       i18n_model_definition::kLegacyHierarchyCountryCode);
   bob_profile.SetRawInfo(NAME_FIRST, u"Bob");
-  personal_data()->AddProfile(bob_profile);
+  personal_data().AddProfile(bob_profile);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest = suggestion_generator()->GetProfilesToSuggest(
@@ -669,7 +669,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   AutofillProfile bob_profile(
       i18n_model_definition::kLegacyHierarchyCountryCode);
   bob_profile.SetRawInfo(NAME_FIRST, u"Bob");
-  personal_data()->AddProfile(bob_profile);
+  personal_data().AddProfile(bob_profile);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest = suggestion_generator()->GetProfilesToSuggest(
@@ -707,7 +707,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
     profiles[i].SetRawInfo(
         NAME_FULL, base::UTF8ToUTF16(base::StringPrintf("Bob %zu Doe", i)));
     profiles[i].set_use_date(kCurrentTime - (i * k30Days));
-    personal_data()->AddProfile(profiles[i]);
+    personal_data().AddProfile(profiles[i]);
   }
 
   // Filter the profiles while capturing histograms.
@@ -1288,8 +1288,8 @@ class AutofillNonAddressFieldsSuggestionGeneratorTest
 
 TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
        AllProfilesGenerateSuggestions) {
-  personal_data()->AddProfile(test::GetFullProfile());
-  personal_data()->AddProfile(test::GetFullProfile2());
+  personal_data().AddProfile(test::GetFullProfile());
+  personal_data().AddProfile(test::GetFullProfile2());
 
   FormFieldData triggering_field;
 
@@ -1553,8 +1553,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
 TEST_F(AutofillSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
   AutofillProfile profile1 = test::GetFullProfile();
   AutofillProfile profile2 = test::GetFullProfile2();
-  personal_data()->AddProfile(profile1);
-  personal_data()->AddProfile(profile2);
+  personal_data().AddProfile(profile1);
+  personal_data().AddProfile(profile2);
 
   // Create a triggering field those value prefix-matches `profile1`, but not
   // `profile2`.
@@ -1767,25 +1767,25 @@ TEST_F(AutofillSuggestionGeneratorTest,
 TEST_F(AutofillSuggestionGeneratorTest, GetServerCardForLocalCard) {
   CreditCard server_card = CreateServerCard();
   server_card.SetNumber(u"4111111111111111");
-  personal_data()->AddServerCreditCard(server_card);
+  personal_data().AddServerCreditCard(server_card);
   CreditCard local_card =
       CreateLocalCard("00000000-0000-0000-0000-000000000002");
 
   // The server card should be returned if the local card is passed in.
   const CreditCard* result =
-      personal_data()->GetServerCardForLocalCard(&local_card);
+      personal_data().GetServerCardForLocalCard(&local_card);
   ASSERT_TRUE(result);
   EXPECT_EQ(server_card.guid(), result->guid());
 
   // Should return nullptr if a server card is passed in.
-  EXPECT_FALSE(personal_data()->GetServerCardForLocalCard(&server_card));
+  EXPECT_FALSE(personal_data().GetServerCardForLocalCard(&server_card));
 
   // Should return nullptr if no server card has the same information as the
   // local card.
   server_card.SetNumber(u"5454545454545454");
-  personal_data()->ClearCreditCards();
-  personal_data()->AddServerCreditCard(server_card);
-  EXPECT_FALSE(personal_data()->GetServerCardForLocalCard(&local_card));
+  personal_data().ClearCreditCards();
+  personal_data().AddServerCreditCard(server_card);
+  EXPECT_FALSE(personal_data().GetServerCardForLocalCard(&local_card));
 }
 
 // The suggestions of credit cards with card linked offers are moved to the
@@ -1793,14 +1793,14 @@ TEST_F(AutofillSuggestionGeneratorTest, GetServerCardForLocalCard) {
 TEST_F(AutofillSuggestionGeneratorTest,
        GetSuggestionsForCreditCards_StableSortBasedOnOffer) {
   // Create three server cards.
-  personal_data()->ClearCreditCards();
-  personal_data()->AddServerCreditCard(CreateServerCard(
+  personal_data().ClearCreditCards();
+  personal_data().AddServerCreditCard(CreateServerCard(
       /*guid=*/"00000000-0000-0000-0000-000000000001",
       /*server_id=*/"server_id1", /*instrument_id=*/1));
-  personal_data()->AddServerCreditCard(CreateServerCard(
+  personal_data().AddServerCreditCard(CreateServerCard(
       /*guid=*/"00000000-0000-0000-0000-000000000002",
       /*server_id=*/"server_id2", /*instrument_id=*/2));
-  personal_data()->AddServerCreditCard(CreateServerCard(
+  personal_data().AddServerCreditCard(CreateServerCard(
       /*guid=*/"00000000-0000-0000-0000-000000000003",
       /*server_id=*/"server_id3", /*instrument_id=*/3));
 
@@ -1810,7 +1810,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   offer_data.SetEligibleInstrumentIdForTesting({2});
   autofill_client()->set_last_committed_primary_main_frame_url(
       GURL("http://www.example1.com"));
-  personal_data()->AddAutofillOfferData(offer_data);
+  personal_data().AddAutofillOfferData(offer_data);
 
   bool should_display_gpay_logo;
   bool with_offer;
@@ -1840,10 +1840,10 @@ TEST_F(AutofillSuggestionGeneratorTest,
 // standalone CVC field.
 TEST_F(AutofillSuggestionGeneratorTest,
        GetSuggestionsForVirtualCardStandaloneCvc) {
-  personal_data()->ClearCreditCards();
+  personal_data().ClearCreditCards();
   CreditCard virtual_card = test::GetVirtualCard();
   virtual_card.set_guid("1234");
-  personal_data()->AddServerCreditCard(virtual_card);
+  personal_data().AddServerCreditCard(virtual_card);
 
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
       virtual_card_guid_to_last_four_map;
@@ -1864,10 +1864,10 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
   // server cards.
   {
     // Create two server cards.
-    personal_data()->AddServerCreditCard(CreateServerCard(
+    personal_data().AddServerCreditCard(CreateServerCard(
         /*guid=*/"00000000-0000-0000-0000-000000000001",
         /*server_id=*/"server_id1", /*instrument_id=*/1));
-    personal_data()->AddServerCreditCard(CreateServerCard(
+    personal_data().AddServerCreditCard(CreateServerCard(
         /*guid=*/"00000000-0000-0000-0000-000000000002",
         /*server_id=*/"server_id2", /*instrument_id=*/2));
 
@@ -1883,7 +1883,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     EXPECT_TRUE(should_display_gpay_logo);
   }
 
-  personal_data()->ClearCreditCards();
+  personal_data().ClearCreditCards();
 
   // `should_display_gpay_logo` should be false if at least one local card was
   // in the suggestions.
@@ -1892,8 +1892,8 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     auto local_card = CreateLocalCard(
         /*guid=*/"00000000-0000-0000-0000-000000000001");
     local_card.SetNumber(u"5454545454545454");
-    personal_data()->AddCreditCard(local_card);
-    personal_data()->AddServerCreditCard(CreateServerCard(
+    personal_data().AddCreditCard(local_card);
+    personal_data().AddServerCreditCard(CreateServerCard(
         /*guid=*/"00000000-0000-0000-0000-000000000002",
         /*server_id=*/"server_id2", /*instrument_id=*/2));
 
@@ -1909,7 +1909,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     EXPECT_FALSE(should_display_gpay_logo);
   }
 
-  personal_data()->ClearCreditCards();
+  personal_data().ClearCreditCards();
 
   // `should_display_gpay_logo` should be true if there was an unused expired
   // local card in the suggestions.
@@ -1920,8 +1920,8 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     local_card.SetNumber(u"5454545454545454");
     local_card.SetExpirationYear(2020);
     local_card.set_use_date(AutofillClock::Now() - base::Days(365));
-    personal_data()->AddCreditCard(local_card);
-    personal_data()->AddServerCreditCard(CreateServerCard(
+    personal_data().AddCreditCard(local_card);
+    personal_data().AddServerCreditCard(CreateServerCard(
         /*guid=*/"00000000-0000-0000-0000-000000000002",
         /*server_id=*/"server_id2", /*instrument_id=*/2));
 
@@ -1937,7 +1937,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     EXPECT_TRUE(should_display_gpay_logo);
   }
 
-  personal_data()->ClearCreditCards();
+  personal_data().ClearCreditCards();
 
   // `should_display_gpay_logo` should be true if there was no card at all.
   {
@@ -1962,7 +1962,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
   server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  personal_data()->AddServerCreditCard(server_card);
+  personal_data().AddServerCreditCard(server_card);
 
   // Create a local card with same information.
   CreditCard local_card =
@@ -1983,7 +1983,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
   server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  personal_data()->AddServerCreditCard(server_card);
+  personal_data().AddServerCreditCard(server_card);
   autofill_client()->ResetAutofillOptimizationGuide();
 
   // Create a local card with same information.
@@ -2005,7 +2005,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
   server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  personal_data()->AddServerCreditCard(server_card);
+  personal_data().AddServerCreditCard(server_card);
 
   // Create a local card with same information.
   CreditCard local_card =
@@ -2032,7 +2032,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
   server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kUnspecified);
-  personal_data()->AddServerCreditCard(server_card);
+  personal_data().AddServerCreditCard(server_card);
 
   // Create a local card with same information.
   CreditCard local_card =
@@ -2299,7 +2299,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
 TEST_F(AutofillSuggestionGeneratorTest, TestAddressSuggestion) {
   AutofillProfile profile = test::GetFullProfile();
-  personal_data()->set_test_addresses({profile});
+  personal_data().set_test_addresses({profile});
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile}, /*field_types=*/{NAME_FIRST},
@@ -2742,7 +2742,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 // Verify that manual fallback credit card suggestions are not filtered.
 TEST_F(AutofillCreditCardSuggestionContentTest,
        GetSuggestionsForCreditCards_ManualFallbackSuggestionsNotFiltered) {
-  personal_data()->AddServerCreditCard(CreateServerCard());
+  personal_data().AddServerCreditCard(CreateServerCard());
 
   FormFieldData field_data;
   field_data.value = u"$$$";
@@ -2769,8 +2769,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // We used last 4 to deduplicate local card and server card so we should set
   // local card with different last 4.
   local_card.SetNumber(u"5454545454545454");
-  personal_data()->AddCreditCard(std::move(local_card));
-  personal_data()->AddServerCreditCard(CreateServerCard());
+  personal_data().AddCreditCard(std::move(local_card));
+  personal_data().AddServerCreditCard(CreateServerCard());
 
   bool should_display_gpay_logo;
   bool with_offer;
@@ -2794,8 +2794,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 TEST_F(AutofillCreditCardSuggestionContentTest,
        GetSuggestionsForCreditCards_Duplicate_CvcField) {
   // Create 2 duplicate local and server card with same last 4.
-  personal_data()->AddCreditCard(CreateLocalCard());
-  personal_data()->AddServerCreditCard(CreateServerCard());
+  personal_data().AddCreditCard(CreateLocalCard());
+  personal_data().AddServerCreditCard(CreateServerCard());
 
   bool should_display_gpay_logo;
   bool with_offer;
@@ -2819,7 +2819,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   CreditCard server_card = CreateServerCard();
   server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  personal_data()->AddServerCreditCard(std::move(server_card));
+  personal_data().AddServerCreditCard(std::move(server_card));
 
   bool should_display_gpay_logo;
   bool with_offer;
@@ -2846,8 +2846,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   CreditCard server_card = CreateServerCard();
   server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  personal_data()->AddServerCreditCard(std::move(server_card));
-  personal_data()->AddCreditCard(CreateLocalCard());
+  personal_data().AddServerCreditCard(std::move(server_card));
+  personal_data().AddCreditCard(CreateLocalCard());
 
   bool should_display_gpay_logo;
   bool with_offer;
@@ -2962,7 +2962,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
   GURL card_art_url = GURL("https://www.example.com/card-art");
   server_card.set_card_art_url(card_art_url);
   gfx::Image fake_image = CustomIconForTest();
-  personal_data()->AddCardArtImage(card_art_url, fake_image);
+  personal_data().AddCardArtImage(card_art_url, fake_image);
 
   Suggestion virtual_card_suggestion =
       suggestion_generator()->CreateCreditCardSuggestion(
@@ -3022,8 +3022,8 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
   GURL card_art_url = GURL("https://www.example.com/card-art");
   server_card.set_card_art_url(card_art_url);
   gfx::Image fake_image = CustomIconForTest();
-  personal_data()->AddServerCreditCard(server_card);
-  personal_data()->AddCardArtImage(card_art_url, fake_image);
+  personal_data().AddServerCreditCard(server_card);
+  personal_data().AddCardArtImage(card_art_url, fake_image);
 
   // Create a local card with same information.
   CreditCard local_card =
@@ -3069,7 +3069,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
     if (card_has_capital_one_icon()) {
       server_card.set_card_art_url(GURL(kCapitalOneCardArtUrl));
     }
-    personal_data()->AddServerCreditCard(server_card);
+    personal_data().AddServerCreditCard(server_card);
 
     bool should_display_gpay_logo;
     bool with_offer;
@@ -3090,7 +3090,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
               expected_issuer_to_metadata_availability);
   }
 
-  personal_data()->ClearCreditCards();
+  personal_data().ClearCreditCards();
 
   {
     // Create a server card with card product description & card art image.
@@ -3099,7 +3099,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
     server_card_with_metadata.set_product_description(u"product_description");
     server_card_with_metadata.set_card_art_url(
         GURL("https://www.example.com/card-art.png"));
-    personal_data()->AddServerCreditCard(server_card_with_metadata);
+    personal_data().AddServerCreditCard(server_card_with_metadata);
 
     bool should_display_gpay_logo;
     bool with_offer;
@@ -3135,7 +3135,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
                                        : "https://www.example.com/card-art");
   server_card.set_card_art_url(card_art_url);
   gfx::Image fake_image = CustomIconForTest();
-  personal_data()->AddCardArtImage(card_art_url, fake_image);
+  personal_data().AddCardArtImage(card_art_url, fake_image);
 
   Suggestion virtual_card_suggestion =
       suggestion_generator()->CreateCreditCardSuggestion(

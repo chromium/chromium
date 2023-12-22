@@ -65,8 +65,8 @@ TEST_F(AddressRewriterInProfileSubsetMetricsTest, PreviouslyHiddenSuggestion) {
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
   base::HistogramTester histogram_tester;
-  AutofillSuggestionGenerator suggestion_generator(autofill_client_.get(),
-                                                   &personal_data());
+  AutofillSuggestionGenerator suggestion_generator(*autofill_client_,
+                                                   personal_data());
   std::vector<Suggestion> suggestions =
       suggestion_generator.GetSuggestionsForProfiles(
           {NAME_FULL, ADDRESS_HOME_LINE1}, FormFieldData(), NAME_FULL,

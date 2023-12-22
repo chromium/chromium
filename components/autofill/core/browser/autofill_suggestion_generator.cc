@@ -7,6 +7,7 @@
 #include <functional>
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -79,12 +80,11 @@ std::u16string SanitizeCreditCardFieldValue(const std::u16string& value) {
 // Returns the card-linked offers map with credit card guid as the key and the
 // pointer to the linked AutofillOfferData as the value.
 std::map<std::string, AutofillOfferData*> GetCardLinkedOffers(
-    AutofillClient* autofill_client) {
-  AutofillOfferManager* offer_manager =
-      autofill_client->GetAutofillOfferManager();
-  if (offer_manager) {
+    AutofillClient& autofill_client) {
+  if (AutofillOfferManager* offer_manager =
+          autofill_client.GetAutofillOfferManager()) {
     return offer_manager->GetCardLinkedOffersMap(
-        autofill_client->GetLastCommittedPrimaryMainFrameURL());
+        autofill_client.GetLastCommittedPrimaryMainFrameURL());
   }
   return {};
 }
@@ -1082,8 +1082,8 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
 }  // namespace
 
 AutofillSuggestionGenerator::AutofillSuggestionGenerator(
-    AutofillClient* autofill_client,
-    PersonalDataManager* personal_data)
+    AutofillClient& autofill_client,
+    PersonalDataManager& personal_data)
     : autofill_client_(autofill_client), personal_data_(personal_data) {}
 
 AutofillSuggestionGenerator::~AutofillSuggestionGenerator() = default;
@@ -1434,7 +1434,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   const std::string& app_locale = personal_data_->app_locale();
 
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
-      GetCardLinkedOffers(autofill_client_);
+      GetCardLinkedOffers(*autofill_client_);
   with_offer = !card_linked_offers_map.empty();
 
   // The field value is sanitized before attempting to match it to the user's
@@ -1442,7 +1442,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   auto field_contents = SanitizeCreditCardFieldValue(field.value);
 
   std::vector<CreditCard> cards_to_suggest =
-      GetOrderedCardsToSuggest(autofill_client_, field_contents.empty());
+      GetOrderedCardsToSuggest(*autofill_client_, field_contents.empty());
 
   std::u16string field_contents_lower = base::i18n::ToLower(field_contents);
 
@@ -1497,7 +1497,7 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
   // duplicate logic to helper functions.
   std::vector<Suggestion> suggestions;
   std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
-      autofill_client_, /*suppress_disused_cards=*/true);
+      *autofill_client_, /*suppress_disused_cards=*/true);
   metadata_logging_context =
       autofill_metrics::GetMetadataLoggingContext(cards_to_suggest);
 
@@ -1556,17 +1556,15 @@ Suggestion AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry() {
 
 // static
 std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
-    AutofillClient* autofill_client,
+    AutofillClient& autofill_client,
     bool suppress_disused_cards) {
-  DCHECK(autofill_client);
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
       GetCardLinkedOffers(autofill_client);
 
-  PersonalDataManager* personal_data =
-      autofill_client->GetPersonalDataManager();
-  DCHECK(personal_data);
+  const PersonalDataManager& personal_data =
+      CHECK_DEREF(autofill_client.GetPersonalDataManager());
   std::vector<CreditCard*> available_cards =
-      personal_data->GetCreditCardsToSuggest();
+      personal_data.GetCreditCardsToSuggest();
 
   // If a card has available card linked offers on the last committed url, rank
   // it to the top.
