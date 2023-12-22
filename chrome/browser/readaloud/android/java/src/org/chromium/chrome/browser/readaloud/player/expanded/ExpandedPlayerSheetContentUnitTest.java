@@ -32,6 +32,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
+import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -239,6 +240,7 @@ public class ExpandedPlayerSheetContentUnitTest {
     @Test
     public void testShowOptionsMenu() {
         mContent.showOptionsMenu();
+        verify(mModel).set(PlayerProperties.OPTION_SHEET_PENDING, true);
         verify(mBottomSheetController).hideContent(mContent, false);
         verify(mBottomSheetController).requestShowContent(mOptionsMenu, true);
     }
@@ -246,6 +248,7 @@ public class ExpandedPlayerSheetContentUnitTest {
     @Test
     public void testShowSpeedMenu() {
         mContent.showSpeedMenu();
+        verify(mModel).set(PlayerProperties.OPTION_SHEET_PENDING, true);
         verify(mBottomSheetController).hideContent(mContent, false);
         verify(mBottomSheetController).requestShowContent(mSpeedMenu, true);
     }
