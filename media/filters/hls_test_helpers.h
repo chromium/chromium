@@ -32,9 +32,8 @@ class MockHlsDataSourceProvider : public HlsDataSourceProvider {
   MockHlsDataSourceProvider();
   ~MockHlsDataSourceProvider() override;
   MOCK_METHOD(void,
-              ReadFromUrl,
-              (GURL,
-               absl::optional<hls::types::ByteRange>,
+              ReadFromCombinedUrlQueue,
+              (HlsDataSourceProvider::SegmentQueue,
                HlsDataSourceProvider::ReadCb),
               (override));
   MOCK_METHOD(void,

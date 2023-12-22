@@ -11,11 +11,11 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
+#include "media/base/cross_origin_data_source.h"
 #include "media/base/mock_media_log.h"
+#include "media/filters/hls_data_source_provider_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "media/filters/hls_data_source_provider_impl.h"
-#include "media/base/cross_origin_data_source.h"
 
 namespace media {
 
@@ -82,7 +82,7 @@ class MockDataSource : public CrossOriginDataSource {
 class MockDataSourceFactory
     : public HlsDataSourceProviderImpl::DataSourceFactory {
  public:
-  using MockDataSource = StrictMock<MockDataSource>;
+  using MockDataSource = NiceMock<MockDataSource>;
 
   ~MockDataSourceFactory() override = default;
   MockDataSourceFactory() = default;
@@ -95,7 +95,6 @@ class MockDataSourceFactory
             .WillOnce(RunOnceCallback<3>(std::get<2>(e)));
       }
       read_expectations_.clear();
-      EXPECT_CALL(*next_mock_, Abort());
       EXPECT_CALL(*next_mock_, Stop());
     }
     std::move(cb).Run(std::move(next_mock_));
@@ -139,7 +138,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlOnce) {
   // The entire read is satisfied, so there is more to read.
   factory_->AddReadExpectation(0, 16384, 16384);
   impl_->ReadFromUrl(
-      GURL("example.com"), absl::nullopt,
+      {GURL("example.com"), absl::nullopt},
       base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
@@ -153,7 +152,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlOnce) {
   // Only got 400 bytes of requested, which means that there is no more to read.
   factory_->AddReadExpectation(0, 16384, 400);
   impl_->ReadFromUrl(
-      GURL("example.com"), absl::nullopt,
+      {GURL("example.com"), absl::nullopt},
       base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
@@ -168,7 +167,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlOnce) {
   // at an offset of 99. The read should be from 99, size of 4242.
   factory_->AddReadExpectation(99, 4242, 4242);
   impl_->ReadFromUrl(
-      GURL("example.com"), hls::types::ByteRange::Validate(4242, 99),
+      {GURL("example.com"), hls::types::ByteRange::Validate(4242, 99)},
       base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
@@ -185,7 +184,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlThenReadAgain) {
   factory_->AddReadExpectation(16384, 16384, 16384);
   factory_->AddReadExpectation(32768, 16384, 3);
   impl_->ReadFromUrl(
-      GURL("example.com"), absl::nullopt,
+      {GURL("example.com"), absl::nullopt},
       base::BindOnce(
           [](HlsDataSourceProviderImpl* impl_ptr,
              HlsDataSourceProvider::ReadResult result) {
@@ -241,13 +240,13 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestAbortMidDownload) {
 
   // The Read CB is captured, and so will not execute right away.
   bool has_been_read = false;
-  impl_->ReadFromUrl(GURL("example.com"), absl::nullopt,
-                     base::BindOnce(
-                         [](bool* read_canary,
-                            HlsDataSourceProvider::ReadResult result) {
-                           *read_canary = true;
-                         },
-                         &has_been_read));
+  impl_->ReadFromUrl(
+      {GURL("example.com"), absl::nullopt},
+      base::BindOnce(
+          [](bool* read_canary, HlsDataSourceProvider::ReadResult result) {
+            *read_canary = true;
+          },
+          &has_been_read));
 
   // cycle everything and check that we are blocking the read.
   task_environment_.RunUntilIdle();
@@ -274,13 +273,13 @@ TEST_F(HlsDataSourceProviderImplUnittest, AbortMidInit) {
   EXPECT_CALL(*mock_data_source, Stop());
 
   bool has_been_read = false;
-  impl_->ReadFromUrl(GURL("example.com"), absl::nullopt,
-                     base::BindOnce(
-                         [](bool* read_canary,
-                            HlsDataSourceProvider::ReadResult result) {
-                           *read_canary = true;
-                         },
-                         &has_been_read));
+  impl_->ReadFromUrl(
+      {GURL("example.com"), absl::nullopt},
+      base::BindOnce(
+          [](bool* read_canary, HlsDataSourceProvider::ReadResult result) {
+            *read_canary = true;
+          },
+          &has_been_read));
 
   // Despite the init never returning, it is stored in the `data_source_map_`
   // and all entries there get stopped on teardown.
@@ -288,6 +287,93 @@ TEST_F(HlsDataSourceProviderImplUnittest, AbortMidInit) {
 
   // Should be false, because the stream init function won't post it's callback.
   ASSERT_FALSE(has_been_read);
+}
+
+TEST_F(HlsDataSourceProviderImplUnittest, ReadMultipleSegments) {
+  HlsDataSourceProvider::SegmentQueue segments;
+  segments.emplace(GURL("example.com"), absl::nullopt);
+  segments.emplace(GURL("foo.com"), absl::nullopt);
+
+  // Request 16k, but only 4k is read. This means the stream has ended.
+  factory_->AddReadExpectation(0, 16384, 4096);
+
+  std::unique_ptr<HlsDataSourceStream> read_result;
+  impl_->ReadFromCombinedUrlQueue(
+      std::move(segments), base::BindOnce(
+                               [](std::unique_ptr<HlsDataSourceStream>* extract,
+                                  HlsDataSourceProvider::ReadResult result) {
+                                 *extract = std::move(result).value();
+                               },
+                               &read_result));
+
+  task_environment_.RunUntilIdle();
+  ASSERT_NE(read_result, nullptr);
+  ASSERT_TRUE(read_result->CanReadMore());
+  ASSERT_TRUE(read_result->RequiresNextDataSource());
+
+  factory_->AddReadExpectation(0, 16384, 4096);
+  impl_->ReadFromExistingStream(
+      std::move(read_result),
+      base::BindOnce(
+          [](std::unique_ptr<HlsDataSourceStream>* extract,
+             HlsDataSourceProvider::ReadResult result) {
+            *extract = std::move(result).value();
+          },
+          &read_result));
+
+  task_environment_.RunUntilIdle();
+  ASSERT_NE(read_result, nullptr);
+  ASSERT_FALSE(read_result->CanReadMore());
+  ASSERT_FALSE(read_result->RequiresNextDataSource());
+
+  read_result = nullptr;
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsDataSourceProviderImplUnittest, ReadMultipleRangedSegments) {
+  HlsDataSourceProvider::SegmentQueue segments;
+  // Read 10 bytes from offset 0.
+  segments.emplace(GURL("example.com"), hls::types::ByteRange::Validate(10, 0));
+
+  // Read 100 bytes from offset 100
+  segments.emplace(GURL("foo.com"), hls::types::ByteRange::Validate(100, 100));
+
+  // Request 10 bytes from the 0 offset. this is fairly common for EXT-X-MAP.
+  factory_->AddReadExpectation(0, 10, 10);
+
+  std::unique_ptr<HlsDataSourceStream> read_result;
+  impl_->ReadFromCombinedUrlQueue(
+      std::move(segments), base::BindOnce(
+                               [](std::unique_ptr<HlsDataSourceStream>* extract,
+                                  HlsDataSourceProvider::ReadResult result) {
+                                 *extract = std::move(result).value();
+                               },
+                               &read_result));
+
+  task_environment_.RunUntilIdle();
+  ASSERT_NE(read_result, nullptr);
+  ASSERT_TRUE(read_result->CanReadMore());
+  ASSERT_TRUE(read_result->RequiresNextDataSource());
+
+  // The second segment will request another 100 bytes, and again, because it is
+  // a range request, more should be returned.
+  factory_->AddReadExpectation(100, 100, 100);
+  impl_->ReadFromExistingStream(
+      std::move(read_result),
+      base::BindOnce(
+          [](std::unique_ptr<HlsDataSourceStream>* extract,
+             HlsDataSourceProvider::ReadResult result) {
+            *extract = std::move(result).value();
+          },
+          &read_result));
+
+  task_environment_.RunUntilIdle();
+  ASSERT_NE(read_result, nullptr);
+  ASSERT_FALSE(read_result->CanReadMore());
+  ASSERT_FALSE(read_result->RequiresNextDataSource());
+
+  read_result = nullptr;
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace blink

@@ -411,9 +411,10 @@ void HlsManifestDemuxerEngine::ReadFromUrl(
     cb = base::BindOnce(&HlsManifestDemuxerEngine::ReadUntilExhausted,
                         weak_factory_.GetWeakPtr(), std::move(cb));
   }
-
+  HlsDataSourceProvider::UrlDataSegment segment = {.uri = std::move(uri),
+                                                   .range = range};
   data_source_provider_.AsyncCall(&HlsDataSourceProvider::ReadFromUrl)
-      .WithArgs(std::move(uri), range,
+      .WithArgs(std::move(segment),
                 base::BindPostTaskToCurrentDefault(std::move(cb)));
 }
 

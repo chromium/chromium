@@ -64,37 +64,17 @@ HlsDataSourceProviderImpl::~HlsDataSourceProviderImpl() {
   data_source_factory_.reset();
 }
 
-void HlsDataSourceProviderImpl::OnDataSourceReady(
-    absl::optional<hls::types::ByteRange> range,
-    ReadCb callback,
-    std::unique_ptr<DataSource> data_source) {
-  auto stream_id = stream_id_generator_.GenerateNextId();
-  auto it = data_source_map_.try_emplace(stream_id, std::move(data_source));
-  // The factory may return a CrossOriginDataSource, which must be initialized.
-  // Other implementations of DataSource may not even have an Initialization
-  // method. In these cases, the factory should provide instances which are
-  // ready to use.
-  // TODO(crbug/1266991): Unify the `Initialize` method across DataSource
-  // implementations, and remove the check for CrossOriginDataSource here.
-  if (auto* cross_origin = it.first->second->GetAsCrossOriginDataSource()) {
-    cross_origin->Initialize(base::BindPostTaskToCurrentDefault(base::BindOnce(
-        &HlsDataSourceProviderImpl::DataSourceInitialized,
-        weak_factory_.GetWeakPtr(), stream_id, range, std::move(callback))));
-  } else {
-    DataSourceInitialized(stream_id, range, std::move(callback), true);
-  }
-}
-
-void HlsDataSourceProviderImpl::ReadFromUrl(
-    GURL uri,
-    absl::optional<hls::types::ByteRange> range,
-    ReadCb callback) {
+void HlsDataSourceProviderImpl::ReadFromCombinedUrlQueue(SegmentQueue segments,
+                                                         ReadCb callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  data_source_factory_->CreateDataSource(
-      std::move(uri),
-      base::BindOnce(&HlsDataSourceProviderImpl::OnDataSourceReady,
-                     weak_factory_.GetWeakPtr(), std::move(range),
-                     std::move(callback)));
+  CHECK(!segments.empty());
+  auto stream_id = stream_id_generator_.GenerateNextId();
+  auto stream = std::make_unique<HlsDataSourceStream>(
+      stream_id, std::move(segments),
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&HlsDataSourceProviderImpl::OnStreamReleased,
+                         weak_factory_.GetWeakPtr(), stream_id)));
+  ReadFromExistingStream(std::move(stream), std::move(callback));
 }
 
 void HlsDataSourceProviderImpl::ReadFromExistingStream(
@@ -102,16 +82,30 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
     ReadCb callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(stream);
-
-  auto it = data_source_map_.find(stream->stream_id());
-  if (it == data_source_map_.end()) {
-    std::move(callback).Run(
-        HlsDataSourceProvider::ReadStatus::Codes::kError);
+  // There might be no data source attached to the stream yet, so we should
+  // try to make one. Creating a new data source will re-enter this function to
+  // complete `callback`.
+  if (stream->RequiresNextDataSource()) {
+    auto new_uri = stream->GetNextSegmentURI();
+    data_source_factory_->CreateDataSource(
+        std::move(new_uri),
+        base::BindOnce(&HlsDataSourceProviderImpl::OnDataSourceCreated,
+                       weak_factory_.GetWeakPtr(), std::move(stream),
+                       std::move(callback)));
     return;
   }
 
+  // A finished stream may have removed any attached data source, so it might
+  // not be present in the map.
   if (!stream->CanReadMore()) {
     std::move(callback).Run(std::move(stream));
+    return;
+  }
+
+  // Any stream which can read more _must_ have an active data source attached.
+  auto it = data_source_map_.find(stream->stream_id());
+  if (it == data_source_map_.end()) {
+    std::move(callback).Run(ReadStatus::Codes::kError);
     return;
   }
 
@@ -132,6 +126,46 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
                                   std::move(callback), int_read_size));
 }
 
+void HlsDataSourceProviderImpl::OnDataSourceCreated(
+    std::unique_ptr<HlsDataSourceStream> stream,
+    ReadCb callback,
+    std::unique_ptr<DataSource> data_source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto stream_id = stream->stream_id();
+  auto old_data_source = data_source_map_.find(stream_id);
+  if (old_data_source != data_source_map_.end()) {
+    old_data_source->second->Stop();
+    data_source_map_.erase(old_data_source);
+  }
+  auto pair = data_source_map_.try_emplace(stream_id, std::move(data_source));
+  // Cross origin data sources have an asynchronous initialize method which
+  // must be called after they're put into `data_source_map_`. Other types of
+  // data source (including the test framework ones) come from the factory ready
+  // to go, and don't have an async init process.
+  if (auto* cross_origin = pair.first->second->GetAsCrossOriginDataSource()) {
+    cross_origin->Initialize(base::BindPostTaskToCurrentDefault(base::BindOnce(
+        &HlsDataSourceProviderImpl::DataSourceInitialized,
+        weak_factory_.GetWeakPtr(), std::move(stream), std::move(callback))));
+  } else {
+    DataSourceInitialized(std::move(stream), std::move(callback), true);
+  }
+}
+
+void HlsDataSourceProviderImpl::DataSourceInitialized(
+    std::unique_ptr<HlsDataSourceStream> stream,
+    ReadCb callback,
+    bool success) {
+  if (!success) {
+    auto it = data_source_map_.find(stream->stream_id());
+    CHECK(it != data_source_map_.end());
+    data_source_map_.erase(it);
+    std::move(callback).Run(ReadStatus::Codes::kStopped);
+    return;
+  }
+
+  ReadFromExistingStream(std::move(stream), std::move(callback));
+}
+
 void HlsDataSourceProviderImpl::AbortPendingReads(base::OnceClosure cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& [id, source] : data_source_map_) {
@@ -141,37 +175,11 @@ void HlsDataSourceProviderImpl::AbortPendingReads(base::OnceClosure cb) {
   std::move(cb).Run();
 }
 
-void HlsDataSourceProviderImpl::DataSourceInitialized(
-    HlsDataSourceStream::StreamId stream_id,
-    absl::optional<hls::types::ByteRange> range,
-    ReadCb callback,
-    bool success) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!success) {
-    auto it = data_source_map_.find(stream_id);
-    if (it != data_source_map_.end()) {
-      data_source_map_.erase(it);
-    }
-    std::move(callback).Run(
-        HlsDataSourceProvider::ReadStatus::Codes::kAborted);
-    return;
-  }
-
-  auto stream = std::make_unique<HlsDataSourceStream>(
-      stream_id,
-      base::BindPostTaskToCurrentDefault(
-          base::BindOnce(&HlsDataSourceProviderImpl::OnStreamReleased,
-                         weak_factory_.GetWeakPtr(), stream_id)),
-      range);
-  ReadFromExistingStream(std::move(stream), std::move(callback));
-}
-
 void HlsDataSourceProviderImpl::OnStreamReleased(
     HlsDataSourceStream::StreamId stream_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = data_source_map_.find(stream_id);
   if (it != data_source_map_.end()) {
-    it->second->Abort();
     it->second->Stop();
     data_source_map_.erase(it);
   }

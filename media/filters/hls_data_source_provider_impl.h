@@ -34,20 +34,19 @@ class MEDIA_EXPORT HlsDataSourceProviderImpl : public HlsDataSourceProvider {
       std::unique_ptr<DataSourceFactory> factory);
 
   // HlsDataSourceProvider implementation
-  void ReadFromUrl(GURL uri,
-                   absl::optional<hls::types::ByteRange> range,
-                   ReadCb callback) override;
+  void ReadFromCombinedUrlQueue(SegmentQueue segments,
+                                ReadCb callback) override;
+
   void ReadFromExistingStream(std::unique_ptr<HlsDataSourceStream> stream,
                               ReadCb callback) override;
   void AbortPendingReads(base::OnceClosure cb) override;
 
  private:
-  void OnDataSourceReady(absl::optional<hls::types::ByteRange> range,
-                         ReadCb callback,
-                         std::unique_ptr<DataSource> data_source);
+  void OnDataSourceCreated(std::unique_ptr<HlsDataSourceStream> stream,
+                           ReadCb callback,
+                           std::unique_ptr<DataSource> data_source);
   void OnStreamReleased(HlsDataSourceStream::StreamId stream_id);
-  void DataSourceInitialized(HlsDataSourceStream::StreamId stream_id,
-                             absl::optional<hls::types::ByteRange> range,
+  void DataSourceInitialized(std::unique_ptr<HlsDataSourceStream> stream,
                              ReadCb callback,
                              bool success);
 
