@@ -8,7 +8,9 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
+#import "base/test/test_timeouts.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
@@ -116,14 +118,19 @@ TEST_F(BookmarkSpotlightManagerTest, testClearAndReindexModel) {
   [manager clearAndReindexModel];
 
   // We expect to attempt deleting searchable items.
-  EXPECT_EQ(fakeSpotlightInterface
-                .deleteSearchableItemsWithDomainIdentifiersCallsCount,
-            1u);
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool() {
+        return fakeSpotlightInterface
+                   .deleteSearchableItemsWithDomainIdentifiersCallsCount == 1u;
+      }));
 
-  // We expect that we will reindex the only existing item in bookmark, thus the
-  // +2 for the count.
-  EXPECT_EQ(fakeSpotlightInterface.indexSearchableItemsCallsCount,
-            initialIndexedItemCount + 2);
+  // We expect that we will reindex the only existing item in bookmark,
+  // thus the +2 for the count.
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool() {
+        return fakeSpotlightInterface.indexSearchableItemsCallsCount ==
+               initialIndexedItemCount + 2;
+      }));
 
   [manager shutdown];
 }
