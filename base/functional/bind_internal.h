@@ -106,9 +106,6 @@ struct MayDangleUntriaged {};
 
 namespace internal {
 
-template <typename Functor>
-struct FunctorTraits;
-
 template <typename T,
           typename UnretainedTrait,
           RawPtrTraits PtrTraits = RawPtrTraits::kEmpty>
@@ -487,19 +484,6 @@ struct TakeTypeListItemImpl<n, TypeList<T, List...>, Accum...>
 template <size_t n, typename List>
 using TakeTypeListItem = typename TakeTypeListItemImpl<n, List>::Type;
 
-// Used for ConcatTypeLists implementation.
-template <typename List1, typename List2>
-struct ConcatTypeListsImpl;
-
-template <typename... Types1, typename... Types2>
-struct ConcatTypeListsImpl<TypeList<Types1...>, TypeList<Types2...>> {
-  using Type = TypeList<Types1..., Types2...>;
-};
-
-// A type-level function that concats two TypeLists.
-template <typename List1, typename List2>
-using ConcatTypeLists = typename ConcatTypeListsImpl<List1, List2>::Type;
-
 // Implements `MakeFunctionType`.
 template <typename R, typename ArgList>
 struct MakeFunctionTypeImpl;
@@ -666,18 +650,7 @@ struct FunctorTraits<R (*)(Args...) noexcept> : FunctorTraits<R (*)(Args...)> {
 
 // `__stdcall` functions.
 template <typename R, typename... Args>
-struct FunctorTraits<R(__stdcall*)(Args...)> {
-  using RunType = R(Args...);
-  static constexpr bool is_method = false;
-  static constexpr bool is_nullable = true;
-  static constexpr bool is_callback = false;
-  static constexpr bool is_stateless = true;
-
-  template <typename... RunArgs>
-  static R Invoke(R(__stdcall* function)(Args...), RunArgs&&... args) {
-    return function(std::forward<RunArgs>(args)...);
-  }
-};
+struct FunctorTraits<R(__stdcall*)(Args...)> : FunctorTraits<R (*)(Args...)> {};
 
 template <typename R, typename... Args>
 struct FunctorTraits<R(__stdcall*)(Args...) noexcept>
@@ -685,17 +658,7 @@ struct FunctorTraits<R(__stdcall*)(Args...) noexcept>
 
 // `__fastcall` functions.
 template <typename R, typename... Args>
-struct FunctorTraits<R(__fastcall*)(Args...)> {
-  using RunType = R(Args...);
-  static constexpr bool is_method = false;
-  static constexpr bool is_nullable = true;
-  static constexpr bool is_callback = false;
-  static constexpr bool is_stateless = true;
-
-  template <typename... RunArgs>
-  static R Invoke(R(__fastcall* function)(Args...), RunArgs&&... args) {
-    return function(std::forward<RunArgs>(args)...);
-  }
+struct FunctorTraits<R(__fastcall*)(Args...)> : FunctorTraits<R (*)(Args...)> {
 };
 
 template <typename R, typename... Args>
@@ -704,13 +667,10 @@ struct FunctorTraits<R(__fastcall*)(Args...) noexcept>
 
 #endif  // BUILDFLAG(IS_WIN) && !defined(ARCH_CPU_64_BITS)
 
-#if __OBJC__
+#if __OBJC__ && HAS_FEATURE(objc_arc)
 
-// Support for Objective-C blocks. Blocks can be bound as the compiler will
-// ensure their lifetimes will be correctly managed.
-
-#if HAS_FEATURE(objc_arc)
-
+// Objective-C blocks. Blocks can be bound as the compiler will ensure their
+// lifetimes will be correctly managed.
 template <typename R, typename... Args>
 struct FunctorTraits<R (^)(Args...)> {
   using RunType = R(Args...);
@@ -732,8 +692,7 @@ struct FunctorTraits<R (^)(Args...)> {
   }
 };
 
-#endif  // HAS_FEATURE(objc_arc)
-#endif  // __OBJC__
+#endif  // __OBJC__ && HAS_FEATURE(objc_arc)
 
 // Methods.
 template <typename R, typename Receiver, typename... Args>
@@ -757,19 +716,9 @@ struct FunctorTraits<R (Receiver::*)(Args...) noexcept>
     : FunctorTraits<R (Receiver::*)(Args...)> {};
 
 template <typename R, typename Receiver, typename... Args>
-struct FunctorTraits<R (Receiver::*)(Args...) const> {
+struct FunctorTraits<R (Receiver::*)(Args...) const>
+    : FunctorTraits<R (Receiver::*)(Args...)> {
   using RunType = R(const Receiver*, Args...);
-  static constexpr bool is_method = true;
-  static constexpr bool is_nullable = true;
-  static constexpr bool is_callback = false;
-  static constexpr bool is_stateless = true;
-
-  template <typename Method, typename ReceiverPtr, typename... RunArgs>
-  static R Invoke(Method method,
-                  ReceiverPtr&& receiver_ptr,
-                  RunArgs&&... args) {
-    return ((*receiver_ptr).*method)(std::forward<RunArgs>(args)...);
-  }
 };
 
 template <typename R, typename Receiver, typename... Args>
@@ -908,8 +857,7 @@ struct InvokeHelper<false, ReturnType, indices...> {
   static inline ReturnType MakeItSo(Functor&& functor,
                                     BoundArgsTuple&& bound,
                                     RunArgs&&... args) {
-    using Traits = MakeFunctorTraits<Functor>;
-    return Traits::Invoke(
+    return MakeFunctorTraits<Functor>::Invoke(
         std::forward<Functor>(functor),
         Unwrap(std::get<indices>(std::forward<BoundArgsTuple>(bound)))...,
         std::forward<RunArgs>(args)...);
@@ -930,8 +878,7 @@ struct InvokeHelper<true, ReturnType, index_target, index_tail...> {
     if (!target) {
       return;
     }
-    using Traits = MakeFunctorTraits<Functor>;
-    Traits::Invoke(
+    MakeFunctorTraits<Functor>::Invoke(
         std::forward<Functor>(functor), target,
         Unwrap(std::get<index_tail>(std::forward<BoundArgsTuple>(bound)))...,
         std::forward<RunArgs>(args)...);
@@ -953,14 +900,14 @@ struct Invoker<StorageType, R(UnboundArgs...)> {
  public:
   static R RunOnce(BindStateBase* base,
                    PassingType<UnboundArgs>... unbound_args) {
-    StorageType* storage = static_cast<StorageType*>(base);
+    auto* const storage = static_cast<StorageType*>(base);
     return RunImpl(std::move(storage->functor_),
                    std::move(storage->bound_args_), Indices(),
                    std::forward<UnboundArgs>(unbound_args)...);
   }
 
   static R Run(BindStateBase* base, PassingType<UnboundArgs>... unbound_args) {
-    const StorageType* storage = static_cast<StorageType*>(base);
+    auto* const storage = static_cast<const StorageType*>(base);
     return RunImpl(storage->functor_, storage->bound_args_, Indices(),
                    std::forward<UnboundArgs>(unbound_args)...);
   }
@@ -1017,7 +964,7 @@ struct Invoker<StorageType, R(UnboundArgs...)> {
   template <typename Functor, typename BoundArgsTuple, size_t... indices>
   static inline R RunImpl(Functor&& functor,
                           BoundArgsTuple&& bound,
-                          std::index_sequence<indices...> seq,
+                          std::index_sequence<indices...>,
                           UnboundArgs&&... unbound_args) {
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
     RawPtrAsanBoundArgTracker raw_ptr_asan_bound_arg_tracker;
@@ -1130,17 +1077,7 @@ struct BindState final : BindStateBase {
       : BindStateBase(invoke_func, &Destroy, &QueryCancellationTraits),
         functor_(std::forward<ForwardFunctor>(functor)),
         bound_args_(std::forward<ForwardBoundArgs>(bound_args)...) {
-    if constexpr (FunctorTraits::is_nullable) {
-      // Check the validity of `functor_` to avoid hard-to-diagnose crashes.
-      // Ideally we'd do this unconditionally, but release builds limit this to
-      // the case of nested callbacks (e.g. `Bind(callback, ...)`) to limit
-      // binary size impact.
-      if constexpr (FunctorTraits::is_callback) {
-        CHECK(!!functor_);
-      } else {
-        DCHECK(!!functor_);
-      }
-    }
+    CheckFunctorIsNonNull();
   }
 
   template <typename ForwardFunctor, typename... ForwardBoundArgs>
@@ -1151,14 +1088,7 @@ struct BindState final : BindStateBase {
       : BindStateBase(invoke_func, &Destroy),
         functor_(std::forward<ForwardFunctor>(functor)),
         bound_args_(std::forward<ForwardBoundArgs>(bound_args)...) {
-    if constexpr (FunctorTraits::is_nullable) {
-      // See above for CHECK/DCHECK rationale.
-      if constexpr (FunctorTraits::is_callback) {
-        CHECK(!!functor_);
-      } else {
-        DCHECK(!!functor_);
-      }
-    }
+    CheckFunctorIsNonNull();
   }
 
   ~BindState() = default;
@@ -1188,6 +1118,20 @@ struct BindState final : BindStateBase {
   bool MaybeValid(std::index_sequence<indices...>) const {
     return CancellationTraits::MaybeValid(functor_,
                                           std::get<indices>(bound_args_)...);
+  }
+
+  void CheckFunctorIsNonNull() const {
+    if constexpr (FunctorTraits::is_nullable) {
+      // Check the validity of `functor_` to avoid hard-to-diagnose crashes.
+      // Ideally we'd do this unconditionally, but release builds limit this to
+      // the case of nested callbacks (e.g. `Bind(callback, ...)`) to limit
+      // binary size impact.
+      if constexpr (FunctorTraits::is_callback) {
+        CHECK(!!functor_);
+      } else {
+        DCHECK(!!functor_);
+      }
+    }
   }
 };
 
@@ -1769,19 +1713,17 @@ struct BindHelper {
       // Store the invoke func into `PolymorphicInvoke` before casting it to
       // `InvokeFuncStorage`, so that we can ensure its type matches to
       // `PolymorphicInvoke`, to which `CallbackType` will cast back.
+      typename CallbackType::PolymorphicInvoke invoke_func;
       using Invoker =
           Invoker<typename ValidatedBindState::Type, UnboundRunType>;
-      using PolymorphicInvoke = typename CallbackType::PolymorphicInvoke;
-      PolymorphicInvoke invoke_func;
       if constexpr (kIsOnce) {
         invoke_func = Invoker::RunOnce;
       } else {
         invoke_func = Invoker::Run;
       }
 
-      using InvokeFuncStorage = BindStateBase::InvokeFuncStorage;
       return CallbackType(ValidatedBindState::Type::Create(
-          reinterpret_cast<InvokeFuncStorage>(invoke_func),
+          reinterpret_cast<BindStateBase::InvokeFuncStorage>(invoke_func),
           std::forward<Functor>(functor), std::forward<Args>(args)...));
     }
   }
