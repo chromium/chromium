@@ -81,7 +81,8 @@ void WebApps::Initialize() {
   }
 
   provider_->on_registry_ready().Post(
-      FROM_HERE, base::BindOnce(&WebApps::InitWebApps, AsWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&WebApps::InitWebApps, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebApps::LoadIcon(const std::string& app_id,
@@ -392,7 +393,7 @@ void WebApps::GetAppShortcutMenuModel(
   if (!web_app->shortcuts_menu_item_infos().empty()) {
     provider()->icon_manager().ReadAllShortcutsMenuIcons(
         app_id, base::BindOnce(&WebApps::OnShortcutsMenuIconsRead,
-                               base::AsWeakPtr<WebApps>(this), app_id,
+                               weak_ptr_factory_.GetWeakPtr(), app_id,
                                std::move(menu_items), std::move(callback)));
   } else {
     std::move(callback).Run(std::move(menu_items));

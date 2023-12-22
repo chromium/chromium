@@ -870,22 +870,22 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
    private:
     // PendingDiscovery yields a single virtual authenticator when requested to
     // do so by calling the result of |GetAddAuthenticatorCallback|.
-    class PendingDiscovery : public device::FidoDeviceDiscovery,
-                             public base::SupportsWeakPtr<PendingDiscovery> {
+    class PendingDiscovery final : public device::FidoDeviceDiscovery {
      public:
       explicit PendingDiscovery(device::FidoTransportProtocol transport)
           : FidoDeviceDiscovery(transport) {}
 
       base::RepeatingClosure GetAddAuthenticatorCallback() {
         return base::BindRepeating(&PendingDiscovery::AddAuthenticator,
-                                   AsWeakPtr());
+                                   weak_ptr_factory_.GetWeakPtr());
       }
 
      protected:
       void StartInternal() override {
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(&PendingDiscovery::NotifyDiscoveryStarted,
-                                      AsWeakPtr(), /*success=*/true));
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      /*success=*/true));
       }
 
      private:
@@ -901,6 +901,8 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
 
         AddDevice(std::make_unique<device::VirtualCtap2Device>(state, config));
       }
+
+      base::WeakPtrFactory<PendingDiscovery> weak_ptr_factory_{this};
     };
 
     const raw_ptr<WebAuthnCableSecondFactor> parent_;

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_BROWSER_SHORTCUTS_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
@@ -30,10 +31,9 @@ class WebAppProvider;
 
 // A shortcut publisher (in the App Service sense) of web app system backed
 // shortcuts where the parent app is the browser.
-class BrowserShortcuts : public apps::ShortcutPublisher,
-                         public base::SupportsWeakPtr<BrowserShortcuts>,
-                         public WebAppInstallManagerObserver,
-                         public WebAppRegistrarObserver {
+class BrowserShortcuts final : public apps::ShortcutPublisher,
+                               public WebAppInstallManagerObserver,
+                               public WebAppRegistrarObserver {
  public:
   explicit BrowserShortcuts(apps::AppServiceProxy* proxy);
   BrowserShortcuts(const BrowserShortcuts&) = delete;
@@ -91,6 +91,8 @@ class BrowserShortcuts : public apps::ShortcutPublisher,
 
   base::ScopedObservation<WebAppRegistrar, WebAppRegistrarObserver>
       registrar_observation_{this};
+
+  base::WeakPtrFactory<BrowserShortcuts> weak_ptr_factor_{this};
 };
 
 }  // namespace web_app

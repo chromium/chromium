@@ -50,9 +50,8 @@ class WebApp;
 class WebAppProvider;
 
 // An app publisher (in the App Service sense) of Web Apps.
-class WebApps : public apps::AppPublisher,
-                public WebAppPublisherHelper::Delegate,
-                public base::SupportsWeakPtr<WebApps> {
+class WebApps final : public apps::AppPublisher,
+                      public WebAppPublisherHelper::Delegate {
  public:
   explicit WebApps(apps::AppServiceProxy* proxy);
   WebApps(const WebApps&) = delete;

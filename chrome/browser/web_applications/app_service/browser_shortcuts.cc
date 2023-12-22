@@ -62,8 +62,8 @@ void BrowserShortcuts::Initialize() {
 
   CHECK(provider_);
   provider_->on_registry_ready().Post(
-      FROM_HERE,
-      base::BindOnce(&BrowserShortcuts::InitBrowserShortcuts, AsWeakPtr()));
+      FROM_HERE, base::BindOnce(&BrowserShortcuts::InitBrowserShortcuts,
+                                weak_ptr_factor_.GetWeakPtr()));
 }
 
 void BrowserShortcuts::InitBrowserShortcuts() {
