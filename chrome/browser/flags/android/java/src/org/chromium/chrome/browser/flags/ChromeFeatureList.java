@@ -356,6 +356,8 @@ public abstract class ChromeFeatureList {
     public static final String RELATED_SEARCHES = "RelatedSearches";
     public static final String RELATED_SEARCHES_ALL_LANGUAGE = "RelatedSearchesAllLanguage";
     public static final String RENAME_JOURNEYS = "RenameJourneys";
+    public static final String REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS =
+            "ReplaceSyncPromosWithSignInPromos";
     public static final String RESTORE_TABS_ON_FRE = "RestoreTabsOnFRE";
     public static final String REQUEST_DESKTOP_SITE_DEFAULTS = "RequestDesktopSiteDefaults";
     public static final String REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL =
