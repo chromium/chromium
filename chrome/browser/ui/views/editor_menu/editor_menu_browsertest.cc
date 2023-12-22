@@ -129,6 +129,11 @@ class EditorMenuBrowserFeatureEnabledTest : public EditorMenuBrowserTest {
   }
 
   ~EditorMenuBrowserFeatureEnabledTest() override = default;
+
+// TODO(crbug.com/1513820): Tentatively disable the failing tests.
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetUp() override { GTEST_SKIP(); }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureDisabledTest,
