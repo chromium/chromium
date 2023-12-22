@@ -9,7 +9,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
@@ -25,11 +24,8 @@ namespace test {
 class ReceiverSetStaticAssertTests {
   // The receiver entry in a receiver set with no context should be the same
   // size as a regular receiver + one machine word for the vtable.
-#if !BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1507521): Remove when msvc::no_unique_address is fixed.
   static_assert(sizeof(Receiver<PingService>) + sizeof(void*) ==
                 sizeof(ReceiverSet<PingService>::ReceiverEntry));
-#endif
 };
 
 namespace {

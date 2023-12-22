@@ -115,8 +115,7 @@
 // https://devblogs.microsoft.com/cppblog/msvc-cpp20-and-the-std-cpp20-switch/#msvc-extensions-and-abi),
 // and clang-cl matches it for ABI compatibility reasons. We need to prefer
 // [[msvc::no_unique_address]] when available if we actually want any effect.
-// TODO(crbug.com/1507521): Fix and re-enable.
-#define NO_UNIQUE_ADDRESS
+#define NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
 #elif HAS_CPP_ATTRIBUTE(no_unique_address)
 #define NO_UNIQUE_ADDRESS [[no_unique_address]]
 #else
