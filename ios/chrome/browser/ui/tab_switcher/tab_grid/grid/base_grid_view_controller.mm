@@ -1795,23 +1795,20 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     return;
   }
 
-  NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
-  DCHECK_LT(index, self.items.count);
+  CHECK_EQ(indexPath.section,
+           [self.diffableDataSource
+               indexForSectionIdentifier:kGridOpenTabsSectionIdentifier]);
 
-  // crbug.com/1163238: In the wild, the above DCHECK condition is hit. This
-  // might be a case of the UI sending touch events after the model has updated.
-  // In this case, just no-op; if the user has to tap again to activate a tab,
-  // that's better than a crash.
-  if (index >= self.items.count) {
-    return;
-  }
-  web::WebStateID itemID = self.items[index].identifier;
+  GridItemIdentifier* itemIdentifier =
+      [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
+
+  CHECK_EQ(GridItemType::Tab, itemIdentifier.type);
+
+  web::WebStateID itemID = itemIdentifier.tabSwitcherItem.identifier;
   [self.mutator userTappedOnItemID:itemID];
   if (_mode == TabGridModeSelection) {
     // Reconfigure the item.
     GridSnapshot* snapshot = self.diffableDataSource.snapshot;
-    GridItemIdentifier* itemIdentifier =
-        [GridItemIdentifier tabIdentifier:self.items[index]];
     [snapshot reconfigureItemsWithIdentifiers:@[ itemIdentifier ]];
     [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
   }
