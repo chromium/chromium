@@ -96,10 +96,13 @@ TEST_F(SourceListDirectiveTest, BasicMatchingStar) {
             CSPCheckResult::Allowed());
   EXPECT_EQ(CSPSourceListAllows(*source_list, *self_source,
                                 KURL(base, "ftp://example.com/")),
-            (CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp()));
+            base::FeatureList::IsEnabled(
+                network::features::kCspStopMatchingWildcardDirectivesToFtp)
+                ? CSPCheckResult::Blocked()
+                : CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp());
   EXPECT_EQ(CSPSourceListAllows(*source_list, *self_source,
                                 KURL(base, "ws://example.com/")),
-            (CSPCheckResult::AllowedOnlyIfWildcardMatchesWs()));
+            CSPCheckResult::AllowedOnlyIfWildcardMatchesWs());
 
   EXPECT_EQ(CSPSourceListAllows(*source_list, *self_source,
                                 KURL(base, "data:https://example.test/")),
@@ -116,6 +119,18 @@ TEST_F(SourceListDirectiveTest, BasicMatchingStar) {
   EXPECT_EQ(CSPSourceListAllows(*source_list, *self_source,
                                 KURL(base, "applewebdata://example.test/")),
             CSPCheckResult::Blocked());
+}
+
+TEST_F(SourceListDirectiveTest, BasicMatchingStarPlusExplicitFtpWs) {
+  network::mojom::blink::CSPSourceListPtr source_list =
+      ParseSourceList("script-src", "* ftp: ws:");
+
+  EXPECT_EQ(CSPSourceListAllows(*source_list, *self_source,
+                                KURL("ftp://example.com/")),
+            CSPCheckResult::Allowed());
+  EXPECT_EQ(CSPSourceListAllows(*source_list, *self_source,
+                                KURL("ws://example.com/")),
+            CSPCheckResult::Allowed());
 }
 
 TEST_F(SourceListDirectiveTest, StarallowsSelf) {

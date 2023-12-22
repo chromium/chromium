@@ -21,6 +21,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -573,7 +574,15 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
       {"ws:*", "ws://example.com", 0, 0},
       {"wss:*", "wss://example.com", 0, 0},
       // Feature should be logged if matched with wildcard.
-      {"*", "ftp://example.com", 0, 1},
+      {
+          "*",
+          "ftp://example.com",
+          0,
+          base::FeatureList::IsEnabled(
+              network::features::kCspStopMatchingWildcardDirectivesToFtp)
+              ? 0
+              : 1,
+      },
       {"*", "ws://example.com", 1, 0},
       {"*", "wss://example.com", 1, 0},
   };

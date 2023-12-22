@@ -37,6 +37,12 @@ using CSPDirectiveName = mojom::CSPDirectiveName;
 using DirectivesMap =
     std::vector<std::pair<std::string_view, std::string_view>>;
 
+namespace features {
+BASE_FEATURE(kCspStopMatchingWildcardDirectivesToFtp,
+             "CspStopMatchingWildcardDirectivesToFtp",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}
+
 namespace {
 
 bool IsDirectiveNameCharacter(char c) {

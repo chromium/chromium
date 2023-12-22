@@ -7,9 +7,11 @@
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/content_security_policy/csp_source.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 
 namespace network {
@@ -246,7 +248,10 @@ CSPCheckResult CheckCSPSourceList(mojom::CSPDirectiveName directive_name,
       return CSPCheckResult::AllowedOnlyIfWildcardMatchesWs();
     }
     if (url.SchemeIs("ftp")) {
-      return CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp();
+      return base::FeatureList::IsEnabled(
+                 features::kCspStopMatchingWildcardDirectivesToFtp)
+                 ? CSPCheckResult::Blocked()
+                 : CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp();
     }
   }
 
