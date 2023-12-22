@@ -141,7 +141,7 @@ class ShellClientData : public test::TestClient::CustomData {
 
  private:
   bool close_called_ = false;
-  const raw_ptr<test::TestClient, ExperimentalAsh> client_;
+  const raw_ptr<test::TestClient> client_;
   std::unique_ptr<wl_surface> surface_;
   std::unique_ptr<xdg_surface> xdg_surface_;
   std::unique_ptr<xdg_toplevel> xdg_toplevel_;

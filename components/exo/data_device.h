@@ -97,9 +97,8 @@ class DataDevice : public DataOfferObserver,
       ui::mojom::DragOperation& output_drag_op,
       std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
-  const raw_ptr<DataDeviceDelegate, DanglingUntriaged | ExperimentalAsh>
-      delegate_;
-  const raw_ptr<Seat, ExperimentalAsh> seat_;
+  const raw_ptr<DataDeviceDelegate, DanglingUntriaged> delegate_;
+  const raw_ptr<Seat> seat_;
   std::unique_ptr<ScopedDataOffer> data_offer_;
   std::unique_ptr<ScopedSurface> focused_surface_;
 

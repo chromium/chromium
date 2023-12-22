@@ -38,7 +38,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) WindowInfo {
 
   WindowInfo* Clone();
 
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window;
+  raw_ptr<aura::Window, DanglingUntriaged> window;
 
   // Index in MruWindowTracker to restore window stack. A lower index
   // indicates a more recently used window.

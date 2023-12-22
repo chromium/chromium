@@ -29,10 +29,10 @@ struct WaylandDataDeviceManager {
 
   // Owned by WaylandServerController, which always outlives
   // wl_data_device_manager.
-  const raw_ptr<Display, ExperimentalAsh> display;
+  const raw_ptr<Display> display;
 
   // Owned by Server, which always outlives wl_data_device_manager.
-  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker;
+  const raw_ptr<SerialTracker> serial_tracker;
 };
 
 void bind_data_device_manager(wl_client* client,

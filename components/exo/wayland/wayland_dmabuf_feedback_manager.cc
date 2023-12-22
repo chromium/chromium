@@ -262,9 +262,8 @@ class WaylandDmabufSurfaceFeedback : public SurfaceObserver {
   }
 
  private:
-  const raw_ptr<WaylandDmabufFeedbackManager, ExperimentalAsh>
-      feedback_manager_;
-  const raw_ptr<Surface, ExperimentalAsh> surface_;
+  const raw_ptr<WaylandDmabufFeedbackManager> feedback_manager_;
+  const raw_ptr<Surface> surface_;
   std::unique_ptr<WaylandDmabufFeedback> const feedback_;
   std::set<WaylandDmabufSurfaceFeedbackResourceWrapper*> surface_feedback_refs_;
 };
@@ -294,8 +293,8 @@ class WaylandDmabufSurfaceFeedbackResourceWrapper {
   void SetInert() { surface_feedback_ = nullptr; }
 
  private:
-  raw_ptr<WaylandDmabufSurfaceFeedback, ExperimentalAsh> surface_feedback_;
-  raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  raw_ptr<WaylandDmabufSurfaceFeedback> surface_feedback_;
+  raw_ptr<wl_resource> resource_;
 };
 
 WaylandDmabufSurfaceFeedback::~WaylandDmabufSurfaceFeedback() {

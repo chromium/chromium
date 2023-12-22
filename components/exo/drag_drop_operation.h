@@ -124,7 +124,7 @@ class DragDropOperation : public DataSourceObserver,
   std::unique_ptr<ScopedSurface> origin_;
   gfx::PointF drag_start_point_;
   std::unique_ptr<ui::OSExchangeData> os_exchange_data_;
-  raw_ptr<ash::DragDropController, ExperimentalAsh> drag_drop_controller_;
+  raw_ptr<ash::DragDropController> drag_drop_controller_;
 
   base::RepeatingClosure counter_;
 
@@ -143,7 +143,7 @@ class DragDropOperation : public DataSourceObserver,
 
   ui::mojom::DragEventSource event_source_;
 
-  raw_ptr<ExtendedDragSource, ExperimentalAsh> extended_drag_source_;
+  raw_ptr<ExtendedDragSource> extended_drag_source_;
 
   // TODO(crbug.com/1371493): Remove this once the issue is fixed.
   base::OneShotTimer start_drag_drop_timer_;

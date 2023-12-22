@@ -25,10 +25,10 @@ struct WaylandTextInputManager {
   WaylandTextInputManager& operator=(const WaylandTextInputManager&) = delete;
 
   // Owned by Seat, which also always outlives zwp_text_input_manager.
-  const raw_ptr<const XkbTracker, ExperimentalAsh> xkb_tracker;
+  const raw_ptr<const XkbTracker> xkb_tracker;
 
   // Owned by Server, which always outlives zwp_text_input_manager.
-  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker;
+  const raw_ptr<SerialTracker> serial_tracker;
 };
 
 struct WaylandTextInputExtension {};

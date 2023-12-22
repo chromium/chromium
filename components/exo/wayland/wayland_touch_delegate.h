@@ -46,10 +46,10 @@ class WaylandTouchDelegate : public WaylandInputDelegate, public TouchDelegate {
   wl_client* client() const;
 
   // The touch resource associated with the touch.
-  const raw_ptr<wl_resource, ExperimentalAsh> touch_resource_;
+  const raw_ptr<wl_resource> touch_resource_;
 
   // Owned by Server, which always outlives this delegate.
-  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
+  const raw_ptr<SerialTracker> serial_tracker_;
 };
 
 }  // namespace wayland

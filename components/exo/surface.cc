@@ -251,7 +251,7 @@ class CustomWindowDelegate : public aura::WindowDelegate {
   }
 
  private:
-  const raw_ptr<Surface, ExperimentalAsh> surface_;
+  const raw_ptr<Surface> surface_;
 };
 
 class CustomWindowTargeter : public aura::WindowTargeter {

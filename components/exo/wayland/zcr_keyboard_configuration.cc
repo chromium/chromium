@@ -242,8 +242,8 @@ class WaylandKeyboardDeviceConfigurationDelegate
 
   wl_client* client() const { return wl_resource_get_client(resource_); }
 
-  raw_ptr<wl_resource, ExperimentalAsh> resource_;
-  raw_ptr<Keyboard, ExperimentalAsh> keyboard_;
+  raw_ptr<wl_resource> resource_;
+  raw_ptr<Keyboard> keyboard_;
 
   // List of acknowledged installed keyboard layouts. Used to determine if there
   // are new keyboard layouts installed.

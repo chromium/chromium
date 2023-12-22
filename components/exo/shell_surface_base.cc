@@ -254,7 +254,7 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
   }
 
  private:
-  const raw_ptr<ShellSurfaceBase, ExperimentalAsh> shell_surface_;
+  const raw_ptr<ShellSurfaceBase> shell_surface_;
 };
 
 class CustomClientView : public views::ClientView {
@@ -375,8 +375,8 @@ class CustomWindowTargeter : public aura::WindowTargeter {
     return false;
   }
 
-  raw_ptr<ShellSurfaceBase, ExperimentalAsh> shell_surface_;
-  const raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> widget_;
+  raw_ptr<ShellSurfaceBase> shell_surface_;
+  const raw_ptr<views::Widget, DanglingUntriaged> widget_;
 };
 
 void CloseAllShellSurfaceTransientChildren(aura::Window* window) {

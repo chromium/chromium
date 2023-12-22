@@ -797,7 +797,7 @@ class ZAuraOutputTest : public test::ExoTestBase {
     std::unique_ptr<WaylandDisplayOutput> output;
     std::unique_ptr<WaylandDisplayHandler> handler;
 
-    raw_ptr<wl_client, ExperimentalAsh> client;
+    raw_ptr<wl_client> client;
 
     void CreateAuraOutput() {
       DCHECK(!aura_output);
@@ -820,7 +820,7 @@ class ZAuraOutputTest : public test::ExoTestBase {
  private:
   std::vector<std::unique_ptr<OutputHolder>> output_holder_list_;
   std::unique_ptr<wl_display, WlDisplayDeleter> wayland_display_;
-  raw_ptr<wl_client, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<wl_client> client_ = nullptr;
 };
 
 TEST_F(ZAuraOutputTest, SendInsets) {

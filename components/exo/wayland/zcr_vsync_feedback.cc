@@ -46,7 +46,7 @@ class VSyncTiming final : public VSyncTimingManager::Observer {
 
  private:
   // The VSync timing resource.
-  const raw_ptr<wl_resource, ExperimentalAsh> timing_resource_;
+  const raw_ptr<wl_resource> timing_resource_;
 };
 
 void vsync_timing_destroy(wl_client* client, wl_resource* resource) {

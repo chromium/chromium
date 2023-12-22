@@ -37,7 +37,7 @@ struct InstanceParams {
   ~InstanceParams();
 
   const std::string app_id;
-  raw_ptr<aura::Window, ExperimentalAsh> window;
+  raw_ptr<aura::Window> window;
   absl::optional<std::string> launch_id;
   absl::optional<std::pair<InstanceState, base::Time>> state;
   absl::optional<content::BrowserContext*> browser_context;

@@ -71,7 +71,7 @@ class VSyncTimingManager : public viz::mojom::VSyncParameterObserver,
   base::TimeDelta last_interval_;
   base::TimeTicks last_timebase_;
 
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   std::vector<raw_ptr<Observer, VectorExperimental>> observers_;
 

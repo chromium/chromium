@@ -58,10 +58,10 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   wl_client* client() const;
 
   // The keyboard resource associated with the keyboard.
-  const raw_ptr<wl_resource, ExperimentalAsh> keyboard_resource_;
+  const raw_ptr<wl_resource> keyboard_resource_;
 
   // Owned by Server, which always outlives this delegate.
-  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
+  const raw_ptr<SerialTracker> serial_tracker_;
 
   // Tracks the latest modifiers.
   KeyboardModifiers current_modifiers_{};

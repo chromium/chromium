@@ -308,8 +308,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   Orientation orientation_ = Orientation::LANDSCAPE;
   Orientation expected_orientation_ = Orientation::LANDSCAPE;
 
-  raw_ptr<ash::ClientControlledState, ExperimentalAsh>
-      client_controlled_state_ = nullptr;
+  raw_ptr<ash::ClientControlledState> client_controlled_state_ = nullptr;
 
   chromeos::WindowStateType pending_window_state_ =
       chromeos::WindowStateType::kNormal;

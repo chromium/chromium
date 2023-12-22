@@ -123,7 +123,7 @@ class TestEventHandler : public ui::EventHandler {
         ->FocusWindow(focus_window_);
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> focus_window_;
+  raw_ptr<aura::Window> focus_window_;
 };
 
 // Verifies that switching desks via alt-tab doesn't prevent Seat from receiving

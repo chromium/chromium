@@ -153,8 +153,8 @@ class ScopedDataSource {
   DataSource* get() { return data_source_; }
 
  private:
-  const raw_ptr<DataSource, ExperimentalAsh> data_source_;
-  const raw_ptr<DataSourceObserver, ExperimentalAsh> observer_;
+  const raw_ptr<DataSource> data_source_;
+  const raw_ptr<DataSourceObserver> observer_;
 };
 
 }  // namespace exo

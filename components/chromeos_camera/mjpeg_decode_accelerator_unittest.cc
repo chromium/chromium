@@ -483,7 +483,7 @@ enum ClientState {
 };
 
 struct DecodeTask {
-  raw_ptr<const ParsedJpegImage, ExperimentalAsh> image;
+  raw_ptr<const ParsedJpegImage> image;
   gfx::Size target_size;
 
   DecodeTask(const ParsedJpegImage* im)
@@ -544,7 +544,7 @@ class JpegClient : public MjpegDecodeAccelerator::Client {
   double GetMeanAbsoluteDifference();
 
   // JpegClient doesn't own |tasks_|.
-  const raw_ref<const std::vector<DecodeTask>, ExperimentalAsh> tasks_;
+  const raw_ref<const std::vector<DecodeTask>> tasks_;
 
   ClientState state_;
 

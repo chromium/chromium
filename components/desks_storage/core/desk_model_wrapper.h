@@ -71,10 +71,9 @@ class DeskModelWrapper : public DeskModel {
   void OnDeleteAllEntries(DeskModel::DeleteEntryCallback callback,
                           desks_storage::DeskModel::DeleteEntryStatus status);
 
-  raw_ptr<desks_storage::DeskModel, ExperimentalAsh>
-      save_and_recall_desks_model_;
+  raw_ptr<desks_storage::DeskModel> save_and_recall_desks_model_;
 
-  raw_ptr<desks_storage::DeskSyncBridge, ExperimentalAsh> desk_template_model_;
+  raw_ptr<desks_storage::DeskSyncBridge> desk_template_model_;
 
   base::WeakPtrFactory<DeskModelWrapper> weak_ptr_factory_{this};
 };

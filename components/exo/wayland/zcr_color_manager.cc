@@ -196,8 +196,8 @@ class ColorManagerSurface final : public SurfaceObserver {
     scoped_surface_.reset();
   }
 
-  raw_ptr<Server, ExperimentalAsh> server_;
-  raw_ptr<wl_resource, ExperimentalAsh> color_manager_surface_resource_;
+  raw_ptr<Server> server_;
+  raw_ptr<wl_resource> color_manager_surface_resource_;
   std::unique_ptr<ScopedSurface> scoped_surface_;
 };
 
@@ -259,9 +259,9 @@ class ColorManagerObserver : public WaylandDisplayObserver {
   void SendActiveDisplay() override {}
 
  private:
-  raw_ptr<WaylandDisplayHandler, ExperimentalAsh> wayland_display_handler_;
-  const raw_ptr<wl_resource, ExperimentalAsh> color_management_output_resource_;
-  raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh> output_resource_;
+  raw_ptr<WaylandDisplayHandler> wayland_display_handler_;
+  const raw_ptr<wl_resource> color_management_output_resource_;
+  raw_ptr<wl_resource, DanglingUntriaged> output_resource_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

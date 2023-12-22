@@ -652,7 +652,7 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
   const char kForcedOffGroup[] = "ForcedOff";
 
   struct {
-    const raw_ref<const base::Feature, ExperimentalAsh> feature;
+    const raw_ref<const base::Feature> feature;
     const char* enable_features_command_line;
     const char* disable_features_command_line;
     OneHundredPercentGroup one_hundred_percent_group;
@@ -664,54 +664,52 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
       // Check what happens without and command-line forcing flags - that the
       // |one_hundred_percent_group| gets correctly selected and does the right
       // thing w.r.t. to affecting the feature / activating the trial.
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault), "", "", DEFAULT_GROUP,
-       kDefaultGroup, false, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault), "", "", ENABLE_GROUP,
-       kEnabledGroup, true, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault), "", "", DISABLE_GROUP,
-       kDisabledGroup, false, true},
+      {ToRawRef(kFeatureOffByDefault), "", "", DEFAULT_GROUP, kDefaultGroup,
+       false, true},
+      {ToRawRef(kFeatureOffByDefault), "", "", ENABLE_GROUP, kEnabledGroup,
+       true, true},
+      {ToRawRef(kFeatureOffByDefault), "", "", DISABLE_GROUP, kDisabledGroup,
+       false, true},
 
       // Do the same as above, but for kFeatureOnByDefault feature.
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), "", "", DEFAULT_GROUP,
-       kDefaultGroup, true, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), "", "", ENABLE_GROUP,
-       kEnabledGroup, true, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), "", "", DISABLE_GROUP,
-       kDisabledGroup, false, true},
+      {ToRawRef(kFeatureOnByDefault), "", "", DEFAULT_GROUP, kDefaultGroup,
+       true, true},
+      {ToRawRef(kFeatureOnByDefault), "", "", ENABLE_GROUP, kEnabledGroup, true,
+       true},
+      {ToRawRef(kFeatureOnByDefault), "", "", DISABLE_GROUP, kDisabledGroup,
+       false, true},
 
       // Test forcing each feature on and off through the command-line and that
       // the correct associated experiment gets chosen.
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault),
-       kFeatureOffByDefault.name, "", DEFAULT_GROUP, kForcedOnGroup, true,
-       true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault), "",
-       kFeatureOffByDefault.name, DEFAULT_GROUP, kForcedOffGroup, false, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), kFeatureOnByDefault.name,
-       "", DEFAULT_GROUP, kForcedOnGroup, true, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), "",
-       kFeatureOnByDefault.name, DEFAULT_GROUP, kForcedOffGroup, false, true},
+      {ToRawRef(kFeatureOffByDefault), kFeatureOffByDefault.name, "",
+       DEFAULT_GROUP, kForcedOnGroup, true, true},
+      {ToRawRef(kFeatureOffByDefault), "", kFeatureOffByDefault.name,
+       DEFAULT_GROUP, kForcedOffGroup, false, true},
+      {ToRawRef(kFeatureOnByDefault), kFeatureOnByDefault.name, "",
+       DEFAULT_GROUP, kForcedOnGroup, true, true},
+      {ToRawRef(kFeatureOnByDefault), "", kFeatureOnByDefault.name,
+       DEFAULT_GROUP, kForcedOffGroup, false, true},
 
       // Check that even if a feature should be enabled or disabled based on the
       // the experiment probability weights, the forcing flag association still
       // takes precedence. This is 4 cases as above, but with different values
       // for |one_hundred_percent_group|.
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault),
-       kFeatureOffByDefault.name, "", ENABLE_GROUP, kForcedOnGroup, true, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault), "",
-       kFeatureOffByDefault.name, ENABLE_GROUP, kForcedOffGroup, false, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), kFeatureOnByDefault.name,
-       "", ENABLE_GROUP, kForcedOnGroup, true, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), "",
-       kFeatureOnByDefault.name, ENABLE_GROUP, kForcedOffGroup, false, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault),
-       kFeatureOffByDefault.name, "", DISABLE_GROUP, kForcedOnGroup, true,
-       true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault), "",
-       kFeatureOffByDefault.name, DISABLE_GROUP, kForcedOffGroup, false, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), kFeatureOnByDefault.name,
-       "", DISABLE_GROUP, kForcedOnGroup, true, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), "",
-       kFeatureOnByDefault.name, DISABLE_GROUP, kForcedOffGroup, false, true},
+      {ToRawRef(kFeatureOffByDefault), kFeatureOffByDefault.name, "",
+       ENABLE_GROUP, kForcedOnGroup, true, true},
+      {ToRawRef(kFeatureOffByDefault), "", kFeatureOffByDefault.name,
+       ENABLE_GROUP, kForcedOffGroup, false, true},
+      {ToRawRef(kFeatureOnByDefault), kFeatureOnByDefault.name, "",
+       ENABLE_GROUP, kForcedOnGroup, true, true},
+      {ToRawRef(kFeatureOnByDefault), "", kFeatureOnByDefault.name,
+       ENABLE_GROUP, kForcedOffGroup, false, true},
+      {ToRawRef(kFeatureOffByDefault), kFeatureOffByDefault.name, "",
+       DISABLE_GROUP, kForcedOnGroup, true, true},
+      {ToRawRef(kFeatureOffByDefault), "", kFeatureOffByDefault.name,
+       DISABLE_GROUP, kForcedOffGroup, false, true},
+      {ToRawRef(kFeatureOnByDefault), kFeatureOnByDefault.name, "",
+       DISABLE_GROUP, kForcedOnGroup, true, true},
+      {ToRawRef(kFeatureOnByDefault), "", kFeatureOnByDefault.name,
+       DISABLE_GROUP, kForcedOffGroup, false, true},
   };
 
   for (size_t i = 0; i < std::size(test_cases); i++) {

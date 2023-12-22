@@ -122,7 +122,7 @@ class Server : public display::DisplayManagerObserver {
   // by clients to connect to the display server.
   bool AddSocket(const std::string& name);
 
-  const raw_ptr<Display, ExperimentalAsh> display_;
+  const raw_ptr<Display> display_;
   std::unique_ptr<SecurityDelegate> security_delegate_;
   // Deleting wl_display depends on SerialTracker.
   std::unique_ptr<SerialTracker> serial_tracker_;

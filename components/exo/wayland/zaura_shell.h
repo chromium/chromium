@@ -114,8 +114,8 @@ class AuraSurface : public SurfaceObserver,
       const aura::Window::OcclusionState occlusion_state);
 
  private:
-  raw_ptr<Surface, ExperimentalAsh> surface_;
-  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  raw_ptr<Surface> surface_;
+  const raw_ptr<wl_resource> resource_;
 
   // Tooltip text sent from Lacros.
   // This is kept here since it should out-live ShowTooltip() scope.
@@ -186,12 +186,11 @@ class AuraToplevel {
   void SetCanFullscreen(bool can_fullscreen);
   void SetShadowCornersRadii(const gfx::RoundedCornersF& radii);
 
-  raw_ptr<ShellSurface, DanglingUntriaged | ExperimentalAsh> shell_surface_;
-  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
-  const raw_ptr<SerialTracker, ExperimentalAsh> rotation_serial_tracker_;
-  raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh>
-      xdg_toplevel_resource_;
-  raw_ptr<wl_resource, ExperimentalAsh> aura_toplevel_resource_;
+  raw_ptr<ShellSurface, DanglingUntriaged> shell_surface_;
+  const raw_ptr<SerialTracker> serial_tracker_;
+  const raw_ptr<SerialTracker> rotation_serial_tracker_;
+  raw_ptr<wl_resource, DanglingUntriaged> xdg_toplevel_resource_;
+  raw_ptr<wl_resource> aura_toplevel_resource_;
   bool supports_window_bounds_ = false;
 
   base::WeakPtrFactory<AuraToplevel> weak_ptr_factory_{this};
@@ -235,8 +234,8 @@ class AuraOutput : public WaylandDisplayObserver {
   virtual void SendLogicalTransform(int32_t transform);
 
  private:
-  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
-  raw_ptr<WaylandDisplayHandler, ExperimentalAsh> display_handler_;
+  const raw_ptr<wl_resource> resource_;
+  raw_ptr<WaylandDisplayHandler> display_handler_;
 };
 
 }  // namespace wayland

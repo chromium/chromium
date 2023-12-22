@@ -36,10 +36,9 @@ class ClientData : public test::TestClient::CustomData {
   std::unique_ptr<wl_surface> child_wl_surface;
   std::unique_ptr<wl_subsurface> child_wl_subsurface;
 
-  raw_ptr<augmented_surface, DanglingUntriaged | ExperimentalAsh>
-      augmented_surface = nullptr;
-  raw_ptr<augmented_sub_surface, DanglingUntriaged | ExperimentalAsh>
-      augmented_sub_surface = nullptr;
+  raw_ptr<augmented_surface, DanglingUntriaged> augmented_surface = nullptr;
+  raw_ptr<augmented_sub_surface, DanglingUntriaged> augmented_sub_surface =
+      nullptr;
 };
 
 using SurfaceAugmenterTest = test::WaylandServerTest;

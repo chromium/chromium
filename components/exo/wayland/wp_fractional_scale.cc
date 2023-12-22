@@ -62,7 +62,7 @@ class FractionalScale : public SurfaceObserver {
   }
 
  private:
-  raw_ptr<Surface, ExperimentalAsh> surface_;
+  raw_ptr<Surface> surface_;
   const raw_ptr<wl_resource> resource_;
 };
 

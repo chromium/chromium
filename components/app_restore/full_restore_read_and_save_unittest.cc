@@ -118,7 +118,7 @@ class FullRestoreReadHandlerTestApi {
   }
 
  private:
-  raw_ptr<FullRestoreReadHandler, ExperimentalAsh> read_handler_;
+  raw_ptr<FullRestoreReadHandler> read_handler_;
 };
 
 class FullRestoreSaveHandlerTestApi {
@@ -204,7 +204,7 @@ class FullRestoreSaveHandlerTestApi {
     return save_handler_->arc_save_handler_.get();
   }
 
-  raw_ptr<FullRestoreSaveHandler, ExperimentalAsh> save_handler_;
+  raw_ptr<FullRestoreSaveHandler> save_handler_;
 };
 
 // Unit tests for restore data.

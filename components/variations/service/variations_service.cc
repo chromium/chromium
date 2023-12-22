@@ -321,7 +321,7 @@ class DeviceVariationsRestrictionByPolicyApplicator {
     }
   }
 
-  const raw_ptr<PrefService, ExperimentalAsh> policy_pref_service_;
+  const raw_ptr<PrefService> policy_pref_service_;
 
   // Watch the changes of the variations prefs.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

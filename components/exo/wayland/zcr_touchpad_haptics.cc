@@ -63,7 +63,7 @@ class WaylandTouchpadHapticsDelegate {
   }
 
  private:
-  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  const raw_ptr<wl_resource> resource_;
   absl::optional<bool> last_activation_state_;
 };
 

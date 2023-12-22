@@ -448,11 +448,9 @@ class ExitNotifier : public ui::EventHandler,
       exit_popup_->Hide(animate);
   }
 
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
-  raw_ptr<views::Widget, ExperimentalAsh> fullscreen_esc_notification_ =
-      nullptr;
-  raw_ptr<views::Widget, ExperimentalAsh> pointer_capture_notification_ =
-      nullptr;
+  const raw_ptr<aura::Window> window_;
+  raw_ptr<views::Widget> fullscreen_esc_notification_ = nullptr;
+  raw_ptr<views::Widget> pointer_capture_notification_ = nullptr;
   bool want_pointer_capture_notification_ = false;
   bool pointer_is_captured_ = false;
   std::unique_ptr<FullscreenControlPopup> exit_popup_;

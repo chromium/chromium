@@ -38,7 +38,7 @@ class TestBuffer {
 
  private:
   std::unique_ptr<wl_buffer> resource_;
-  raw_ptr<BufferListener, ExperimentalAsh> listener_ = nullptr;
+  raw_ptr<BufferListener> listener_ = nullptr;
 };
 
 }  // namespace exo::wayland::test

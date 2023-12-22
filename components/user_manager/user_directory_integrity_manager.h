@@ -52,7 +52,7 @@ class USER_MANAGER_EXPORT UserDirectoryIntegrityManager {
  private:
   absl::optional<std::string> GetMisconfiguredUserEmail();
 
-  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  const raw_ptr<PrefService> local_state_;
 };
 
 }  // namespace user_manager

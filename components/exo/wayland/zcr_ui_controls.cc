@@ -38,8 +38,8 @@ struct UiControls::UiControlsState {
   UiControlsState(const UiControlsState&) = delete;
   UiControlsState& operator=(const UiControlsState&) = delete;
 
-  raw_ptr<Server, ExperimentalAsh> server_;
-  const raw_ptr<const Seat, ExperimentalAsh> seat_;
+  raw_ptr<Server> server_;
+  const raw_ptr<const Seat> seat_;
 
   // Keeps track of the IDs of pending requests for that we still need to emit
   // request_processed events. This is per wl_resource so that we can drop

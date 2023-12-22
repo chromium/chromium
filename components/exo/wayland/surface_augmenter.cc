@@ -102,7 +102,7 @@ class AugmentedSurface : public SurfaceObserver {
   }
 
  private:
-  raw_ptr<Surface, ExperimentalAsh> surface_;
+  raw_ptr<Surface> surface_;
 };
 
 void augmented_surface_destroy(wl_client* client, wl_resource* resource) {
@@ -270,7 +270,7 @@ class AugmentedSubSurface : public SubSurfaceObserver {
   }
 
  private:
-  raw_ptr<SubSurface, ExperimentalAsh> sub_surface_;
+  raw_ptr<SubSurface> sub_surface_;
 };
 
 void augmented_sub_surface_destroy(wl_client* client, wl_resource* resource) {

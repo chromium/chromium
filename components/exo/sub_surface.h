@@ -116,8 +116,8 @@ class SubSurface : public SurfaceDelegate,
   void RemoveSubSurfaceObserver(SubSurfaceObserver* observer);
 
  private:
-  raw_ptr<Surface, ExperimentalAsh> surface_;
-  raw_ptr<Surface, ExperimentalAsh> parent_;
+  raw_ptr<Surface> surface_;
+  raw_ptr<Surface> parent_;
   bool is_synchronized_ = true;
 
   // Surface observer list. Surface does not own the observers.

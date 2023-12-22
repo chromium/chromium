@@ -1448,7 +1448,7 @@ class WaylandAuraShell : public ash::DesksController::Observer,
 
   // The aura shell resource associated with observer.
   const raw_ptr<wl_resource, DanglingUntriaged> aura_shell_resource_;
-  const raw_ptr<Seat, ExperimentalAsh> seat_;
+  const raw_ptr<Seat> seat_;
 
   bool last_has_focused_client_ = false;
 

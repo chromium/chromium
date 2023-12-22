@@ -219,31 +219,28 @@ class Pointer : public SurfaceTreeHost,
                            const gfx::PointF& location_in_target);
 
   // The delegate instance that all events are dispatched to.
-  const raw_ptr<PointerDelegate, DanglingUntriaged | ExperimentalAsh> delegate_;
+  const raw_ptr<PointerDelegate, DanglingUntriaged> delegate_;
 
-  const raw_ptr<Seat, ExperimentalAsh> seat_;
+  const raw_ptr<Seat> seat_;
 
   // The delegate instance that all pinch related events are dispatched to.
-  raw_ptr<PointerGesturePinchDelegate, ExperimentalAsh> pinch_delegate_ =
-      nullptr;
+  raw_ptr<PointerGesturePinchDelegate> pinch_delegate_ = nullptr;
 
   // The delegate instance that relative movement events are dispatched to.
-  raw_ptr<RelativePointerDelegate, ExperimentalAsh> relative_pointer_delegate_ =
-      nullptr;
+  raw_ptr<RelativePointerDelegate> relative_pointer_delegate_ = nullptr;
 
   // Delegate that owns the currently granted pointer lock, if any.
-  raw_ptr<PointerConstraintDelegate, ExperimentalAsh>
-      pointer_constraint_delegate_ = nullptr;
+  raw_ptr<PointerConstraintDelegate> pointer_constraint_delegate_ = nullptr;
 
   // All delegates currently requesting a pointer locks, whether granted or
   // not. Only one such request may exist per surface; others will be denied.
   base::flat_map<Surface*, PointerConstraintDelegate*> constraints_;
 
   // The delegate instance that stylus/pen events are dispatched to.
-  raw_ptr<PointerStylusDelegate, ExperimentalAsh> stylus_delegate_ = nullptr;
+  raw_ptr<PointerStylusDelegate> stylus_delegate_ = nullptr;
 
   // The current focus surface for the pointer.
-  raw_ptr<Surface, ExperimentalAsh> focus_surface_ = nullptr;
+  raw_ptr<Surface> focus_surface_ = nullptr;
 
   // The location of the pointer in the root window.
   gfx::PointF location_in_root_;
@@ -260,7 +257,7 @@ class Pointer : public SurfaceTreeHost,
 
   // The window with pointer capture. Pointer capture is enabled if and only if
   // this is not null.
-  raw_ptr<aura::Window, ExperimentalAsh> capture_window_ = nullptr;
+  raw_ptr<aura::Window> capture_window_ = nullptr;
 
   // True if this pointer is permitted to be captured.
   //
