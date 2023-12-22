@@ -81,37 +81,48 @@ class AuthFlowsLoginTestBase : public LoginManagerTest {
                                                   embedded_test_server()};
 };
 
+// ----------------------------------------------------------
+
 class AuthFlowsLoginReauthTest : public AuthFlowsLoginTestBase {
  public:
   AuthFlowsLoginReauthTest()
       : AuthFlowsLoginTestBase(/* require_reauth */ true) {}
   ~AuthFlowsLoginReauthTest() override = default;
+
+  void TriggerUserOnlineAuth(const LoginManagerMixin::TestUserInfo user,
+                             const std::string& password) {
+    ConfigureFakeGaiaFor(user);
+
+    test::OnLoginScreen()->SelectUserPod(user.account_id);
+    auto gaia = test::AwaitGaiaSigninUI();
+
+    gaia->ReauthConfirmEmail(user.account_id);
+    gaia->TypePassword(password);
+    gaia->ContinueLogin();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest, GaiaPasswordNotChanged) {
+  const auto& user = with_gaia_pw_;
+
+  TriggerUserOnlineAuth(user, test::kGaiaPassword);
+
+  login_mixin_.WaitForActiveSession();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest,
+                       GaiaPasswordRecoveryNotChanged) {
   const auto& user = with_gaia_pw_recovery_;
-  ConfigureFakeGaiaFor(user);
 
-  test::OnLoginScreen()->SelectUserPod(user.account_id);
-  auto gaia = test::AwaitGaiaSigninUI();
-
-  gaia->ReauthConfirmEmail(user.account_id);
-  gaia->TypePassword(test::kGaiaPassword);
-  gaia->ContinueLogin();
+  TriggerUserOnlineAuth(user, test::kGaiaPassword);
 
   login_mixin_.WaitForActiveSession();
 }
 
 IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest, GaiaPasswordChangedRecovery) {
   const auto& user = with_gaia_pw_recovery_;
-  ConfigureFakeGaiaFor(user);
 
-  test::OnLoginScreen()->SelectUserPod(user.account_id);
-  auto gaia = test::AwaitGaiaSigninUI();
-
-  gaia->ReauthConfirmEmail(user.account_id);
-  gaia->TypePassword(test::kNewPassword);
-  gaia->ContinueLogin();
+  TriggerUserOnlineAuth(user, test::kNewPassword);
 
   auto pw_updated = test::AwaitPasswordUpdatedUI();
   pw_updated->ExpectPasswordUpdateState();
@@ -122,14 +133,99 @@ IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest, GaiaPasswordChangedRecovery) {
 
 IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest, GaiaPasswordChangedManual) {
   const auto& user = with_gaia_pw_;
-  ConfigureFakeGaiaFor(user);
 
-  test::OnLoginScreen()->SelectUserPod(user.account_id);
-  auto gaia = test::AwaitGaiaSigninUI();
+  TriggerUserOnlineAuth(user, test::kNewPassword);
 
-  gaia->ReauthConfirmEmail(user.account_id);
-  gaia->TypePassword(test::kNewPassword);
-  gaia->ContinueLogin();
+  auto pw_changed = test::AwaitPasswordChangedUI();
+  pw_changed->TypePreviousPassword(test::kGaiaPassword);
+  pw_changed->SubmitPreviousPassword();
+
+  auto pw_updated = test::AwaitPasswordUpdatedUI();
+  pw_updated->ExpectPasswordUpdateState();
+  pw_updated->ConfirmPasswordUpdate();
+
+  login_mixin_.WaitForActiveSession();
+}
+
+// ----------------------------------------------------------
+
+class AuthFlowsLoginAddExistingUserTest : public AuthFlowsLoginTestBase {
+ public:
+  AuthFlowsLoginAddExistingUserTest()
+      : AuthFlowsLoginTestBase(/* require_reauth */ false) {}
+  ~AuthFlowsLoginAddExistingUserTest() override = default;
+
+  void TriggerUserOnlineAuth(const LoginManagerMixin::TestUserInfo user,
+                             const std::string& password) {
+    ConfigureFakeGaiaFor(user);
+
+    test::OnLoginScreen()->AddNewUser();
+    auto new_user = test::AwaitNewUserSelectionUI();
+
+    new_user->ChooseConsumerUser();
+    new_user->AwaitNextButton();
+    new_user->Next();
+
+    auto gaia = test::AwaitGaiaSigninUI();
+
+    gaia->SubmitFullAuthEmail(user.account_id);
+    gaia->TypePassword(password);
+    gaia->ContinueLogin();
+  }
+
+  void ExpectReauthForRapt(const LoginManagerMixin::TestUserInfo user,
+                           const std::string& password) {
+    auto reauth = test::AwaitRecoveryReauthUI();
+    reauth->ConfirmReauth();
+
+    auto gaia = test::AwaitGaiaSigninUI();
+
+    gaia->ReauthConfirmEmail(user.account_id);
+    gaia->TypePassword(password);
+    gaia->ContinueLogin();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginAddExistingUserTest,
+                       GaiaPasswordNotChanged) {
+  const auto& user = with_gaia_pw_;
+
+  TriggerUserOnlineAuth(user, test::kGaiaPassword);
+
+  login_mixin_.WaitForActiveSession();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginAddExistingUserTest,
+                       GaiaPassworRecoverydNotChanged) {
+  const auto& user = with_gaia_pw_recovery_;
+
+  TriggerUserOnlineAuth(user, test::kGaiaPassword);
+
+  login_mixin_.WaitForActiveSession();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginAddExistingUserTest,
+                       GaiaPasswordChangedRecovery) {
+  const auto& user = with_gaia_pw_recovery_;
+
+  TriggerUserOnlineAuth(user, test::kNewPassword);
+
+  // Add new user flow does not provide RAPT token required for recovery.
+  // Expect a request to reauthenticate and proceed with recovery.
+  ExpectReauthForRapt(user, test::kNewPassword);
+
+  auto pw_updated = test::AwaitPasswordUpdatedUI();
+  pw_updated->ExpectPasswordUpdateState();
+  pw_updated->ConfirmPasswordUpdate();
+
+  login_mixin_.WaitForActiveSession();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginAddExistingUserTest,
+                       GaiaPasswordChangedManual) {
+  const auto& user = with_gaia_pw_;
+
+  TriggerUserOnlineAuth(user, test::kNewPassword);
 
   auto pw_changed = test::AwaitPasswordChangedUI();
   pw_changed->TypePreviousPassword(test::kGaiaPassword);

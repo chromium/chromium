@@ -23,6 +23,7 @@ class FullScreenAuthSurface {
   virtual ~FullScreenAuthSurface();
 
   virtual void SelectUserPod(const AccountId& account_id) = 0;
+  virtual void AddNewUser() = 0;
 };
 
 class OobePageActor {
@@ -38,14 +39,33 @@ class OobePageActor {
   std::optional<ash::test::UIPath> path_;
 };
 
+class UserSelectionPageActor : public OobePageActor {
+ public:
+  UserSelectionPageActor();
+  ~UserSelectionPageActor() override;
+
+  void ChooseConsumerUser();
+  void AwaitNextButton();
+  void Next();
+};
+
 class GaiaPageActor : public OobePageActor {
  public:
   GaiaPageActor();
   ~GaiaPageActor() override;
 
   virtual void ReauthConfirmEmail(const AccountId& account_id) = 0;
+  virtual void SubmitFullAuthEmail(const AccountId& account_id) = 0;
   virtual void TypePassword(const std::string& password) = 0;
   virtual void ContinueLogin() = 0;
+};
+
+class RecoveryReauthPageActor : public OobePageActor {
+ public:
+  RecoveryReauthPageActor();
+  ~RecoveryReauthPageActor() override;
+
+  void ConfirmReauth();
 };
 
 class PasswordChangedPageActor : public OobePageActor {
@@ -72,10 +92,12 @@ class PasswordUpdatedPageActor : public OobePageActor {
 std::unique_ptr<FullScreenAuthSurface> OnLoginScreen();
 
 [[nodiscard]] std::unique_ptr<GaiaPageActor> AwaitGaiaSigninUI();
+[[nodiscard]] std::unique_ptr<RecoveryReauthPageActor> AwaitRecoveryReauthUI();
 [[nodiscard]] std::unique_ptr<PasswordChangedPageActor>
 AwaitPasswordChangedUI();
 [[nodiscard]] std::unique_ptr<PasswordUpdatedPageActor>
 AwaitPasswordUpdatedUI();
+[[nodiscard]] std::unique_ptr<UserSelectionPageActor> AwaitNewUserSelectionUI();
 
 // Password change scenario
 // page for entering old password

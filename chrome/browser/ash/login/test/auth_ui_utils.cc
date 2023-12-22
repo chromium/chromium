@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/webui/ash/login/osauth/factor_setup_success_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/local_data_loss_warning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/osauth_error_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,6 +33,9 @@
 namespace ash::test {
 
 namespace {
+
+constexpr UIPath kUserCreationConsumerOption = {"user-creation", "selfButton"};
+constexpr UIPath kUserCreationNextButton = {"user-creation", "nextButton"};
 
 constexpr UIPath kGaiaSigninPrimaryButton = {
     "gaia-signin", "signin-frame-dialog", "primary-action-button"};
@@ -70,12 +74,17 @@ constexpr UIPath kDataLossWarningRemove = {"local-data-loss-warning",
 constexpr UIPath kDataLossWarningReset = {"local-data-loss-warning",
                                           "powerwash"};
 
-const test::UIPath kRecoverySuccessStep = {"cryptohome-recovery",
-                                           "successDialog"};
-const test::UIPath kRecoveryDoneButton = {"cryptohome-recovery", "doneButton"};
-const test::UIPath kRecoveryErrorStep = {"cryptohome-recovery", "errorDialog"};
-const test::UIPath kRecoveryManualRecoveryButton = {"cryptohome-recovery",
-                                                    "manualRecoveryButton"};
+constexpr UIPath kRecoverySuccessStep = {"cryptohome-recovery",
+                                         "successDialog"};
+constexpr UIPath kRecoveryDoneButton = {"cryptohome-recovery", "doneButton"};
+constexpr UIPath kRecoveryErrorStep = {"cryptohome-recovery", "errorDialog"};
+constexpr UIPath kRecoveryManualRecoveryButton = {"cryptohome-recovery",
+                                                  "manualRecoveryButton"};
+
+constexpr UIPath kRecoveryReauthNotificationStep = {"cryptohome-recovery",
+                                                    "reauthNotificationDialog"};
+constexpr UIPath kRecoveryReauthButton = {"cryptohome-recovery",
+                                          "reauthButton"};
 
 constexpr UIPath kFactorSetupSuccessElement = {"factor-setup-success"};
 constexpr UIPath kFactorSetupSuccessDoneButton = {"factor-setup-success",
@@ -96,6 +105,10 @@ class LoginScreenAuthSurface : public FullScreenAuthSurface {
   void SelectUserPod(const AccountId& account_id) override {
     EXPECT_TRUE(LoginScreenTestApi::FocusUser(account_id));
   }
+
+  void AddNewUser() override {
+    ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
+  }
 };
 
 class GaiaPageActorImpl : public GaiaPageActor {
@@ -108,9 +121,17 @@ class GaiaPageActorImpl : public GaiaPageActor {
                                 FakeGaiaMixin::kEmailPath);
     OobeJS().ClickOnPath(kGaiaSigninPrimaryButton);
   }
+
+  void SubmitFullAuthEmail(const AccountId& account_id) override {
+    gaia_js_.ExpectElementValue("", FakeGaiaMixin::kEmailPath);
+    gaia_js_.TypeIntoPath(account_id.GetUserEmail(), FakeGaiaMixin::kEmailPath);
+    OobeJS().ClickOnPath(kGaiaSigninPrimaryButton);
+  }
+
   void TypePassword(const std::string& password) override {
     gaia_js_.TypeIntoPath(password, FakeGaiaMixin::kPasswordPath);
   }
+
   void ContinueLogin() override {
     OobeJS().ClickOnPath(kGaiaSigninPrimaryButton);
   }
@@ -151,6 +172,33 @@ std::unique_ptr<test::TestConditionWaiter> OobePageActor::UntilShown() {
 
 // ----------------------------------------------------------
 
+UserSelectionPageActor::UserSelectionPageActor()
+    : OobePageActor(UserCreationView::kScreenId, std::nullopt) {}
+
+UserSelectionPageActor::~UserSelectionPageActor() = default;
+
+void UserSelectionPageActor::ChooseConsumerUser() {
+  OobeJS().ClickOnPath(kUserCreationConsumerOption);
+}
+
+void UserSelectionPageActor::AwaitNextButton() {
+  OobeJS().CreateEnabledWaiter(true, kUserCreationNextButton)->Wait();
+}
+
+void UserSelectionPageActor::Next() {
+  OobeJS().ClickOnPath(kUserCreationNextButton);
+}
+
+std::unique_ptr<UserSelectionPageActor> AwaitNewUserSelectionUI() {
+  std::unique_ptr<UserSelectionPageActor> result =
+      std::make_unique<UserSelectionPageActor>();
+  result->UntilShown()->Wait();
+
+  return result;
+}
+
+// ----------------------------------------------------------
+
 GaiaPageActor::GaiaPageActor()
     : OobePageActor(GaiaView::kScreenId, std::nullopt) {}
 GaiaPageActor::~GaiaPageActor() = default;
@@ -168,6 +216,24 @@ std::unique_ptr<GaiaPageActor> AwaitGaiaSigninUI() {
       LoginDisplayHost::default_host()->GetOobeWebContents(), "signin-frame");
   CHECK(frame);
   result->gaia_js_ = test::JSChecker(frame);
+  return result;
+}
+
+// ----------------------------------------------------------
+
+RecoveryReauthPageActor::RecoveryReauthPageActor()
+    : OobePageActor(CryptohomeRecoveryScreenView::kScreenId,
+                    kRecoveryReauthNotificationStep) {}
+RecoveryReauthPageActor::~RecoveryReauthPageActor() = default;
+
+void RecoveryReauthPageActor::ConfirmReauth() {
+  OobeJS().ClickOnPath(kRecoveryReauthButton);
+}
+
+std::unique_ptr<RecoveryReauthPageActor> AwaitRecoveryReauthUI() {
+  std::unique_ptr<RecoveryReauthPageActor> result =
+      std::make_unique<RecoveryReauthPageActor>();
+  result->UntilShown()->Wait();
   return result;
 }
 
