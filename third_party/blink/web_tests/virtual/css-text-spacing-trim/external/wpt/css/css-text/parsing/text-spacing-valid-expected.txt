@@ -1,9 +1,11 @@
 This is a testharness.js-based test.
 [FAIL] e.style['text-spacing'] = "auto" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['text-spacing'] = "allow-end space-first" should set the property value
+[FAIL] e.style['text-spacing'] = "trim-start" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['text-spacing'] = "space-first allow-end" should set the property value
+[FAIL] e.style['text-spacing'] = "no-autospace normal" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-spacing'] = "normal no-autospace" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 Harness: the test ran to completion.
 

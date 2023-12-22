@@ -136560,6 +136560,58 @@
        {}
       ]
      ],
+     "grid-container-baseline-synthesized-001.html": [
+      "431b1867f80df8723f9b25e157359d337007fb92",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/reference/grid-container-baseline-synthesized-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "grid-container-baseline-synthesized-002.html": [
+      "c11c8ac1b98283a8c5142668f9bbbb99e66ed244",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/reference/grid-container-baseline-synthesized-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "grid-container-baseline-synthesized-003.html": [
+      "9964c3dfb4ae19b9ca1ef7fa064d3aa6b01aa50d",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/reference/grid-container-baseline-synthesized-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "grid-container-baseline-synthesized-004.html": [
+      "d8c4f630aba38214d45cf924130739f1eb84f591",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/reference/grid-container-baseline-synthesized-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "grid-definition": {
       "flex-item-grid-container-percentage-rows-001.html": [
        "ba655ce8a17d6482071d39e66684b50ebe749822",
@@ -195997,6 +196049,19 @@
         ],
         {}
        ]
+      ],
+      "text-justify-word-separators.html": [
+       "028b69e40e0c6761187bbb1435873fb5955ff67e",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-justify/text-justify-word-separators-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "text-spacing-trim": {
@@ -196378,6 +196443,92 @@
         [
          [
           "/css/css-text/text-spacing-trim/text-spacing-trim-space-all-001-ref.html?class=halt",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-spacing-trim-space-first-wrap-001.html": [
+       "ebbea0e52b09c21be870ffd2dea48d2b70d4cb88",
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001.html?class=chws,htb",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001-ref.html?class=chws,htb",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001.html?class=chws,vrl",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001-ref.html?class=chws,vrl",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001.html?class=halt,htb",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001-ref.html?class=halt,htb",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001.html?class=halt,vrl",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001-ref.html?class=halt,vrl",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-spacing-trim-space-first-wrap-br-001.html": [
+       "acbfaa3ddcba0a1029676eb39dc9e8d45e2ad495",
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-br-001.html?class=chws,htb",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-wrap-001-ref.html?class=chws,htb",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-br-001.html?class=chws,vrl",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-wrap-001-ref.html?class=chws,vrl",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-br-001.html?class=halt,htb",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-wrap-001-ref.html?class=halt,htb",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-br-001.html?class=halt,vrl",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-wrap-001-ref.html?class=halt,vrl",
           "=="
          ]
         ],
@@ -307009,7 +307160,7 @@
       []
      ],
      "at-scope-parsing-expected.txt": [
-      "2968b753ace74f1a548a1795070aa21223b947a0",
+      "3a81a4319e364017b2e0c42fb1dcbdf44f02d19b",
       []
      ],
      "important-prop-ref.html": [
@@ -321345,6 +321496,10 @@
        "9ce866acef9de5952c3d838d081c3fded7ace647",
        []
       ],
+      "grid-container-baseline-synthesized-001-ref.html": [
+       "88faddd22a432eaed0a807a0a0466544518d5829",
+       []
+      ],
       "grid-container-scrollbars-sizing-001-ref.html": [
        "a090f7955907bd1819b22d54b8cb0bf966d93e0a",
        []
@@ -332958,19 +333113,19 @@
        []
       ],
       "text-spacing-computed-expected.txt": [
-       "6981c50ef0789439fe1237e696a011b564b9c4b8",
+       "120ed7eaf7c3740e986383de0b37e96de761509f",
        []
       ],
       "text-spacing-trim-computed-expected.txt": [
-       "e56e6241b38c9b920cc1c3b2db71dfdeebb9e319",
+       "83e5496b7cd5f3f5f5da7557b492553cf267c549",
        []
       ],
       "text-spacing-trim-valid-expected.txt": [
-       "cea57950aa022ff706347e1d27eb216e338c6826",
+       "5704a8cbb4e864726386188deca1fb7fd7f16dc0",
        []
       ],
       "text-spacing-valid-expected.txt": [
-       "f4b4e85fc394c617bcaa5ddc612e2d9623a59e36",
+       "e47b4e2fd371ad9d4a90a0af4546ae6680beafb0",
        []
       ],
       "text-transform-computed-expected.txt": [
@@ -333784,6 +333939,10 @@
       "text-justify-none-001-ref.html": [
        "c8500ac9f38a2a6c843e4bfbb383f6d20c77f8c3",
        []
+      ],
+      "text-justify-word-separators-ref.html": [
+       "99154cff3923b181a080c218b6b399dbbc558761",
+       []
       ]
      },
      "text-spacing-trim": {
@@ -333865,12 +334024,16 @@
        "d33e3b62edd31029751ac32bcbdb6178df90d563",
        []
       ],
+      "text-spacing-trim-space-first-wrap-001-ref.html": [
+       "5295bdc34fff440fc3c75c6d1a1600390f601573",
+       []
+      ],
       "text-spacing-trim-trim-all-001-ref.html": [
        "d541fcc5f810629f4eb8d0d97bc6f0b6db8adba3",
        []
       ],
       "text-spacing-trim-wrap-001-ref.html": [
-       "5295bdc34fff440fc3c75c6d1a1600390f601573",
+       "b03890c59ca77ffcb4a20bc749c92221b234951e",
        []
       ]
      },
@@ -351074,7 +351237,7 @@
      []
     ],
     "README.md": [
-     "e3c486b572e9e2fed96eef4118e19b07232d1ea7",
+     "3dc65fbc050b0596a1b23f4341c5192c41115fe0",
      []
     ],
     "client-hints.https.html.headers": [
@@ -351863,7 +352026,7 @@
       []
      ],
      "utils.js": [
-      "f6c884ca74d4a4ef858923d3862806557bfb46f6",
+      "cbea173f17a6ad89a9d5dea3e304cff534971edb",
       []
      ],
      "web-bluetooth-inner.html": [
@@ -394350,7 +394513,7 @@
        []
       ],
       "__init__.py": [
-       "9c976d4a674cc2912909695a62014a317cced331",
+       "cae2e2576d6ce4d13ffa200d846af34d76e51804",
        []
       ],
       "browsing_context": {
@@ -394673,7 +394836,7 @@
       },
       "script": {
        "__init__.py": [
-        "0f62fe4475606c80e6d8293af8bd4db430b26a47",
+        "7feae91f27b9086c70783135c29300ff3b626498",
         []
        ],
        "add_preload_script": {
@@ -441667,7 +441830,7 @@
       ]
      ],
      "at-scope-parsing.html": [
-      "d85ff9ee6031813d5b7a857556b3907134833138",
+      "88e28fe4ff7444f7268cb82cb1625c9a04451c9b",
       [
        null,
        {}
@@ -451350,6 +451513,13 @@
         {}
        ]
       ],
+      "alignment-in-subgridded-axes-001.html": [
+       "419088b4d5a8988990024eba02d959887ac1b3cb",
+       [
+        null,
+        {}
+       ]
+      ],
       "grid-template-computed-nogrid.html": [
        "1f37ce860acfd3eeec3f00dcd09819e00b15a5b9",
        [
@@ -451407,14 +451577,14 @@
        ]
       ],
       "subgrid-baseline-010.html": [
-       "4e302e152742024112d5845d11d948e1994c1548",
+       "fde522c57acc72c5c4a8c2fd92f8fd0ab60c67c2",
        [
         null,
         {}
        ]
       ],
       "subgrid-baseline-011.html": [
-       "ed1e13354d08f93ddf642db6ef66a76cc57a4852",
+       "098145cd041346b51aaf4bbee145cec82c5700fa",
        [
         null,
         {}
@@ -462791,42 +462961,42 @@
        ]
       ],
       "text-spacing-computed.html": [
-       "f2387919eea5467eca3fa1c9e89ca8b939a046df",
+       "84d267c46550adaae78cdce0263ef0822eb2861b",
        [
         null,
         {}
        ]
       ],
       "text-spacing-invalid.html": [
-       "bd76a064a10d964152d2a1466f8bd5377a9ccfd7",
+       "5b83dfbf50223974f46db16921b87759fc764ab5",
        [
         null,
         {}
        ]
       ],
       "text-spacing-trim-computed.html": [
-       "33a845fb9e7ccc15ffe29660b23573628a69a716",
+       "163a740103c0ef06b295b591b5d73a2a3309d686",
        [
         null,
         {}
        ]
       ],
       "text-spacing-trim-invalid.html": [
-       "f63ae0df427d3b3e4665e4e5dd969de2d825e602",
+       "9f835352b286d6d4adce131ba69a90ae8adfd01d",
        [
         null,
         {}
        ]
       ],
       "text-spacing-trim-valid.html": [
-       "2fc258adb6d3eb6960f8207bbe246b01858849f9",
+       "a83a099480d2b3de6347859377544d482d54c205",
        [
         null,
         {}
        ]
       ],
       "text-spacing-valid.html": [
-       "695fa8bcbb8231a84f89aef19f7238c3d39a09cc",
+       "994ea01fae61b7b95d5c3570d19cd80c78caef35",
        [
         null,
         {}
@@ -471792,6 +471962,13 @@
        {}
       ]
      ],
+     "offsetTop-offsetLeft-with-zoom.html": [
+      "2d74a9f116bc68b141969dbda8cf18c744a6a779",
+      [
+       null,
+       {}
+      ]
+     ],
      "offsetTopLeft-border-box.html": [
       "8cabf6478f7afc158617914776548db528c3a7f5",
       [
@@ -479871,7 +480048,7 @@
       ]
      ],
      "basic-dom-part-objects.tentative.html": [
-      "c8c478efb55aa4c06c70edd868678cefc8b8dd78",
+      "d7834fe69b0118eac16a372dd7b9c14cdd57e575",
       [
        null,
        {}
@@ -479893,6 +480070,13 @@
      ],
      "dom-parts-parseparts-on-root.tentative.html": [
       "f3ba3eaf6bf9f118c9eb64c3c930c9977165b76e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "dom-parts-valid-node-types.tentative.html": [
+      "f9ed167e605ad1e2b6b1d198d1ce44906765604c",
       [
        null,
        {}
@@ -499377,6 +499561,15 @@
       }
      ]
     ],
+    "automatic-beacon-component-ad.https.html": [
+     "132b1234df1b0d36568cd1d9e1298f7244132f5b",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "automatic-beacon-cross-origin-false.https.html": [
      "ccd8634973425aa7fee7e189fcf37335c3a37bb3",
      [
@@ -500088,6 +500281,13 @@
       {}
      ]
     ],
+    "multiple-component-ads.https.html": [
+     "81d506842efd41c6defbcb4ba12ba5d2ccfa9216",
+     [
+      null,
+      {}
+     ]
+    ],
     "navigate-ancestor-by-name.https.html": [
      "a5df1e99424e3d4561b977cc45c4df946102557d",
      [
@@ -500175,7 +500375,7 @@
      ]
     ],
     "nested-opaque-ad-sizes.https.html": [
-     "2ac8ff003f9f37db50dd5b350cb31da68dd6af5d",
+     "aa93b962ff9cd2ea9cb1bb56614140916404ee5b",
      [
       null,
       {}
@@ -701989,14 +702189,14 @@
        },
        "locate_nodes": {
         "context.py": [
-         "6aac78a48ba08e28944520f682fb7aa223da77b9",
+         "49a6941486ba491f7da708244903b1f9e0d42910",
          [
           null,
           {}
          ]
         ],
         "invalid.py": [
-         "d549cf35de281154e79d33fd2174c29943c96868",
+         "b9a4d848caeaefe13644f01221e5cc7e26d3b3e8",
          [
           null,
           {}
@@ -702010,21 +702210,21 @@
          ]
         ],
         "max_node_count.py": [
-         "9147fb318326d918d9ea9137abae18f94cdeeeb4",
+         "4652026e96fae72c40c1ce87cad9e5ef836b3725",
          [
           null,
           {}
          ]
         ],
         "ownership.py": [
-         "d5450ffc80c8c060d575b7893f8bd8cd179c4c94",
+         "b1830c740a90ef77f0260e3d4dae4e37f6ba0f9d",
          [
           null,
           {}
          ]
         ],
         "sandbox.py": [
-         "7f9cd9dfd8584bee967d1d070b79a6eb92f31d4f",
+         "efa431bf190aaec7305958a079032e7264932a2b",
          [
           null,
           {}
@@ -702038,7 +702238,7 @@
          ]
         ],
         "start_nodes.py": [
-         "3f46a50642c7c3bba1b8a92884c3a6ab50244a7f",
+         "707d83a337d8ff309e2727475f61e8940207b14b",
          [
           null,
           {}
@@ -702802,7 +703002,7 @@
          ]
         ],
         "result_ownership.py": [
-         "84b8f776b452c8a01532a50d518d22952c5c07dd",
+         "6a96f87ad106bd2df2ca0ae62385b84b1ed45b6d",
          [
           null,
           {}
@@ -702862,7 +703062,7 @@
        },
        "disown": {
         "handles.py": [
-         "e1226463a5cb82b1cd4a3facda15f4af93040557",
+         "1dfa318cd1871e2e5ebdcd13bd2e3c6c26ae02b5",
          [
           null,
           {}
@@ -702883,7 +703083,7 @@
          ]
         ],
         "target.py": [
-         "67d857a04141ea441085f92ab5bc39f57088ff5c",
+         "bce956d06bedcd760f613808502030cc5effb514",
          [
           null,
           {}
@@ -702962,7 +703162,7 @@
          ]
         ],
         "result_ownership.py": [
-         "ab018699eb954a699c992e39cfbbfdd9cfaa5e17",
+         "4a417532afb0490bbcc69c01af07dc067508dc19",
          [
           null,
           {}

@@ -2615,6 +2615,11 @@ crbug.com/626703 external/wpt/html/dom/elements/global-attributes/dir-auto-form-
 crbug.com/626703 external/wpt/editing/other/insertparagraph-in-editing-host-cannot-have-div.tentative.html* [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-text/text-justify/text-justify-word-separators.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001.html?class=chws,htb [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001.html?class=chws,vrl [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001.html?class=halt,htb [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001.html?class=halt,vrl [ Failure ]
 crbug.com/626703 external/wpt/svg/pservers/reftests/gradient-color-interpolation.svg [ Failure ]
 crbug.com/626703 virtual/webnn-service-enabled/external/wpt/webnn/gpu/arg_min_max.https.any.html [ Skip Timeout ]
 crbug.com/626703 virtual/webnn-service-enabled/external/wpt/webnn/gpu/arg_min_max.https.any.worker.html [ Crash ]

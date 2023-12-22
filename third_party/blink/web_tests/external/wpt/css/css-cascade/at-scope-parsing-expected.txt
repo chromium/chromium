@@ -1,4 +1,8 @@
 This is a testharness.js-based test.
+[FAIL] @scope () is valid
+  assert_equals: expected "@scope {\\n}" but got "@scope () {\\n}"
+[FAIL] @scope () to () is valid
+  assert_equals: expected "@scope {\\n}" but got "@scope () {\\n}"
 [FAIL] @scope (.c <> .d) is valid
   assert_equals: expected "@scope (.c <> .d) {\\n}" but got "@scope () {\\n}"
 [FAIL] @scope (.a, .c <> .d) is valid
