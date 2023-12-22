@@ -233,7 +233,6 @@ class TouchToFillMediator {
             boolean isOriginSecure,
             boolean triggerSubmission,
             List<Credential> credentials) {
-        // TODO(http://crbug.com/1504098) :  Format the sender name to be in bold
         String formattedUrl =
                 UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         List<Credential> sharedCredentials = getSharedPasswordsThatRequireNotification(credentials);
