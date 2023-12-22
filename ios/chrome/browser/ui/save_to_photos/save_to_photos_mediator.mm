@@ -310,8 +310,10 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 - (void)photosServiceFinishedUploadWithResult:
     (const PhotosService::UploadResult&)result {
   if (!result.successful) {
-    base::UmaHistogramTimes("IOS.SaveToPhotos.UploadFailureLatency",
+    base::UmaHistogramTimes(kSaveToPhotosUploadFailureLatencyHistogram,
                             base::TimeTicks::Now() - _uploadStart);
+    base::UmaHistogramEnumeration(kSaveToPhotosUploadFailureTypeHistogram,
+                                  result.failure_type);
     __weak __typeof(self) weakSelf = self;
     [self.delegate stopValidationSpinnerForAccountPicker];
     [self showTryAgainOrCancelAlertWithTryAgainBlock:^{
@@ -321,7 +323,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
     return;
   }
 
-  base::UmaHistogramTimes("IOS.SaveToPhotos.UploadSuccessLatency",
+  base::UmaHistogramTimes(kSaveToPhotosUploadSuccessLatencyHistogram,
                           base::TimeTicks::Now() - _uploadStart);
   _uploadCompletedSuccessfully = YES;
 
