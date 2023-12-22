@@ -479,14 +479,12 @@ PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents)
           base::BindRepeating(&PrerenderHostRegistry::OnMemoryPressure,
                               base::Unretained(this))) {
   Observe(&web_contents);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
 PrerenderHostRegistry::~PrerenderHostRegistry() {
   // This function is called by WebContentsImpl's dtor, so web_contents() should
   // not be a null ptr at this moment.
   CHECK(web_contents());
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   PrerenderFinalStatus final_status =
       web_contents()->GetClosedByUserGesture()
@@ -512,7 +510,6 @@ void PrerenderHostRegistry::RemoveObserver(Observer* observer) {
 int PrerenderHostRegistry::CreateAndStartHost(
     const PrerenderAttributes& attributes,
     PreloadingAttempt* attempt) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string recorded_url =
       attributes.initiator_origin.has_value()
           ? attributes.initiator_origin.value().GetURL().spec()
@@ -1094,7 +1091,6 @@ int PrerenderHostRegistry::ReserveHostToActivate(
   TRACE_EVENT2("navigation", "PrerenderHostRegistry::ReserveHostToActivate",
                "navigation_url", navigation_request.GetURL().spec(),
                "render_frame_host", render_frame_host);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Find an available host for the navigation request.
   int host_id = FindHostToActivateInternal(navigation_request);
@@ -1151,7 +1147,6 @@ RenderFrameHostImpl* PrerenderHostRegistry::GetRenderFrameHostForReservedHost(
 std::unique_ptr<StoredPage> PrerenderHostRegistry::ActivateReservedHost(
     int frame_tree_node_id,
     NavigationRequest& navigation_request) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(reserved_prerender_host_);
   CHECK_EQ(frame_tree_node_id, reserved_prerender_host_->frame_tree_node_id());
 
@@ -1640,11 +1635,6 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
 void PrerenderHostRegistry::ScheduleToDeleteAbandonedHost(
     std::unique_ptr<PrerenderHost> prerender_host,
     const PrerenderCancellationReason& cancellation_reason) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI))
-      << "Post tasks to destroy PrerenderHosts on non-ui threads "
-         "with reason of "
-      << static_cast<int>(cancellation_reason.final_status());
   prerender_host->RecordFailedFinalStatus(PassKey(), cancellation_reason);
 
   // Asynchronously delete the prerender host.
@@ -1655,7 +1645,6 @@ void PrerenderHostRegistry::ScheduleToDeleteAbandonedHost(
 }
 
 void PrerenderHostRegistry::DeleteAbandonedHosts() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Swap the vector and let it scope out instead of directly destructing the
   // hosts in the vector, for example, by `to_be_deleted_hosts_.clear()`. This
   // avoids potential cases where a host being deleted indirectly modifies
