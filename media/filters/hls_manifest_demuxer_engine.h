@@ -102,6 +102,10 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   void FinishInitialization(PipelineStatusCallback cb, PipelineStatus status);
   void OnAdaptationComplete(PipelineStatus status);
 
+  // Helper for OnTimeUpdate/CheckState which helps record tracing macros.
+  void FinishTimeUpdate(ManifestDemuxer::DelayCallback cb,
+                        base::TimeDelta delay_time);
+
   // Calls Rendition::CheckState and binds OnStateChecked to it's closure arg,
   // and records the timetick when the state checking happened.
   void CheckState(base::TimeDelta time,

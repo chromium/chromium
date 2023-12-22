@@ -4,6 +4,7 @@
 
 #include "media/filters/hls_codec_detector.h"
 #include "base/task/bind_post_task.h"
+#include "base/trace_event/trace_event.h"
 #include "media/formats/mp2t/mp2t_stream_parser.h"
 #include "media/formats/mp4/mp4_stream_parser.h"
 
@@ -24,6 +25,7 @@ void HlsCodecDetectorImpl::DetermineContainerOnly(
   CHECK(!callback_);
   callback_ = std::move(cb);
   parser_ = nullptr;
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "HLS::ReadChunk", this);
   rendition_host_->ReadStream(
       std::move(stream), base::BindOnce(&HlsCodecDetectorImpl::OnStreamFetched,
                                         weak_factory_.GetWeakPtr(),
@@ -37,6 +39,8 @@ void HlsCodecDetectorImpl::DetermineContainerAndCodec(
   CHECK(!callback_);
   callback_ = std::move(cb);
   parser_ = nullptr;
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "HLS::ReadChunk", this);
   rendition_host_->ReadStream(
       std::move(stream), base::BindOnce(&HlsCodecDetectorImpl::OnStreamFetched,
                                         weak_factory_.GetWeakPtr(),
@@ -48,6 +52,7 @@ void HlsCodecDetectorImpl::OnStreamFetched(
     HlsDataSourceProvider::ReadResult maybe_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(callback_);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "HLS::ReadChunk", this);
 
   if (!maybe_stream.has_value()) {
     HlsDemuxerStatus status = {HlsDemuxerStatus::Codes::kPlaylistUrlInvalid,
@@ -126,6 +131,7 @@ void HlsCodecDetectorImpl::OnStreamFetched(
   // chunk initially anyway, so fetching the whole thing isn't going to be an
   // issue.
   stream->Clear();
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "HLS::ReadChunk", this);
   rendition_host_->ReadStream(
       std::move(stream),
       base::BindOnce(&HlsCodecDetectorImpl::OnStreamFetched,
