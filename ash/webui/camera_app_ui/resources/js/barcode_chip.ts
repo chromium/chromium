@@ -266,7 +266,7 @@ function showWifi(wifiConfig: WifiConfig) {
       loadTimeData.getI18nMessage(I18nString.BARCODE_WIFI_CHIPTEXT, ssidString);
   textEl.textContent = text;
 
-  const chip = dom.get('#barcode-chip-wifi', HTMLDivElement);
+  const chip = dom.get('#barcode-chip-wifi', HTMLElement);
   const label = loadTimeData.getI18nMessage(
       I18nString.LABEL_BARCODE_WIFI_CHIP, ssidString);
   chip.setAttribute('aria-label', label);
