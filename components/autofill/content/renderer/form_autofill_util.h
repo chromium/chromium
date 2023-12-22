@@ -424,10 +424,10 @@ std::u16string FindChildTextWithIgnoreList(
     const std::set<blink::WebNode>& divs_to_skip);
 
 // Infers corresponding label for `element` from surrounding context in the DOM,
-// e.g. the contents of the preceding <p> tag or text element.
-bool InferLabelForElement(const blink::WebFormControlElement& element,
-                          std::u16string& label,
-                          FormFieldData::LabelSource& label_source);
+// e.g. the contents of the preceding <p> tag or text element. Returns an empty
+// string if it could not find a label for `element`.
+std::u16string InferLabelForElement(const blink::WebFormControlElement& element,
+                                    FormFieldData::LabelSource& label_source);
 
 // Returns the form element by unique renderer id. Returns the null element if
 // there is no form with the |form_renderer_id|.
