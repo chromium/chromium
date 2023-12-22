@@ -4230,7 +4230,7 @@
   {
     "name": "feed-signed-out-view-demotion",
     "owners": ["//components/feed/OWNERS", "harringtond@chromium.org"],
-    "expiry_milestone": 122
+    "expiry_milestone": 135
   },
   {
     "name": "feed-sports-card",
