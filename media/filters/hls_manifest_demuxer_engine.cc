@@ -396,10 +396,29 @@ void HlsManifestDemuxerEngine::ReadUntilExhausted(
                             weak_factory_.GetWeakPtr(), std::move(cb)));
 }
 
-void HlsManifestDemuxerEngine::ReadFromUrl(
-    GURL uri,
+void HlsManifestDemuxerEngine::ReadManifest(const GURL& uri,
+                                            HlsDataSourceProvider::ReadCb cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  if (!data_source_provider_) {
+    std::move(cb).Run(HlsDataSourceProvider::ReadStatus::Codes::kStopped);
+    return;
+  }
+
+  HlsDataSourceProvider::SegmentQueue queue;
+  queue.emplace(uri, std::nullopt);
+
+  data_source_provider_
+      .AsyncCall(&HlsDataSourceProvider::ReadFromCombinedUrlQueue)
+      .WithArgs(std::move(queue),
+                base::BindPostTaskToCurrentDefault(base::BindOnce(
+                    &HlsManifestDemuxerEngine::ReadUntilExhausted,
+                    weak_factory_.GetWeakPtr(), std::move(cb))));
+}
+
+void HlsManifestDemuxerEngine::ReadMediaSegment(
+    const hls::MediaSegment& segment,
     bool read_chunked,
-    absl::optional<hls::types::ByteRange> range,
+    bool include_init,
     HlsDataSourceProvider::ReadCb cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!data_source_provider_) {
@@ -411,10 +430,18 @@ void HlsManifestDemuxerEngine::ReadFromUrl(
     cb = base::BindOnce(&HlsManifestDemuxerEngine::ReadUntilExhausted,
                         weak_factory_.GetWeakPtr(), std::move(cb));
   }
-  HlsDataSourceProvider::UrlDataSegment segment = {.uri = std::move(uri),
-                                                   .range = range};
-  data_source_provider_.AsyncCall(&HlsDataSourceProvider::ReadFromUrl)
-      .WithArgs(std::move(segment),
+
+  HlsDataSourceProvider::SegmentQueue queue;
+  if (include_init) {
+    if (auto init = segment.GetInitializationSegment()) {
+      queue.emplace(init->GetUri(), init->GetByteRange());
+    }
+  }
+  queue.emplace(segment.GetUri(), segment.GetByteRange());
+
+  data_source_provider_
+      .AsyncCall(&HlsDataSourceProvider::ReadFromCombinedUrlQueue)
+      .WithArgs(std::move(queue),
                 base::BindPostTaskToCurrentDefault(std::move(cb)));
 }
 
@@ -502,8 +529,8 @@ void HlsManifestDemuxerEngine::UpdateRenditionManifestUri(
     GURL uri,
     base::OnceClosure cb) {
   GURL uri_copy = uri;
-  ReadFromUrl(
-      std::move(uri_copy), false, absl::nullopt,
+  ReadManifest(
+      std::move(uri_copy),
       base::BindOnce(&HlsManifestDemuxerEngine::UpdateMediaPlaylistForRole,
                      weak_factory_.GetWeakPtr(), role, std::move(uri),
                      std::move(cb)));
@@ -664,10 +691,10 @@ void HlsManifestDemuxerEngine::LoadPlaylist(
     PipelineStatusCallback on_complete) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   auto uri = parse_info.uri;
-  ReadFromUrl(std::move(uri), false, absl::nullopt,
-              base::BindOnce(&HlsManifestDemuxerEngine::ParsePlaylist,
-                             weak_factory_.GetWeakPtr(), std::move(on_complete),
-                             std::move(parse_info)));
+  ReadManifest(std::move(uri),
+               base::BindOnce(&HlsManifestDemuxerEngine::ParsePlaylist,
+                              weak_factory_.GetWeakPtr(),
+                              std::move(on_complete), std::move(parse_info)));
 }
 
 void HlsManifestDemuxerEngine::OnMediaPlaylist(
@@ -759,9 +786,8 @@ void HlsManifestDemuxerEngine::DetermineStreamContainerAndCodecs(
     std::move(container_cb).Run(HlsDemuxerStatus::Codes::kUnsupportedContainer);
     return;
   }
-
-  ReadFromUrl(
-      segments[0]->GetUri(), true, segments[0]->GetByteRange(),
+  ReadMediaSegment(
+      *segments[0], /*read_chunked=*/true, /*include_init=*/true,
       base::BindOnce(&HlsManifestDemuxerEngine::PeekFirstSegment,
                      weak_factory_.GetWeakPtr(), std::move(container_cb)));
 }

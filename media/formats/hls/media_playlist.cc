@@ -95,6 +95,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
   absl::optional<XDiscontinuitySequenceTag> discontinuity_sequence_tag;
   std::vector<scoped_refptr<MediaSegment>> segments;
   scoped_refptr<MediaSegment::InitializationSegment> initialization_segment;
+  bool new_init_segment = false;
 
   types::DecimalInteger discontinuity_sequence_number = 0;
 
@@ -256,6 +257,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
             }
           }
 
+          new_init_segment = true;
           initialization_segment =
               base::MakeRefCounted<MediaSegment::InitializationSegment>(
                   std::move(resource_uri), byte_range);
@@ -395,7 +397,8 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
     segments.push_back(base::MakeRefCounted<MediaSegment>(
         inf_tag->duration, media_sequence_number, discontinuity_sequence_number,
         std::move(segment_uri), initialization_segment, byterange, bitrate,
-        discontinuity_tag.has_value(), gap_tag.has_value()));
+        discontinuity_tag.has_value(), gap_tag.has_value(), new_init_segment));
+    new_init_segment = false;
 
     // Reset per-segment tags
     inf_tag.reset();

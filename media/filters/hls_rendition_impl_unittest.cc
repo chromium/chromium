@@ -69,6 +69,10 @@ const std::string kSecondFetchLivePlaylist =
 using testing::_;
 using testing::Return;
 
+MATCHER_P(MediaSegmentHasUrl, urlstr, "MediaSegment has provided URL") {
+  return arg.GetUri() == GURL(urlstr);
+}
+
 class HlsRenditionImplUnittest : public testing::Test {
  protected:
   std::unique_ptr<MockManifestDemuxerEngineHost> mock_mdeh_;
@@ -154,9 +158,9 @@ class HlsRenditionImplUnittest : public testing::Test {
                                base::TimeDelta initial_response_end,
                                base::TimeDelta fetch_expected_time) {
     std::string junk_content = "abcdefg, I dont like to sing rhyming songs";
-    EXPECT_CALL(*mock_hrh_, ReadFromUrl(_, _, _, _))
+    EXPECT_CALL(*mock_hrh_, ReadMediaSegment(_, _, _, _))
         .WillOnce([content = std::move(junk_content), host = mock_hrh_.get()](
-                      GURL url, bool, absl::optional<hls::types::ByteRange>,
+                      const hls::MediaSegment&, bool, bool,
                       HlsDataSourceProvider::ReadCb cb) {
           auto stream = StringHlsDataSourceStreamFactory::CreateStream(content);
           std::move(cb).Run(std::move(stream));
@@ -177,9 +181,9 @@ class HlsRenditionImplUnittest : public testing::Test {
   }
 
   void RespondToUrl(std::string uri, std::string content) {
-    EXPECT_CALL(*mock_hrh_, ReadFromUrl(GURL(uri), _, _, _))
+    EXPECT_CALL(*mock_hrh_, ReadMediaSegment(MediaSegmentHasUrl(uri), _, _, _))
         .WillOnce([content = std::move(content), host = mock_hrh_.get()](
-                      GURL url, bool, absl::optional<hls::types::ByteRange>,
+                      const hls::MediaSegment&, bool, bool,
                       HlsDataSourceProvider::ReadCb cb) {
           auto stream = StringHlsDataSourceStreamFactory::CreateStream(content);
           std::move(cb).Run(std::move(stream));

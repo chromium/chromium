@@ -113,12 +113,14 @@ class MockHlsRenditionHost : public HlsRenditionHost {
   MockHlsRenditionHost();
   ~MockHlsRenditionHost() override;
   MOCK_METHOD(void,
-              ReadFromUrl,
-              (GURL uri,
-               bool read_chunked,
-               absl::optional<hls::types::ByteRange> range,
-               HlsDataSourceProvider::ReadCb cb),
+              ReadManifest,
+              (const GURL&, HlsDataSourceProvider::ReadCb),
               (override));
+  MOCK_METHOD(
+      void,
+      ReadMediaSegment,
+      (const hls::MediaSegment&, bool, bool, HlsDataSourceProvider::ReadCb),
+      (override));
 
   MOCK_METHOD(void,
               UpdateRenditionManifestUri,

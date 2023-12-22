@@ -277,6 +277,10 @@ ManifestDemuxer::SeekResponse HlsRenditionImpl::Seek(
         role_, segments_->NextSegmentStartTime());
   }
 
+  // If this stream uses initialization segments, we're going to need once now,
+  // since chunk demuxer is empty.
+  requires_init_segment_ = true;
+
   return ManifestDemuxer::SeekState::kNeedsData;
 }
 
@@ -334,8 +338,13 @@ void HlsRenditionImpl::FetchNext(base::OnceClosure cb, base::TimeDelta time) {
   base::TimeDelta segment_end;
   std::tie(segment, segment_start, segment_end) = segments_->GetNextSegment();
 
-  rendition_host_->ReadFromUrl(
-      segment->GetUri(), /*read_chunked=*/false, segment->GetByteRange(),
+  // If this segment has a different init segment than the segment before it,
+  // we need to include the init segment before we fetch. Alternatively, if
+  // we've seeked somewhere and flushed old data, we'll need the init segment
+  // again.
+  bool include_init = requires_init_segment_ || segment->HasNewInitSegment();
+  rendition_host_->ReadMediaSegment(
+      *segment, /*read_chunked=*/false, include_init,
       base::BindOnce(&HlsRenditionImpl::OnSegmentData,
                      weak_factory_.GetWeakPtr(), std::move(cb), time,
                      segment_end, base::TimeTicks::Now()));
@@ -368,6 +377,10 @@ void HlsRenditionImpl::OnSegmentData(base::OnceClosure cb,
           &parse_offset_, stream->raw_data(), stream->buffer_size())) {
     return engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
   }
+
+  // Wince we've successfully parsed our data, we can mark that an init segment
+  // is not required due to seeking.
+  requires_init_segment_ = false;
 
   auto fetch_duration = base::TimeTicks::Now() - net_req_start;
   auto bps = stream->buffer_size() * 8 / fetch_duration.InSecondsF();

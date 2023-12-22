@@ -54,10 +54,11 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   void Stop() override;
 
   // HlsRenditionHost implementation.
-  void ReadFromUrl(GURL uri,
-                   bool read_chunked,
-                   absl::optional<hls::types::ByteRange> range,
-                   HlsDataSourceProvider::ReadCb cb) override;
+  void ReadManifest(const GURL& uri, HlsDataSourceProvider::ReadCb cb) override;
+  void ReadMediaSegment(const hls::MediaSegment& segment,
+                        bool read_chunked,
+                        bool include_init,
+                        HlsDataSourceProvider::ReadCb cb) override;
   void ReadStream(std::unique_ptr<HlsDataSourceStream> stream,
                   HlsDataSourceProvider::ReadCb cb) override;
   void UpdateNetworkSpeed(uint64_t bps) override;
