@@ -431,6 +431,72 @@ TEST_F(SVGImageSimTest, AnimationsPausedWhenImageScrolledOutOfView) {
   EXPECT_TRUE(timer.IsActive());
 }
 
+TEST_F(SVGImageSimTest, AnimationsResumedWhenImageScrolledIntoView) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimSubresourceRequest image_resource("https://example.com/image.svg",
+                                       "image/svg+xml");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      .change {
+        will-change: transform;
+      }
+    </style>
+    <div style="height: 100vh"></div>
+    <div class="change">
+      <img src="image.svg" width="20" id="image">
+    </div>
+  )HTML");
+  image_resource.Complete(kAnimatedDocument);
+
+  Compositor().BeginFrame();
+
+  Element* element = GetDocument().getElementById(AtomicString("image"));
+  ASSERT_TRUE(IsA<HTMLImageElement>(element));
+
+  ImageResourceContent* image_content =
+      To<HTMLImageElement>(*element).CachedImage();
+  ASSERT_TRUE(image_content);
+  ASSERT_TRUE(image_content->IsLoaded());
+  ASSERT_TRUE(image_content->HasImage());
+  Image* image = image_content->GetImage();
+  ASSERT_TRUE(IsA<SVGImage>(image));
+  SVGImage& svg_image = To<SVGImage>(*image);
+  ASSERT_TRUE(svg_image.MaybeAnimated());
+  auto& svg_image_chrome_client = svg_image.ChromeClientForTesting();
+  TimerBase& timer = svg_image_chrome_client.GetTimerForTesting();
+
+  // The image animation is running after being started by the paint above.
+  EXPECT_FALSE(svg_image_chrome_client.IsSuspended());
+  EXPECT_TRUE(timer.IsActive());
+
+  // Process pending timers. This will suspend the image animation.
+  WaitForTimer(timer);
+  WaitForTimer(timer);
+
+  EXPECT_TRUE(svg_image_chrome_client.IsSuspended());
+  EXPECT_FALSE(timer.IsActive());
+
+  // Mutate the image's container triggering a paint that restarts the image
+  // animation.
+  Element* div = element->parentElement();
+  div->removeAttribute(html_names::kClassAttr);
+
+  Compositor().BeginFrame();
+
+  // Wait for the next animation frame.
+  WaitForTimer(timer);
+
+  // Scroll down to make the image appear in the viewport, and then wait for
+  // the animation timer to fire.
+  GetDocument().domWindow()->scrollBy(0, 10000);
+  Compositor().BeginFrame();
+
+  EXPECT_FALSE(svg_image_chrome_client.IsSuspended());
+  EXPECT_TRUE(timer.IsActive());
+}
+
 TEST_F(SVGImageSimTest, TwoImagesSameSVGImageDifferentSize) {
   SimRequest main_resource("https://example.com/", "text/html");
   SimSubresourceRequest image_resource("https://example.com/image.svg",

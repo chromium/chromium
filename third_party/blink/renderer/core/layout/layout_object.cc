@@ -4361,8 +4361,9 @@ bool LayoutObject::WillRenderImage() {
   }
   // If paint invalidation of this object is delayed, animations can be
   // suspended. When the object is painted the next time, the animations will
-  // be started again.
-  if (ShouldDelayFullPaintInvalidation()) {
+  // be started again. Only suspend if the object is marked for paint
+  // invalidation in the future, or else may not end up being painted.
+  if (ShouldDelayFullPaintInvalidation() && ShouldCheckForPaintInvalidation()) {
     return false;
   }
   return true;
