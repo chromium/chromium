@@ -178,7 +178,7 @@ login_screens_js_files = [
   "screens/login/checking_downloading_update.js",
   "screens/login/encryption_migration.ts",
   "screens/login/lacros_data_backward_migration.js",
-  "screens/login/lacros_data_migration.js",
+  "screens/login/lacros_data_migration.ts",
   "screens/login/management_transition.js",
   "screens/login/offline_login.js",
   "screens/login/update_required_card.js",
