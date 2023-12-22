@@ -1031,13 +1031,29 @@ void AuraToplevel::OnConfigure(
   wl_array_init(&states);
   if (state_type == chromeos::WindowStateType::kMaximized)
     AddState(&states, XDG_TOPLEVEL_STATE_MAXIMIZED);
-  // TODO(crbug/1250129): Pinned states need to be handled properly.
   // TODO(crbug/1250129): Support snapped state.
   if (IsFullscreenOrPinnedWindowStateType(state_type)) {
-    AddState(&states, XDG_TOPLEVEL_STATE_FULLSCREEN);
+    // If pinned state is not yet supported, always set fullscreen.
+    if (wl_resource_get_version(aura_toplevel_resource_) <
+        ZAURA_TOPLEVEL_STATE_TRUSTED_PINNED_SINCE_VERSION) {
+      AddState(&states, XDG_TOPLEVEL_STATE_FULLSCREEN);
+    } else if (state_type == chromeos::WindowStateType::kFullscreen) {
+      AddState(&states, XDG_TOPLEVEL_STATE_FULLSCREEN);
+    } else if (state_type == chromeos::WindowStateType::kPinned) {
+      AddState(&states, ZAURA_TOPLEVEL_STATE_PINNED);
+    } else if (state_type == chromeos::WindowStateType::kTrustedPinned) {
+      AddState(&states, ZAURA_TOPLEVEL_STATE_TRUSTED_PINNED);
+    }
+
     if (shell_surface_->GetWidget() &&
         shell_surface_->GetWidget()->GetNativeWindow()->GetProperty(
             chromeos::kImmersiveImpliedByFullscreen)) {
+      // Imemrsive state should NOT be set for pinned state.
+      // TODO(crbug.com/1511187): Lacros randomly enters/exits immersive state
+      // when transitioning to pinned/unpinned state. Add CHECK to guarantee
+      // `state_type` is as same as chrome::WindowStateType::kFullscreen here
+      // after resolving this bug.
+
       // TODO(oshima): Immersive should probably be default.
       // Investigate and fix.
       AddState(&states, ZAURA_TOPLEVEL_STATE_IMMERSIVE);

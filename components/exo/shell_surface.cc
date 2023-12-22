@@ -753,9 +753,10 @@ void ShellSurface::OnPostWindowStateTypeChange(
   }
 
   if (root_surface() && window_state->GetStateType() != old_type &&
-      (window_state->GetStateType() == chromeos::WindowStateType::kFullscreen ||
-       old_type == chromeos::WindowStateType::kFullscreen)) {
-    root_surface()->OnFullscreenStateChanged(window_state->IsFullscreen());
+      (IsFullscreenOrPinnedWindowStateType(window_state->GetStateType()) ||
+       IsFullscreenOrPinnedWindowStateType(old_type))) {
+    root_surface()->OnFullscreenStateChanged(window_state->IsFullscreen() ||
+                                             window_state->IsPinned());
   }
 
   // Re-enable animations if they were disabled in pre state change handler.

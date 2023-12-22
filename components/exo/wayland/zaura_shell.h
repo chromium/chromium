@@ -33,8 +33,9 @@ class ShellSurfaceBase;
 namespace wayland {
 class SerialTracker;
 
+// version: 64
 constexpr uint32_t kZAuraShellVersion =
-    ZAURA_TOPLEVEL_SET_SHADOW_CORNER_RADII_SINCE_VERSION;
+    ZAURA_TOPLEVEL_STATE_TRUSTED_PINNED_SINCE_VERSION;
 
 // Adds bindings to the Aura Shell. Normally this implies Ash on ChromeOS
 // builds. On non-ChromeOS builds the protocol provides access to Aura windowing
