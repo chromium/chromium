@@ -3,7 +3,7 @@ Short Name: libaom
 URL: https://aomedia.googlesource.com/aom/
 Version: N/A
 Revision: f30a3ed4e80e97c2df4cb5c71eb11cc90c034ae6
-CPEPrefix: cpe:/a:aomedia:aomedia:3.6.1
+CPEPrefix: cpe:/a:aomedia:aomedia:3.8.0
 License: BSD
 License File: source/libaom/LICENSE
 Security Critical: yes
