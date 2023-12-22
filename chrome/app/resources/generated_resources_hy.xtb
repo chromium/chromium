@@ -8156,7 +8156,7 @@
 <translation id="747114903913869239">Սխալ՝ չհաջողվեց ապակոդավորել ընդլայնումը</translation>
 <translation id="7471520329163184433">Ավելի դանդաղ</translation>
 <translation id="747312361841682912">Ջնջել ցուցադրված տվյալները</translation>
-<translation id="7473891865547856676">Ոչ</translation>
+<translation id="7473891865547856676">Ոչ, պետք չէ</translation>
 <translation id="747459581954555080">Վերականգնել բոլորը</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Անհապաղ վերադարձրեք սարքը}one{Վերադարձրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_DAYS} օրվա ընթացքում}other{Վերադարձրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_DAYS} օրվա ընթացքում}}</translation>
 <translation id="7475671414023905704">Netscape-ի կորցված գաղտնաբառերի URL</translation>

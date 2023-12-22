@@ -600,7 +600,7 @@
 <translation id="3454555520521576458">قابل تغییر اندازه</translation>
 <translation id="3455468639467374593">الگو، <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">یک دستگاه به نقطه اتصال <ph name="DEVICE_NAME" /> متصل است</translation>
-<translation id="346243998268439747">بازنشانی بزرگ‌نمایی</translation>
+<translation id="346243998268439747">بازنشانی سطح بزرگ‌نمایی</translation>
 <translation id="3465223694362104965">از آخرین باری که به سیستم وارد شدید، صفحه‌کلید دیگری به این دستگاه متصل شده است. قبل از استفاده از این صفحه‌کلید، مطمئن شوید به آن اعتماد دارید.</translation>
 <translation id="3465356146291925647">تحت‌مدیریت سرپرست</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> سپس <ph name="KEY_TWO" /> یا <ph name="KEY_THREE" /></translation>
@@ -823,7 +823,7 @@
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> به پوشه <ph name="FOLDER_NAME" /> منتقل شد.</translation>
 <translation id="4302592941791324970">موجود نیست</translation>
 <translation id="4303223480529385476">بزرگ کردن ناحیه نشانگر وضعیت</translation>
-<translation id="4305133312001648038">بازنشاندن میزان بزرگ‌نمایی در صفحه</translation>
+<translation id="4305133312001648038">بازنشاندن سطح بزرگ‌نمایی در صفحه</translation>
 <translation id="4307713728991152670">راه‌اندازی مشاهده عکس‌ها، رسانه‌ها، و برنامه‌های جدید تلفن</translation>
 <translation id="4312840429157639164">دوربین به گوشه بالا سمت راست چسبید. تداخلی با سطح سیستم روی داد.</translation>
 <translation id="4316910396681052118">همه برنامه‌ها</translation>
