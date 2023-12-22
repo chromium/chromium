@@ -63,6 +63,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="2427791862912929107">May mga feature ang Chrome na nakakatulong sa iyong pamahalaan ang data mo sa internet at kung gaano ka kabilis nakakapag-load ng mga webpage.
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Para madaling makuha ang iyong mga naka-save na password sa iba mo pang app, gamitin ang Chrome para sa AutoFill</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Nangyayari ito kapag hindi ginamit ang Chrome nang {THRESHOLD} minuto. Posibleng kasama rito ang history at autofill.}one{Nangyayari ito kapag hindi ginamit ang Chrome nang {THRESHOLD} minuto. Posibleng kasama rito ang history at autofill.}other{Nangyayari ito kapag hindi ginamit ang Chrome nang {THRESHOLD} na minuto. Posibleng kasama rito ang history at autofill.}}</translation>
 <translation id="2561231791489583059">Gamitin ang Chrome bilang iyong default na browser para manatiling protektado laban sa mga mapanganib na site at mapanatiling ligtas ang mga password mo</translation>
 <translation id="2574249610672786438">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chrome, mag-sign in sa lahat ng device mo</translation>
 <translation id="2576431527583832481">Naging mas mahusay na ang Chrome! Available na ang bagong bersyon.</translation>
@@ -91,6 +92,7 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
 <translation id="3282568296779691940">Mag-sign in sa Chrome</translation>
 <translation id="3340938510625667914">Mga Pagkilos sa Chrome</translation>
 <translation id="3345341804167540816">Gamitin ang Chrome sa Lahat ng Lugar</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Nangyayari ito kapag hindi ginamit ang Chrome nang {THRESHOLD} minuto}one{Nangyayari ito kapag hindi ginamit ang Chrome nang {THRESHOLD} minuto}other{Nangyayari ito kapag hindi ginamit ang Chrome nang {THRESHOLD} na minuto}}</translation>
 <translation id="3399930248910934354">Buksan ang Mga Setting ng Chrome</translation>
 <translation id="3472587960215700950">Gumagamit ang Chrome ng Google Maps para mabigyan ka ng mga direksyon at lokal na impormasyon tungkol sa mga na-detect na address.</translation>
 <translation id="3503014945441706099">Kunin din ang Pinahusay na Ligtas na Pag-browse para sa profile sa Chrome na ito</translation>

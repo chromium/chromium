@@ -69,7 +69,7 @@
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">Pourboire</translation>
 <translation id="1354356357730355833">copier</translation>
-<translation id="1360699455582016846">Cliquez sur l'élément sous la clé de routage <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1360699455582016846">Cliquez sur l'élément sous la touche de routage <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">passer au caractère suivant</translation>
 <translation id="1377925789329510816">Il s'agit du dernier titre. Appuyez sur la touche de recherche+H pour revenir au premier titre ou sur la touche de recherche+Maj+H pour accéder au deuxième titre de cette page.</translation>
 <translation id="138218114945450791">Bleu clair</translation>
@@ -975,7 +975,7 @@
 <translation id="773906353055481349">Appuyez simultanément sur Recherche+Ctrl+Alt et sur les flèches pour parcourir le contenu par cellule</translation>
 <translation id="7746976083433980639"><ph name="ACTION" /> pour <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Le téléchargement du fichier <ph name="FILE_NAME" /> a commencé</translation>
-<translation id="7768784765476638775">Sélectionner pour prononcer</translation>
+<translation id="7768784765476638775">Sélectionner pour écouter</translation>
 <translation id="7776293189010177726">Ouvrir les menus ChromeVox</translation>
 <translation id="7799302833060027366">Appuyez sur la flèche vers le haut, vers le bas, vers la gauche ou vers la droite pour explorer le contenu mathématique</translation>
 <translation id="7800558923657349506">Épilogue</translation>

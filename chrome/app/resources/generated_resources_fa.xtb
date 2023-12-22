@@ -4207,6 +4207,7 @@
 <translation id="4246980464509998944">نظرات تکمیلی:</translation>
 <translation id="424726838611654458">‏همیشه در Adobe Reader باز شود</translation>
 <translation id="4248401726442101648">دوربین وصل نیست</translation>
+<translation id="4249116869350613769">بهینه‌سازی باتری</translation>
 <translation id="4249248555939881673">در انتظار اتصال شبکه...</translation>
 <translation id="4249373718504745892">این صفحه از دسترسی به دوربین و میکروفون شما بازداشته شده است.</translation>
 <translation id="424963718355121712">برنامه‌ها باید ازجانب میزبانی ارائه شوند که بر آن‌ها تأثیر دارد</translation>
@@ -4372,7 +4373,7 @@
 <translation id="4376226992615520204">مکان خاموش است</translation>
 <translation id="4377058670119819762">هنگام پر بودن نوار برگه، قابلیت پیمایش به چپ و راست را برای این نوار فعال می‌کند.</translation>
 <translation id="4377363674125277448">مشکلی در رابطه با گواهی سرور پیش آمد.</translation>
-<translation id="437809255587011096">اعلام سبک‌بندی نوشتار</translation>
+<translation id="437809255587011096">اعلام سبک‌پردازی نوشتار</translation>
 <translation id="4378154925671717803">تلفن</translation>
 <translation id="4378308539633073595">پیمایش به‌جلو</translation>
 <translation id="4378551569595875038">در حال اتصال..</translation>
@@ -5037,6 +5038,7 @@
 <translation id="4893522937062257019">در صفحه قفل</translation>
 <translation id="4895799941222633551">ایجاد میان‌بر…</translation>
 <translation id="4898011734382862273">مجوز «<ph name="CERTIFICATE_NAME" />» نشان‌دهنده یک ارائه‌دهنده مجوز است</translation>
+<translation id="4898913189644355814">ممکن است سایتی زبان برگزیده شما یا مواردی را که می‌خواهید بخرید ذخیره کند. این اطلاعات دردسترس سایت و زیردامنه‌های آن است.</translation>
 <translation id="4899052647152077033">نگاتیو</translation>
 <translation id="4899696330053002588">حاوی آگهی است</translation>
 <translation id="490031510406860025">در این سایت مجاز نیست</translation>
@@ -7674,7 +7676,7 @@
 <translation id="7011797924920577670">علایق شما را تخمین می‌زند</translation>
 <translation id="7014174261166285193">نصب انجام نشد.</translation>
 <translation id="7014480873681694324">برداشتن برجسته‌سازی</translation>
-<translation id="7014741021609395734">میزان بزرگ‌نمایی</translation>
+<translation id="7014741021609395734">سطح بزرگ‌نمایی</translation>
 <translation id="7016995776279438971">قرمز-سبز، ضعف در قرمز (قرمزدشواربینی)</translation>
 <translation id="7017004637493394352">‏دوباره بگویید «Ok Google»</translation>
 <translation id="7017219178341817193">افزودن صفحه جدید</translation>
@@ -8827,7 +8829,7 @@
 <translation id="7924075559900107275">نامزد پشتیبانی بلندمدت</translation>
 <translation id="7924358170328001543">خطا هنگام ارسال درگاه</translation>
 <translation id="7925108652071887026">داده‌های تکمیل خودکار</translation>
-<translation id="792514962475806987">میزان بزرگ‌نمایی متصل:</translation>
+<translation id="792514962475806987">سطح بزرگ‌نمایی متصل:</translation>
 <translation id="7925285046818567682">منتظر <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">من نبودم.</translation>
 <translation id="7926975587469166629">نام مستعار کارت</translation>

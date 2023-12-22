@@ -4193,6 +4193,7 @@
 <translation id="4246980464509998944">Լրացուցիչ մեկնաբանություններ՝</translation>
 <translation id="424726838611654458">Միշտ բացել Adobe Reader-ում</translation>
 <translation id="4248401726442101648">Տեսախցիկ միացված չէ</translation>
+<translation id="4249116869350613769">Մարտկոցի տնտեսում</translation>
 <translation id="4249248555939881673">Սպասում է ցանցի կապակցմանը…</translation>
 <translation id="4249373718504745892">Այս էջին արգելված է օգտագործել ձեր տեսախցիկն ու խոսափողը:</translation>
 <translation id="424963718355121712">Հավելվածները պետք է բեռնվեն այն կայքից, որի հետ աշխատում են</translation>
@@ -5023,6 +5024,7 @@
 <translation id="4893522937062257019">Կողպէկրանին</translation>
 <translation id="4895799941222633551">Ստեղծել &amp;դյուրանցում…</translation>
 <translation id="4898011734382862273">«<ph name="CERTIFICATE_NAME" />» հավաստագիրը ներկայացնում է հավաստագրման կենտրոնը</translation>
+<translation id="4898913189644355814">Կայքը կարող է պահել տեղեկութուններ ձեր նախընտրած լեզվի կամ ապրանքների մասին, որոնք ուզում եք գնել։ Այդ տեղեկությունները հասանելի են կայքին և դրա ենթատիրույթներին։</translation>
 <translation id="4899052647152077033">Շրջել գույները</translation>
 <translation id="4899696330053002588">Կա գովազդ</translation>
 <translation id="490031510406860025">Թույլատրված չէ այս կայքում</translation>
@@ -8209,7 +8211,7 @@
 <translation id="747114903913869239">Սխալ՝ չհաջողվեց ապակոդավորել ընդլայնումը</translation>
 <translation id="7471520329163184433">Ավելի դանդաղ</translation>
 <translation id="747312361841682912">Ջնջել ցուցադրված տվյալները</translation>
-<translation id="7473891865547856676">Ոչ</translation>
+<translation id="7473891865547856676">Ոչ, պետք չէ</translation>
 <translation id="747459581954555080">Վերականգնել բոլորը</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Անհապաղ վերադարձրեք սարքը}one{Վերադարձրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_DAYS} օրվա ընթացքում}other{Վերադարձրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_DAYS} օրվա ընթացքում}}</translation>
 <translation id="7475671414023905704">Netscape-ի կորցված գաղտնաբառերի URL</translation>

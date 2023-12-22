@@ -397,7 +397,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2658778018866295321">Cliquer et faire glisser</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> et <ph name="UNAVAILABLE_APPS_TWO" /> ne sont pas sur cet appareil.</translation>
 <translation id="2673968385134502798">Jeux</translation>
-<translation id="2678852583403169292">Menu Sélectionner pour prononcer</translation>
+<translation id="2678852583403169292">Menu Sélectionner pour écouter</translation>
 <translation id="2687510499067466116">Le raccourci clavier a changé</translation>
 <translation id="2689613560355655046">Bureau 8</translation>
 <translation id="2695305337569143674">web</translation>
@@ -1671,7 +1671,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7748275671948949022">Mettre en surbrillance le bouton du lanceur d'applications sur l'étagère</translation>
 <translation id="7749443890790263709">Vous avez atteint le nombre maximal de bureaux.</translation>
 <translation id="776344839111254542">Cliquer pour afficher les informations relatives à la mise à jour</translation>
-<translation id="7768784765476638775">Sélectionner pour prononcer</translation>
+<translation id="7768784765476638775">Sélectionner pour écouter</translation>
 <translation id="7769299611924763557">Votre GIF sera bientôt prêt</translation>
 <translation id="7773536009433685931">Activer le Wi-Fi à la place</translation>
 <translation id="7780094051999721182">raccourcis</translation>
@@ -1764,7 +1764,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8098591350844501178">Arrêter de diffuser l'écran sur "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="810637681351706236">Retirer l'appli de l'étagère</translation>
 <translation id="8113423164597455979">Activées, toutes applis</translation>
-<translation id="8113515504791187892">Bouton "Sélectionner pour prononcer"</translation>
+<translation id="8113515504791187892">Bouton Sélectionner pour écouter</translation>
 <translation id="8120151603115102514">Votre téléphone n'a pas d'écran de verrouillage. Déverrouillez votre Chromebook avec votre mot de passe.</translation>
 <translation id="8127095419621171197">Ouvrir l'application Calculatrice</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
@@ -1840,7 +1840,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8444246603146515890">Bureau <ph name="DESK_TITILE" /> activé</translation>
 <translation id="8446884382197647889">En savoir plus</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" />+V</translation>
-<translation id="8462305545768648477">Fermer Sélectionner pour prononcer</translation>
+<translation id="8462305545768648477">Fermer Sélectionner pour écouter</translation>
 <translation id="8468806060683421065">pour le <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Paramètres de l'échelle d'affichage</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> a <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

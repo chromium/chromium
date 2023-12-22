@@ -921,6 +921,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1695510246756136088">Hindi makakonekta sa internet. Subukan ulit.</translation>
 <translation id="1696555181932908973">Puwede kang sumubok ng iba pang paraan para magpatuloy sa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">May naka-configure na server ng SSH ang device. Huwag mag-sign in gamit ang mga sensitibong account.</translation>
+<translation id="1697122132646041614">Nagbubukas ang thumbs down ng form para sa pagsusumite ng detalyadong feedback tungkol sa kung bakit hindi mo gusto ang mga resultang ito.</translation>
 <translation id="1697150536837697295">Sining</translation>
 <translation id="1697686431566694143">I-edit ang file</translation>
 <translation id="1698796500103229697">&amp;Mga Paraan ng Pagbabayad</translation>
@@ -2311,6 +2312,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2731700343119398978">Mangyaring maghintay...</translation>
 <translation id="2731971182069536520">Sa susunod na i-restart mo ang iyong device, magsasagawa ang administrator mo ng isang beses na pag-update na magde-delete sa iyong lokal na data.</translation>
 <translation id="2732134891301408122">Karagdagang content na <ph name="CURRENT_ELEMENT" /> sa <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Nagsusumite ang thumbs up ng feedback na gusto mo ang mga resultang ito.</translation>
 <translation id="2733992589856193783">Gumawa ka ng passkey para sa site na ito. Kailangan mo ang iyong mobile device para mag-sign in.</translation>
 <translation id="27349076983469322">Maliwanag na background</translation>
 <translation id="2735712963799620190">Iskedyul</translation>
@@ -5680,6 +5682,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5431318178759467895">Kulay</translation>
 <translation id="5432145523462851548">Ipakita ang <ph name="FILE_NAME" /> sa folder</translation>
 <translation id="5432223177001837288">Para i-share ang audio, mag-share na lang ng tab</translation>
+<translation id="5432872710261597882">Nagsusumite ang thumbs up ng feedback na gusto mo ito.</translation>
 <translation id="543338862236136125">I-edit ang password</translation>
 <translation id="5434065355175441495">PKCS #1 RSA Encryption</translation>
 <translation id="5435274640623994081">I-enable ang pag-log ng earcon</translation>
@@ -5715,6 +5718,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Mga tala sa lock screen</translation>
 <translation id="5459864179070366255">Magpatuloy sa pag-install</translation>
+<translation id="5460861858595506978">Inspirasyon</translation>
 <translation id="5461050611724244538">Naputol ang koneksyon sa iyong telepono</translation>
 <translation id="5463275305984126951">Index ng <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Mag-sign up para sa mga email sa <ph name="DEVICE_TYPE" /></translation>
@@ -8901,6 +8905,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Mga detalye ng ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 na May RSA Encryption</translation>
+<translation id="7973149423217802477">Nagsusumite ang thumbs down ng feedback na hindi mo ito gusto.</translation>
 <translation id="7973776233567882054">Alin sa sumusunod ang pinakamahusay na naglalarawan sa iyong network?</translation>
 <translation id="797394244396603170">Piliin ang device kung saan mo gustong magbahagi ng mga file</translation>
 <translation id="7974566588408714340">Subukang muli gamit ang <ph name="EXTENSIONNAME" /></translation>

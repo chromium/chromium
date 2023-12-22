@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{Nagpapakita ngayon ng 1 window ng Chromium}one{Nagpapakita ngayon ng {count} window ng Chromium}other{Nagpapakita ngayon ng {count} na window ng Chromium}}</translation>
 <translation id="3344973607274501920">Hindi masuri ng Chromium ang iyong mga password. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="3366305173356742781">Data sa Chromium sa iyong account</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto. Posibleng kasama rito ang history at autofill.}one{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto. Posibleng kasama rito ang history at autofill.}other{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} na minuto. Posibleng kasama rito ang history at autofill.}}</translation>
 <translation id="3472200483164753384">Hindi sinusuportahan sa Chromium Canary</translation>
 <translation id="3478750326643748149">I-hide ang “Sulitin ang Chromium”</translation>
 <translation id="3512168799938877162">Hindi na-share ang password mo. Suriin ang iyong koneksyon sa internet at tiyaking naka-sign in ka sa Chromium. Pagkatapos ay subukan ulit.</translation>
@@ -284,6 +285,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="8909995017390087892">Chromium para sa iOS</translation>
 <translation id="8924617840944134898">Magbukas ng Tab na Incognito sa Chromium</translation>
 <translation id="894437814105052438">Kapag nag-sign out ka, hindi magsi-sync ang Chromium ng anumang bagong data sa iyong Google Account. Mananatili sa account ang data na dati nang na-sync.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto}one{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto}other{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} na minuto}}</translation>
 <translation id="8963279154877372067">Payagan ang mga notification sa Chromium na makatanggap ng mga alerto sa pagbaba ng presyo</translation>
 <translation id="900560297598578021">Naka-sign in bilang <ph name="EMAIL" />.
 
