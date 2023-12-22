@@ -1363,6 +1363,7 @@ struct ValidateUnwrappedTypeList<is_once, true, Receiver, Args...> {
 // `unretained_traits::MayDangleUntriaged`.
 template <typename StorageType>
 inline constexpr bool IsUnretainedMayDangle = false;
+
 template <typename T, RawPtrTraits PtrTraits>
 inline constexpr bool IsUnretainedMayDangle<
     UnretainedWrapper<T, unretained_traits::MayDangle, PtrTraits>> = true;
@@ -1372,6 +1373,7 @@ inline constexpr bool IsUnretainedMayDangle<
 // `StorageType::GetPtrType` is the same type as `FunctionParamType`.
 template <typename StorageType, typename FunctionParamType>
 inline constexpr bool UnretainedAndRawPtrHaveCompatibleTraits = false;
+
 template <typename T,
           RawPtrTraits PtrTraitsInUnretained,
           RawPtrTraits PtrTraitsInReceiver>
@@ -1631,6 +1633,41 @@ struct ParamsCanBeBound<is_method,
 template <template <typename> class CallbackT>
 struct BindHelper {
  private:
+  static constexpr bool kIsOnce =
+      is_instantiation<OnceCallback, CallbackT<void()>>;
+
+  template <typename Functor,
+            bool v = !is_instantiation<OnceCallback, std::decay_t<Functor>> ||
+                     (kIsOnce && std::is_rvalue_reference_v<Functor&&> &&
+                      !std::is_const_v<std::remove_reference_t<Functor>>)>
+  struct OnceCallbackFunctorIsValid {
+    static constexpr bool value = [] {
+      if constexpr (kIsOnce) {
+        static_assert(v,
+                      "BindOnce() requires non-const rvalue for OnceCallback "
+                      "binding, i.e. base::BindOnce(std::move(callback)).");
+      } else {
+        static_assert(v, "BindRepeating() cannot bind OnceCallback. Use "
+                         "BindOnce() with std::move().");
+      }
+      return v;
+    }();
+  };
+
+  template <typename... Args>
+  struct NoBindArgToOnceCallbackIsBasePassed {
+    static constexpr bool value = [] {
+      // Can't use a defaulted template param since it can't come after `Args`.
+      constexpr bool v =
+          !kIsOnce ||
+          (... && !is_instantiation<PassedWrapper, std::decay_t<Args>>);
+      static_assert(
+          v,
+          "Use std::move() instead of base::Passed() with base::BindOnce().");
+      return v;
+    }();
+  };
+
   template <
       typename Functor,
       bool v =
@@ -1657,9 +1694,8 @@ struct BindHelper {
     }();
   };
 
- public:
   template <typename Functor, typename... Args>
-  static auto Bind(Functor&& functor, Args&&... args) {
+  static auto BindImpl(Functor&& functor, Args&&... args) {
     // There are a lot of variables and type aliases here. An example will be
     // illustrative. Assume we call:
     // ```
@@ -1678,7 +1714,6 @@ struct BindHelper {
     // ```
     // And the implementation below is effectively:
     // ```
-    //   static constexpr bool kIsOnce = true;
     //   using FunctorTraits = struct {
     //     using RunType = double(S*, int, const std::string&);
     //     static constexpr bool is_method = true;
@@ -1706,8 +1741,6 @@ struct BindHelper {
     //     using CallbackType = OnceCallback<double(const std::string&)>;
     //     ...
     // ```
-    static constexpr bool kIsOnce =
-        is_instantiation<OnceCallback, CallbackT<void()>>;
     using FunctorTraits = MakeFunctorTraits<Functor>;
     using ValidatedUnwrappedTypes =
         ValidateUnwrappedTypeList<kIsOnce, FunctorTraits::is_method, Args&&...>;
@@ -1759,7 +1792,7 @@ struct BindHelper {
   // `RepeatingCallback`.
   template <typename T>
     requires is_instantiation<CallbackT, T>
-  static T Bind(T callback) {
+  static T BindImpl(T callback) {
     // Guard against null pointers accidentally ending up in posted tasks,
     // causing hard-to-debug crashes.
     CHECK(callback);
@@ -1770,90 +1803,36 @@ struct BindHelper {
   // intentionally not supported.
   template <typename Signature>
     requires is_instantiation<CallbackT, OnceCallback<Signature>>
-  static OnceCallback<Signature> Bind(RepeatingCallback<Signature> callback) {
-    CHECK(callback);
-    return callback;
+  static OnceCallback<Signature> BindImpl(
+      RepeatingCallback<Signature> callback) {
+    return BindImpl(OnceCallback<Signature>(callback));
   }
 
-  // Must be defined after `Bind()` since it refers to it.
+  // Must be defined after `BindImpl()` since it refers to it.
   template <typename Functor, typename... Args>
-  struct BindWouldSucceed {
+  struct BindImplWouldSucceed {
     // Can't use a defaulted template param since it can't come after `Args`.
     //
-    // Determining if `Bind()` would succeed is not as simple as verifying any
-    // conditions it checks directly; those only control when it's safe to call
-    // other methods, which in turn may fail. However, ultimately, any failure
-    // will result in returning `void`, so check for a non-`void` return type.
+    // Determining if `BindImpl()` would succeed is not as simple as verifying
+    // any conditions it checks directly; those only control when it's safe to
+    // call other methods, which in turn may fail. However, ultimately, any
+    // failure will result in returning `void`, so check for a non-`void` return
+    // type.
     static constexpr bool value =
         !std::same_as<void,
-                      decltype(Bind(std::declval<Functor&&>(),
-                                    std::declval<Args&&>()...))>;
-  };
-};
-
-// Implementation of `BindOnce()`, which checks preconditions before handing off
-// to `BindHelper<>::Bind()`.
-template <typename Functor, typename... Args>
-struct BindOnceHelper {
- private:
-  template <bool v = !is_instantiation<OnceCallback, std::decay_t<Functor>> ||
-                     (std::is_rvalue_reference_v<Functor&&> &&
-                      !std::is_const_v<std::remove_reference_t<Functor>>)>
-  struct OnceCallbackFunctorIsConstRvalue {
-    static constexpr bool value = [] {
-      static_assert(v, "BindOnce() requires non-const rvalue for OnceCallback "
-                       "binding, i.e. base::BindOnce(std::move(callback)).");
-      return v;
-    }();
-  };
-
-  template <bool v =
-                (... && !is_instantiation<PassedWrapper, std::decay_t<Args>>)>
-  struct NoBindArgIsBasePassed {
-    static constexpr bool value = [] {
-      static_assert(
-          v,
-          "Use std::move() instead of base::Passed() with base::BindOnce().");
-      return v;
-    }();
+                      decltype(BindImpl(std::declval<Functor&&>(),
+                                        std::declval<Args&&>()...))>;
   };
 
  public:
-  static auto BindOnce(Functor&& functor, Args&&... args) {
-    if constexpr (std::conjunction_v<OnceCallbackFunctorIsConstRvalue<>,
-                                     NoBindArgIsBasePassed<>,
-                                     BindHelper<OnceCallback>::BindWouldSucceed<
-                                         Functor, Args...>>) {
-      return BindHelper<OnceCallback>::Bind(std::forward<Functor>(functor),
-                                            std::forward<Args>(args)...);
-    } else {
-      return BindFailedCheckPreviousErrors();
-    }
-  }
-};
-
-// Implementation of `BindRepeating()`, which checks preconditions before
-// handing off to `BindHelper<>::Bind()`.
-template <typename Functor, typename... Args>
-struct BindRepeatingHelper {
- private:
-  template <bool v = !is_instantiation<OnceCallback, std::decay_t<Functor>>>
-  struct FunctorIsNotOnceCallback {
-    static constexpr bool value = [] {
-      static_assert(v,
-                    "BindRepeating() cannot bind OnceCallback. Use BindOnce() "
-                    "with std::move().");
-      return v;
-    }();
-  };
-
- public:
-  static auto BindRepeating(Functor&& functor, Args&&... args) {
-    if constexpr (std::conjunction_v<FunctorIsNotOnceCallback<>,
-                                     BindHelper<RepeatingCallback>::
-                                         BindWouldSucceed<Functor, Args...>>) {
-      return BindHelper<RepeatingCallback>::Bind(std::forward<Functor>(functor),
-                                                 std::forward<Args>(args)...);
+  template <typename Functor, typename... Args>
+  static auto Bind(Functor&& functor, Args&&... args) {
+    if constexpr (std::conjunction_v<
+                      OnceCallbackFunctorIsValid<Functor>,
+                      NoBindArgToOnceCallbackIsBasePassed<Args...>,
+                      BindImplWouldSucceed<Functor, Args...>>) {
+      return BindImpl(std::forward<Functor>(functor),
+                      std::forward<Args>(args)...);
     } else {
       return BindFailedCheckPreviousErrors();
     }
