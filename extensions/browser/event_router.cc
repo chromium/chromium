@@ -1562,12 +1562,12 @@ void EventRouter::UnbindServiceWorkerEventDispatcher(RenderProcessHost* host,
 }
 
 Event::Event(events::HistogramValue histogram_value,
-             base::StringPiece event_name,
+             std::string_view event_name,
              base::Value::List event_args)
     : Event(histogram_value, event_name, std::move(event_args), nullptr) {}
 
 Event::Event(events::HistogramValue histogram_value,
-             base::StringPiece event_name,
+             std::string_view event_name,
              base::Value::List event_args,
              content::BrowserContext* restrict_to_browser_context,
              absl::optional<mojom::ContextType> restrict_to_context_type)
@@ -1581,7 +1581,7 @@ Event::Event(events::HistogramValue histogram_value,
             mojom::EventFilteringInfo::New()) {}
 
 Event::Event(events::HistogramValue histogram_value,
-             base::StringPiece event_name,
+             std::string_view event_name,
              base::Value::List event_args,
              content::BrowserContext* restrict_to_browser_context,
              absl::optional<mojom::ContextType> restrict_to_context_type,

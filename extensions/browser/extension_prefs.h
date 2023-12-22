@@ -9,10 +9,11 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -263,7 +264,7 @@ class ExtensionPrefs : public KeyedService {
   // |extension_id| from |pref_key|. If the value is not found or invalid,
   // return the |default_bit|.
   int GetBitMapPrefBits(const std::string& extension_id,
-                        base::StringPiece pref_key,
+                        std::string_view pref_key,
                         int default_bit) const;
   // Modifies the extensions bit map pref |pref_key| to add a new bit value,
   // remove an existing bit value, or clear all bits. If |operation| is
@@ -272,7 +273,7 @@ class ExtensionPrefs : public KeyedService {
   void ModifyBitMapPrefBits(const std::string& extension_id,
                             int pending_bits,
                             BitMapPrefOperation operation,
-                            base::StringPiece pref_key,
+                            std::string_view pref_key,
                             int default_bit);
 
   // Gets or sets profile wide ExtensionPrefs.
@@ -318,7 +319,7 @@ class ExtensionPrefs : public KeyedService {
                    base::Time value);
 
   void UpdateExtensionPref(const std::string& id,
-                           base::StringPiece key,
+                           std::string_view key,
                            std::optional<base::Value> value);
 
   void DeleteExtensionPrefs(const std::string& id);
@@ -347,27 +348,27 @@ class ExtensionPrefs : public KeyedService {
                             const PrefMap& pref) const;
 
   bool ReadPrefAsBoolean(const std::string& extension_id,
-                         base::StringPiece pref_key,
+                         std::string_view pref_key,
                          bool* out_value) const;
 
   bool ReadPrefAsInteger(const std::string& extension_id,
-                         base::StringPiece pref_key,
+                         std::string_view pref_key,
                          int* out_value) const;
 
   bool ReadPrefAsString(const std::string& extension_id,
-                        base::StringPiece pref_key,
+                        std::string_view pref_key,
                         std::string* out_value) const;
 
   const base::Value::List* ReadPrefAsList(const std::string& extension_id,
-                                          base::StringPiece pref_key) const;
+                                          std::string_view pref_key) const;
 
   const base::Value::Dict* ReadPrefAsDict(const std::string& extension_id,
-                                          base::StringPiece pref_key) const;
+                                          std::string_view pref_key) const;
 
   // Interprets the list pref, |pref_key| in |extension_id|'s preferences, as a
   // URLPatternSet. The |valid_schemes| specify how to parse the URLPatterns.
   bool ReadPrefAsURLPatternSet(const std::string& extension_id,
-                               base::StringPiece pref_key,
+                               std::string_view pref_key,
                                URLPatternSet* result,
                                int valid_schemes) const;
 
@@ -375,7 +376,7 @@ class ExtensionPrefs : public KeyedService {
   // to |extension_id|. If |set| is empty, the preference for |pref_key| is
   // cleared.
   void SetExtensionPrefURLPatternSet(const std::string& extension_id,
-                                     base::StringPiece pref_key,
+                                     std::string_view pref_key,
                                      const URLPatternSet& set);
 
   bool HasPrefForExtension(const std::string& extension_id) const;
@@ -790,7 +791,7 @@ class ExtensionPrefs : public KeyedService {
       const mojom::ManifestLocation location);
 
   // Join |parts| to get a prefs key
-  static std::string JoinPrefs(const std::vector<base::StringPiece>& parts);
+  static std::string JoinPrefs(const std::vector<std::string_view>& parts);
 
   // TODO(blee@igalia.com) Need to move all the DNR related codes to the helper.
   //                       (DeclarativeNetRequestPrefsHelper)
@@ -830,18 +831,18 @@ class ExtensionPrefs : public KeyedService {
   // Read the boolean preference entry and return true if the preference exists
   // and the preference's value is true; false otherwise.
   bool ReadPrefAsBooleanAndReturn(const std::string& extension_id,
-                                  base::StringPiece pref_key) const;
+                                  std::string_view pref_key) const;
 
   // Interprets |pref_key| in |extension_id|'s preferences as an
   // PermissionSet, and passes ownership of the set to the caller.
   std::unique_ptr<PermissionSet> ReadPrefAsPermissionSet(
       const std::string& extension_id,
-      base::StringPiece pref_key) const;
+      std::string_view pref_key) const;
 
   // Converts the |new_value| to its value and sets the |pref_key| pref
   // belonging to |extension_id|.
   void SetExtensionPrefPermissionSet(const std::string& extension_id,
-                                     base::StringPiece pref_key,
+                                     std::string_view pref_key,
                                      const PermissionSet& new_value);
 
   // Common implementation to add permissions to a stored permission set.
@@ -861,7 +862,7 @@ class ExtensionPrefs : public KeyedService {
   // Returns an immutable base::Value for extension |id|'s prefs, or nullptr if
   // it doesn't exist.
   const base::Value* GetPrefAsValue(const std::string& extension_id,
-                                    base::StringPiece pref_key) const;
+                                    std::string_view pref_key) const;
 
   // Modifies the extensions disable reasons to add a new reason, remove an
   // existing reason, or clear all reasons. Notifies observers if the set of

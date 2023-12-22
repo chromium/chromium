@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -14,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "net/http/http_request_headers.h"
@@ -94,7 +92,7 @@ class FormDataParserUrlEncoded : public FormDataParser {
   // Implementation of FormDataParser.
   bool AllDataReadOK() override;
   bool GetNextNameValue(Result* result) override;
-  bool SetSource(base::StringPiece source) override;
+  bool SetSource(std::string_view source) override;
 
  private:
   // Returns the pattern to match a single name-value pair. This could be even
@@ -206,7 +204,7 @@ class FormDataParserMultipart : public FormDataParser {
   // Implementation of FormDataParser.
   bool AllDataReadOK() override;
   bool GetNextNameValue(Result* result) override;
-  bool SetSource(base::StringPiece source) override;
+  bool SetSource(std::string_view source) override;
 
  private:
   enum State {
@@ -227,8 +225,8 @@ class FormDataParserMultipart : public FormDataParser {
   // Returns true iff |source_| is seeked forward. Sets |value_assigned|
   // to true iff |value| has been assigned to. Sets |value_is_binary| to true if
   // header has content-type: application/octet-stream.
-  bool TryReadHeader(base::StringPiece* name,
-                     base::StringPiece* value,
+  bool TryReadHeader(std::string_view* name,
+                     std::string_view* value,
                      bool* value_assigned,
                      bool* value_is_binary);
 
@@ -236,7 +234,7 @@ class FormDataParserMultipart : public FormDataParser {
   // portion of a body part. An attempt is made to read the input until the end
   // of that body part. If |data| is not NULL, it is set to contain the data
   // portion. Returns true iff the reading was successful.
-  bool FinishReadingPart(base::StringPiece* data);
+  bool FinishReadingPart(std::string_view* data);
 
   // These methods could be even static, but then we would have to spend more
   // code on initializing the cached pointer to g_patterns.Get().
@@ -285,7 +283,7 @@ class FormDataParserMultipart : public FormDataParser {
 FormDataParser::Result::Result() = default;
 FormDataParser::Result::~Result() = default;
 
-void FormDataParser::Result::SetBinaryValue(base::StringPiece str) {
+void FormDataParser::Result::SetBinaryValue(std::string_view str) {
   value_ = base::Value(
       base::Value::BlobStorage(str.data(), str.data() + str.size()));
 }
@@ -399,7 +397,7 @@ bool FormDataParserUrlEncoded::GetNextNameValue(Result* result) {
   return success && !source_malformed_;
 }
 
-bool FormDataParserUrlEncoded::SetSource(base::StringPiece source) {
+bool FormDataParserUrlEncoded::SetSource(std::string_view source) {
   if (source_set_)
     return false;  // We do not allow multiple sources for this parser.
   source_ = source;
@@ -426,7 +424,7 @@ bool FormDataParserMultipart::AllDataReadOK() {
   return state_ == STATE_FINISHED;
 }
 
-bool FormDataParserMultipart::FinishReadingPart(base::StringPiece* data) {
+bool FormDataParserMultipart::FinishReadingPart(std::string_view* data) {
   std::string_view orig = source_;
   while (!source_.starts_with(dash_boundary_separator_)) {
     if (!RE2::Consume(&source_, crlf_free_pattern()) ||
@@ -469,8 +467,8 @@ bool FormDataParserMultipart::GetNextNameValue(Result* result) {
     return false;
 
   // 1. Read body-part headers.
-  base::StringPiece name;
-  base::StringPiece value;
+  std::string_view name;
+  std::string_view value;
   bool value_assigned = false;
   bool value_is_binary = false;
   bool value_assigned_temp;
@@ -514,7 +512,7 @@ bool FormDataParserMultipart::GetNextNameValue(Result* result) {
   return return_value;
 }
 
-bool FormDataParserMultipart::SetSource(base::StringPiece source) {
+bool FormDataParserMultipart::SetSource(std::string_view source) {
   if (source.data() == nullptr || !source_.empty())
     return false;
   source_ = source;
@@ -549,8 +547,8 @@ bool FormDataParserMultipart::SetSource(base::StringPiece source) {
   return state_ != STATE_ERROR;
 }
 
-bool FormDataParserMultipart::TryReadHeader(base::StringPiece* name,
-                                            base::StringPiece* value,
+bool FormDataParserMultipart::TryReadHeader(std::string_view* name,
+                                            std::string_view* value,
                                             bool* value_assigned,
                                             bool* value_is_binary) {
   *value_assigned = false;

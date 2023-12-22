@@ -7,10 +7,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
-// Cannot forward declare StringPiece because it is a typedef.
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 namespace net {
@@ -37,8 +36,8 @@ class FormDataParser {
     const std::string& name() const { return name_; }
     base::Value take_value() { return std::move(value_); }
 
-    void set_name(base::StringPiece str) { name_ = str; }
-    void SetBinaryValue(base::StringPiece str);
+    void set_name(std::string_view str) { name_ = str; }
+    void SetBinaryValue(std::string_view str);
     void SetStringValue(std::string str);
 
    private:
@@ -78,7 +77,7 @@ class FormDataParser {
   // ownership of |source| is left with the caller and the source should live
   // until |this| dies or |this->SetSource()| is called again, whichever comes
   // sooner. Returns true on success.
-  virtual bool SetSource(base::StringPiece source) = 0;
+  virtual bool SetSource(std::string_view source) = 0;
 
  protected:
   FormDataParser();

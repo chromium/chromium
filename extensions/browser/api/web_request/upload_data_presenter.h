@@ -10,8 +10,9 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
+
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 namespace base {
@@ -54,7 +55,7 @@ class UploadDataPresenter {
   UploadDataPresenter& operator=(const UploadDataPresenter&) = delete;
 
   virtual ~UploadDataPresenter();
-  virtual void FeedBytes(base::StringPiece bytes) = 0;
+  virtual void FeedBytes(std::string_view bytes) = 0;
   virtual void FeedFile(const base::FilePath& path) = 0;
   virtual bool Succeeded() = 0;
   virtual std::optional<base::Value> TakeResult() = 0;
@@ -76,7 +77,7 @@ class RawDataPresenter : public UploadDataPresenter {
   ~RawDataPresenter() override;
 
   // Implementation of UploadDataPresenter.
-  void FeedBytes(base::StringPiece bytes) override;
+  void FeedBytes(std::string_view bytes) override;
   void FeedFile(const base::FilePath& path) override;
   bool Succeeded() override;
   std::optional<base::Value> TakeResult() override;
@@ -108,7 +109,7 @@ class ParsedDataPresenter : public UploadDataPresenter {
   ~ParsedDataPresenter() override;
 
   // Implementation of UploadDataPresenter.
-  void FeedBytes(base::StringPiece bytes) override;
+  void FeedBytes(std::string_view bytes) override;
   void FeedFile(const base::FilePath& path) override;
   bool Succeeded() override;
   std::optional<base::Value> TakeResult() override;

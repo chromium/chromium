@@ -7,7 +7,8 @@
 
 #include <optional>
 #include <string>
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "ui/base/page_transition_types.h"
 
@@ -47,7 +48,7 @@ bool AllowCrossRendererResourceLoadHelper(bool is_guest,
                                           const Extension* extension,
                                           const Extension* owner_extension,
                                           const std::string& partition_id,
-                                          base::StringPiece resource_path,
+                                          std::string_view resource_path,
                                           ui::PageTransition page_transition,
                                           bool* allowed);
 

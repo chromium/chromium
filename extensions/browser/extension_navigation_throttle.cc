@@ -5,6 +5,7 @@
 #include "extensions/browser/extension_navigation_throttle.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "components/guest_view/browser/guest_view_base.h"
@@ -195,8 +196,8 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   // Hosted apps don't have any associated resources outside of icons, so
   // block any requests to URLs in their extension origin.
   if (target_extension->is_hosted_app()) {
-    base::StringPiece resource_root_relative_path =
-        url.path_piece().empty() ? base::StringPiece()
+    std::string_view resource_root_relative_path =
+        url.path_piece().empty() ? std::string_view()
                                  : url.path_piece().substr(1);
     if (!IconsInfo::GetIcons(target_extension)
              .ContainsPath(resource_root_relative_path)) {

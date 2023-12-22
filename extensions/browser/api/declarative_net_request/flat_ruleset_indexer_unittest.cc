@@ -8,6 +8,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
@@ -121,7 +122,7 @@ dnr_api::URLTransform CreateUrlTransform() {
 // Helper to verify the indexed form of URlTransform created by
 // |CreateUrlTransform()|.
 bool VerifyUrlTransform(const flat::UrlTransform& flat_transform) {
-  auto is_string_equal = [](base::StringPiece str,
+  auto is_string_equal = [](std::string_view str,
                             const flatbuffers::String* flat_str) {
     return flat_str && ToString(flat_str) == str;
   };
@@ -134,8 +135,8 @@ bool VerifyUrlTransform(const flat::UrlTransform& flat_transform) {
 
     auto does_query_key_value_match = [&flat_transform, &is_string_equal](
                                           int query_key_index,
-                                          base::StringPiece expected_key,
-                                          base::StringPiece expected_value,
+                                          std::string_view expected_key,
+                                          std::string_view expected_value,
                                           bool expected_replace_only) {
       const flat::QueryKeyValue* query_pair =
           flat_transform.add_or_replace_query_params()->Get(query_key_index);

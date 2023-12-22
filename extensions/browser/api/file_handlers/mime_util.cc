@@ -5,11 +5,11 @@
 #include "extensions/browser/api/file_handlers/mime_util.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -41,7 +41,7 @@ void SniffMimeType(const base::FilePath& local_path, std::string* result) {
       base::ReadFile(local_path, &content[0], static_cast<int>(content.size()));
 
   if (bytes_read >= 0) {
-    net::SniffMimeType(base::StringPiece(&content[0], bytes_read),
+    net::SniffMimeType(std::string_view(&content[0], bytes_read),
                        net::FilePathToFileURL(local_path),
                        std::string(),  // type_hint (passes no hint)
                        net::ForceSniffFileUrlsForHtml::kDisabled, result);
@@ -51,8 +51,8 @@ void SniffMimeType(const base::FilePath& local_path, std::string* result) {
       // better match.
       // TODO(amistry): Potentially add other types (i.e. SVG).
       std::string secondary_result;
-      net::SniffMimeTypeFromLocalData(
-          base::StringPiece(&content[0], bytes_read), &secondary_result);
+      net::SniffMimeTypeFromLocalData(std::string_view(&content[0], bytes_read),
+                                      &secondary_result);
       if (!secondary_result.empty())
         *result = secondary_result;
     }

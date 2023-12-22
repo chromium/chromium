@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/web_contents_capture_client.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
@@ -102,8 +104,8 @@ bool WebContentsCaptureClient::EncodeBitmap(const SkBitmap& bitmap,
   if (!encoded)
     return false;
 
-  base::StringPiece stream_as_string(reinterpret_cast<const char*>(data.data()),
-                                     data.size());
+  std::string_view stream_as_string(reinterpret_cast<const char*>(data.data()),
+                                    data.size());
 
   base::Base64Encode(stream_as_string, base64_result);
   base64_result->insert(

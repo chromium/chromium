@@ -103,7 +103,7 @@ std::unique_ptr<VerifiedContents> VerifiedContents::CreateFromFile(
 
 std::unique_ptr<VerifiedContents> VerifiedContents::Create(
     base::span<const uint8_t> public_key,
-    base::StringPiece contents) {
+    std::string_view contents) {
   // Note: VerifiedContents constructor is private.
   auto verified_contents = base::WrapUnique(new VerifiedContents(public_key));
   std::string payload;
@@ -247,7 +247,7 @@ bool VerifiedContents::TreeHashRootEquals(const base::FilePath& relative_path,
 // that it is for a given extension), but in the future we may validate using
 // the extension's key too (eg for non-webstore hosted extensions such as
 // enterprise installs).
-bool VerifiedContents::GetPayload(base::StringPiece contents,
+bool VerifiedContents::GetPayload(std::string_view contents,
                                   std::string* payload) {
   std::optional<base::Value> top_list = base::JSONReader::Read(contents);
   if (!top_list || !top_list->is_list())

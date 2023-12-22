@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -489,8 +490,8 @@ void ExtensionDownloader::CreateManifestLoader() {
   const ExtensionIdSet extension_ids = active_request->GetExtensionIds();
   NotifyExtensionsDownloadStageChanged(
       extension_ids, ExtensionDownloaderDelegate::Stage::DOWNLOADING_MANIFEST);
-  std::vector<base::StringPiece> id_vector(extension_ids.begin(),
-                                           extension_ids.end());
+  std::vector<std::string_view> id_vector(extension_ids.begin(),
+                                          extension_ids.end());
   std::string id_list = base::JoinString(id_vector, ",");
   VLOG(2) << "Fetching " << active_request->full_url() << " for " << id_list;
   VLOG(2) << "Update interactivity: "

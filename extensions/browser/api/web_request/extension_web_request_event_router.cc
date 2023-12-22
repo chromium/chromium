@@ -5,6 +5,7 @@
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
@@ -169,9 +170,9 @@ void LogRequestAction(RequestAction action) {
 // Returns the corresponding EventTypes for the given |event_name|. If
 // |event_name| is an invalid event, returns EventTypes::kInvalidEvent.
 WebRequestEventRouter::EventTypes GetEventTypeFromEventName(
-    base::StringPiece event_name) {
+    std::string_view event_name) {
   constexpr auto kRequestStageMap = base::MakeFixedFlatMap<
-      base::StringPiece, WebRequestEventRouter::EventTypes>(
+      std::string_view, WebRequestEventRouter::EventTypes>(
       {{keys::kOnBeforeRequest, WebRequestEventRouter::kOnBeforeRequest},
        {keys::kOnBeforeSendHeaders,
         WebRequestEventRouter::kOnBeforeSendHeaders},
@@ -198,7 +199,7 @@ WebRequestEventRouter::EventTypes GetEventTypeFromEventName(
                                       : it->second;
 }
 
-bool IsWebRequestEvent(base::StringPiece event_name) {
+bool IsWebRequestEvent(std::string_view event_name) {
   return GetEventTypeFromEventName(event_name) !=
          WebRequestEventRouter::kInvalidEvent;
 }

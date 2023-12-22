@@ -824,7 +824,7 @@ data_decoder::mojom::JsonParser* SandboxedUnpacker::GetJsonParserPtr() {
   return io_thread_state_->GetJsonParserPtr(this);
 }
 
-void SandboxedUnpacker::ReportUnpackExtensionFailed(base::StringPiece error) {
+void SandboxedUnpacker::ReportUnpackExtensionFailed(std::string_view error) {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
   ReportFailure(SandboxedUnpackerFailureReason::UNPACKER_CLIENT_FAILED,
                 l10n_util::GetStringFUTF16(IDS_EXTENSION_PACKAGE_ERROR_MESSAGE,

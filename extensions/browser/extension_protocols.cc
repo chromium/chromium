@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -230,9 +231,9 @@ bool URLIsForExtensionIcon(const GURL& url, const Extension* extension) {
     return false;
 
   DCHECK_EQ(url.host(), extension->id());
-  base::StringPiece path = url.path_piece();
+  std::string_view path = url.path_piece();
   DCHECK(path.length() > 0 && path[0] == '/');
-  base::StringPiece path_without_slash = path.substr(1);
+  std::string_view path_without_slash = path.substr(1);
   return IconsInfo::GetIcons(extension).ContainsPath(path_without_slash);
 }
 
@@ -297,8 +298,8 @@ void GetSecurityPolicyForURL(const network::ResourceRequest& request,
       (extension.creation_flags() & Extension::FOLLOW_SYMLINKS_ANYWHERE) != 0;
 }
 
-bool IsPathEqualTo(const GURL& url, base::StringPiece test) {
-  base::StringPiece path_piece = url.path_piece();
+bool IsPathEqualTo(const GURL& url, std::string_view test) {
+  std::string_view path_piece = url.path_piece();
   return path_piece.size() > 1 && path_piece.substr(1) == test;
 }
 

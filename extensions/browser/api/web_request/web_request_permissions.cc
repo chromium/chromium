@@ -4,9 +4,10 @@
 
 #include "extensions/browser/api/web_request/web_request_permissions.h"
 
+#include <string_view>
+
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
@@ -190,7 +191,7 @@ bool IsSensitiveGoogleClientUrl(const extensions::WebRequestInfo& request) {
   if (!url.DomainIs(kGoogleCom))
     return false;
 
-  base::StringPiece host = url.host_piece();
+  std::string_view host = url.host_piece();
 
   while (base::EndsWith(host, "."))
     host.remove_suffix(1u);
@@ -203,14 +204,15 @@ bool IsSensitiveGoogleClientUrl(const extensions::WebRequestInfo& request) {
   // These URLs are only protected for requests from the browser, and not for
   // requests from common renderers, because clients*.google.com are also used
   // by websites.
-  base::StringPiece::size_type pos = host.rfind(kClient);
-  if (pos == base::StringPiece::npos)
+  std::string_view::size_type pos = host.rfind(kClient);
+  if (pos == std::string_view::npos) {
     return false;
+  }
 
   if (pos > 0 && host[pos - 1] != '.')
     return false;
 
-  for (base::StringPiece::const_iterator
+  for (std::string_view::const_iterator
            i = host.begin() + pos + kClientLength,
            end = host.end() - (kGoogleComLength + 1);
        i != end; ++i) {

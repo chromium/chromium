@@ -8,7 +8,9 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
+
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -17,7 +19,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -643,18 +644,18 @@ struct Event {
   // option to a constructor version for clients that need to disptach events to
   // related browser_contexts. See https://crbug.com/726022.
   Event(events::HistogramValue histogram_value,
-        base::StringPiece event_name,
+        std::string_view event_name,
         base::Value::List event_args);
 
   Event(events::HistogramValue histogram_value,
-        base::StringPiece event_name,
+        std::string_view event_name,
         base::Value::List event_args,
         content::BrowserContext* restrict_to_browser_context,
         absl::optional<mojom::ContextType> restrict_to_context_type =
             absl::nullopt);
 
   Event(events::HistogramValue histogram_value,
-        base::StringPiece event_name,
+        std::string_view event_name,
         base::Value::List event_args,
         content::BrowserContext* restrict_to_browser_context,
         absl::optional<mojom::ContextType> restrict_to_context_type,
