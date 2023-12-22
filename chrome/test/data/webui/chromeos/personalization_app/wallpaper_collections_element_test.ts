@@ -578,6 +578,10 @@ suite('WallpaperCollectionsElementTest', function() {
     assertTrue(
         promotedTiles[0]!.hasAttribute('data-sea-pen'),
         'expected sea pen promoted tile');
+
+    const experimentTag =
+        wallpaperCollectionsElement.shadowRoot!.getElementById('experimentTag');
+    assertTrue(!!experimentTag, 'expected experiment tag for Sea Pen tile');
   });
 
   test('shows time of day tile once', async () => {
@@ -614,5 +618,9 @@ suite('WallpaperCollectionsElementTest', function() {
             .querySelector<WallpaperGridItemElement>(`${
                 WallpaperGridItemElement.is}[data-is-time-of-day-collection]`);
     assertTrue(!!timeOfDayTile, 'time of day tile is shown');
+
+    const experimentTag =
+        wallpaperCollectionsElement.shadowRoot!.getElementById('experimentTag');
+    assertFalse(!!experimentTag, 'no experiment tag displayed');
   });
 });

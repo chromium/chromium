@@ -362,7 +362,8 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_SEA_PEN_WALLPAPER_POWERED_BY_GOOGLE},
       {"seaPenDeleteWallpaper", IDS_SEA_PEN_DELETE_WALLPAPER},
       {"seaPenCreateMore", IDS_SEA_PEN_CREATE_MORE},
-      {"seaPenAbout", IDS_SEA_PEN_ABOUT}};
+      {"seaPenAbout", IDS_SEA_PEN_ABOUT},
+      {"seaPenExperimentLabel", IDS_SEA_PEN_EXPERIMENT_LABEL}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
 
