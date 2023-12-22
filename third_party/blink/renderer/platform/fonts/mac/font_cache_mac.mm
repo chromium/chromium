@@ -35,6 +35,7 @@
 #import <CoreText/CoreText.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
@@ -52,6 +53,10 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
+
+using base::apple::CFToNSPtrCast;
+using base::apple::NSToCFOwnershipCast;
+using base::apple::ScopedCFTypeRef;
 
 // Forward declare Mac SPIs.
 // Request for public API: rdar://13803570
@@ -210,9 +215,11 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   bool synthetic_bold = IsAppKitFontWeightBold(weight) &&
                         !IsAppKitFontWeightBold(substitute_font_weight);
 
-  std::unique_ptr<FontPlatformData> alternate_font = FontPlatformDataFromNSFont(
-      substitute_font, font_description.EffectiveFontSize(),
-      font_description.SpecifiedSize(), synthetic_bold,
+  std::unique_ptr<FontPlatformData> alternate_font = FontPlatformDataFromCTFont(
+      ScopedCFTypeRef<CTFontRef>(
+          base::apple::NSToCFOwnershipCast(substitute_font)),
+      font_description.EffectiveFontSize(), font_description.SpecifiedSize(),
+      synthetic_bold,
       (traits & NSFontItalicTrait) &&
           !(substitute_font_traits & NSFontItalicTrait),
       font_description.TextRendering(), ResolvedFontFeatures(),
@@ -248,30 +255,26 @@ scoped_refptr<SimpleFontData> FontCache::GetLastResortFallbackFont(
 std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
     const FontDescription& font_description,
     const FontFaceCreationParams& creation_params,
-    float font_size,
+    float size,
     AlternateFontName alternate_name) {
   NSFontTraitMask traits = font_description.Style() ? NSFontItalicTrait : 0;
-  float size = font_size;
 
-  NSFont* matched_font = nullptr;
+  ScopedCFTypeRef<CTFontRef> matched_font;
   if (alternate_name == AlternateFontName::kLocalUniqueFace &&
       RuntimeEnabledFeatures::FontSrcLocalMatchingEnabled()) {
-    matched_font = base::apple::CFToNSOwnershipCast(
-        MatchUniqueFont(creation_params.Family(), size).release());
+    matched_font = MatchUniqueFont(creation_params.Family(), size);
   } else if (creation_params.Family() == font_family_names::kSystemUi) {
-    matched_font = base::apple::CFToNSOwnershipCast(
+    matched_font =
         MatchSystemUIFont(font_description.Weight(), font_description.Style(),
-                          font_description.Stretch(), size)
-            .release());
+                          font_description.Stretch(), size);
   } else if (RuntimeEnabledFeatures::FontMatchingCTMigrationEnabled()) {
-    matched_font = base::apple::CFToNSOwnershipCast(
-        MatchFontFamily(creation_params.Family(), font_description.Weight(),
-                        font_description.Style(), font_description.Stretch(),
-                        size)
-            .release());
+    matched_font = MatchFontFamily(
+        creation_params.Family(), font_description.Weight(),
+        font_description.Style(), font_description.Stretch(), size);
   } else {
-    matched_font = MatchNSFontFamily(creation_params.Family(), traits,
-                                     font_description.Weight(), size);
+    matched_font = ScopedCFTypeRef<CTFontRef>(NSToCFOwnershipCast(
+        MatchNSFontFamily(creation_params.Family(), traits,
+                          font_description.Weight(), size)));
   }
   if (!matched_font)
     return nullptr;
@@ -279,8 +282,10 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
   NSFontManager* font_manager = NSFontManager.sharedFontManager;
   NSFontTraitMask actual_traits = 0;
   if (font_description.Style())
-    actual_traits = [font_manager traitsOfFont:matched_font];
-  NSInteger actual_weight = [font_manager weightOfFont:matched_font];
+    actual_traits =
+        [font_manager traitsOfFont:CFToNSPtrCast(matched_font.get())];
+  NSInteger actual_weight =
+      [font_manager weightOfFont:CFToNSPtrCast(matched_font.get())];
 
   NSInteger app_kit_weight = ToAppKitFontWeight(font_description.Weight());
 
@@ -300,7 +305,7 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
   // font loading failing.  Out-of-process loading occurs for registered fonts
   // stored in non-system locations.  When loading fails, we do not want to use
   // the returned FontPlatformData since it will not have a valid SkTypeface.
-  std::unique_ptr<FontPlatformData> platform_data = FontPlatformDataFromNSFont(
+  std::unique_ptr<FontPlatformData> platform_data = FontPlatformDataFromCTFont(
       matched_font, size, font_description.SpecifiedSize(), synthetic_bold,
       synthetic_italic, font_description.TextRendering(),
       ResolvedFontFeatures(), font_description.Orientation(),
