@@ -158,6 +158,7 @@ class HttpCacheDataRemoverTest : public testing::Test {
 
  protected:
   void InitNetworkContext() {
+    cache_ = nullptr;
     mojom::NetworkContextParamsPtr context_params = CreateContextParams();
     context_params->http_cache_enabled = true;
     network_context_remote_.reset();
@@ -179,7 +180,7 @@ class HttpCacheDataRemoverTest : public testing::Test {
   RAW_PTR_EXCLUSION disk_cache::Backend* backend_ = nullptr;
 
  private:
-  raw_ptr<net::HttpCache, DanglingUntriaged> cache_;
+  raw_ptr<net::HttpCache> cache_;
 };
 
 class HttpCacheDataRemoverSplitCacheTest : public HttpCacheDataRemoverTest {

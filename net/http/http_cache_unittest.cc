@@ -4488,9 +4488,9 @@ TEST_F(HttpCacheTest, SimpleGET_HangingCacheWriteCleanup) {
       mock_cache.disk_cache()->GetDiskEntryRef(cache_key);
   entry->SetDefer(MockDiskEntry::DEFER_WRITE);
 
-  buffer = base::MakeRefCounted<IOBufferWithSize>(1);
-  ReleaseBufferCompletionCallback buffer_callback2(buffer.get());
-  result = transaction->Read(buffer.get(), 1, buffer_callback2.callback());
+  auto buffer2 = base::MakeRefCounted<IOBufferWithSize>(1);
+  ReleaseBufferCompletionCallback buffer_callback2(buffer2.get());
+  result = transaction->Read(buffer2.get(), 1, buffer_callback2.callback());
   EXPECT_EQ(ERR_IO_PENDING, result);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_cache.IsWriterPresent(cache_key));
