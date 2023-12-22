@@ -93,6 +93,7 @@ BASE_DECLARE_FEATURE(kLensCameraAssistedSearch);
 BASE_DECLARE_FEATURE(kLensOnQuickActionSearchWidget);
 BASE_DECLARE_FEATURE(kLocationBarModelOptimizations);
 BASE_DECLARE_FEATURE(kMagicStackAndroid);
+BASE_DECLARE_FEATURE(kMultiInstanceApplicationStatusCleanup);
 BASE_DECLARE_FEATURE(kNewTabSearchEngineUrlAndroid);
 BASE_DECLARE_FEATURE(kNotificationPermissionVariant);
 BASE_DECLARE_FEATURE(kNotificationPermissionBottomSheet);

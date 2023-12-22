@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -636,6 +637,25 @@ public class ApplicationStatus {
     }
 
     /**
+     * Cleanup Activity info from an app Task that is no longer reachable.
+     *
+     * @param taskId The id of the Task that is no longer running.
+     * @return Whether any tasks were cleaned up.
+     */
+    public static boolean cleanupInvalidTask(int taskId) {
+        List<Activity> inaccessibleActivities = new ArrayList<>();
+        for (Entry<Activity, Integer> activityTaskInfo : sActivityTaskId.entrySet()) {
+            if (taskId == activityTaskInfo.getValue()) {
+                inaccessibleActivities.add(activityTaskInfo.getKey());
+            }
+        }
+        for (Activity activity : inaccessibleActivities) {
+            onStateChange(activity, ActivityState.DESTROYED);
+        }
+        return !inaccessibleActivities.isEmpty();
+    }
+
+    /**
      * Registers the given listener to receive state changes for all activities.
      *
      * @param listener Listener to receive state changes.
@@ -727,6 +747,7 @@ public class ApplicationStatus {
             if (sGeneralActivityStateListeners != null) sGeneralActivityStateListeners.clear();
             if (sTaskVisibilityListeners != null) sTaskVisibilityListeners.clear();
             sActivityInfo.clear();
+            sActivityTaskId.clear();
             if (sWindowFocusListeners != null) sWindowFocusListeners.clear();
             sCurrentApplicationState = ApplicationState.UNKNOWN;
             sActivity = null;

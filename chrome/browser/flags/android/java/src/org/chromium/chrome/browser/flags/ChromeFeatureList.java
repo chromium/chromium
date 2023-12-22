@@ -280,6 +280,8 @@ public abstract class ChromeFeatureList {
             "MessagesForAndroidInfrastructure";
     public static final String MESSAGES_FOR_ANDROID_PERMISSION_UPDATE =
             "MessagesForAndroidPermissionUpdate";
+    public static final String MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP =
+            "MultiInstanceApplicationStatusCleanup";
     public static final String NEW_TAB_SEARCH_ENGINE_URL_ANDROID = "NewTabSearchEngineUrlAndroid";
     public static final String NOTIFICATION_PERMISSION_VARIANT = "NotificationPermissionVariant";
     public static final String NOTIFICATION_PERMISSION_BOTTOM_SHEET =
@@ -510,6 +512,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sHideTabOnTabSwitcher =
             new CachedFlag(HIDE_TAB_ON_TAB_SWITCHER, true);
     public static final CachedFlag sMagicStackAndroid = new CachedFlag(MAGIC_STACK_ANDROID, false);
+    public static final CachedFlag sMultiInstanceApplicationStatusCleanup =
+            new CachedFlag(MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP, true);
     public static final CachedFlag sNewTabSearchEngineUrlAndroid =
             new CachedFlag(NEW_TAB_SEARCH_ENGINE_URL_ANDROID, false);
     public static final CachedFlag sPriceChangeModule = new CachedFlag(PRICE_CHANGE_MODULE, false);
@@ -609,6 +613,7 @@ public abstract class ChromeFeatureList {
                     sInstantStart,
                     sHideTabOnTabSwitcher,
                     sMagicStackAndroid,
+                    sMultiInstanceApplicationStatusCleanup,
                     sNewTabSearchEngineUrlAndroid,
                     sPaintPreviewNewColdStartHeuristic,
                     sPriceChangeModule,
