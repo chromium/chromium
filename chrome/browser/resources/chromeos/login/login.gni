@@ -142,7 +142,7 @@ common_screens_js_files = [
   "screens/common/remote_activity_notification.js",
 
   # Template used by the `tools/oobe/generate_screen_template.py` script.
-  "screens/common/placeholder.js",
+  "screens/common/placeholder.ts",
   "screens/common/recommend_apps.js",
   "screens/common/saml_confirm_password.js",
   "screens/common/signin_fatal_error.js",

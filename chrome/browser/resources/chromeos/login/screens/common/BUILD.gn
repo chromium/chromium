@@ -38,7 +38,6 @@ js_type_check("closure_compile_local") {
     ":managed_terms_of_service",
     ":offline_ad_login",
     ":os_install",
-    ":placeholder",
     ":quick_start",
     ":recommend_apps",
     ":remote_activity_notification",
@@ -252,16 +251,6 @@ js_library("quick_start") {
 }
 
 # Template used by the `tools/oobe/generate_screen_template.py` script.
-js_library("placeholder") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/placeholder.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-}
 
 js_library("recommend_apps") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/recommend_apps.js" ]

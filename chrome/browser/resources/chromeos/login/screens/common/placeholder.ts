@@ -8,59 +8,51 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 
 import {getTemplate} from './placeholder.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- */
 const PlaceholderScreenElementBase = mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    PolymerElement);
+    PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+        OobeDialogHostBehaviorInterface & LoginScreenBehaviorInterface,
+    };
 
-/**
- * @polymer
- */
 class PlaceholderScreen extends PlaceholderScreenElementBase {
   static get is() {
-    return 'placeholder-element';
+    return 'placeholder-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {};
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('PlaceholderScreen');
   }
 
   /**
    * Next button click handler.
-   * @private
    */
-  onNextClicked_() {
+  private onNextClicked_(): void {
     this.userActed('next');
   }
 
   /**
    * Back button click handler.
-   * @private
    */
-  onBackClicked_() {
+  private onBackClicked_(): void {
     this.userActed('back');
   }
 }
