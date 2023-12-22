@@ -7235,7 +7235,7 @@ def CheckDanglingUntriaged(input_api, output_api):
         "https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr_guide.md\n" +
         "\n" +
         "To disable this warning, please add in the commit description:\n" +
-        "DanglingUntriaged-notes: <rational for new untriaged dangling " +
+        "DanglingUntriaged-notes: <rationale for new untriaged dangling " +
         "pointers>"
     )
     return [output_api.PresubmitPromptWarning(message)]
