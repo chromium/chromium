@@ -149,6 +149,7 @@ web_component_files_ts = [
   "quick_unlock/fingerprint_progress.ts",
   "shortcut_input_ui/shortcut_input.ts",
   "shortcut_input_ui/shortcut_input_key.ts",
+  "wallpaper_grid_item_element.ts",
 ]
 
 non_web_component_files_ts = [
@@ -458,6 +459,7 @@ generate_definitions_js_files = [
   "shortcut_input_ui/icons.html.js",
   "shortcut_input_ui/shortcut_input.html.js",
   "traffic_counters/traffic_counters_adapter.js",
+  "wallpaper_grid_item_element.html.js",
   "util.js",
 ]
 

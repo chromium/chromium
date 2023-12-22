@@ -1,5 +1,11 @@
-<style include="common">
+<style>
   :host {
+    --personalization-app-grid-item-border-radius: 12px;
+    --personalization-app-grid-item-height: 120px;
+    --personalization-app-grid-item-spacing: 20px;
+    /* copied from |AshColorProvider| |kSecondToneOpacity| constant. */
+    --personalization-app-second-tone-opacity: 0.3;
+
     box-sizing: border-box;
     display: block;
     height: calc(var(--personalization-app-grid-item-height) + var(--personalization-app-grid-item-spacing));
@@ -205,6 +211,15 @@
     margin-inline: 0;
   }
 
+  path {
+    fill: white;
+  }
+
+  #infoIcon {
+    height: 16px;
+    width: 16px;
+  }
+
   @keyframes iron-icon-scale {
     from {
       transform: scale(0);
@@ -251,9 +266,16 @@
   </template>
   <template is="dom-if" if="[[shouldShowInfoText_(imageStatus_, infoText)]]"
       restamp>
-    <info-svg id="infoIcon" title$="[[infoText]]" part="info-icon"></info-svg>
+    <div id="infoIcon" title$="[[infoText]]" part="info-icon">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path part="path"
+            d="M7 12H9V8H7V12ZM8 0C3.584 0 0 3.584 0 8C0 12.416 3.584 16 8 16C12.416 16 16 12.416 16 8C16 3.584 12.416 0 8 0ZM8 14C4.6925 14 2 11.3075 2 8C2 4.6925 4.6925 2 8 2C11.3075 2 14 4.6925 14 8C14 11.3075 11.3075 14 8 14ZM7 6H9V4H7V6Z">
+        </path>
+      </svg>
+    </div>
   </template>
   <div class="check-mark-icon-container" part="icon">
-    <iron-icon icon="[[checkmarkIcon_]]"></iron-icon>
+    <!-- TODO(b/312208348): Replace with an icon in ash/webui/common/resources. -->
+    <iron-icon icon="personalization:circle_checkmark"></iron-icon>
   </div>
 </div>

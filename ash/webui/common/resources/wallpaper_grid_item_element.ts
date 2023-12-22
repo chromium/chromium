@@ -7,23 +7,27 @@
  */
 
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
-import '../../css/common.css.js';
-import './info_svg_element.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';
-import {getCheckmarkIcon, isSelectionEvent} from '../utils.js';
-
-import {getLoadingPlaceholderAnimationDelay} from './utils.js';
 import {getTemplate} from './wallpaper_grid_item_element.html.js';
 
 const enum ImageStatus {
   LOADING = 'loading',
   ERROR = 'error',
   READY = 'ready',
+}
+
+/**
+ * Returns true if this event is a user action to select an item.
+ * TODO(b/316619844): Move this into a util file and share with Personalization
+ * App.
+ */
+function isSelectionEvent(event: Event): boolean {
+  return (event instanceof MouseEvent && event.type === 'click') ||
+      (event instanceof KeyboardEvent && event.key === 'Enter');
 }
 
 function getDataIndex(event: Event&{currentTarget: HTMLImageElement}): number {
@@ -34,10 +38,27 @@ function getDataIndex(event: Event&{currentTarget: HTMLImageElement}): number {
   return index;
 }
 
+/**
+ * TODO(b/316619844): Move this into a util file and share with Personalization
+ * App.
+ */
 function shouldShowPlaceholder(imageStatus: ImageStatus[]): boolean {
   return imageStatus.length === 0 ||
       (imageStatus.includes(ImageStatus.LOADING) &&
        !imageStatus.includes(ImageStatus.ERROR));
+}
+
+/** Returns a css variable to control the animation delay. */
+function getLoadingPlaceholderAnimationDelay(index: number): string {
+  // 48 is chosen because 4 and 3 are both factors, and it's large enough
+  // that 48 grid items don't fit on one screen.
+  const rippleIndex = index % 48;
+  // Since 83 is divisible by neither 3 nor 4, there is a slight pause once the
+  // ripple effect finishes before restarting.
+  const animationDelay = 83;
+  // Setting the animation delay to the ripple index * the animation delay adds
+  // a ripple effect.
+  return `--animation-delay: ${rippleIndex * animationDelay}ms;`;
 }
 
 const wallpaperGridItemSelectedEventName = 'wallpaper-grid-item-selected';
@@ -118,13 +139,6 @@ export class WallpaperGridItemElement extends PolymerElement {
           return [];
         },
         observer: 'onImageStatusChanged_',
-      },
-
-      checkmarkIcon_: {
-        type: String,
-        value() {
-          return getCheckmarkIcon();
-        },
       },
     };
   }
@@ -312,8 +326,7 @@ export class WallpaperGridItemElement extends PolymerElement {
   }
 
   private shouldShowInfoText_(): boolean {
-    return isPersonalizationJellyEnabled() &&
-        typeof this.infoText === 'string' && this.infoText.length > 0 &&
+    return typeof this.infoText === 'string' && this.infoText.length > 0 &&
         !shouldShowPlaceholder(this.imageStatus_);
   }
 }

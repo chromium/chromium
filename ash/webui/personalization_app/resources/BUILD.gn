@@ -96,7 +96,6 @@ build_webui("build") {
     "js/wallpaper/wallpaper_collections_element.ts",
     "js/wallpaper/wallpaper_error_element.ts",
     "js/wallpaper/wallpaper_fullscreen_element.ts",
-    "js/wallpaper/wallpaper_grid_item_element.ts",
     "js/wallpaper/wallpaper_images_element.ts",
     "js/wallpaper/wallpaper_preview_element.ts",
     "js/wallpaper/wallpaper_selected_element.ts",

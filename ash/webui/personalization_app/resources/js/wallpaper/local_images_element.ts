@@ -16,6 +16,7 @@ import '../../common/icons.html.js';
 import '../../css/common.css.js';
 
 import {isImageDataUrl, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/wallpaper_grid_item_element.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -28,7 +29,6 @@ import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './const
 import {getTemplate} from './local_images_element.html.js';
 import {getPathOrSymbol, isDefaultImage} from './utils.js';
 import {selectWallpaper} from './wallpaper_controller.js';
-import {WallpaperGridItemSelectedEvent} from './wallpaper_grid_item_element.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 

@@ -136,7 +136,7 @@ export {WallpaperCollectionsElement} from './wallpaper/wallpaper_collections_ele
 export {selectGooglePhotosAlbum, cancelPreviewWallpaper, confirmPreviewWallpaper, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosPhotos, fetchGooglePhotosSharedAlbums, fetchLocalData, getDefaultImageThumbnail, getLocalImages, initializeBackdropData, fetchGooglePhotosEnabled, selectWallpaper, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper/wallpaper_controller.js';
 export {WallpaperErrorElement} from './wallpaper/wallpaper_error_element.js';
 export {WallpaperFullscreenElement} from './wallpaper/wallpaper_fullscreen_element.js';
-export {WallpaperGridItemElement} from './wallpaper/wallpaper_grid_item_element.js';
+export {WallpaperGridItemElement} from 'chrome://resources/ash/common/wallpaper_grid_item_element.js';
 export {getImageTiles, WallpaperImagesElement} from './wallpaper/wallpaper_images_element.js';
 export {setWallpaperProviderForTesting} from './wallpaper/wallpaper_interface_provider.js';
 export {WallpaperObserver} from './wallpaper/wallpaper_observer.js';

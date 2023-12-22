@@ -12,6 +12,7 @@ import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-thresh
 import '../../css/wallpaper.css.js';
 import '../../css/common.css.js';
 
+import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/wallpaper_grid_item_element.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
@@ -28,7 +29,6 @@ import {recordWallpaperGooglePhotosSourceUMA, WallpaperGooglePhotosSource} from 
 import {getTemplate} from './google_photos_photos_by_album_id_element.html.js';
 import {findAlbumById, getLoadingPlaceholders, isGooglePhotosPhoto, isImageAMatchForKey, isImageEqualToSelected} from './utils.js';
 import {fetchGooglePhotosAlbum, selectWallpaper} from './wallpaper_controller.js';
-import {WallpaperGridItemSelectedEvent} from './wallpaper_grid_item_element.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 const ERROR_ID = 'GooglePhotosByAlbumId';
