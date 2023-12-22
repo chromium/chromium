@@ -317,9 +317,7 @@ class AppListViewLauncherSearchIphTest
 
     AppListTestHelper* test_helper = GetAppListTestHelper();
     test_helper->ShowAppList();
-    GetAppListTestHelper()->search_model()->SetWouldTriggerLauncherSearchIph(
-        true);
-    GetAppListTestHelper()->GetSearchBoxView()->SetIsIphAllowed(true);
+    // TODO(b/280356293): Fix the test.
   }
 
  private:

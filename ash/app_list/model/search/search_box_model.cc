@@ -31,10 +31,6 @@ void SearchBoxModel::SetWouldTriggerIph(bool would_trigger_iph) {
   }
 
   would_trigger_iph_ = would_trigger_iph;
-
-  for (auto& observer : observers_) {
-    observer.OnWouldTriggerIphChanged();
-  }
 }
 
 void SearchBoxModel::SetSearchEngineIsGoogle(bool is_google) {

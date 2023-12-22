@@ -198,9 +198,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   int GetSearchBoxIconSize();
   int GetSearchBoxButtonSize();
 
-  // Sets whether an IPH can be shown now or not.
-  void SetIsIphAllowed(bool iph_allowed);
-
  private:
   class FocusRingLayer;
 
@@ -222,9 +219,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Updates the search box placeholder text and accessible name.
   void UpdatePlaceholderTextAndAccessibleName();
-
-  // Updates the visibility of an IPH view.
-  void UpdateIphViewVisibility();
 
   // Notifies SearchBoxViewDelegate that the autocomplete text is valid.
   void AcceptAutocompleteText();
@@ -249,14 +243,18 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   bool HandleGestureEvent(views::Textfield* sender,
                           const ui::GestureEvent& gesture_event) override;
 
-  // Overridden from SearchBoxModelObserver:
-  void SearchEngineChanged() override;
-  void ShowAssistantChanged() override;
-  void OnWouldTriggerIphChanged() override;
-
   // Updates search_box() for the |selected_result|. Should be called when the
   // selected search result changes.
   void UpdateSearchBoxForSelectedResult(SearchResult* selected_result);
+
+  // Overridden from SearchBoxModelObserver:
+  void SearchEngineChanged() override;
+  void ShowAssistantChanged() override;
+
+  // Updates the visibility of an IPH view.
+  // If `can_show_iph` is false, delete the IPH view if it is visible.
+  // If `can_show_iph` is true, show the IPH view when other conditions are met.
+  void UpdateIphViewVisibility(bool can_show_iph);
 
   // Returns true if the event to trigger autocomplete should be handled.
   bool ShouldProcessAutocomplete();

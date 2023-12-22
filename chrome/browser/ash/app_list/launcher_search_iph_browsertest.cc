@@ -23,6 +23,7 @@
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/view_drawn_waiter.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -35,6 +36,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -90,6 +92,23 @@ class ViewWaiter : public views::ViewObserver {
   int view_id_;
   base::ScopedObservation<views::View, ViewWaiter> scoped_observation_{this};
   base::RunLoop run_loop;
+};
+
+class IphWaiter {
+ public:
+  IphWaiter() = default;
+  ~IphWaiter() = default;
+
+  void Run(feature_engagement::Tracker* tracker) {
+    base::RunLoop run_loop;
+    tracker->AddOnInitializedCallback(base::BindOnce(
+        [](base::OnceClosure callback, bool success) {
+          ASSERT_TRUE(success);
+          std::move(callback).Run();
+        },
+        run_loop.QuitClosure()));
+    run_loop.Run();
+  }
 };
 
 bool IsLauncherSearchIphViewVisible() {
@@ -149,6 +168,9 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
     app_list_client_impl_ = AppListClientImpl::GetInstance();
     app_list_client_impl_->UpdateProfile();
     base::AddTagToTestResult(kScreenPlayTagName, kScreenPlayTagValue);
+
+    tracker_ = feature_engagement::TrackerFactory::GetForBrowserContext(
+        browser()->profile());
 
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
@@ -223,12 +245,42 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
     ASSERT_FALSE(IsAppListVisible());
   }
 
-  void OpenAppListAndWaitForIphView() {
-    OpenAppListForSearch();
+  void ClickAssistantButton() {
+    if (IsTabletModeTest()) {
+      ash::PaginationModelTransitionWaiter pagination_model_transition_waiter(
+          GetFullscreenAppListContentsView()->pagination_model_for_testing());
+
+      views::ImageButton* assistant_button =
+          search_box_view()->assistant_button();
+      ASSERT_TRUE(assistant_button);
+      Click(assistant_button);
+
+      pagination_model_transition_waiter.Wait();
+      return;
+    }
+
+    views::ImageButton* assistant_button =
+        search_box_view()->assistant_button();
+    ASSERT_TRUE(assistant_button);
+    Click(assistant_button);
+  }
+
+  void ClickAssistantIconAndWaitForIphView() {
+    OpenAppList();
+
+    // IPH should not show when open the Launcher.
+    ASSERT_FALSE(IsLauncherSearchIphViewVisible());
+
+    // Clicks Assistant button to open Assistant UI. IPH will show.
+    ClickAssistantButton();
 
     // There is an async call for checking IPH trigger condition.
     ViewWaiter(search_box_view(), ash::LauncherSearchIphView::ViewId::kSelf)
         .Run();
+    auto* launcher_search_iph_view = search_box_view()->GetViewByID(
+        ash::LauncherSearchIphView::ViewId::kSelf);
+    ash::ViewDrawnWaiter().Wait(launcher_search_iph_view);
+
     ASSERT_TRUE(IsLauncherSearchIphViewVisible());
   }
 
@@ -282,6 +334,8 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
 
   ash::SearchBoxView* search_box_view() { return ash::GetSearchBoxView(); }
 
+  views::View* GetAssistantPageView() { return test_api_impl_.page_view(); }
+
   void Click(views::View* view) {
     ASSERT_TRUE(view);
 
@@ -295,6 +349,8 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+
+  raw_ptr<feature_engagement::Tracker> tracker_ = nullptr;
 
  private:
   ash::TestAssistantService test_service_;
@@ -324,24 +380,39 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest,
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, LauncherSearchIph) {
-  OpenAppListAndWaitForIphView();
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
+                       NotShowIphWhenOpenForSearch) {
+  IphWaiter().Run(tracker_);
+  OpenAppListForSearch();
 
-  EXPECT_TRUE(IsLauncherSearchIphViewVisible());
-  if (IsClamshellModeTest()) {
-    EXPECT_TRUE(search_box_view()->assistant_button()->GetBackground());
-  }
+  // IPH should not show when open the Launcher.
+  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+}
 
-  // IPH should be kept being shown as long as the trigger condition in the IPH
-  // config matches.
-  DismissAppList();
-  OpenAppListAndWaitForIphView();
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
+                       NotShowIphWhenQueryChanges) {
+  IphWaiter().Run(tracker_);
+  OpenAppListForSearch();
+
+  // IPH should not show when open the Launcher.
+  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+
+  // Do search and confirm that the IPH is not shown.
+  ash::AppListTestApi().SimulateSearch(u"Test");
+  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
+                       ShowIphWhenClickAssistantButtonInSearchBox) {
+  IphWaiter().Run(tracker_);
+  ClickAssistantIconAndWaitForIphView();
   EXPECT_TRUE(IsLauncherSearchIphViewVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
-                       LauncherSearchIphSearch) {
-  OpenAppListAndWaitForIphView();
+                       DismissIphWhenQueryChanges) {
+  IphWaiter().Run(tracker_);
+  ClickAssistantIconAndWaitForIphView();
   EXPECT_TRUE(IsLauncherSearchIphViewVisible());
 
   // Do search and confirm that the IPH gets dismissed.
@@ -349,27 +420,43 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 }
 
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
+                       DismissIphWhenQueryIsEmpty) {
+  IphWaiter().Run(tracker_);
+  ClickAssistantIconAndWaitForIphView();
+  EXPECT_TRUE(IsLauncherSearchIphViewVisible());
+
+  // Do search and confirm that the IPH gets dismissed.
+  ash::AppListTestApi().SimulateSearch(u"Test");
+  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+
+  // Clear the search box query, the IPH is still not visible.
+  ash::AppListTestApi().SimulateSearch(u"");
+  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+}
+
 using AppListIphBrowserTestWithTestConfigClamshell =
     AppListIphBrowserTestWithTestConfig;
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfigClamshell,
-                       LauncherSearchIphAssistantButtonInSearchBox) {
-  OpenAppListAndWaitForIphView();
+                       ShowAssistantPageWhenClickAssistantButtonInSearchBox) {
+  IphWaiter().Run(tracker_);
+  ClickAssistantIconAndWaitForIphView();
+  EXPECT_TRUE(IsLauncherSearchIphViewVisible());
 
-  // Clicks Assistant button to open Assistant UI and confirm that IPH gets
-  // dismissed.
-  views::ImageButton* assistant_button = search_box_view()->assistant_button();
-  ASSERT_TRUE(assistant_button);
-  Click(assistant_button);
-
+  // Clicks Assistant button when the IPH is visible will open Assistant UI and
+  // confirm that IPH gets dismissed.
+  ClickAssistantButton();
+  EXPECT_TRUE(IsAssistantPageActive());
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfigClamshell,
-                       ClickAssistantInSearchBox) {
-  OpenAppListAndWaitForIphView();
-
+                       RecordActionWhenClickAssistantButtonInSearchBox) {
+  IphWaiter().Run(tracker_);
+  ClickAssistantIconAndWaitForIphView();
   EXPECT_TRUE(IsLauncherSearchIphViewVisible());
+
   // Confirm that a background is installed as we check that this gets removed
   // if IPH is not shown below.
   EXPECT_TRUE(search_box_view()->assistant_button()->GetBackground());
@@ -378,27 +465,38 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfigClamshell,
   // is 0 to distinguish this from other events.
   base::UserActionTester user_action_tester;
   ASSERT_EQ(0, user_action_tester.GetActionCount(kNotifyEventUserActionName));
-  views::ImageButton* assistant_button = search_box_view()->assistant_button();
-  ASSERT_TRUE(assistant_button);
-  Click(assistant_button);
+  ClickAssistantButton();
   EXPECT_EQ(1, user_action_tester.GetActionCount(kNotifyEventUserActionName));
 
   EXPECT_TRUE(IsAssistantPageActive());
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+}
 
-  // Dismiss the app list and show it again. IPH won't be shown this time. Note
-  // that this behavior is coming from the IPH config.
-  DismissAppList();
-  OpenAppListForSearch();
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfigClamshell,
+                       NotShowIphAfterClickTwiceAssistantButtonInSearchBox) {
+  IphWaiter().Run(tracker_);
+  ClickAssistantIconAndWaitForIphView();
+  EXPECT_TRUE(IsLauncherSearchIphViewVisible());
+
+  ClickAssistantButton();
+  EXPECT_TRUE(IsAssistantPageActive());
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 
-  // Launcher search iph installs a background to an assistant button in the
-  // search box. It should be removed if the iph gets dismissed.
-  EXPECT_FALSE(search_box_view()->assistant_button()->GetBackground());
+  // Back() to dismiss Launcher.
+  // Open Launcher and click Assistant button again. IPH won't be shown this
+  // time. Note that this behavior is coming from the IPH config.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+  OpenAppList();
+  ClickAssistantButton();
+  ash::ViewDrawnWaiter().Wait(GetAssistantPageView());
+  EXPECT_TRUE(IsAssistantPageActive());
+  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickChip) {
-  OpenAppListAndWaitForIphView();
+  IphWaiter().Run(tracker_);
+  ClickAssistantIconAndWaitForIphView();
+  EXPECT_TRUE(IsLauncherSearchIphViewVisible());
 
   // Chip click is specified as EventUsed in the config.
   base::UserActionTester user_action_tester;
@@ -423,14 +521,14 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickChip) {
   // config matches.
   DismissAppList();
   // Open Launcher again, will still show IPH.
-  OpenAppListAndWaitForIphView();
+  ClickAssistantIconAndWaitForIphView();
   EXPECT_TRUE(IsLauncherSearchIphViewVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
-                       ClickAssistantInIph) {
-  OpenAppListAndWaitForIphView();
-
+                       ClickAssistantChipInIph) {
+  IphWaiter().Run(tracker_);
+  ClickAssistantIconAndWaitForIphView();
   EXPECT_TRUE(IsLauncherSearchIphViewVisible());
   if (IsClamshellModeTest()) {
     // Confirm that a background is installed as we check that this gets removed
@@ -450,24 +548,55 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
 
   EXPECT_TRUE(IsAssistantPageActive());
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
-
-  // Dismiss the app list and show it again. IPH won't be shown this time. Note
-  // that this behavior is coming from the IPH config.
-  DismissAppList();
-  OpenAppListForSearch();
-  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
-
-  if (IsClamshellModeTest()) {
-    // Launcher search iph installs a background to an assistant button in the
-    // search box. It should be removed if the iph gets dismissed.
-    EXPECT_FALSE(search_box_view()->assistant_button()->GetBackground());
-  }
 }
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
-                       ExpectEntryExitPoints) {
-  OpenAppListAndWaitForIphView();
+                       NotShowIphAfterClickAssistantChipInIph) {
+  IphWaiter().Run(tracker_);
+  ClickAssistantIconAndWaitForIphView();
+  EXPECT_TRUE(IsLauncherSearchIphViewVisible());
+  if (IsClamshellModeTest()) {
+    // Confirm that a background is installed as we check that this gets removed
+    // if IPH is not shown below.
+    EXPECT_TRUE(search_box_view()->assistant_button()->GetBackground());
+  }
 
+  views::View* assistant_button = search_box_view()->GetViewByID(
+      ash::LauncherSearchIphView::ViewId::kAssistant);
+  ASSERT_TRUE(assistant_button);
+  Click(assistant_button);
+
+  EXPECT_TRUE(IsAssistantPageActive());
+  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+
+  // Back() to dismiss Launcher.
+  // Open Launcher and click Assistant button again. IPH won't be shown this
+  // time. Note that this behavior is coming from the IPH config.
+  if (IsTabletModeTest()) {
+    ash::PaginationModelTransitionWaiter pagination_model_transition_waiter(
+        GetFullscreenAppListContentsView()->pagination_model_for_testing());
+
+    PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+    pagination_model_transition_waiter.Wait();
+  } else {
+    PressAndReleaseKey(ui::VKEY_ESCAPE);
+    OpenAppList();
+  }
+
+  ClickAssistantButton();
+  ash::ViewDrawnWaiter().Wait(GetAssistantPageView());
+  EXPECT_TRUE(IsAssistantPageActive());
+  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
+                       RecordEntryExitPointsWhenClickAssistantChip) {
+  auto duration_mode = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  IphWaiter().Run(tracker_);
+  ClickAssistantIconAndWaitForIphView();
   EXPECT_TRUE(IsLauncherSearchIphViewVisible());
 
   views::View* assistant_button = search_box_view()->GetViewByID(
@@ -482,11 +611,12 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
 }
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
-                       NoIphWithoutAssistant) {
+                       NotShowIphWithoutAssistant) {
   // `AssistantTestApiImpl::SetAssistantEnabled` asserts that the value has
   // taken effect, i.e. we are sure that Assistant gets disabled after this
   // call.
   DisableAssistant();
+  IphWaiter().Run(tracker_);
 
   OpenAppListForSearch();
 
@@ -520,9 +650,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest, NoAssistantZeroStateIphFlagOff) {
 
   OpenAppList();
 
-  views::ImageButton* assistant_button = search_box_view()->assistant_button();
-  ASSERT_TRUE(assistant_button);
-  Click(assistant_button);
+  ClickAssistantButton();
 
   // The LauncherSearchIphView is not shown in the zero state view.
   ASSERT_TRUE(IsAssistantPageActive());
@@ -538,9 +666,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestAssistantZeroState,
                        ShowAssistantZeroStateIph) {
   OpenAppList();
 
-  views::ImageButton* assistant_button = search_box_view()->assistant_button();
-  ASSERT_TRUE(assistant_button);
-  Click(assistant_button);
+  ClickAssistantButton();
 
   // The LauncherSearchIphView is shown in the zero state view.
   ASSERT_TRUE(IsAssistantPageActive());
@@ -559,9 +685,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestAssistantZeroState,
 
   OpenAppList();
 
-  views::ImageButton* assistant_button = search_box_view()->assistant_button();
-  ASSERT_TRUE(assistant_button);
-  Click(assistant_button);
+  ClickAssistantButton();
 
   // The LauncherSearchIphView is shown in the zero state view.
   ASSERT_TRUE(IsAssistantPageActive());
@@ -591,15 +715,13 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestAssistantZeroState,
 }
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestAssistantZeroState,
-                       ExpectEntryExitPoints) {
+                       RecordExitPointsWhenClickAssistantChip) {
   auto duration_mode = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   OpenAppList();
 
-  views::ImageButton* assistant_button = search_box_view()->assistant_button();
-  ASSERT_TRUE(assistant_button);
-  Click(assistant_button);
+  ClickAssistantButton();
   histogram_tester()->ExpectTotalCount("Assistant.EntryPoint", 1);
   histogram_tester()->ExpectBucketCount("Assistant.EntryPoint",
                                         /*kLauncherSearchBoxIcon=*/9, 1);
@@ -626,9 +748,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestAssistantZeroState,
 
   OpenAppList();
 
-  views::ImageButton* assistant_button = search_box_view()->assistant_button();
-  ASSERT_TRUE(assistant_button);
-  Click(assistant_button);
+  ClickAssistantButton();
 
   // The LauncherSearchIphView is shown in the zero state view.
   ASSERT_TRUE(IsAssistantPageActive());
@@ -661,9 +781,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestAssistantZeroState,
 
   // Test after the back action, click the Assistant button will show the
   // `assistant_page`. (b/309551206)
-  assistant_button = search_box_view()->assistant_button();
-  ASSERT_TRUE(assistant_button);
-  Click(assistant_button);
+  ClickAssistantButton();
 
   EXPECT_TRUE(IsAssistantPageActive());
   EXPECT_FALSE(IsSearchPageActive());

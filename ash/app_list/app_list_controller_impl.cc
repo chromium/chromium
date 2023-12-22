@@ -1180,6 +1180,7 @@ void AppListControllerImpl::RecordShelfAppLaunched() {
 void AppListControllerImpl::StartAssistant(
     assistant::AssistantEntryPoint entry_point) {
   AssistantUiController::Get()->ShowUi(entry_point);
+  UpdateSearchBoxUiVisibilities();
 }
 
 void AppListControllerImpl::EndAssistant(
