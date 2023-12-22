@@ -323,8 +323,9 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.AccountTracker.RefreshAccountInfo.IsTrackingAccount"
-    enum="Boolean" expires_after="2023-12-31">
+<histogram
+    name="Signin.AccountTracker.RefreshAccountInfo.IsAlreadyTrackingAccount"
+    enum="Boolean" expires_after="2024-06-02">
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
