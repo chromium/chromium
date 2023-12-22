@@ -37,6 +37,7 @@ namespace internal {
 class DelayTimerBase;
 class DelayedTaskManager;
 }
+class PreFreezeBackgroundMemoryTrimmer;
 class DeadlineTimer;
 class MetronomeTimer;
 class TimeDelta;
@@ -50,6 +51,9 @@ class PostDelayedTaskPassKey {
   // Avoid =default to disallow creation by uniform initialization.
   PostDelayedTaskPassKey() {}
 
+#if BUILDFLAG(IS_ANDROID)
+  friend class base::PreFreezeBackgroundMemoryTrimmer;
+#endif
   friend class base::internal::DelayTimerBase;
   friend class base::internal::DelayedTaskManager;
   friend class base::DeadlineTimer;
