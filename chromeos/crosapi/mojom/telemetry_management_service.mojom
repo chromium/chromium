@@ -1,0 +1,26 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// API and definitions exposed by the Telemetry Management Services. This API is
+// normally consumed by the Telemetry Extension APIs implementation.
+
+// WARNING: This mojom and its implementation is designed for use only by the
+// telemetry extension.
+
+module crosapi.mojom;
+
+// Telemetry management interface exposed to Lacros.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable, Uuid="562b12e3-8773-4085-9480-450e088ac252"]
+interface TelemetryManagementService {
+  // Sets the specified input audio device |node_id| gain to value |gain|. Will
+  // no-op if |node_id| is invalid.
+  // TODO(b/317014106): Support reporting whether the operation is successful.
+  //
+  // The request:
+  // * |node_id| - Node id of the audio device to be configured.
+  // * |gain| - Target gain percent in [0, 100]. Sets to 0 or 100 if outside.
+  SetAudioGain@0(uint64 node_id, int32 gain) => ();
+};

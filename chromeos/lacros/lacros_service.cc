@@ -106,6 +106,7 @@
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_management_service.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/timezone.mojom.h"
 #include "chromeos/crosapi/mojom/trusted_vault.mojom.h"
@@ -563,6 +564,10 @@ LacrosService::LacrosService()
       crosapi::mojom::TelemetryEventService,
       &Crosapi::BindTelemetryEventService,
       Crosapi::MethodMinVersions::kBindTelemetryEventServiceMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::TelemetryManagementService,
+      &Crosapi::BindTelemetryManagementService,
+      Crosapi::MethodMinVersions::kBindTelemetryManagementServiceMinVersion>();
   ConstructRemote<
       crosapi::mojom::TelemetryProbeService,
       &crosapi::mojom::Crosapi::BindTelemetryProbeService,

@@ -120,6 +120,7 @@
 #include "chrome/browser/ash/sync/sync_mojo_service_factory_ash.h"
 #include "chrome/browser/ash/telemetry_extension/diagnostics/diagnostics_service_ash.h"
 #include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_ash.h"
+#include "chrome/browser/ash/telemetry_extension/management/telemetry_management_service_ash.h"
 #include "chrome/browser/ash/telemetry_extension/routines/telemetry_diagnostic_routine_service_ash.h"
 #include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_ash.h"
 #include "chrome/browser/ash/trusted_vault/trusted_vault_backend_service_ash.h"
@@ -293,6 +294,8 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
           std::make_unique<ash::TelemetryDiagnosticsRoutineServiceAsh>()),
       telemetry_event_service_ash_(
           std::make_unique<ash::TelemetryEventServiceAsh>()),
+      telemetry_management_service_ash_(
+          std::make_unique<ash::TelemetryManagementServiceAsh>()),
       probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()),
       remoting_ash_(std::make_unique<RemotingAsh>()),
       resource_manager_ash_(std::make_unique<ResourceManagerAsh>()),
@@ -959,6 +962,11 @@ void CrosapiAsh::BindTelemetryDiagnosticRoutinesService(
 void CrosapiAsh::BindTelemetryEventService(
     mojo::PendingReceiver<mojom::TelemetryEventService> receiver) {
   telemetry_event_service_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindTelemetryManagementService(
+    mojo::PendingReceiver<mojom::TelemetryManagementService> receiver) {
+  telemetry_management_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindTelemetryProbeService(

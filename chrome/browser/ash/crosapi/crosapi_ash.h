@@ -36,6 +36,7 @@ class ProbeServiceAsh;
 class SmartReaderManagerAsh;
 class TelemetryDiagnosticsRoutineServiceAsh;
 class TelemetryEventServiceAsh;
+class TelemetryManagementServiceAsh;
 class VideoConferenceManagerAsh;
 
 namespace auth {
@@ -372,6 +373,9 @@ class CrosapiAsh : public mojom::Crosapi {
       override;
   void BindTelemetryEventService(
       mojo::PendingReceiver<mojom::TelemetryEventService> receiver) override;
+  void BindTelemetryManagementService(
+      mojo::PendingReceiver<mojom::TelemetryManagementService> receiver)
+      override;
   void BindTelemetryProbeService(
       mojo::PendingReceiver<mojom::TelemetryProbeService> receiver) override;
   void BindTestController(
@@ -676,6 +680,8 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ash::TelemetryDiagnosticsRoutineServiceAsh>
       telemetry_diagnostic_routine_service_ash_;
   std::unique_ptr<ash::TelemetryEventServiceAsh> telemetry_event_service_ash_;
+  std::unique_ptr<ash::TelemetryManagementServiceAsh>
+      telemetry_management_service_ash_;
   std::unique_ptr<ash::ProbeServiceAsh> probe_service_ash_;
   std::unique_ptr<RemotingAsh> remoting_ash_;
   std::unique_ptr<ResourceManagerAsh> resource_manager_ash_;
