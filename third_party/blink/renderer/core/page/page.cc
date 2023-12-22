@@ -434,8 +434,11 @@ void Page::UsesOverlayScrollbarsChanged() {
   for (Page* page : AllPages()) {
     for (Frame* frame = page->MainFrame(); frame;
          frame = frame->Tree().TraverseNext()) {
-      if (auto* local_frame = DynamicTo<LocalFrame>(frame))
-        local_frame->View()->UsesOverlayScrollbarsChanged();
+      if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+        if (LocalFrameView* view = local_frame->View()) {
+          view->UsesOverlayScrollbarsChanged();
+        }
+      }
     }
   }
 }
@@ -445,7 +448,9 @@ void Page::PlatformColorsChanged() {
     for (Frame* frame = page->MainFrame(); frame;
          frame = frame->Tree().TraverseNext()) {
       if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
-        local_frame->GetDocument()->PlatformColorsChanged();
+        if (Document* document = local_frame->GetDocument()) {
+          document->PlatformColorsChanged();
+        }
         if (LayoutView* view = local_frame->ContentLayoutObject())
           view->InvalidatePaintForViewAndDescendants();
       }
@@ -457,8 +462,11 @@ void Page::ColorSchemeChanged() {
   for (const Page* page : AllPages())
     for (Frame* frame = page->MainFrame(); frame;
          frame = frame->Tree().TraverseNext()) {
-      if (auto* local_frame = DynamicTo<LocalFrame>(frame))
-        local_frame->GetDocument()->ColorSchemeChanged();
+      if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+        if (Document* document = local_frame->GetDocument()) {
+          document->ColorSchemeChanged();
+        }
+      }
     }
 }
 

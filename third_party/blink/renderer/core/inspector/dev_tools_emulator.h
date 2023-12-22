@@ -27,6 +27,7 @@ class CORE_EXPORT DevToolsEmulator final
  public:
   explicit DevToolsEmulator(WebViewImpl*);
   ~DevToolsEmulator();
+  void Shutdown();
 
   void Trace(Visitor*) const;
 
@@ -111,6 +112,7 @@ class CORE_EXPORT DevToolsEmulator final
 
   WebViewImpl* web_view_;
 
+  bool is_shutdown_ = false;
   bool device_metrics_enabled_;
   scoped_refptr<ScopedGlobalOverrides> global_overrides_;
   DeviceEmulationParams emulation_params_;
