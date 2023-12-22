@@ -309,15 +309,15 @@ UIImage* DefaultFavicon() {
 
   /// `_topLeftCornerView` and `_topRightCornerView` constraints.
   [NSLayoutConstraint activateConstraints:@[
-    [_topLeftCornerView.leadingAnchor
-        constraintEqualToAnchor:contentView.leadingAnchor],
+    [_topLeftCornerView.leftAnchor
+        constraintEqualToAnchor:contentView.leftAnchor],
     [_topLeftCornerView.topAnchor
         constraintEqualToAnchor:contentView.topAnchor],
     [_topLeftCornerView.widthAnchor constraintEqualToConstant:kCornerSize],
     [_topLeftCornerView.heightAnchor constraintEqualToConstant:kCornerSize],
 
-    [_topRightCornerView.trailingAnchor
-        constraintEqualToAnchor:contentView.trailingAnchor],
+    [_topRightCornerView.rightAnchor
+        constraintEqualToAnchor:contentView.rightAnchor],
     [_topRightCornerView.topAnchor
         constraintEqualToAnchor:contentView.topAnchor],
     [_topRightCornerView.widthAnchor constraintEqualToConstant:kCornerSize],
@@ -326,15 +326,13 @@ UIImage* DefaultFavicon() {
 
   /// `_leftTailView` and `_rightTailView` constraints.
   [NSLayoutConstraint activateConstraints:@[
-    [_leftTailView.trailingAnchor
-        constraintEqualToAnchor:contentView.leadingAnchor],
+    [_leftTailView.rightAnchor constraintEqualToAnchor:contentView.leftAnchor],
     [_leftTailView.bottomAnchor
         constraintEqualToAnchor:contentView.bottomAnchor],
     [_leftTailView.widthAnchor constraintEqualToConstant:kCornerSize],
     [_leftTailView.heightAnchor constraintEqualToConstant:kCornerSize],
 
-    [_rightTailView.leadingAnchor
-        constraintEqualToAnchor:contentView.trailingAnchor],
+    [_rightTailView.leftAnchor constraintEqualToAnchor:contentView.rightAnchor],
     [_rightTailView.bottomAnchor
         constraintEqualToAnchor:contentView.bottomAnchor],
     [_rightTailView.widthAnchor constraintEqualToConstant:kCornerSize],
