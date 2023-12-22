@@ -296,6 +296,11 @@ class AutofillProfile : public AutofillDataModel {
   const ProfileTokenQuality& token_quality() const { return token_quality_; }
   ProfileTokenQuality& token_quality() { return token_quality_; }
 
+  // Returns the type that should be used to fill a field given `field_type`.
+  // It is possible that this type is not necessarily `field_type`, if it does
+  // not yield a value for filling.
+  AutofillType GetFillingType(AutofillType field_type) const;
+
  private:
   // FormGroup:
   std::u16string GetInfoImpl(const AutofillType& type,

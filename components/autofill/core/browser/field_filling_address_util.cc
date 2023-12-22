@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/field_type_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/browser/select_control_util.h"
@@ -402,19 +403,19 @@ GetFillingValueAndTypeForProfile(const AutofillProfile& profile,
                                  const FormFieldData& field_data,
                                  AddressNormalizer* address_normalizer,
                                  std::string* failure_to_fill) {
-  FieldType filling_type = field_type.GetStorableType();
-  CHECK(IsAddressType(filling_type));
+  AutofillType filling_type = profile.GetFillingType(field_type);
+  CHECK(IsAddressType(filling_type.GetStorableType()));
   std::optional<std::u16string> value = GetValueForProfileForInput(
-      profile, app_locale, field_type, field_data, failure_to_fill);
+      profile, app_locale, filling_type, field_data, failure_to_fill);
 
   if (value && field_data.IsSelectOrSelectListElement()) {
     value = GetValueForProfileSelectControl(
-        profile, *value, app_locale, field_data.options, filling_type,
-        address_normalizer, failure_to_fill);
+        profile, *value, app_locale, field_data.options,
+        filling_type.GetStorableType(), address_normalizer, failure_to_fill);
   }
 
   return value ? std::make_optional<std::pair<std::u16string, FieldType>>(
-                     std::move(*value), filling_type)
+                     std::move(*value), filling_type.GetStorableType())
                : std::nullopt;
 }
 

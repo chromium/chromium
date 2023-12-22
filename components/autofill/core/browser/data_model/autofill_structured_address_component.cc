@@ -439,6 +439,11 @@ VerificationStatus AddressComponent::GetVerificationStatusForType(
                        : VerificationStatus::kNoStatus;
 }
 
+FieldType AddressComponent::GetFallbackTypeForType(FieldType field_type) const {
+  const AddressComponent* node_for_type = GetNodeForType(field_type);
+  return node_for_type ? node_for_type->GetFallbackType() : field_type;
+}
+
 bool AddressComponent::UnsetValueForTypeIfSupported(FieldType field_type) {
   AddressComponent* node_for_type = GetNodeForType(field_type);
   if (!node_for_type || field_type != node_for_type->GetStorageType()) {
