@@ -32,7 +32,6 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kIbanEntry:
       return FillingProduct::kIban;
     case PopupItemId::kAutocompleteEntry:
-    case PopupItemId::kDatalistEntry:
       return FillingProduct::kAutocomplete;
     case PopupItemId::kPasswordEntry:
     case PopupItemId::kUsernameEntry:
@@ -47,7 +46,7 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kPasswordAccountStorageEmpty:
     case PopupItemId::kWebauthnCredential:
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
-      return FillingProduct::kPasswordManager;
+      return FillingProduct::kPassword;
     case PopupItemId::kCompose:
       return FillingProduct::kCompose;
     case PopupItemId::kCreateNewPlusAddress:
@@ -57,6 +56,7 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kSeePromoCodeDetails:
     case PopupItemId::kSeparator:
     case PopupItemId::kClearForm:
+    case PopupItemId::kDatalistEntry:
     case PopupItemId::kMixedFormMessage:
     case PopupItemId::kInsecureContextPaymentDisabledMessage:
       return FillingProduct::kNone;

@@ -478,6 +478,102 @@ TEST_F(AutofillExternalDelegateUnitTest,
   }
 }
 
+TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
+  IssueOnQuery();
+
+  // Main filling product is not defined before the first call to
+  // `OnSuggestionsReturned`.
+  EXPECT_EQ(external_delegate().GetMainFillingProduct(), FillingProduct::kNone);
+
+  // Show address suggestion in the popup.
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {test::CreateAutofillSuggestion(PopupItemId::kAddressEntry,
+                                      u"address suggestion"),
+       test::CreateAutofillSuggestion(PopupItemId::kAutofillOptions,
+                                      u"manage addresses")});
+  EXPECT_EQ(external_delegate().GetMainFillingProduct(),
+            FillingProduct::kAddress);
+
+  // Show credit card suggestion in the popup.
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {test::CreateAutofillSuggestion(PopupItemId::kCreditCardEntry,
+                                      u"credit card suggestion"),
+       test::CreateAutofillSuggestion(PopupItemId::kAutofillOptions,
+                                      u"manage payment methods")});
+  EXPECT_EQ(external_delegate().GetMainFillingProduct(),
+            FillingProduct::kCreditCard);
+
+  // Show merchant promo code suggestion in the popup.
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {test::CreateAutofillSuggestion(PopupItemId::kMerchantPromoCodeEntry,
+                                      u"promo code")});
+  EXPECT_EQ(external_delegate().GetMainFillingProduct(),
+            FillingProduct::kMerchantPromoCode);
+
+  // Show IBAN suggestion in the popup.
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {test::CreateAutofillSuggestion(PopupItemId::kIbanEntry, u"fill IBAN")});
+  EXPECT_EQ(external_delegate().GetMainFillingProduct(), FillingProduct::kIban);
+
+  // Show password suggestion in the popup.
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {test::CreateAutofillSuggestion(PopupItemId::kPasswordEntry,
+                                      u"password")});
+  EXPECT_EQ(external_delegate().GetMainFillingProduct(),
+            FillingProduct::kPassword);
+
+  // Show compose suggestion in the popup.
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {test::CreateAutofillSuggestion(PopupItemId::kCompose,
+                                      u"generated text")});
+  EXPECT_EQ(external_delegate().GetMainFillingProduct(),
+            FillingProduct::kCompose);
+
+  // Show plus addresses suggestion in the popup.
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {test::CreateAutofillSuggestion(PopupItemId::kFillExistingPlusAddress,
+                                      u"existing plus address")});
+  EXPECT_EQ(external_delegate().GetMainFillingProduct(),
+            FillingProduct::kPlusAddresses);
+
+  // Show only autocomplete suggestion in the popup.
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {test::CreateAutofillSuggestion(PopupItemId::kAutocompleteEntry,
+                                      u"autocomplete")});
+  EXPECT_EQ(external_delegate().GetMainFillingProduct(),
+            FillingProduct::kAutocomplete);
+
+  // Show only datalist suggestion with autocomplete suggestion in the popup.
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {test::CreateAutofillSuggestion(PopupItemId::kDatalistEntry, u"datalist"),
+       test::CreateAutofillSuggestion(PopupItemId::kAutocompleteEntry,
+                                      u"autocomplete")});
+  EXPECT_EQ(external_delegate().GetMainFillingProduct(),
+            FillingProduct::kAutocomplete);
+
+  // Show auxiliary helper suggestion in the popup.
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {test::CreateAutofillSuggestion(PopupItemId::kClearForm, u"clear form")});
+  EXPECT_EQ(external_delegate().GetMainFillingProduct(), FillingProduct::kNone);
+
+  // Show auxiliary helper suggestion in the popup.
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {test::CreateAutofillSuggestion(PopupItemId::kMixedFormMessage,
+                                      u"no autofill available")});
+  EXPECT_EQ(external_delegate().GetMainFillingProduct(), FillingProduct::kNone);
+}
+
 TEST_F(AutofillExternalDelegateUnitTest,
        GetPopupTypeForPaymentsManualFallback_CreditCardForm) {
   FormData form = CreateTestCreditCardFormData(/*is_https=*/true,

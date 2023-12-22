@@ -67,9 +67,14 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
                         Suggestion::BackendId backend_id) override;
   void ClearPreviewedForm() override;
 
-  // Returns PopupType::kUnspecified for all popups prior to |onQuery|, or the
-  // popup type after call to |onQuery|.
+  // Returns PopupType::kUnspecified for all popups prior to `onQuery`, or the
+  // popup type after call to `onQuery`.
   PopupType GetPopupType() const override;
+
+  // Returns FillingProduct::kNone for all popups prior to
+  // `OnSuggestionsReturned`. Returns the filling product of the first
+  // suggestion that has a filling product that is not none.
+  FillingProduct GetMainFillingProduct() const override;
 
   // Returns the ax node id associated with the current web contents' element
   // who has a controller relation to the current autofill popup.

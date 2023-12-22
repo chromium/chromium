@@ -44,6 +44,7 @@ class MockAutofillPopupDelegate : public AutofillPopupDelegate {
               (override));
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
   MOCK_METHOD(PopupType, GetPopupType, (), (const, override));
+  MOCK_METHOD(FillingProduct, GetMainFillingProduct, (), (const, override));
   MOCK_METHOD(int32_t,
               GetWebContentsPopupControllerAxId,
               (),

@@ -18,7 +18,7 @@ enum class FillingProduct {
   kMerchantPromoCode,
   kIban,
   kAutocomplete,
-  kPasswordManager,
+  kPassword,
   kCompose,
   kPlusAddresses,
   kMaxValue = kPlusAddresses

@@ -264,7 +264,7 @@ bool IsSingleFieldFormFillerFillingProduct(FillingProduct filling_product) {
       return true;
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kCompose:
-    case FillingProduct::kPasswordManager:
+    case FillingProduct::kPassword:
     case FillingProduct::kCreditCard:
     case FillingProduct::kAddress:
     case FillingProduct::kNone:

@@ -660,7 +660,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
     case FillingProduct::kNone:
     case FillingProduct::kMerchantPromoCode:
     case FillingProduct::kIban:
-    case FillingProduct::kPasswordManager:
+    case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
       break;

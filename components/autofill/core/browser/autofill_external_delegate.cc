@@ -153,7 +153,6 @@ PopupType GetPopupTypeForQuery(BrowserAutofillManager& manager,
       return PopupType::kAddresses;
   }
 }
-
 }  // namespace
 
 AutofillExternalDelegate::AutofillExternalDelegate(
@@ -845,6 +844,17 @@ void AutofillExternalDelegate::ClearPreviewedForm() {
 
 PopupType AutofillExternalDelegate::GetPopupType() const {
   return popup_type_;
+}
+
+FillingProduct AutofillExternalDelegate::GetMainFillingProduct() const {
+  for (PopupItemId popup_item_id : shown_suggestion_types_) {
+    if (FillingProduct product =
+            GetFillingProductFromPopupItemId(popup_item_id);
+        product != FillingProduct::kNone) {
+      return product;
+    }
+  }
+  return FillingProduct::kNone;
 }
 
 int32_t AutofillExternalDelegate::GetWebContentsPopupControllerAxId() const {
