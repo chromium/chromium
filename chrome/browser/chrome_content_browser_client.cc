@@ -168,9 +168,8 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "chrome/browser/ui/login/login_handler.h"
+#include "chrome/browser/ui/login/http_auth_coordinator.h"
 #include "chrome/browser/ui/login/login_navigation_throttle.h"
-#include "chrome/browser/ui/login/login_tab_helper.h"
 #include "chrome/browser/ui/passwords/password_manager_navigation_throttle.h"
 #include "chrome/browser/ui/passwords/well_known_change_password_navigation_throttle.h"
 #include "chrome/browser/ui/prefs/pref_watcher.h"
@@ -5418,6 +5417,9 @@ void ChromeContentBrowserClient::InitOnUIThread() {
 
   safe_browsing_service_ = g_browser_process->safe_browsing_service();
 
+  // Initialize the http auth coordinator.
+  http_auth_coordinator_ = CreateHttpAuthCoordinator();
+
   // Initialize `network_contexts_parent_directory_`.
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
@@ -6692,22 +6694,9 @@ ChromeContentBrowserClient::CreateLoginDelegate(
 
   // Once Lacros ships this logic will no longer need to be included in
   // ash-chrome.
-  //
-  // For subresources, create a LoginHandler directly, which may show a login
-  // prompt to the user. Main frame resources go through LoginTabHelper, which
-  // manages a more complicated flow to avoid confusion about which website is
-  // showing the prompt.
-  if (is_request_for_primary_main_frame) {
-    LoginTabHelper::CreateForWebContents(web_contents);
-    return LoginTabHelper::FromWebContents(web_contents)
-        ->CreateAndStartMainFrameLoginDelegate(
-            auth_info, web_contents, request_id, url, response_headers,
-            std::move(auth_required_callback));
-  }
-  std::unique_ptr<LoginHandler> login_handler = LoginHandler::Create(
-      auth_info, web_contents, std::move(auth_required_callback));
-  login_handler->StartSubresource(request_id, url, response_headers);
-  return login_handler;
+  return http_auth_coordinator_->CreateLoginDelegate(
+      web_contents, auth_info, request_id, is_request_for_primary_main_frame,
+      url, response_headers, std::move(auth_required_callback));
 }
 
 bool ChromeContentBrowserClient::HandleExternalProtocol(
@@ -6946,6 +6935,11 @@ const ui::NativeTheme* ChromeContentBrowserClient::GetWebTheme() const {
 void ChromeContentBrowserClient::AddExtraPart(
     ChromeContentBrowserClientParts* part) {
   extra_parts_.push_back(base::WrapUnique(part));
+}
+
+std::unique_ptr<HttpAuthCoordinator>
+ChromeContentBrowserClient::CreateHttpAuthCoordinator() {
+  return std::make_unique<HttpAuthCoordinator>();
 }
 
 scoped_refptr<safe_browsing::UrlCheckerDelegate>

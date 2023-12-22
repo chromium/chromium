@@ -129,6 +129,8 @@ static_library("ui") {
     "javascript_dialogs/chrome_app_modal_dialog_manager_delegate.h",
     "javascript_dialogs/chrome_javascript_app_modal_dialog_view_factory.h",
     "lens/lens_core_tab_side_panel_helper.h",
+    "login/http_auth_coordinator.cc",
+    "login/http_auth_coordinator.h",
     "login/login_handler.cc",
     "login/login_handler.h",
     "login/login_navigation_throttle.cc",

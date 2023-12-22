@@ -116,6 +116,7 @@ class ChromePrivateNetworkDeviceDelegate;
 class ChromeSerialDelegate;
 class ChromeUsbDelegate;
 class ChromeWebAuthenticationDelegate;
+class HttpAuthCoordinator;
 struct NavigateParams;
 
 #if BUILDFLAG(ENABLE_VR)
@@ -997,6 +998,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   // TODO: This should receive unique_ptr<ChromeContentBrowserClientParts>.
   void AddExtraPart(ChromeContentBrowserClientParts* part);
 
+  // Exposed for tests to perform dependency injection.
+  virtual std::unique_ptr<HttpAuthCoordinator> CreateHttpAuthCoordinator();
+
  private:
   friend class DisableWebRtcEncryptionFlagTest;
   friend class InProcessBrowserTest;
@@ -1143,6 +1147,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   // Returned from GetNetworkContextsParentDirectory() but created on the UI
   // thread because it needs to access the Local State prefs.
   std::vector<base::FilePath> network_contexts_parent_directory_;
+
+  // Handles web-browser implementation of the http auth feature.
+  std::unique_ptr<HttpAuthCoordinator> http_auth_coordinator_;
 
 #if !BUILDFLAG(IS_ANDROID)
   uint64_t num_keepalive_requests_ = 0;
