@@ -65,6 +65,7 @@ class TimeManagementContainer : public views::FlexLayoutView {
   TimeManagementContainer() {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
+    SetOrientation(views::LayoutOrientation::kVertical);
     SetProperty(views::kMarginsKey,
                 gfx::Insets::TLBR(0, 0, kMarginBetweenGlanceables, 0));
     SetInteriorMargin(gfx::Insets(12));
@@ -74,10 +75,10 @@ class TimeManagementContainer : public views::FlexLayoutView {
     SetBorder(std::make_unique<views::HighlightBorder>(
         kGlanceablesContainerCornerRadius,
         views::HighlightBorder::Type::kHighlightBorderOnShadow));
-    SetDefault(views::kFlexBehaviorKey,
-               views::FlexSpecification(
-                   views::MinimumFlexSizeRule::kPreferredSnapToZero,
-                   views::MaximumFlexSizeRule::kUnbounded));
+    SetDefault(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                 views::MaximumFlexSizeRule::kPreferred));
   }
   TimeManagementContainer(const TimeManagementContainer&) = delete;
   TimeManagementContainer& operator=(const TimeManagementContainer&) = delete;
@@ -201,6 +202,11 @@ GlanceableTrayBubbleView::GlanceableTrayBubbleView(
     : TrayBubbleView(init_params), shelf_(shelf) {
   Shell::Get()->glanceables_controller()->RecordGlanceablesBubbleShowTime(
       base::TimeTicks::Now());
+  // The calendar view should always keep its size if possible. If there is no
+  // enough space, the `scroll_view_` and `time_management_container_view_`
+  // should be prioritized to be shrunk. Set the default flex to 0 and manually
+  // updates the flex of views depending on the view hierarchy.
+  box_layout()->SetDefaultFlex(0);
 }
 
 GlanceableTrayBubbleView::~GlanceableTrayBubbleView() {
@@ -372,12 +378,14 @@ void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
   if (features::IsGlanceablesTimeManagementStableLaunchEnabled()) {
     time_management_container_view_ =
         AddChildViewAt(std::make_unique<TimeManagementContainer>(), 0);
+    box_layout()->SetFlexForView(time_management_container_view_, 1);
     tasks_bubble_view_ = time_management_container_view_->AddChildView(
         std::make_unique<GlanceablesTasksView>(task_lists));
     UpdateBubble();
   } else {
     tasks_bubble_view_ = scroll_view_->contents()->AddChildViewAt(
         std::make_unique<TasksBubbleView>(task_lists), 0);
+    box_layout()->SetFlexForView(scroll_view_, 1);
   }
 
   AdjustChildrenFocusOrder();

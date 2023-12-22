@@ -57,7 +57,6 @@ constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 4);
 constexpr int kInteriorGlanceableBubbleMargin = 16;
 constexpr int kListViewBetweenChildSpacing = 2;
 constexpr int kMaximumTasks = 100;
-constexpr int kScrollViewMaxHeight = 300;
 
 constexpr char kTasksManagementPage[] =
     "https://calendar.google.com/calendar/u/0/r/week?opentasks=1";
@@ -112,10 +111,6 @@ GlanceablesTasksView::GlanceablesTasksView(
   tasks_header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   tasks_header_view_->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   tasks_header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
-  tasks_header_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kPreferred));
   tasks_header_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleHeaderView));
 
@@ -123,12 +118,17 @@ GlanceablesTasksView::GlanceablesTasksView(
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
   auto* const scroll_view = AddChildView(std::make_unique<views::ScrollView>());
-  scroll_view->ClipHeightTo(0, kScrollViewMaxHeight);
+  scroll_view->ClipHeightTo(0, std::numeric_limits<int>::max());
   scroll_view->SetBackgroundColor(std::nullopt);
   scroll_view->SetDrawOverflowIndicator(false);
 
   auto* const list_view =
       scroll_view->SetContents(std::make_unique<views::View>());
+  scroll_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded)
+          .WithWeight(1));
   list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       /*inside_border_insets=*/gfx::Insets(), kListViewBetweenChildSpacing));

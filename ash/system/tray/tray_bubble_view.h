@@ -280,6 +280,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // the InitParams.insets, but may need to be reset programmatically.
   void SetBubbleBorderInsets(gfx::Insets insets);
 
+  views::BoxLayout* box_layout() { return layout_; }
+
  private:
   // This reroutes receiving key events to the TrayBubbleView passed in the
   // constructor. TrayBubbleView is not activated by default. But we want to
