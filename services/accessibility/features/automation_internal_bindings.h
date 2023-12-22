@@ -88,7 +88,7 @@ class AutomationInternalBindings : public ui::AutomationTreeManagerOwner,
   friend class AutomationInternalBindingsTest;
 
   // Used during object template creation.
-  raw_ptr<v8::Local<v8::ObjectTemplate>, ExperimentalAsh> template_;
+  raw_ptr<v8::Local<v8::ObjectTemplate>> template_;
 
   // Owns `this`.
   raw_ptr<BindingsIsolateHolder> isolate_holder_;

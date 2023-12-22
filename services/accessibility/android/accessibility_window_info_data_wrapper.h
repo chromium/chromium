@@ -59,9 +59,8 @@ class AccessibilityWindowInfoDataWrapper : public AccessibilityInfoDataWrapper {
   bool GetProperty(mojom::AccessibilityWindowIntListProperty prop,
                    std::vector<int32_t>* out_value) const;
 
-  raw_ptr<mojom::AccessibilityWindowInfoData,
-          DanglingUntriaged | ExperimentalAsh>
-      window_ptr_ = nullptr;
+  raw_ptr<mojom::AccessibilityWindowInfoData, DanglingUntriaged> window_ptr_ =
+      nullptr;
 };
 
 }  // namespace ax::android

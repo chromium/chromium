@@ -32,9 +32,8 @@ class AssistiveTechnologyControllerTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<AssistiveTechnologyControllerImpl,
-          DanglingUntriaged | ExperimentalAsh>
-      at_controller_ = nullptr;
+  raw_ptr<AssistiveTechnologyControllerImpl, DanglingUntriaged> at_controller_ =
+      nullptr;
   std::unique_ptr<FakeServiceClient> client_;
 
  private:

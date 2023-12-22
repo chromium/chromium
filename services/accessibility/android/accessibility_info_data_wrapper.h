@@ -56,7 +56,7 @@ class AccessibilityInfoDataWrapper {
   virtual int32_t GetWindowId() const = 0;
 
  protected:
-  raw_ptr<AXTreeSourceAndroid, ExperimentalAsh> tree_source_;
+  raw_ptr<AXTreeSourceAndroid> tree_source_;
   absl::optional<
       std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>>
       cached_children_;
