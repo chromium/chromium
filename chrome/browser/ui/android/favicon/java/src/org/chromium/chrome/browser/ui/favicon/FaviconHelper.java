@@ -7,17 +7,14 @@ package org.chromium.chrome.browser.ui.favicon;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
@@ -70,24 +67,24 @@ public class FaviconHelper {
         private int getResourceId(GURL url) {
             return UrlUtilities.isInternalScheme(url)
                     ? R.drawable.chromelogo16
-                    : R.drawable.default_favicon;
+                    : R.drawable.ic_globe_24dp;
         }
 
         private Bitmap createBitmap(Context context, int resourceId, boolean useDarkIcon) {
             Resources resources = context.getResources();
-            Bitmap origBitmap = BitmapFactory.decodeResource(resources, resourceId);
+            Drawable drawable = AppCompatResources.getDrawable(context, resourceId);
+            int faviconSize = resources.getDimensionPixelSize(R.dimen.default_favicon_size);
             Bitmap tintedBitmap =
-                    Bitmap.createBitmap(
-                            origBitmap.getWidth(), origBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+                    Bitmap.createBitmap(faviconSize, faviconSize, Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(tintedBitmap);
+            drawable.setBounds(0, 0, faviconSize, faviconSize);
             final @ColorInt int tintColor =
                     context.getColor(
                             useDarkIcon
                                     ? R.color.default_icon_color_baseline
                                     : R.color.default_icon_color_light);
-            Paint p = new Paint();
-            p.setColorFilter(new PorterDuffColorFilter(tintColor, PorterDuff.Mode.SRC_IN));
-            c.drawBitmap(origBitmap, 0f, 0f, p);
+            drawable.setTint(tintColor);
+            drawable.draw(c);
             return tintedBitmap;
         }
 
