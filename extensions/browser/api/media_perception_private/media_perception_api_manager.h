@@ -146,7 +146,7 @@ class MediaPerceptionAPIManager : public BrowserContextKeyedAPI,
 
   bool ComponentIsLoaded();
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   // Keeps track of whether the analytics process is running so that it can be
   // started with an Upstart D-Bus method call if necessary.

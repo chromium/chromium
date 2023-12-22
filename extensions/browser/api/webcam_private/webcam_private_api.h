@@ -102,7 +102,7 @@ class WebcamPrivateAPI : public BrowserContextKeyedAPI {
   static const bool kServiceIsNULLWhileTesting = true;
   static const bool kServiceRedirectedInIncognito = true;
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   std::unique_ptr<ApiResourceManager<WebcamResource>> webcam_resource_manager_;
 
   base::WeakPtrFactory<WebcamPrivateAPI> weak_ptr_factory_{this};

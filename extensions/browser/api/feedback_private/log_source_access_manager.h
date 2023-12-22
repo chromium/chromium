@@ -153,11 +153,11 @@ class LogSourceAccessManager {
   std::map<api::feedback_private::LogSource, size_t> num_readers_per_source_;
 
   // For fetching browser resources like ApiResourceManager.
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  raw_ptr<content::BrowserContext> context_;
 
   // Provides a timer clock implementation for keeping track of access times.
   // Can override the default clock for testing.
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // For removing PII from log strings from log sources.
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_redactor_;

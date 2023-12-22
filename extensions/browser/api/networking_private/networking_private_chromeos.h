@@ -112,7 +112,7 @@ class NetworkingPrivateChromeOS : public NetworkingPrivateDelegate {
   // which is not available to the chromeos/ash/components/network module.
   void AppendThirdPartyProviderName(base::Value::Dict* dictionary);
 
-  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   base::WeakPtrFactory<NetworkingPrivateChromeOS> weak_ptr_factory_{this};
 };
 
