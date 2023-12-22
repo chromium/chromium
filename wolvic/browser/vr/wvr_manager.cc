@@ -461,7 +461,7 @@ static void PopulateProfiles(
   };
 
   if (add_hand_profile)
-    input_source->description->profiles.push_back("generic-hand-select");
+    input_source->description->profiles.insert(input_source->description->profiles.begin(), "generic-hand");
 }
 
 device::mojom::XRHandTrackingDataPtr
