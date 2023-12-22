@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "chrome/browser/ui/ash/mock_activation_change_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/download/public/common/mock_download_item.h"
@@ -95,7 +96,6 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
@@ -249,16 +249,6 @@ void WaitForText(views::Label* label, const std::u16string& text) {
 }
 
 // Mocks -----------------------------------------------------------------------
-
-class MockActivationChangeObserver : public wm::ActivationChangeObserver {
- public:
-  MOCK_METHOD(void,
-              OnWindowActivated,
-              (wm::ActivationChangeObserver::ActivationReason reason,
-               aura::Window* gained_active,
-               aura::Window* lost_active),
-              (override));
-};
 
 class MockDownloadControllerClient
     : public crosapi::mojom::DownloadControllerClient {

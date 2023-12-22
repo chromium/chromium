@@ -130,34 +130,37 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
 
   DisplayMetadata display_metadata;
 
-  // NOTE: Since `download_status_updater_` owns `DisplayManager`, using
-  // `base::Unretained()` is safe here.
   std::vector<CommandInfo> command_infos;
   if (download_status.cancellable.value_or(false)) {
     command_infos.emplace_back(
-        base::BindRepeating(&crosapi::DownloadStatusUpdaterAsh::Cancel,
-                            base::Unretained(download_status_updater_),
-                            download_status.guid,
-                            /*callback=*/base::DoNothing()),
+        base::BindRepeating(&DisplayManager::PerformCommand,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            download_status.guid, CommandType::kCancel),
         &kCancelIcon, IDS_ASH_DOWNLOAD_COMMAND_TEXT_CANCEL,
         CommandType::kCancel);
   }
   if (download_status.pausable.value_or(false)) {
     command_infos.emplace_back(
-        base::BindRepeating(&crosapi::DownloadStatusUpdaterAsh::Pause,
-                            base::Unretained(download_status_updater_),
-                            download_status.guid,
-                            /*callback=*/base::DoNothing()),
+        base::BindRepeating(&DisplayManager::PerformCommand,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            download_status.guid, CommandType::kPause),
         &kPauseIcon, IDS_ASH_DOWNLOAD_COMMAND_TEXT_PAUSE, CommandType::kPause);
   }
   if (download_status.resumable.value_or(false)) {
     command_infos.emplace_back(
-        base::BindRepeating(&crosapi::DownloadStatusUpdaterAsh::Resume,
-                            base::Unretained(download_status_updater_),
-                            download_status.guid,
-                            /*callback=*/base::DoNothing()),
+        base::BindRepeating(&DisplayManager::PerformCommand,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            download_status.guid, CommandType::kResume),
         &kResumeIcon, IDS_ASH_DOWNLOAD_COMMAND_TEXT_RESUME,
         CommandType::kResume);
+  }
+  if (download_status.state == crosapi::mojom::DownloadState::kInProgress) {
+    // NOTE: `kShowInBrowser` is not shown so doesn't require an icon/text_id.
+    command_infos.emplace_back(
+        base::BindRepeating(&DisplayManager::PerformCommand,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            download_status.guid, CommandType::kShowInBrowser),
+        /*icon=*/nullptr, /*text_id=*/-1, CommandType::kShowInBrowser);
   }
   display_metadata.command_infos = std::move(command_infos);
 
@@ -168,6 +171,25 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
   display_metadata.total_bytes = GetTotalBytes(download_status);
 
   return display_metadata;
+}
+
+void DisplayManager::PerformCommand(const std::string& guid,
+                                    CommandType command) {
+  switch (command) {
+    case CommandType::kCancel:
+      download_status_updater_->Cancel(guid, /*callback=*/base::DoNothing());
+      break;
+    case CommandType::kPause:
+      download_status_updater_->Pause(guid, /*callback=*/base::DoNothing());
+      break;
+    case CommandType::kResume:
+      download_status_updater_->Resume(guid, /*callback=*/base::DoNothing());
+      break;
+    case CommandType::kShowInBrowser:
+      download_status_updater_->ShowInBrowser(guid,
+                                              /*callback=*/base::DoNothing());
+      break;
+  }
 }
 
 void DisplayManager::Remove(const std::string& guid) {

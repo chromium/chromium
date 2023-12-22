@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 
 class Profile;
 
@@ -25,6 +26,7 @@ class DownloadStatus;
 
 namespace ash::download_status {
 
+enum class CommandType;
 class DisplayClient;
 struct DisplayMetadata;
 
@@ -54,6 +56,9 @@ class DisplayManager {
   DisplayMetadata CalculateDisplayMetadata(
       const crosapi::mojom::DownloadStatus& download_status);
 
+  // Performs `command` on the download specified by `guid`.
+  void PerformCommand(const std::string& guid, CommandType command);
+
   // Removes the displayed download specified by `guid` from all clients. No op
   // if the specified download is not displayed.
   void Remove(const std::string& guid);
@@ -66,6 +71,8 @@ class DisplayManager {
   // All clients are ready when `DisplayManager` is created to ensure
   // consistency in the received display metadata among clients.
   std::vector<std::unique_ptr<DisplayClient>> clients_;
+
+  base::WeakPtrFactory<DisplayManager> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::download_status

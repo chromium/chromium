@@ -94,6 +94,8 @@ int GetCommandTextId(CommandType command_type) {
       return IDS_ASH_DOWNLOAD_COMMAND_TEXT_PAUSE;
     case CommandType::kResume:
       return IDS_ASH_DOWNLOAD_COMMAND_TEXT_RESUME;
+    case CommandType::kShowInBrowser:
+      NOTREACHED_NORETURN();
   }
 }
 

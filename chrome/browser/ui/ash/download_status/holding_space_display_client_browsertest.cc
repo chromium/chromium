@@ -16,6 +16,7 @@
 #include "ash/public/cpp/holding_space/mock_holding_space_model_observer.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/ash/download_status/display_test_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
+#include "chrome/browser/ui/ash/mock_activation_change_observer.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -41,6 +43,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace ash::download_status {
 
@@ -49,6 +52,7 @@ namespace {
 // Aliases ---------------------------------------------------------------------
 
 using ::testing::_;
+using ::testing::Mock;
 using ::testing::NiceMock;
 
 // NotificationPopupBlocker ----------------------------------------------------
@@ -318,6 +322,84 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
                                                  completed_download_id));
   EXPECT_FALSE(test_api().GetHoldingSpaceItemView(download_chips,
                                                   in_progress_download_id));
+}
+
+// Verifies clicking a completed download's holding space chip.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
+                       ClickCompletedDownloadChip) {
+  // Add a completed download.
+  crosapi::mojom::DownloadStatusPtr download =
+      CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
+                                     /*received_bytes=*/1024,
+                                     /*target_bytes=*/1024);
+  download->state = crosapi::mojom::DownloadState::kComplete;
+  Update(download->Clone());
+  test_api().Show();
+
+  // Cache `completed_download_chip`.
+  std::vector<views::View*> download_chips = test_api().GetDownloadChips();
+  ASSERT_EQ(download_chips.size(), 1u);
+  views::View* const completed_download_chip = download_chips.at(0);
+
+  // Observe the `activation_client` so we can detect windows becoming active as
+  // a result of opening the download file.
+  NiceMock<MockActivationChangeObserver> activation_mock_observer;
+  base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
+      activation_observation{&activation_mock_observer};
+  auto* const activation_client = wm::GetActivationClient(
+      completed_download_chip->GetWidget()->GetNativeView()->GetRootWindow());
+  ASSERT_TRUE(activation_client);
+  activation_observation.Observe(activation_client);
+
+  // The command that shows downloads in browser should not be performed.
+  EXPECT_CALL(download_status_updater_client(), ShowInBrowser).Times(0);
+
+  // Double click `completed_download_chip` and then wait until window
+  // activation updates. Minimize the browser window before click to ensure
+  // the window activation change.
+  WaitForTestSystemAppInstall();
+  browser()->window()->Minimize();
+  base::RunLoop run_loop;
+  EXPECT_CALL(activation_mock_observer, OnWindowActivated)
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  test::Click(completed_download_chip, ui::EF_IS_DOUBLE_CLICK);
+  run_loop.Run();
+  Mock::VerifyAndClearExpectations(&activation_mock_observer);
+  Mock::VerifyAndClearExpectations(&download_status_updater_client());
+}
+
+// Verifies clicking an in-progress download's holding space chip.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
+                       ClickInProgressDownloadChip) {
+  // Add an in-progress download.
+  crosapi::mojom::DownloadStatusPtr download =
+      CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
+                                     /*received_bytes=*/0,
+                                     /*target_bytes=*/1024);
+  Update(download->Clone());
+  test_api().Show();
+
+  // Cache `in_progress_download_chip`.
+  std::vector<views::View*> download_chips = test_api().GetDownloadChips();
+  ASSERT_EQ(download_chips.size(), 1u);
+  views::View* const in_progress_download_chip = download_chips.at(0);
+
+  // Double click `in_progress_download_chip`. Check that the underlying
+  // download is shown in browser.
+  base::RunLoop run_loop;
+  EXPECT_CALL(download_status_updater_client(),
+              ShowInBrowser(download->guid, _))
+      .WillOnce(
+          [&run_loop](
+              const std::string& guid,
+              crosapi::mojom::DownloadStatusUpdaterClient::ShowInBrowserCallback
+                  callback) {
+            std::move(callback).Run(/*handled=*/true);
+            run_loop.Quit();
+          });
+  test::Click(in_progress_download_chip, ui::EF_IS_DOUBLE_CLICK);
+  run_loop.Run();
+  Mock::VerifyAndClearExpectations(&download_status_updater_client());
 }
 
 IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {

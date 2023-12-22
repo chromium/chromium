@@ -21,11 +21,11 @@ struct VectorIcon;
 namespace ash::download_status {
 
 // Lists the types of commands that can be performed on a displayed download.
-// TODO(http://b/307353486): Implement all commands.
 enum class CommandType {
   kCancel,
   kPause,
   kResume,
+  kShowInBrowser,
 };
 
 // The metadata to display a download command.
@@ -52,7 +52,6 @@ struct CommandInfo {
 };
 
 // The metadata used to display downloads.
-// TODO(http://b/307347158): Fill `DisplayMetadata`.
 struct DisplayMetadata {
   DisplayMetadata();
   DisplayMetadata(DisplayMetadata&&);

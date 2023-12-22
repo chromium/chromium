@@ -131,6 +131,7 @@ gfx::Size GetMaxImageSizeForType(HoldingSpaceItem::Type type) {
 bool IsInProgressCommand(HoldingSpaceCommandId command_id) {
   switch (command_id) {
     case HoldingSpaceCommandId::kCancelItem:
+    case HoldingSpaceCommandId::kOpenItem:
     case HoldingSpaceCommandId::kPauseItem:
     case HoldingSpaceCommandId::kResumeItem:
       return true;

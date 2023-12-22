@@ -6967,6 +6967,8 @@ static_library("test_support") {
       "ash/ash_test_util.h",
       "ash/download_status/display_test_util.cc",
       "ash/download_status/display_test_util.h",
+      "ash/mock_activation_change_observer.cc",
+      "ash/mock_activation_change_observer.h",
       "ash/shelf/chrome_shelf_controller_test_util.cc",
       "ash/shelf/chrome_shelf_controller_test_util.h",
       "ash/test_login_screen.cc",
