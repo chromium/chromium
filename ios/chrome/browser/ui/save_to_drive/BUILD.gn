@@ -6,6 +6,8 @@ source_set("save_to_drive") {
   sources = [
     "save_to_drive_coordinator.h",
     "save_to_drive_coordinator.mm",
+    "save_to_drive_mediator.h",
+    "save_to_drive_mediator.mm",
   ]
   deps = [
     "//base",

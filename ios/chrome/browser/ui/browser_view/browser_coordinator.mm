@@ -10,7 +10,6 @@
 #import <memory>
 #import <optional>
 
-#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
@@ -237,7 +236,6 @@
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
-#import "ios/web/public/download/download_task.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -2641,10 +2639,7 @@ enum class ToolbarKind {
   _saveToDriveCoordinator = [[SaveToDriveCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                        fileName:base::apple::FilePathToNSString(
-                                     downloadTask->GenerateFileName())
-                        fileSize:downloadTask->GetTotalBytes()
-                        webState:downloadTask->GetWebState()];
+                    downloadTask:downloadTask];
   [_saveToDriveCoordinator start];
 }
 

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/save_to_drive/save_to_drive_coordinator.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/files/file_path.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -16,7 +18,9 @@
 #import "ios/chrome/browser/ui/account_picker/account_picker_coordinator.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
+#import "ios/chrome/browser/ui/save_to_drive/save_to_drive_mediator.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/download/download_task.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -58,25 +62,18 @@ NSString* GetAccountPickerBodyText(NSString* file_name, int64_t file_size) {
 @end
 
 @implementation SaveToDriveCoordinator {
-  NSString* _fileName;
-  int64_t _fileSize;
-  base::WeakPtr<web::WebState> _webState;
-  id<SystemIdentity> _selectedIdentity;
+  raw_ptr<web::DownloadTask> _downloadTask;
+  SaveToDriveMediator* _mediator;
   AccountPickerCoordinator* _accountPickerCoordinator;
+  id<SystemIdentity> _selectedIdentity;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                  fileName:(NSString*)fileName
-                                  fileSize:(int64_t)fileSize
-                                  webState:(web::WebState*)webState {
+                              downloadTask:(web::DownloadTask*)downloadTask {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _fileName = fileName;
-    _fileSize = fileSize;
-    _webState = webState->GetWeakPtr();
-    _selectedIdentity = nil;
-    _accountPickerCoordinator = nil;
+    _downloadTask = downloadTask;
   }
   return self;
 }
@@ -84,12 +81,19 @@ NSString* GetAccountPickerBodyText(NSString* file_name, int64_t file_size) {
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  id<SaveToDriveCommands> saveToDriveCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SaveToDriveCommands);
+  _mediator = [[SaveToDriveMediator alloc]
+            initWithDownloadTask:_downloadTask
+      saveToDriveCommandsHandler:saveToDriveCommandsHandler];
+
   AccountPickerConfiguration* accountPickerConfiguration =
       [[AccountPickerConfiguration alloc] init];
   accountPickerConfiguration.titleText =
       l10n_util::GetNSString(IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_TITLE);
-  accountPickerConfiguration.bodyText =
-      GetAccountPickerBodyText(_fileName, _fileSize);
+  accountPickerConfiguration.bodyText = GetAccountPickerBodyText(
+      base::apple::FilePathToNSString(_downloadTask->GenerateFileName()),
+      _downloadTask->GetTotalBytes());
   accountPickerConfiguration.submitButtonTitle =
       l10n_util::GetNSString(IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_SUBMIT);
 
@@ -102,6 +106,9 @@ NSString* GetAccountPickerBodyText(NSString* file_name, int64_t file_size) {
 }
 
 - (void)stop {
+  [_mediator disconnect];
+  _mediator = nil;
+
   [_accountPickerCoordinator stop];
   _accountPickerCoordinator = nil;
 }
@@ -156,26 +163,12 @@ NSString* GetAccountPickerBodyText(NSString* file_name, int64_t file_size) {
 
   // If an identity was selected, start the download and save to Drive.
   if (_selectedIdentity) {
-    [self startDownloadAndSaveToDriveWithIdentity:_selectedIdentity];
+    [_mediator startDownloadAndSaveToDriveWithIdentity:_selectedIdentity];
   }
 
   id<SaveToDriveCommands> saveToDriveCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SaveToDriveCommands);
   [saveToDriveCommandsHandler hideSaveToDrive];
-}
-
-#pragma mark - Private
-
-// If the web state still exists with its associated DownloadManagerTabHelper
-// instance, asks the DownloadManagerTabHelper to start the current download
-// task and remember to save the downloaded file to Drive.
-- (void)startDownloadAndSaveToDriveWithIdentity:(id<SystemIdentity>)identity {
-  if (!_webState) {
-    return;
-  }
-  DownloadManagerTabHelper* downloadManagerTabHelper =
-      DownloadManagerTabHelper::FromWebState(_webState.get());
-  downloadManagerTabHelper->StartDownloadTaskAndSaveToDrive(identity);
 }
 
 @end
