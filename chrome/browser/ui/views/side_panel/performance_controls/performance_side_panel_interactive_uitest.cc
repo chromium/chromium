@@ -9,7 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/test_support/battery_saver_browser_test_mixin.h"
-#include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
+#include "chrome/browser/ui/performance_controls/test_support/memory_saver_interactive_test_mixin.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -40,7 +40,7 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPerformanceWebContentsElementId);
 }  // namespace
 
 class PerformanceSidePanelInteractiveTest
-    : public MemorySaverBrowserTestMixin<
+    : public MemorySaverInteractiveTestMixin<
           BatterySaverBrowserTestMixin<InteractiveBrowserTest>> {
  public:
   void SetUp() override {
@@ -51,34 +51,13 @@ class PerformanceSidePanelInteractiveTest
     animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
         gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
     set_open_about_blank_on_browser_launch(true);
-    MemorySaverBrowserTestMixin::SetUp();
+    MemorySaverInteractiveTestMixin::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    MemorySaverBrowserTestMixin::SetUpOnMainThread();
+    MemorySaverInteractiveTestMixin::SetUpOnMainThread();
     SetMemorySaverModeEnabled(true);
-  }
-
-  auto TryDiscardTab(int tab_index) {
-    return Do(
-        base::BindLambdaForTesting([=]() { TryDiscardTabAt(tab_index); }));
-  }
-
-  // Attempts to discard the tab at discard_tab_index and navigates to that
-  // tab and waits for it to reload
-  auto DiscardAndSelectTab(int discard_tab_index,
-                           const ui::ElementIdentifier& contents_id) {
-    return Steps(FlushEvents(),
-                 // This has to be done on a fresh message loop to prevent
-                 // a tab being discarded while it is notifying its observers
-                 TryDiscardTab(discard_tab_index), WaitForHide(contents_id),
-                 SelectTab(kTabStripElementId, discard_tab_index),
-                 WaitForShow(contents_id));
-  }
-
-  auto SetBatterySaverActive(bool active) {
-    return Do(base::BindLambdaForTesting(
-        [=] { SetBatterySaverModeEnabled(active); }));
+    SetBatterySaverModeEnabled(true);
   }
 
  private:
@@ -102,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceSidePanelInteractiveTest,
                        IconChangesOnBatterySaverModeActive) {
   constexpr char kPerformanceButton[] = "performance_button";
   RunTestSequence(
-      SetBatterySaverActive(true), PressButton(kToolbarAppMenuButtonElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
       SelectMenuItem(AppMenuModel::kPerformanceMenuItem),
       WaitForShow(kSidePanelElementId), FlushEvents(),
       WaitForShow(kPinnedToolbarActionsContainerElementId),
@@ -161,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceSidePanelInteractiveTest,
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      DiscardAndSelectTab(0, kFirstTabContents),
+      DiscardAndReloadTab(0, kFirstTabContents),
       PressButton(kMemorySaverChipElementId), WaitForShow(kSidePanelElementId),
       WaitForShow(kPerformanceSidePanelWebViewElementId),
       InstrumentNonTabWebView(kPerformanceWebContentsElementId,

@@ -13,6 +13,7 @@
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/performance_controls/test_support/battery_saver_browser_test_mixin.h"
+#include "chrome/browser/ui/performance_controls/test_support/memory_saver_interactive_test_mixin.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -60,26 +61,13 @@ const WebContentsInteractionTestUtil::DeepQuery kDiscardOnTimerQuery = {
 
 }  // namespace
 
-class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
+class MemorySettingsInteractiveTest
+    : public MemorySaverInteractiveTestMixin<InteractiveBrowserTest> {
  public:
-  void SetUp() override {
-    InteractiveBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
-    performance_manager::user_tuning::UserPerformanceTuningManager::
-        GetInstance()
-            ->SetMemorySaverModeEnabled(true);
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    embedded_test_server()->StartAcceptingConnections();
+    MemorySaverInteractiveTestMixin::SetUpOnMainThread();
+    SetMemorySaverModeEnabled(true);
   }
-
-  void TearDownOnMainThread() override {
-    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    InteractiveBrowserTest::TearDownOnMainThread();
-  }
-
   auto ClickElement(const ui::ElementIdentifier& contents_id,
                     const DeepQuery& element) {
     return Steps(MoveMouseTo(contents_id, element), ClickMouse());
@@ -154,8 +142,7 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
-                       MemorySaverPrefChanged) {
+IN_PROC_BROWSER_TEST_F(MemorySettingsInteractiveTest, MemorySaverPrefChanged) {
   RunTestSequence(
       InstrumentTab(kPerformanceSettingsPage),
       NavigateWebContents(kPerformanceSettingsPage,
@@ -177,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
       CheckMemorySaverModePrefState(MemorySaverModeState::kEnabledOnTimer));
 }
 
-IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MemorySettingsInteractiveTest,
                        MemorySaverLearnMoreLinkNavigates) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLearnMorePage);
   const DeepQuery memory_saver_learn_more = {"settings-ui",
@@ -198,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
                               GURL(chrome::kMemorySaverModeLearnMoreUrl)));
 }
 
-IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MemorySettingsInteractiveTest,
                        MemorySaverMetricsShouldLogOnToggle) {
   base::HistogramTester histogram_tester;
 
@@ -227,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // TODO(http://b/281528238): reenable the test.
-IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MemorySettingsInteractiveTest,
                        DISABLED_MemorySaverSendFeedbackDialogOpens) {
   const DeepQuery memory_saver_feedback = {
       "settings-ui", "settings-main", "settings-basic-page",
@@ -243,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 class PerformanceSettingsMultiStateModeInteractiveTest
-    : public PerformanceSettingsInteractiveTest {
+    : public MemorySettingsInteractiveTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
@@ -427,17 +414,6 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsMultiStateModeInteractiveTest,
 class BatterySettingsInteractiveTest
     : public BatterySaverBrowserTestMixin<InteractiveBrowserTest> {
  public:
-  void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    embedded_test_server()->StartAcceptingConnections();
-  }
-
-  void TearDownOnMainThread() override {
-    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    InteractiveBrowserTest::TearDownOnMainThread();
-  }
-
   base::BatteryLevelProvider::BatteryState GetFakeBatteryState() override {
     return base::test::TestBatteryLevelProvider::CreateBatteryState(1, true,
                                                                     100);

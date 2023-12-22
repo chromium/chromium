@@ -18,6 +18,7 @@
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
+#include "net/dns/mock_host_resolver.h"
 
 namespace {
 constexpr base::TimeDelta kShortDelay = base::Seconds(1);
