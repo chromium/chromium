@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/login/http_auth_coordinator.h"
 #include "chrome/browser/ui/login/login_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -172,37 +173,56 @@ class LoginTabHelperFake : public LoginTabHelper {
   const raw_ptr<BrowserClientFake> browser_client_;
 };
 
-class BrowserClientFake : public ChromeContentBrowserClient {
+class HttpAuthCoordinatorFake : public HttpAuthCoordinator {
  public:
-  // This duplicates the logic from CreateLoginDelegate (ignoring ChromeOS
-  // specialized logic) and replaces instances of LoginTabHelper and
-  // LoginHandler with their fakes.
-  std::unique_ptr<content::LoginDelegate> CreateLoginDelegate(
-      const net::AuthChallengeInfo& auth_info,
+  explicit HttpAuthCoordinatorFake(BrowserClientFake* browser_client)
+      : browser_client_(browser_client) {}
+  ~HttpAuthCoordinatorFake() override = default;
+
+  std::unique_ptr<content::LoginDelegate> CreateLoginDelegateFromTabHelper(
       content::WebContents* web_contents,
+      const net::AuthChallengeInfo& auth_info,
       const content::GlobalRequestID& request_id,
-      bool is_request_for_primary_main_frame,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
-      bool first_auth_attempt,
-      LoginAuthRequiredCallback auth_required_callback) override {
-    if (is_request_for_primary_main_frame) {
-      if (!LoginTabHelper::FromWebContents(web_contents)) {
-        auto tab_helper =
-            std::make_unique<LoginTabHelperFake>(web_contents, this);
-        web_contents->SetUserData(LoginTabHelper::UserDataKey(),
-                                  std::move(tab_helper));
-      }
-      return LoginTabHelper::FromWebContents(web_contents)
-          ->CreateAndStartMainFrameLoginDelegate(
-              auth_info, web_contents, request_id, url,
-              std::move(response_headers), std::move(auth_required_callback));
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
+      override {
+    if (!LoginTabHelper::FromWebContents(web_contents)) {
+      auto tab_helper =
+          std::make_unique<LoginTabHelperFake>(web_contents, browser_client_);
+      web_contents->SetUserData(LoginTabHelper::UserDataKey(),
+                                std::move(tab_helper));
     }
+    return LoginTabHelper::FromWebContents(web_contents)
+        ->CreateAndStartMainFrameLoginDelegate(
+            auth_info, web_contents, request_id, url,
+            std::move(response_headers), std::move(auth_required_callback));
+  }
+
+  std::unique_ptr<content::LoginDelegate> CreateLoginDelegateFromLoginHandler(
+      content::WebContents* web_contents,
+      const net::AuthChallengeInfo& auth_info,
+      const content::GlobalRequestID& request_id,
+      const GURL& url,
+      scoped_refptr<net::HttpResponseHeaders> response_headers,
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
+      override {
     auto login_handler = std::make_unique<LoginHandlerFake>(
-        auth_info, web_contents, std::move(auth_required_callback), this);
+        auth_info, web_contents, std::move(auth_required_callback),
+        browser_client_);
     login_handler->StartSubresource(request_id, url,
                                     std::move(response_headers));
     return login_handler;
+  }
+
+ private:
+  const raw_ptr<BrowserClientFake> browser_client_;
+};
+
+class BrowserClientFake : public ChromeContentBrowserClient {
+ public:
+  std::unique_ptr<HttpAuthCoordinator> CreateHttpAuthCoordinator() override {
+    return std::make_unique<HttpAuthCoordinatorFake>(this);
   }
 
   // This is needed for tests that restart the network service.

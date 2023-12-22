@@ -64,6 +64,27 @@ class HttpAuthCoordinator {
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
+
+ protected:
+  // Exposed for testing.
+  virtual std::unique_ptr<content::LoginDelegate>
+  CreateLoginDelegateFromTabHelper(
+      content::WebContents* web_contents,
+      const net::AuthChallengeInfo& auth_info,
+      const content::GlobalRequestID& request_id,
+      const GURL& url,
+      scoped_refptr<net::HttpResponseHeaders> response_headers,
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
+
+  // Exposed for testing.
+  virtual std::unique_ptr<content::LoginDelegate>
+  CreateLoginDelegateFromLoginHandler(
+      content::WebContents* web_contents,
+      const net::AuthChallengeInfo& auth_info,
+      const content::GlobalRequestID& request_id,
+      const GURL& url,
+      scoped_refptr<net::HttpResponseHeaders> response_headers,
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
 };
 
 #endif  // CHROME_BROWSER_UI_LOGIN_HTTP_AUTH_COORDINATOR_H_

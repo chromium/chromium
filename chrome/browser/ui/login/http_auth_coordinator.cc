@@ -24,12 +24,39 @@ HttpAuthCoordinator::CreateLoginDelegate(
   // manages a more complicated flow to avoid confusion about which website is
   // showing the prompt.
   if (is_request_for_primary_main_frame) {
-    LoginTabHelper::CreateForWebContents(web_contents);
-    return LoginTabHelper::FromWebContents(web_contents)
-        ->CreateAndStartMainFrameLoginDelegate(
-            auth_info, web_contents, request_id, url, response_headers,
-            std::move(auth_required_callback));
+    return CreateLoginDelegateFromTabHelper(web_contents, auth_info, request_id,
+                                            url, response_headers,
+                                            std::move(auth_required_callback));
   }
+
+  return CreateLoginDelegateFromLoginHandler(web_contents, auth_info,
+                                             request_id, url, response_headers,
+                                             std::move(auth_required_callback));
+}
+
+std::unique_ptr<content::LoginDelegate>
+HttpAuthCoordinator::CreateLoginDelegateFromTabHelper(
+    content::WebContents* web_contents,
+    const net::AuthChallengeInfo& auth_info,
+    const content::GlobalRequestID& request_id,
+    const GURL& url,
+    scoped_refptr<net::HttpResponseHeaders> response_headers,
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
+  LoginTabHelper::CreateForWebContents(web_contents);
+  return LoginTabHelper::FromWebContents(web_contents)
+      ->CreateAndStartMainFrameLoginDelegate(auth_info, web_contents,
+                                             request_id, url, response_headers,
+                                             std::move(auth_required_callback));
+}
+
+std::unique_ptr<content::LoginDelegate>
+HttpAuthCoordinator::CreateLoginDelegateFromLoginHandler(
+    content::WebContents* web_contents,
+    const net::AuthChallengeInfo& auth_info,
+    const content::GlobalRequestID& request_id,
+    const GURL& url,
+    scoped_refptr<net::HttpResponseHeaders> response_headers,
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   std::unique_ptr<LoginHandler> login_handler = LoginHandler::Create(
       auth_info, web_contents, std::move(auth_required_callback));
   login_handler->StartSubresource(request_id, url, response_headers);

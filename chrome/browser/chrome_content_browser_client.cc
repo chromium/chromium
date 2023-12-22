@@ -5417,9 +5417,6 @@ void ChromeContentBrowserClient::InitOnUIThread() {
 
   safe_browsing_service_ = g_browser_process->safe_browsing_service();
 
-  // Initialize the http auth coordinator.
-  http_auth_coordinator_ = CreateHttpAuthCoordinator();
-
   // Initialize `network_contexts_parent_directory_`.
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
@@ -6692,6 +6689,9 @@ ChromeContentBrowserClient::CreateLoginDelegate(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  if (!http_auth_coordinator_) {
+    http_auth_coordinator_ = CreateHttpAuthCoordinator();
+  }
   // Once Lacros ships this logic will no longer need to be included in
   // ash-chrome.
   return http_auth_coordinator_->CreateLoginDelegate(
