@@ -74,15 +74,6 @@ config("dependants_extra_warnings") {
     } else {
       cflags += [ "-pedantic" ]
     }
-
-    # TODO(https://crbug.com/1464560) Get rid of those warning exceptions.
-    # This is blocking using PartitionAlloc in Dawn. Most fixes have been
-    # prototyped in:
-    # https://chromium-review.googlesource.com/c/chromium/src/+/5057762
-    cflags += [
-      # Those are compiler extension banned by -pedantic.
-      "-Wno-language-extension-token",
-    ]
   }
 }
 
