@@ -7,10 +7,13 @@ import {StringUtil} from '../common/string_util.js';
 /**
  * Class to record metrics for Switch Access.
  */
-export namespace SwitchAccessMetrics {
-  export function recordMenuAction(menuAction: string): void {
+export const SwitchAccessMetrics = {
+  /**
+   * @param {string} menuAction
+   */
+  recordMenuAction: menuAction => {
     const metricName = 'Accessibility.CrosSwitchAccess.MenuAction.' +
         StringUtil.toUpperCamelCase(menuAction);
     chrome.metricsPrivate.recordUserAction(metricName);
-  }
-}
+  },
+};
