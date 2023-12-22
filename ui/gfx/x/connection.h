@@ -222,6 +222,11 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
     return shm_version_;
   }
 
+  ExtensionVersion sync_version() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return sync_version_;
+  }
+
   ExtensionVersion xinput_version() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return xinput_version_;
@@ -526,6 +531,7 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
   ExtensionVersion render_version_ = {0, 0};
   ExtensionVersion screensaver_version_ = {0, 0};
   ExtensionVersion shm_version_ = {0, 0};
+  ExtensionVersion sync_version_ = {0, 0};
   ExtensionVersion xinput_version_ = {0, 0};
 
   Setup setup_;

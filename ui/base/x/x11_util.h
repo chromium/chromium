@@ -234,9 +234,6 @@ COMPONENT_EXPORT(UI_BASE_X) bool IsX11WindowFullScreen(x11::Window window);
 // is called an equal number of times with |suspend| set to false.
 COMPONENT_EXPORT(UI_BASE_X) bool SuspendX11ScreenSaver(bool suspend);
 
-// Return true if the display supports SYNC extension.
-COMPONENT_EXPORT(UI_BASE_X) bool IsSyncExtensionAvailable();
-
 // Returns the preferred Skia colortype for an X11 visual.  Returns
 // kUnknown_SkColorType if there isn't a suitable colortype.
 COMPONENT_EXPORT(UI_BASE_X)

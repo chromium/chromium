@@ -591,7 +591,8 @@ void Connection::InitializeExtensions() {
       ScreenSaver::major_version, ScreenSaver::minor_version);
   shape().QueryVersion();
   auto shm_future = shm().QueryVersion();
-  sync().Initialize(Sync::major_version, Sync::minor_version);
+  auto sync_future =
+      sync().Initialize(Sync::major_version, Sync::minor_version);
   xfixes().QueryVersion(XFixes::major_version, XFixes::minor_version);
   auto xinput_future =
       xinput().XIQueryVersion(Input::major_version, Input::minor_version);
@@ -616,6 +617,15 @@ void Connection::InitializeExtensions() {
   if (auto response = shm_future.Sync()) {
     shm_version_ = {response->major_version, response->minor_version};
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Chrome for ChromeOS can be run with X11 on a Linux desktop. In this case,
+  // NotifySwapAfterResize is never called as the compositor does not notify
+  // about swaps after resize. Thus, simply disable usage of XSyncCounter on
+  // ChromeOS builds.
+  if (auto response = sync_future.Sync()) {
+    sync_version_ = {response->major_version, response->minor_version};
+  }
+#endif
   if (auto response = xinput_future.Sync()) {
     xinput_version_ = {response->major_version, response->minor_version};
   }

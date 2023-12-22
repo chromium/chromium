@@ -1258,7 +1258,7 @@ void X11Window::SetWorkspaceExtensionDelegate(
 }
 
 bool X11Window::IsSyncExtensionAvailable() const {
-  return ui::IsSyncExtensionAvailable();
+  return connection_->sync_version() > std::pair<uint32_t, uint32_t>{0, 0};
 }
 
 bool X11Window::IsWmTiling() const {
