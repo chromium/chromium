@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/dcheck_is_on.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
@@ -33,6 +34,15 @@ OpenXrExtensionEnumeration::OpenXrExtensionEnumeration() {
     xrEnumerateInstanceExtensionProperties(nullptr, extension_count,
                                            &extension_count,
                                            extension_properties_.data());
+  }
+
+  if constexpr (DCHECK_IS_ON()) {
+    DVLOG(1) << __func__ << ": Supported Extensions Begin";
+    for (const auto& extension : extension_properties_) {
+      DVLOG(1) << __func__ << ": " << extension.extensionName
+               << " version=" << extension.extensionVersion;
+    }
+    DVLOG(1) << __func__ << ": Supported Extensions End";
   }
 }
 

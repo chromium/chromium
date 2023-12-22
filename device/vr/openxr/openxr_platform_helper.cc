@@ -15,6 +15,7 @@
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
+#include "device/vr/openxr/openxr_interaction_profiles.h"
 
 namespace device {
 
@@ -137,13 +138,17 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
   // available.
   EnableExtensionIfSupported(XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
 
-  // Input extensions. These enable interaction profiles not defined in the core
-  // spec
-  EnableExtensionIfSupported(XR_EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME);
-  EnableExtensionIfSupported(XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME);
-  EnableExtensionIfSupported(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
-  EnableExtensionIfSupported(
-      XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME);
+  // Enable the required extensions for any controllers that both we and the
+  // runtime support.
+  // Hold a reference to the vector to ensure that the `.c_str()` data remains
+  // valid until the xrCreateInstance call at the end of this function.
+  const auto& interaction_profiles = GetOpenXrControllerInteractionProfiles();
+  for (const auto& interaction_profile : interaction_profiles) {
+    if (!interaction_profile.required_extension.empty()) {
+      EnableExtensionIfSupported(
+          interaction_profile.required_extension.c_str());
+    }
+  }
 
   EnableExtensionIfSupported(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
   EnableExtensionIfSupported(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);

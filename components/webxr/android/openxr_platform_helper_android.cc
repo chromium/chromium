@@ -91,7 +91,24 @@ device::mojom::XRDeviceData OpenXrPlatformHelperAndroid::GetXRDeviceData() {
 
 XrResult OpenXrPlatformHelperAndroid::DestroyInstance(XrInstance& instance) {
   session_coordinator_->EndSession();
-  XrResult result = OpenXrPlatformHelper::DestroyInstance(instance);
+
+  // The `EndSession` call above can cause us to get called re-entrantly. The
+  // base class `DestroyInstance` takes `instance` by reference and expects that
+  // it is not null. In the case of a re-entrant call occurring, that call could
+  // go through and null out the instance before our call to the base
+  // `DestroyInstance` here, so verify that the `instance` is still valid before
+  // attempting to destroy it.
+  XrResult result = XR_SUCCESS;
+  if (instance != XR_NULL_HANDLE) {
+    result = OpenXrPlatformHelper::DestroyInstance(instance);
+  }
+
+  // Since we can't validate that we were only ever called with a valid
+  // instance, we want to assert that the cached member is cleared as the result
+  // of at least *one* successful call to the base `DestroyInstance`.
+  if (XR_SUCCEEDED(result)) {
+    CHECK(xr_instance_ == XR_NULL_HANDLE);
+  }
   activity_ = nullptr;
   return result;
 }

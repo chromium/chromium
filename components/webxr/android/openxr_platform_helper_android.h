@@ -33,6 +33,9 @@ class OpenXrPlatformHelperAndroid : public device::OpenXrPlatformHelper {
   XrResult DestroyInstance(XrInstance& instance) override;
 
  private:
+  void OnXrActivityReady(PlatformCreateInfoReadyCallback callback,
+                         const base::android::JavaParamRef<jobject>& activity);
+
   std::unique_ptr<XrSessionCoordinator> session_coordinator_;
 
   XrInstanceCreateInfoAndroidKHR create_info_{
@@ -40,8 +43,6 @@ class OpenXrPlatformHelperAndroid : public device::OpenXrPlatformHelper {
   base::android::ScopedJavaGlobalRef<jobject> activity_;
   base::android::ScopedJavaGlobalRef<jobject> app_context_;
 
-  void OnXrActivityReady(PlatformCreateInfoReadyCallback callback,
-                         const base::android::JavaParamRef<jobject>& activity);
 };
 
 }  // namespace webxr
