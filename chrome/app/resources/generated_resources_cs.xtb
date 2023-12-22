@@ -921,6 +921,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1695510246756136088">Nelze se připojit k internetu. Zkuste to znovu.</translation>
 <translation id="1696555181932908973">Můžete na <ph name="SITE_ETLD_PLUS_ONE" /> zkusit pokračovat jinými způsoby.</translation>
 <translation id="169675691788639886">Zařízení má nakonfigurovaná server SSH. Nepřihlašujte se pomocí účtů s citlivými údaji.</translation>
+<translation id="1697122132646041614">Palec dolů otevře formulář k odeslání podrobné zpětné vazby o tom, proč se vám tyto výsledky nelíbí.</translation>
 <translation id="1697150536837697295">Umění</translation>
 <translation id="1697686431566694143">Upravit soubor</translation>
 <translation id="1698796500103229697">&amp;Platební metody</translation>
@@ -2299,6 +2300,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2731700343119398978">Čekejte prosím...</translation>
 <translation id="2731971182069536520">Až příště zařízení restartujete, administrátor provede jednorázovou aktualizaci, která vymaže vaše místní data.</translation>
 <translation id="2732134891301408122">Extra obsah <ph name="CURRENT_ELEMENT" /> z <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Palec nahoru odešle zpětnou vazbu, že se vám tyto výsledky líbí.</translation>
 <translation id="2733992589856193783">Pro tento web jste vytvořili přístupový klíč. K přihlášení potřebujete své mobilní zařízení.</translation>
 <translation id="27349076983469322">Světlé pozadí</translation>
 <translation id="2735712963799620190">Plán</translation>
@@ -5661,6 +5663,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5431318178759467895">Barevně</translation>
 <translation id="5432145523462851548">Zobrazit <ph name="FILE_NAME" /> ve složce</translation>
 <translation id="5432223177001837288">Pokud chcete sdílet zvuk, sdílejte místo toho kartu</translation>
+<translation id="5432872710261597882">Palec nahoru odešle zpětnou vazbu, že se vám toto líbí.</translation>
 <translation id="543338862236136125">Upravit heslo</translation>
 <translation id="5434065355175441495">Šifrování PKCS #1 RSA</translation>
 <translation id="5435274640623994081">Zapnout protokolování</translation>
@@ -5696,6 +5699,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Poznámky na obrazovce uzamčení</translation>
 <translation id="5459864179070366255">Přesto nainstalovat</translation>
+<translation id="5460861858595506978">Inspirace</translation>
 <translation id="5461050611724244538">Spojení s telefonem bylo ztraceno</translation>
 <translation id="5463275305984126951">Index <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Zaregistrovat se k odběru e‑mailů ohledně zařízení <ph name="DEVICE_TYPE" /></translation>
@@ -6499,6 +6503,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="610487644502954950">Boční panel odepnut</translation>
 <translation id="6104929924898022309">Vyhledávacím tlačítkem měnit chování funkčních kláves</translation>
 <translation id="6106167152849320869">Pokud jste v předchozím kroku zvolili, že také chcete odesílat diagnostická data a data o využití, budou se pro nainstalované aplikace shromažďovat tato data.</translation>
+<translation id="6108952804512516814">Vytváření pomocí umělé inteligence</translation>
 <translation id="6111718295497931251">Odebrat přístup k Disku Google</translation>
 <translation id="6111972606040028426">Aktivovat Asistenta Google</translation>
 <translation id="6112294629795967147">Klepnutím změníte velikost</translation>
@@ -6611,7 +6616,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6195155925303302899">Zarovnat na střed</translation>
 <translation id="6195163219142236913">Soubory cookie třetích stran jsou omezeny</translation>
 <translation id="6195693561221576702">Toto zařízení nelze nastavit v offline ukázkovém režimu.</translation>
-<translation id="6196607555925437199">Vytvořit znovu</translation>
 <translation id="6196640612572343990">Blokovat soubory cookie třetích stran</translation>
 <translation id="6196854373336333322">Rozšíření <ph name="EXTENSION_NAME" /> převzalo kontrolu nad nastavením proxy serveru, což znamená, že může změnit, narušit nebo sledovat vše, co děláte na internetu. Pokud si nejste jisti, proč k tomu došlo, zřejmě se jedná o nežádoucí změnu.</translation>
 <translation id="6197128521826316819">Vytvořit QR kód pro tuto stránku</translation>
@@ -8869,6 +8873,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Podrobnosti o ethernetu</translation>
 <translation id="7972714317346275248">Šifrování PKCS #1 SHA-384 s RSA</translation>
+<translation id="7973149423217802477">Palec dolů odešle zpětnou vazbu, že se vám toto nelíbí.</translation>
 <translation id="7973776233567882054">Který popis nejlépe vystihuje vaši síť?</translation>
 <translation id="797394244396603170">Vyberte zařízení, se kterým chcete sdílet soubory</translation>
 <translation id="7974566588408714340">Zkusit znovu pomocí rozšíření <ph name="EXTENSIONNAME" /></translation>

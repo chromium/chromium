@@ -919,6 +919,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1695510246756136088">Kan geen verbinding maken met internet. Probeer het opnieuw.</translation>
 <translation id="1696555181932908973">Je kunt andere manieren proberen om door te gaan op <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Er is een SSH-server ingesteld voor het apparaat. Log niet in met gevoelige accounts.</translation>
+<translation id="1697122132646041614">Met Niet leuk open je een formulier waarmee je gedetailleerde feedback kunt sturen over waarom je deze resultaten niet leuk vindt.</translation>
 <translation id="1697150536837697295">Kunst</translation>
 <translation id="1697686431566694143">Bestand bewerken</translation>
 <translation id="1698796500103229697">&amp;Betaalmethoden</translation>
@@ -2297,6 +2298,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2731700343119398978">Even geduld...</translation>
 <translation id="2731971182069536520">De volgende keer dat je je apparaat opnieuw opstart, voert je beheerder een update uit waarmee je lokale gegevens worden verwijderd.</translation>
 <translation id="2732134891301408122">Extra content <ph name="CURRENT_ELEMENT" /> van <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Met Leuk stuur je feedback dat je deze resultaten leuk vindt.</translation>
 <translation id="2733992589856193783">Je hebt een toegangssleutel voor deze site gemaakt. Je hebt je mobiele apparaat nodig om in te loggen.</translation>
 <translation id="27349076983469322">Lichte achtergrond</translation>
 <translation id="2735712963799620190">Schema</translation>
@@ -5658,6 +5660,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5431318178759467895">Kleur</translation>
 <translation id="5432145523462851548"><ph name="FILE_NAME" /> in map tonen</translation>
 <translation id="5432223177001837288">Als je audio wilt delen, moet je in plaats daarvan een tabblad delen</translation>
+<translation id="5432872710261597882">Met Leuk stuur je feedback dat je dit leuk vindt.</translation>
 <translation id="543338862236136125">Wachtwoord bewerken</translation>
 <translation id="5434065355175441495">PKCS nr. 1 met RSA-versleuteling</translation>
 <translation id="5435274640623994081">Earconregistratie aanzetten</translation>
@@ -5693,6 +5696,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notities op vergrendelscherm</translation>
 <translation id="5459864179070366255">Toch installeren</translation>
+<translation id="5460861858595506978">Inspiratie</translation>
 <translation id="5461050611724244538">De verbinding met je telefoon is verbroken</translation>
 <translation id="5463275305984126951">Index van <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Aanmelden voor <ph name="DEVICE_TYPE" />-mails</translation>
@@ -6496,6 +6500,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="610487644502954950">Zijvenster losgemaakt</translation>
 <translation id="6104929924898022309">De zoektoets gebruiken om het gedrag van functietoetsen te wijzigen</translation>
 <translation id="6106167152849320869">Als je er in de vorige stap ook voor hebt gekozen diagnostische en gebruiksgegevens te sturen, worden deze gegevens verzameld voor geïnstalleerde apps.</translation>
+<translation id="6108952804512516814">Maken met AI</translation>
 <translation id="6111718295497931251">Toegang tot Google Drive intrekken</translation>
 <translation id="6111972606040028426">De Google Assistent aanzetten</translation>
 <translation id="6112294629795967147">Tikken om het formaat aan te passen</translation>
@@ -6607,7 +6612,6 @@ Zichtbaar als <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6195155925303302899">Centreren</translation>
 <translation id="6195163219142236913">Cookies van derden beperkt</translation>
 <translation id="6195693561221576702">Dit apparaat kan niet worden ingesteld in de offline demomodus.</translation>
-<translation id="6196607555925437199">Opnieuw maken</translation>
 <translation id="6196640612572343990">Cookies van derden blokkeren</translation>
 <translation id="6196854373336333322">De extensie '<ph name="EXTENSION_NAME" />' heeft het beheer van je proxyinstellingen overgenomen. Dit betekent dat de extensie alles wat je online doet, kan wijzigen, beschadigen of bekijken. Als je niet zeker weet waarom deze wijziging heeft plaatsgevonden, is het waarschijnlijk een ongewenste wijziging.</translation>
 <translation id="6197128521826316819">QR-code maken voor deze pagina</translation>
@@ -8858,6 +8862,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Ethernetgegevens</translation>
 <translation id="7972714317346275248">PKCS nr. 1 SHA-384 met RSA-versleuteling</translation>
+<translation id="7973149423217802477">Met Niet leuk stuur je feedback dat je dit niet leuk vindt.</translation>
 <translation id="7973776233567882054">Welke beschrijving past het beste bij je netwerk?</translation>
 <translation id="797394244396603170">Selecteer het apparaat waarmee je bestanden wilt delen</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> opnieuw proberen te gebruiken</translation>

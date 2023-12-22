@@ -917,6 +917,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1695510246756136088">Internetga ulanilmadi. Qayta urining.</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> orqali boshqa usulda davom eting.</translation>
 <translation id="169675691788639886">Qurilmada sozlangan SSH server bor. Maxfiy hisoblardan kirmang.</translation>
+<translation id="1697122132646041614">Salbiy baho bosilsa, bu natijalarning nega yoqmagani haqida batafsil fikr-mulohaza yuborish shakli ochiladi.</translation>
 <translation id="1697150536837697295">Sanʼat</translation>
 <translation id="1697686431566694143">Faylni tahrirlash</translation>
 <translation id="1698796500103229697">&amp;Toʻlov usullari</translation>
@@ -2299,6 +2300,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2731700343119398978">Iltimos, kuting...</translation>
 <translation id="2731971182069536520">Qurilmangiz keyingi safar oʻchirib-yoqilganda administrator tomonidan bir martalik yangilanish oʻrnatiladi va mahalliy maʼlumotlar tozalanadi.</translation>
 <translation id="2732134891301408122"><ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /> sonli qoʻshimcha kontent</translation>
+<translation id="2733248615007838252">Ijobiy baho bosilsa, bu natijalarning sizga yoqqani haqida fikr-mulohaza yuboriladi.</translation>
 <translation id="2733992589856193783">Bu sayt uchun kalit yaratildi. Kirish uchun mobil qurilmasi zarur.</translation>
 <translation id="27349076983469322">Yorug‘ fon</translation>
 <translation id="2735712963799620190">Jadval</translation>
@@ -5663,6 +5665,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5431318178759467895">Rang</translation>
 <translation id="5432145523462851548"><ph name="FILE_NAME" />: jildda chiqarish</translation>
 <translation id="5432223177001837288">Ovozni ulashish uchun varaqni ulashing</translation>
+<translation id="5432872710261597882">Ijobiy baho bosilsa, buning sizga yoqqani haqida fikr-mulohaza yuboriladi.</translation>
 <translation id="543338862236136125">Parolni almashtirish</translation>
 <translation id="5434065355175441495">PKCS #1 RSA Shifrlash</translation>
 <translation id="5435274640623994081">Earcon jurnalini yoqish</translation>
@@ -5698,6 +5701,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Ekran qulfi qaydlari</translation>
 <translation id="5459864179070366255">Oʻrnatishda davom etish</translation>
+<translation id="5460861858595506978">Ilhom</translation>
 <translation id="5461050611724244538">Telefon bilan ulanish uzilib qoldi</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> tarkibi</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> xatlariga yozilish</translation>
@@ -6504,6 +6508,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="610487644502954950">Yon panel olib tashlandi</translation>
 <translation id="6104929924898022309">Funksiya tugmalari ishlashini almashtirish uchun qidiruv tugmasini bosing</translation>
 <translation id="6106167152849320869">Avvalgi ekranda diagnostika va foydalanish statistikasi ham yuborilishi tanlansa, bu axborotlar oʻrnatilgan ilovalar uchun ham jamlanadi.</translation>
+<translation id="6108952804512516814">AI bilan yaratish</translation>
 <translation id="6111718295497931251">Google Drive ruxsatini olib tashlash</translation>
 <translation id="6111972606040028426">Google Assistentni yoqish</translation>
 <translation id="6112294629795967147">Hajmini moslash uchun tegining</translation>
@@ -6616,7 +6621,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6195155925303302899">Markazga tekislash</translation>
 <translation id="6195163219142236913">Tashqi cookie fayllar cheklangan</translation>
 <translation id="6195693561221576702">Bu qurilmani oflayn demo rejimda sozlab boʻlmaydi.</translation>
-<translation id="6196607555925437199">Qayta yaratish</translation>
 <translation id="6196640612572343990">Tashqi cookie-fayllarni bloklash.</translation>
 <translation id="6196854373336333322">“<ph name="EXTENSION_NAME" />” kengaytmasi proksi-server sozlamalarini nazorat qiladi. U internetda bajargan ishlaringizni o‘zgartirishi, buzishi yoki bildirmasdan eshitishi mumkin. Agar bu haqda eshitmagan bo‘lsangiz, uni o‘chirib qo‘yganingiz yaxshi.</translation>
 <translation id="6197128521826316819">Bu sahifa uchun QR kod yaratish</translation>
@@ -8869,6 +8873,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Ethernet axboroti</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA shifri bilan</translation>
+<translation id="7973149423217802477">Sallbiy baho bosilsa, buning sizga yoqmagani haqida fikr-mulohaza yuboriladi.</translation>
 <translation id="7973776233567882054">Quyidagilardan qaysi biri tarmogʻingizga mos keladi?</translation>
 <translation id="797394244396603170">Fayllar yuboriladigan qurilmani tanlang</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> orqali ulanish</translation>

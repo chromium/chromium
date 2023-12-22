@@ -921,6 +921,7 @@
 <translation id="1695510246756136088">לא ניתן להתחבר לאינטרנט. אפשר לנסות שוב.</translation>
 <translation id="1696555181932908973">אפשר לנסות להמשיך בדרכים אחרות ב-<ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">‏למכשיר מוגדר שרת SSH. אין להיכנס לחשבונות רגישים.</translation>
+<translation id="1697122132646041614">בסימון דיסלייק, נפתח טופס לשליחת משוב מפורט על הסיבה לכך שלא אהבת את התוצאות האלה.</translation>
 <translation id="1697150536837697295">אומנות</translation>
 <translation id="1697686431566694143">אישור לערוך את הקובץ</translation>
 <translation id="1698796500103229697">אמצעי תשלום</translation>
@@ -2312,6 +2313,7 @@
 <translation id="2731700343119398978">יש להמתין...</translation>
 <translation id="2731971182069536520">בפעם הבאה שהמכשיר יופעל מחדש, מנהל המערכת יבצע עדכון חד-פעמי שימחק את הנתונים המקומיים.</translation>
 <translation id="2732134891301408122">תוכן נוסף של <ph name="CURRENT_ELEMENT" /> מתוך <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">בסימון לייק, נשלח משוב שאהבת את התוצאות האלה.</translation>
 <translation id="2733992589856193783">יצרת מפתח גישה לאתר הזה. נדרש מכשיר נייד כדי להיכנס לחשבון.</translation>
 <translation id="27349076983469322">רקע בהיר</translation>
 <translation id="2735712963799620190">לוח זמנים</translation>
@@ -5677,6 +5679,7 @@
 <translation id="5431318178759467895">צבע</translation>
 <translation id="5432145523462851548">הצגה של <ph name="FILE_NAME" /> בתיקייה</translation>
 <translation id="5432223177001837288">כדי לשתף אודיו, צריך לשתף כרטיסיה ולא חלון או מסך</translation>
+<translation id="5432872710261597882">בסימון לייק, נשלח משוב שאהבת את התכונה הזו.</translation>
 <translation id="543338862236136125">עריכת סיסמה</translation>
 <translation id="5434065355175441495">‏הצפנת RSA של PKCS #1</translation>
 <translation id="5435274640623994081">הפעלת רישום ביומן של צלילי התראה</translation>
@@ -5712,6 +5715,7 @@
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">הערות במסך הנעילה</translation>
 <translation id="5459864179070366255">המשך להתקנה</translation>
+<translation id="5460861858595506978">להשראה</translation>
 <translation id="5461050611724244538">החיבור עם הטלפון שלך אבד</translation>
 <translation id="5463275305984126951">אינדקס של <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">הרשמה לקבלת אימיילים לגבי <ph name="DEVICE_TYPE" /></translation>
@@ -6518,6 +6522,7 @@
 <translation id="610487644502954950">בוטלה ההצמדה של החלונית הצדדית</translation>
 <translation id="6104929924898022309">שימוש במקש החיפוש לשינוי ההתנהגות של מקשי הפונקציות</translation>
 <translation id="6106167152849320869">אם בחרת לשלוח נתוני אבחון ושימוש גם בשלב הקודם, ייאספו נתונים כאלה לגבי אפליקציות מותקנות.</translation>
+<translation id="6108952804512516814">‏יצירה באמצעות AI</translation>
 <translation id="6111718295497931251">‏הסרת הגישה ל-Google Drive</translation>
 <translation id="6111972606040028426">‏הפעלת Google Assistant</translation>
 <translation id="6112294629795967147">שינוי גודל באמצעות נגיעה</translation>
@@ -6630,7 +6635,6 @@
 <translation id="6195155925303302899">יישור למרכז</translation>
 <translation id="6195163219142236913">‏יש הגבלה על קובצי Cookie של צד שלישי</translation>
 <translation id="6195693561221576702">אי אפשר להגדיר את המכשיר הזה במצב הדגמה אופליין.</translation>
-<translation id="6196607555925437199">יצירה מחדש</translation>
 <translation id="6196640612572343990">‏חסימת קובצי Cookie של צד שלישי</translation>
 <translation id="6196854373336333322">‏התוסף "<ph name="EXTENSION_NAME" />" השתלט על הגדרות שרת ה-Proxy. פירוש הדבר שהוא יכול לשנות ולקטוע לכל פעולה שביצעת באינטרנט או לצותת לה. אם לא ידוע לך בוודאות מדוע שינוי זה התרחש, סביר להניח שזהו שינוי לא רצוי.</translation>
 <translation id="6197128521826316819">‏יצירת קוד QR לדף הזה</translation>
@@ -8888,6 +8892,7 @@
 <translation id="7969046989155602842">פקודה</translation>
 <translation id="7970673414865679092">פרטים על אתרנט</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 עם הצפנת RSA</translation>
+<translation id="7973149423217802477">בסימון דיסלייק, נשלח משוב שלא אהבת את התכונה הזו.</translation>
 <translation id="7973776233567882054">איזה מהמשפטים הבאים מתאר את הרשת שלך בצורה הטובה ביותר?</translation>
 <translation id="797394244396603170">יש לבחור את המכשיר שאיתו ברצונך לשתף קבצים</translation>
 <translation id="7974566588408714340">ניסיון נוסף באמצעות <ph name="EXTENSIONNAME" /></translation>

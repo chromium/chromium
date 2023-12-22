@@ -916,6 +916,7 @@
 <translation id="1695510246756136088">Интернетке қосылу мүмкін емес. Қайталап көріңіз.</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> сайтында жұмысты жалғастырудың басқа жолдарын байқап көрсеңіз болады.</translation>
 <translation id="169675691788639886">Құрылғыда SSH сервері конфигурацияланған. Құпия аккаунттармен кірмеңіз.</translation>
+<translation id="1697122132646041614">"Ұнамайды" белгішесін бассаңыз, бұл нәтижелердің ұнамау себебін толықтай жазуға арналған үлгі ашылады.</translation>
 <translation id="1697150536837697295">Өнер</translation>
 <translation id="1697686431566694143">Файлды өңдеу</translation>
 <translation id="1698796500103229697">&amp;Төлеу әдістері</translation>
@@ -2294,6 +2295,7 @@
 <translation id="2731700343119398978">Күтіңіз…</translation>
 <translation id="2731971182069536520">Құрылғы келесіде қосылған кезде, әкімші жергілікті деректерді жоятын бір реттік жаңарту әрекетін жасайды.</translation>
 <translation id="2732134891301408122"><ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" />-картадағы қосымша контент</translation>
+<translation id="2733248615007838252">"Ұнайды" белгішесін бассаңыз, бұл нәтижелер сізге ұнағанын білдіресіз.</translation>
 <translation id="2733992589856193783">Сіз осы сайт үшін кіру кілтін жасадыңыз. Кіруіңіз үшін мобильдік құрылғы керек.</translation>
 <translation id="27349076983469322">Жарық фон</translation>
 <translation id="2735712963799620190">Кесте</translation>
@@ -5657,6 +5659,7 @@
 <translation id="5431318178759467895">Түс</translation>
 <translation id="5432145523462851548">Қалтада <ph name="FILE_NAME" /> файлын көрсету</translation>
 <translation id="5432223177001837288">Аудионы бөлісу үшін оның орнына қойындыны бөлісу</translation>
+<translation id="5432872710261597882">"Ұнайды" белгішесін бассаңыз, бұл функция сізге ұнағанын білдіресіз.</translation>
 <translation id="543338862236136125">Құпия сөзді өзгерту</translation>
 <translation id="5434065355175441495">PKCS #1 RSA шифрлауы</translation>
 <translation id="5435274640623994081">Earcon журналын қосу</translation>
@@ -5692,6 +5695,7 @@
 <translation id="5458214261780477893">Дворак</translation>
 <translation id="5458998536542739734">Құлып экранындағы жазбалар</translation>
 <translation id="5459864179070366255">Орнату үшін жалғастыру</translation>
+<translation id="5460861858595506978">Шабыт</translation>
 <translation id="5461050611724244538">Телефоныңызбен байланыс үзілді</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> индексі</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> туралы электрондық хаттар алуға тіркелу</translation>
@@ -6495,6 +6499,7 @@
 <translation id="610487644502954950">Бүйірлік панель босатылды</translation>
 <translation id="6104929924898022309">Функция пернелерінің әрекетін өзгерту үшін іздеу пернесін пайдалану</translation>
 <translation id="6106167152849320869">Алдыңғы қадамда диагностика мен пайдалану туралы деректі жіберуді таңдасаңыз, орнатылған қолданбалар үшін осы деректер жиналады.</translation>
+<translation id="6108952804512516814">AI көмегімен жасау</translation>
 <translation id="6111718295497931251">Google Drive қызметін пайдалану рұқсатын өшіру</translation>
 <translation id="6111972606040028426">Google Assistant қолданбасын қосу</translation>
 <translation id="6112294629795967147">Өлшемін өзгерту үшін түртіңіз</translation>
@@ -6607,7 +6612,6 @@
 <translation id="6195155925303302899">Ортасына туралау</translation>
 <translation id="6195163219142236913">Үшінші тарап cookie файлдарына шектеу қойылды.</translation>
 <translation id="6195693561221576702">Бұл құрылғы офлайн демо режимінде реттелмейді.</translation>
-<translation id="6196607555925437199">Қайта жасау</translation>
 <translation id="6196640612572343990">Үшінші тарап cookie файлдарын бөгеу</translation>
 <translation id="6196854373336333322">«<ph name="EXTENSION_NAME" />» кеңейтімі прокси-сервер параметрлерін бақылауға алды, яғни сіздің онлайн орындайтын кез келген әрекетіңізді өзгерте, бұза немесе ұстап қала алады. Ондай бақылаудың жасалуын қаламасаңыз, кеңейтімді өшіргеніңіз жөн болар.</translation>
 <translation id="6197128521826316819">Осы бетке QR кодын жасау</translation>
@@ -8860,6 +8864,7 @@
 <translation id="7969046989155602842">Пәрмен</translation>
 <translation id="7970673414865679092">Ethernet мәліметтері</translation>
 <translation id="7972714317346275248">RSA шифрлауы бар PKCS #1 SHA-384</translation>
+<translation id="7973149423217802477">"Ұнамайды" белгішесін бассаңыз, бұл функция сізге ұнамағанын білдіресіз.</translation>
 <translation id="7973776233567882054">Келесілердің қайсысы желіңізді ең жақсы сипаттайды?</translation>
 <translation id="797394244396603170">Файлдарды бөліскіңіз келетін құрылғыны таңдаңыз.</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> қайта пайдаланып көріңіз</translation>

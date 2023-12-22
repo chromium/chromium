@@ -925,6 +925,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1695510246756136088">Internetne povezave ni mogoče vzpostaviti. Poskusite znova.</translation>
 <translation id="1696555181932908973">Na <ph name="SITE_ETLD_PLUS_ONE" /> lahko poskusite nadaljevati na druge načine.</translation>
 <translation id="169675691788639886">Naprava ima konfiguriran strežnik SSH. Ne prijavljajte se z občutljivimi računi.</translation>
+<translation id="1697122132646041614">S palcem dol odprete obrazec za pošiljanje podrobnih povratnih informacij glede tega, zakaj vam ti rezultati niso všeč.</translation>
 <translation id="1697150536837697295">Umetnost</translation>
 <translation id="1697686431566694143">Uredi datoteko</translation>
 <translation id="1698796500103229697">&amp;Plačilna sredstva</translation>
@@ -2315,6 +2316,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2731700343119398978">Počakajte ...</translation>
 <translation id="2731971182069536520">Ob naslednjem vnovičnem zagonu naprave bo skrbnik opravil enkratno posodobitev, s katero bodo izbrisani lokalni podatki.</translation>
 <translation id="2732134891301408122">Element dodatne vsebine št. <ph name="CURRENT_ELEMENT" /> od <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">S palcem gor pošljete povratne informacije, da so vam ti rezultati všeč.</translation>
 <translation id="2733992589856193783">Ustvarili ste ključ za dostop za to spletno mesto. Za prijavo potrebujete mobilno napravo.</translation>
 <translation id="27349076983469322">Svetlo ozadje</translation>
 <translation id="2735712963799620190">Razpored</translation>
@@ -5679,6 +5681,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5431318178759467895">Barvno</translation>
 <translation id="5432145523462851548">Prikaz datoteke <ph name="FILE_NAME" /> v mapi</translation>
 <translation id="5432223177001837288">Če želite deliti zvok, namesto tega delite zavihek</translation>
+<translation id="5432872710261597882">S palcem gor pošljete povratne informacije, da vam je to všeč.</translation>
 <translation id="543338862236136125">Uredi geslo</translation>
 <translation id="5434065355175441495">PKCS #1 s šifriranjem RSA</translation>
 <translation id="5435274640623994081">Omogočanje beleženja zvočnih ikon</translation>
@@ -5714,6 +5717,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Zapiski na zaklenjenem zaslonu</translation>
 <translation id="5459864179070366255">Na namestitev</translation>
+<translation id="5460861858595506978">Navdih</translation>
 <translation id="5461050611724244538">Povezava s telefonom je prekinjena</translation>
 <translation id="5463275305984126951">Kazalo lokacije <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Prijava za e-poštna sporočila glede naprave <ph name="DEVICE_TYPE" /></translation>
@@ -6522,6 +6526,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="610487644502954950">Stransko podokno je odpeto</translation>
 <translation id="6104929924898022309">Spreminjanje delovanja funkcijskih tipk s tipko za iskanje</translation>
 <translation id="6106167152849320869">Če ste v prejšnjem koraku izbrali tudi pošiljanje diagnostičnih podatkov in podatkov o uporabi, se ti podatki zbirajo za nameščene aplikacije.</translation>
+<translation id="6108952804512516814">Ustvarjanje z umetno inteligenco</translation>
 <translation id="6111718295497931251">Odstrani dostop do Googla Drive</translation>
 <translation id="6111972606040028426">Omogočanje Pomočnika Google</translation>
 <translation id="6112294629795967147">Dotaknite se za spreminjanje velikosti</translation>
@@ -6634,7 +6639,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6195155925303302899">Poravnaj na sredino</translation>
 <translation id="6195163219142236913">Piškotki tretjih oseb so omejeni</translation>
 <translation id="6195693561221576702">Te naprave ni mogoče nastaviti v predstavitvenem načinu brez povezave.</translation>
-<translation id="6196607555925437199">Znova ustvari</translation>
 <translation id="6196640612572343990">Blokiraj piškotke drugih spletnih mest</translation>
 <translation id="6196854373336333322">Razširitev »<ph name="EXTENSION_NAME" />« je prevzela nadzor nad nastavitvami strežnika proxy, kar pomeni, da lahko spremeni, prekine ali nadzoruje vse, kar počnete v spletu. Če ne veste, zakaj je prišlo do te spremembe, je verjetno nezaželena.</translation>
 <translation id="6197128521826316819">Ustvari kodo QR za to stran</translation>
@@ -8895,6 +8899,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Podrobnosti etherneta</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 s šifriranjem RSA</translation>
+<translation id="7973149423217802477">S palcem dol pošljete povratne informacije, da vam to ni všeč.</translation>
 <translation id="7973776233567882054">Kaj od tega najbolje opiše vaše omrežje?</translation>
 <translation id="797394244396603170">Izberite napravo, s katero želite deliti datoteke</translation>
 <translation id="7974566588408714340">Poskusi znova z razširitvijo <ph name="EXTENSIONNAME" /></translation>

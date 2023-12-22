@@ -921,6 +921,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1695510246756136088">Povezivanje s internetom nije moguće. Pokušajte ponovo.</translation>
 <translation id="1696555181932908973">Možete isprobati druge načine da biste nastavili na <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Za uređaj je konfiguriran SSH poslužitelj. Nemojte se prijavljivati osjetljivim računima.</translation>
+<translation id="1697122132646041614">Palac dolje otvara obrazac za slanje detaljnih povratnih informacija o tome zašto vam se ti rezultati ne sviđaju.</translation>
 <translation id="1697150536837697295">Umjetnost</translation>
 <translation id="1697686431566694143">Uredi datoteku</translation>
 <translation id="1698796500103229697">&amp;Načini plaćanja</translation>
@@ -2300,6 +2301,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2731700343119398978">Pričekajte...</translation>
 <translation id="2731971182069536520">Prilikom sljedećeg ponovnog pokretanja uređaja vaš će administrator izvršiti jednokratno ažuriranje kojim će se izbrisati vaši lokalni podaci.</translation>
 <translation id="2732134891301408122">Dodatni sadržaj <ph name="CURRENT_ELEMENT" /> od <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Palac gore šalje povratne informacije da vam se ti rezultati sviđaju.</translation>
 <translation id="2733992589856193783">Izradili ste pristupni ključ za ovu web-lokaciju. Za prijavu je potreban mobilni uređaj.</translation>
 <translation id="27349076983469322">Svijetla pozadina</translation>
 <translation id="2735712963799620190">Raspored</translation>
@@ -5663,6 +5665,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5431318178759467895">Boja</translation>
 <translation id="5432145523462851548">Prikaži <ph name="FILE_NAME" /> u mapi</translation>
 <translation id="5432223177001837288">Da biste dijelili zvuk, podijelite karticu</translation>
+<translation id="5432872710261597882">Palac gore šalje povratne informacije da vam se to sviđa.</translation>
 <translation id="543338862236136125">Uredite zaporku</translation>
 <translation id="5434065355175441495">PKCS br. 1 RSA enkripcija</translation>
 <translation id="5435274640623994081">Omogući zapisnik zvučnih ikona</translation>
@@ -5698,6 +5701,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Bilješke na zaključanom zaslonu</translation>
 <translation id="5459864179070366255">Nastavi s instalacijom</translation>
+<translation id="5460861858595506978">Inspiracija</translation>
 <translation id="5461050611724244538">Veza s telefonom je izgubljena</translation>
 <translation id="5463275305984126951">Indeks za <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Registrirajte se za e-poruke o uređaju <ph name="DEVICE_TYPE" /></translation>
@@ -6501,6 +6505,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="610487644502954950">Bočna ploča je otkvačena</translation>
 <translation id="6104929924898022309">Upotrijebite tipku za pretraživanje da biste promijenili ponašanje funkcijskih tipki</translation>
 <translation id="6106167152849320869">Ako ste u prethodnom koraku odabrali i slanje podataka o dijagnostici i upotrebi, ti će se podaci prikupljati za instalirane aplikacije.</translation>
+<translation id="6108952804512516814">Izrada pomoću umjetne inteligencije</translation>
 <translation id="6111718295497931251">Ukloni pristup Google diska</translation>
 <translation id="6111972606040028426">Omogućivanje Google asistenta</translation>
 <translation id="6112294629795967147">Dodirnite za promjenu veličine</translation>
@@ -6613,7 +6618,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6195155925303302899">Središnje poravnanje</translation>
 <translation id="6195163219142236913">Ograničeni kolačići treće strane</translation>
 <translation id="6195693561221576702">Uređaj nije moguće postaviti u izvanmrežnom demo načinu.</translation>
-<translation id="6196607555925437199">Izradi ponovo</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće trećih strana</translation>
 <translation id="6196854373336333322">Proširenje "<ph name="EXTENSION_NAME" />" preuzelo je kontrolu nad vašim postavkama proxyja, a to znači da može promijeniti, prekinuti ili prisluškivati sve što radite na mreži. Ako niste sigurni kako je došlo do te promjene, vjerojatno je ne želite.</translation>
 <translation id="6197128521826316819">Izradi QR kôd za ovu stranicu</translation>
@@ -8872,6 +8876,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7969046989155602842">Tipka Command</translation>
 <translation id="7970673414865679092">Pojedinosti o ethernetu</translation>
 <translation id="7972714317346275248">PKCS br. 1 SHA-384 s RSA enkripcijom</translation>
+<translation id="7973149423217802477">Palac dolje šalje povratne informacije da vam se to ne sviđa.</translation>
 <translation id="7973776233567882054">Koje od sljedećeg najbolje opisuje vašu mrežu?</translation>
 <translation id="797394244396603170">Odaberite uređaj s kojim želite dijeliti datoteke</translation>
 <translation id="7974566588408714340">Pokušaj ponovo pomoću proširenja <ph name="EXTENSIONNAME" /></translation>

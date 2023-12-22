@@ -922,6 +922,7 @@
 <translation id="1695510246756136088">인터넷에 연결할 수 없습니다. 다시 시도해 주세요.</translation>
 <translation id="1696555181932908973">다른 방법으로 <ph name="SITE_ETLD_PLUS_ONE" />에서 진행해 볼 수 있습니다.</translation>
 <translation id="169675691788639886">기기에 SSH 서버가 구성되어 있습니다. 민감한 계정을 사용하여 로그인하지 마세요.</translation>
+<translation id="1697122132646041614">싫어요를 누르면 이러한 결과가 마음에 들지 않는 이유에 관해 자세한 의견을 제출할 수 있는 양식이 열립니다.</translation>
 <translation id="1697150536837697295">예술</translation>
 <translation id="1697686431566694143">파일 수정</translation>
 <translation id="1698796500103229697">결제 수단</translation>
@@ -2314,6 +2315,7 @@
 <translation id="2731700343119398978">잠시 기다려 주세요...</translation>
 <translation id="2731971182069536520">다음번에 기기를 다시 시작하면 관리자가 일회성 업데이트를 실행하여 로컬 데이터가 삭제됩니다.</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" />개 중 <ph name="CURRENT_ELEMENT" />번째 추가 콘텐츠</translation>
+<translation id="2733248615007838252">좋아요를 누르면 이러한 결과가 마음에 든다는 의견이 제출됩니다.</translation>
 <translation id="2733992589856193783">이 사이트의 패스키를 생성했습니다. 로그인하려면 휴대기기가 필요합니다.</translation>
 <translation id="27349076983469322">밝은 배경</translation>
 <translation id="2735712963799620190">일정</translation>
@@ -5676,6 +5678,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5431318178759467895">컬러</translation>
 <translation id="5432145523462851548">폴더에서 <ph name="FILE_NAME" /> 보기</translation>
 <translation id="5432223177001837288">오디오를 공유하려면 탭을 대신 공유하세요.</translation>
+<translation id="5432872710261597882">좋아요를 누르면 이 기능이 마음에 든다는 의견이 제출됩니다.</translation>
 <translation id="543338862236136125">비밀번호 수정</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 암호화</translation>
 <translation id="5435274640623994081">이어콘 로깅 사용</translation>
@@ -5711,6 +5714,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5458214261780477893">드보락</translation>
 <translation id="5458998536542739734">잠금 화면 메모</translation>
 <translation id="5459864179070366255">설치 계속</translation>
+<translation id="5460861858595506978">영감</translation>
 <translation id="5461050611724244538">휴대전화와 연결 끊김</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" />의 색인</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> 이메일 가입</translation>
@@ -6517,6 +6521,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="610487644502954950">측면 패널 고정 해제됨</translation>
 <translation id="6104929924898022309">검색 키를 사용하여 기능 키 동작 변경</translation>
 <translation id="6106167152849320869">이전 단계에서도 진단 및 사용 데이터를 전송하도록 선택한 경우 설치된 앱의 데이터가 수집됩니다.</translation>
+<translation id="6108952804512516814">AI로 만들기</translation>
 <translation id="6111718295497931251">Google Drive 액세스 권한 삭제</translation>
 <translation id="6111972606040028426">Google 어시스턴트 사용</translation>
 <translation id="6112294629795967147">터치하여 크기 조정</translation>
@@ -6629,7 +6634,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6195155925303302899">가운데 정렬</translation>
 <translation id="6195163219142236913">서드 파티 쿠키 제한됨</translation>
 <translation id="6195693561221576702">이 기기는 오프라인 데모 모드에서 설정할 수 없습니다.</translation>
-<translation id="6196607555925437199">다시 만들기</translation>
 <translation id="6196640612572343990">서드 파티 쿠키 차단</translation>
 <translation id="6196854373336333322">'<ph name="EXTENSION_NAME" />' 확장 프로그램이 프록시 설정을 제어할 수 있게 되었으며, 따라서 사용자가 온라인에서 수행하는 모든 작업을 변경, 중단하거나 엿볼 수 있게 되었습니다. 이와 같이 변경된 이유를 잘 모른다면 이 설정을 사용하지 않는 것이 좋습니다.</translation>
 <translation id="6197128521826316819">이 페이지의 QR 코드 생성</translation>
@@ -8884,6 +8888,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">이더넷 세부정보</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384(RSA 암호화 사용)</translation>
+<translation id="7973149423217802477">싫어요를 누르면 이 기능이 마음에 들지 않는다는 의견이 제출됩니다.</translation>
 <translation id="7973776233567882054">다음 중 사용 중인 네트워크를 가장 잘 설명하는 항목은 무엇인가요?</translation>
 <translation id="797394244396603170">파일을 공유할 기기를 선택하세요.</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" />을(를) 사용하여 다시 시도</translation>

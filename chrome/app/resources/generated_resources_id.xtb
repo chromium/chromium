@@ -922,6 +922,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1695510246756136088">Tidak dapat terhubung ke internet. Coba lagi.</translation>
 <translation id="1696555181932908973">Anda dapat mencoba cara lain untuk melanjutkan di <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Perangkat memiliki server SSH yang dikonfigurasi. Jangan login dengan akun sensitif.</translation>
+<translation id="1697122132646041614">Memberi tanda Tidak suka akan membuka formulir untuk mengirim masukan mendetail tentang alasan Anda tidak menyukai hasil ini.</translation>
 <translation id="1697150536837697295">Seni</translation>
 <translation id="1697686431566694143">Edit file</translation>
 <translation id="1698796500103229697">&amp;Metode Pembayaran</translation>
@@ -2312,6 +2313,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2731700343119398978">Harap tunggu...</translation>
 <translation id="2731971182069536520">Saat berikutnya Anda memulai ulang perangkat, administrator Anda akan menjalankan update satu kali yang akan menghapus data lokal Anda.</translation>
 <translation id="2732134891301408122">Konten tambahan <ph name="CURRENT_ELEMENT" /> dari <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Memberi tanda Suka akan mengirim masukan bahwa Anda menyukai hasil ini.</translation>
 <translation id="2733992589856193783">Anda membuat kunci sandi untuk situs ini. Anda memerlukan perangkat seluler untuk login.</translation>
 <translation id="27349076983469322">Latar belakang terang</translation>
 <translation id="2735712963799620190">Jadwal</translation>
@@ -5676,6 +5678,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5431318178759467895">Warna</translation>
 <translation id="5432145523462851548">Tampilkan <ph name="FILE_NAME" /> dalam folder</translation>
 <translation id="5432223177001837288">Untuk berbagi audio, bagikan tab sebagai gantinya</translation>
+<translation id="5432872710261597882">Memberi tanda Suka akan mengirim masukan bahwa Anda menyukai fitur ini.</translation>
 <translation id="543338862236136125">Edit sandi</translation>
 <translation id="5434065355175441495">PKCS #1 MD Dengan Enkripsi RSA</translation>
 <translation id="5435274640623994081">Aktifkan pencatatan earcon</translation>
@@ -5711,6 +5714,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Catatan layar kunci</translation>
 <translation id="5459864179070366255">Lanjutkan menginstal</translation>
+<translation id="5460861858595506978">Inspirasi</translation>
 <translation id="5461050611724244538">Koneksi dengan ponsel Anda terputus</translation>
 <translation id="5463275305984126951">Pengindeksan <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Daftar untuk menerima email <ph name="DEVICE_TYPE" /></translation>
@@ -6517,6 +6521,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="610487644502954950">Panel samping dilepaskan</translation>
 <translation id="6104929924898022309">Gunakan tombol penelusuran untuk mengubah perilaku tombol fungsi</translation>
 <translation id="6106167152849320869">Jika Anda juga memilih untuk mengirim data diagnostik dan penggunaan pada langkah sebelumnya, data ini akan dikumpulkan untuk aplikasi terinstal.</translation>
+<translation id="6108952804512516814">Buat dengan AI</translation>
 <translation id="6111718295497931251">Hapus akses Google Drive</translation>
 <translation id="6111972606040028426">Aktifkan Asisten Google</translation>
 <translation id="6112294629795967147">Sentuh untuk mengubah ukuran</translation>
@@ -6629,7 +6634,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6195155925303302899">Rata tengah</translation>
 <translation id="6195163219142236913">Cookie pihak ketiga dibatasi</translation>
 <translation id="6195693561221576702">Perangkat ini tidak dapat disiapkan dalam mode demo offline.</translation>
-<translation id="6196607555925437199">Buat ulang</translation>
 <translation id="6196640612572343990">Blokir cookie pihak ketiga</translation>
 <translation id="6196854373336333322">Ekstensi "<ph name="EXTENSION_NAME" />" telah mengambil alih kontrol setelan proxy Anda, yang berarti ekstensi dapat mengubah, merusak, atau menyadap apa pun yang Anda lakukan secara online. Jika tidak yakin mengapa perubahan ini terjadi, mungkin Anda tidak menginginkannya.</translation>
 <translation id="6197128521826316819">Buat Kode QR untuk Halaman ini</translation>
@@ -8883,6 +8887,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7969046989155602842">Tombol Perintah</translation>
 <translation id="7970673414865679092">Detail ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Dengan Enkripsi RSA</translation>
+<translation id="7973149423217802477">Memberi tanda Tidak suka akan mengirim masukan bahwa Anda tidak menyukai fitur ini.</translation>
 <translation id="7973776233567882054">Manakah dari pernyataan berikut yang paling mendeskripsikan jaringan Anda?</translation>
 <translation id="797394244396603170">Pilih perangkat penerima file yang akan Anda bagikan</translation>
 <translation id="7974566588408714340">Coba lagi menggunakan <ph name="EXTENSIONNAME" /></translation>

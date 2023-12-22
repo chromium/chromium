@@ -922,6 +922,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1695510246756136088">Internetiga ei saa ühendust luua. Proovige uuesti.</translation>
 <translation id="1696555181932908973">Võite proovida teenuses <ph name="SITE_ETLD_PLUS_ONE" /> jätkamiseks teisi võimalusi.</translation>
 <translation id="169675691788639886">Seadme puhul on seadistatud SSH-server. Ärge logige sisse tundlikku teavet sisaldava kontoga.</translation>
+<translation id="1697122132646041614">Mittemeeldivaks märkimine avab vormi üksikasjaliku tagasiside saatmiseks selle kohta, miks teile need tulemused ei meeldi.</translation>
 <translation id="1697150536837697295">Kunst</translation>
 <translation id="1697686431566694143">Muuda faili</translation>
 <translation id="1698796500103229697">Makseviisid</translation>
@@ -2303,6 +2304,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2731700343119398978">Oodake ...</translation>
 <translation id="2731971182069536520">Seadme järgmisel taaskäivitamisel teeb administraator ühekordse värskenduse, mille käigus kustutatakse teie kohalikud andmed.</translation>
 <translation id="2732134891301408122">Lisasisu üksus <ph name="CURRENT_ELEMENT" /> <ph name="TOTAL_ELEMENTS" />-st</translation>
+<translation id="2733248615007838252">Meeldivaks märkimine saadab tagasisidet, et need tulemused meeldivad teile.</translation>
 <translation id="2733992589856193783">Lõite selle saidi jaoks pääsuvõtme. Vajate sisselogimiseks mobiilseadet.</translation>
 <translation id="27349076983469322">Hele taust</translation>
 <translation id="2735712963799620190">Ajakava</translation>
@@ -5666,6 +5668,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5431318178759467895">Värv</translation>
 <translation id="5432145523462851548">Kuva <ph name="FILE_NAME" /> kaustas</translation>
 <translation id="5432223177001837288">Heli jagamiseks jagage selle asemel vahekaarti</translation>
+<translation id="5432872710261597882">Meeldivaks märkimine saadab tagasisidet, et see meeldib teile.</translation>
 <translation id="543338862236136125">Muuda parooli</translation>
 <translation id="5434065355175441495">PKCS 1 RSA krüpteerimine</translation>
 <translation id="5435274640623994081">Helisignaali logimise lubamine</translation>
@@ -5701,6 +5704,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Lukustuskuva märkmed</translation>
 <translation id="5459864179070366255">Jätka installimisega</translation>
+<translation id="5460861858595506978">Inspiratsioon</translation>
 <translation id="5461050611724244538">Ühendus teie telefoniga katkes</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> indeks</translation>
 <translation id="5463450804024056231">Registreeru seadme <ph name="DEVICE_TYPE" /> meilide jaoks</translation>
@@ -6507,6 +6511,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="610487644502954950">Külgpaneel on vabastatud</translation>
 <translation id="6104929924898022309">Otsinguklahvi kasutamine funktsiooniklahvide käitumise muutmiseks</translation>
 <translation id="6106167152849320869">Kui valisite eelmise sammu käigus diagnostika- ja kasutusandmete saatmise, kogutakse installitud rakenduste puhul neid andmeid.</translation>
+<translation id="6108952804512516814">Looge AI-ga</translation>
 <translation id="6111718295497931251">Google Drive’ile juurdepääsu eemaldamine</translation>
 <translation id="6111972606040028426">Google'i assistendi lubamine</translation>
 <translation id="6112294629795967147">Puudutage suuruse muutmiseks</translation>
@@ -6619,7 +6624,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6195155925303302899">Joonda keskele</translation>
 <translation id="6195163219142236913">Kolmanda osapoole küpsisefailid on piiratud</translation>
 <translation id="6195693561221576702">Seadet ei saa võrguühenduseta demorežiimis seadistada.</translation>
-<translation id="6196607555925437199">Loo uuesti</translation>
 <translation id="6196640612572343990">Blokeeri kolmanda osapoole küpsisefailid</translation>
 <translation id="6196854373336333322">Laiendus „<ph name="EXTENSION_NAME" />” on hõivanud puhverserveri seaded, mis tähendab, et see saab muuta, lõhkuda või kuulata pealt kogu teie veebitegevust. Kui te pole kindel, miks see muudatus toimus, siis te tõenäoliselt ei taha seda.</translation>
 <translation id="6197128521826316819">Loo selle lehe jaoks QR-kood</translation>
@@ -8874,6 +8878,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7969046989155602842">Käsuklahv</translation>
 <translation id="7970673414865679092">Etherneti üksikasjad</translation>
 <translation id="7972714317346275248">PKCS 1 SHA-384 koos RSA krüpteerimisega</translation>
+<translation id="7973149423217802477">Mittemeeldivaks märkimine saadab tagasisidet, et see ei meeldi teile.</translation>
 <translation id="7973776233567882054">Milline järgmine väide kirjeldab kõige paremini teie võrku?</translation>
 <translation id="797394244396603170">Valige seade, millega soovite faile jagada</translation>
 <translation id="7974566588408714340">Proovi uuesti, kasutades laiendust <ph name="EXTENSIONNAME" /></translation>

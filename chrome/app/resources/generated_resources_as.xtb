@@ -920,6 +920,7 @@
 <translation id="1695510246756136088">ইণ্টাৰনেটৰ লগত সংযোগ কৰিব নোৱাৰি। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="1696555181932908973">আপুনি <ph name="SITE_ETLD_PLUS_ONE" />ত অব্যাহত ৰাখিবলৈ আন উপায় চেষ্টা কৰিব পাৰে।</translation>
 <translation id="169675691788639886">ডিভাইচটোত SSH ছার্ভাৰ কনফিগাৰ কৰা আছে। সংবেদনশীল একাউণ্টৰ জৰিয়তে ছাইন ইন নকৰিব।</translation>
+<translation id="1697122132646041614">থাম্বছ ডাউনে আপুনি এই ফলাফলসমূহ কিয় ডিছলাইক কৰে তাৰ সবিশেষ মতামত দাখিল কৰাৰ বাবে এখন ফৰ্ম খোলে।</translation>
 <translation id="1697150536837697295">কলা</translation>
 <translation id="1697686431566694143">ফাইল সম্পাদনা কৰক</translation>
 <translation id="1698796500103229697">পৰিশোধ পদ্ধতিসমূহ</translation>
@@ -2310,6 +2311,7 @@
 <translation id="2731700343119398978">অনুগ্রহ কৰি অপেক্ষা কৰক...</translation>
 <translation id="2731971182069536520">পৰৱর্তী সময়ত আপুনি নিজৰ ডিভাইচ ৰিষ্টার্ট কৰিলে, আপোনাৰ প্ৰশাসকে এবাৰেই কৰিবলগীয়া আপডে'টটো কৰিব যিয়ে আপোনাৰ স্থানীয় ডেটা মচিব।</translation>
 <translation id="2732134891301408122">অতিৰিক্ত <ph name="TOTAL_ELEMENTS" /> টা সমলৰ ভিতৰত <ph name="CURRENT_ELEMENT" /> নম্বৰটো</translation>
+<translation id="2733248615007838252">থাম্বছ আপে আপুনি এই ফলাফলসমূহ লাইক কৰা বুলি মতামত দাখিল কৰে।</translation>
 <translation id="2733992589856193783">আপুনি এই ছাইটটোৰ বাবে পাছকী সৃষ্টি কৰিছে। ছাইন ইন কৰিবলৈ আপোনাক আপোনাৰ ম’বাইল ডিভাইচটো লাগিব।</translation>
 <translation id="27349076983469322">নেপথ্যত পাতল ৰং</translation>
 <translation id="2735712963799620190">সময়সূচী</translation>
@@ -5673,6 +5675,7 @@
 <translation id="5431318178759467895">ৰং</translation>
 <translation id="5432145523462851548"><ph name="FILE_NAME" /> ফ’ল্ডাৰত দেখুৱাওক</translation>
 <translation id="5432223177001837288">অডিঅ’ শ্বেয়াৰ কৰিবলৈ, ইয়াৰ সলনি এটা টেব শ্বেয়াৰ কৰক</translation>
+<translation id="5432872710261597882">থাম্বছ আপে আপুনি এইটো লাইক কৰা বুলি মতামত দাখিল কৰে।</translation>
 <translation id="543338862236136125">পাছৱৰ্ড সম্পাদনা কৰক</translation>
 <translation id="5434065355175441495">PKCS #1 RSA এনক্ৰিপশ্বন</translation>
 <translation id="5435274640623994081">ইয়েৰক’ন লগ ইন সক্ষম কৰক</translation>
@@ -5708,6 +5711,7 @@
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">লক স্ক্রীণৰ টোকা</translation>
 <translation id="5459864179070366255">ইনষ্টল কৰি থাকক</translation>
+<translation id="5460861858595506978">অনুপ্ৰেৰণা</translation>
 <translation id="5461050611724244538">আপোনাৰ ফ’নৰ সৈতে সংযোগ বিচ্ছিন্ন হৈছে</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" />ৰ সূচক</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> ইমেইলৰ বাবে ছাইন আপ কৰক</translation>
@@ -6514,6 +6518,7 @@
 <translation id="610487644502954950">ছাইডৰ পেনেল আনপিন কৰা হৈছে</translation>
 <translation id="6104929924898022309">ফাংশ্বন কীসমূহৰ আচৰণ সলনি কৰিবলৈ সন্ধানৰ কীটো ব্যৱহাৰ কৰক</translation>
 <translation id="6106167152849320869">যদি আপুনি পূৰ্বৱৰ্তী পদক্ষেপটোত ডায়গন’ষ্টিক আৰু ব্যৱহাৰৰ ডেটা পঠিওৱাৰো সিদ্ধান্ত লৈছে, এই ডেটা ইনষ্টল কৰা এপৰ বাবে সংগ্ৰহ কৰা হ’ব।</translation>
+<translation id="6108952804512516814">AIৰ জৰিয়তে সৃষ্টি কৰক</translation>
 <translation id="6111718295497931251">Google Driveৰ এক্সেছ আঁতৰাওক</translation>
 <translation id="6111972606040028426">Google Assistant সক্ষম কৰক</translation>
 <translation id="6112294629795967147">আকাৰ সলনি কৰিবলৈ স্পর্শ কৰক</translation>
@@ -6626,7 +6631,6 @@
 <translation id="6195155925303302899">সোঁমাজলৈ শাৰীবিন্যাস কৰক</translation>
 <translation id="6195163219142236913">তৃতীয় পক্ষৰ কুকি সীমিত কৰা হৈছে</translation>
 <translation id="6195693561221576702">এই ডিভাইচটো অফলাইন ডেম' ম'ডত ছেট আপ কৰিব নোৱাৰি।</translation>
-<translation id="6196607555925437199">পুনৰ সৃষ্টি কৰক</translation>
 <translation id="6196640612572343990">তৃতীয়-পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
 <translation id="6196854373336333322">"<ph name="EXTENSION_NAME" />" এক্সটেনশ্বনটোৱে আপোনাৰ প্ৰক্সিৰ ছেটিংসমূহৰ নিয়ন্ত্ৰণ লৈছে যাৰ অৰ্থ হৈছে ই আপুনি অনলাইনত কৰা যিকোনো কাৰ্য সলনি কৰিব পাৰে, ভাঙিব পাৰে বা গোপনে নজৰ ৰাখিব পাৰে। আপুনি যদি এই সালসলনিখিনি কিয় হৈছে সেয়া নিশ্চিতকৈ নাজানে, আপুনি চাগে সেইখিনি নিবিচাৰে।</translation>
 <translation id="6197128521826316819">এই পৃষ্ঠাখনৰ বাবে কিউআৰ ক’ড সৃষ্টি কৰক</translation>
@@ -8882,6 +8886,7 @@
 <translation id="7969046989155602842">নিৰ্দেশনা</translation>
 <translation id="7970673414865679092">ইথাৰনেটৰ সবিশেষ</translation>
 <translation id="7972714317346275248">RSA এনক্ৰিপশ্বনৰ সৈতে PKCS #1 SHA-384</translation>
+<translation id="7973149423217802477">থাম্বছ ডাউনে আপুনি এইটো ডিছলাইক কৰা বুলি মতামত দাখিল কৰে।</translation>
 <translation id="7973776233567882054">তলৰ কোনটোৱে আপোনাৰ নেটৱৰ্কটো সকলোতকৈ ভালকৈ বৰ্ণনা কৰে?</translation>
 <translation id="797394244396603170">আপুনি যিটো ডিভাইচৰ সৈতে ফাইল শ্বেয়াৰ কৰিবলৈ বিচাৰে সেই ডিভাইচটো বাছনি কৰক</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> ব্যৱহাৰ কৰি পুনৰ চেষ্টা কৰক</translation>

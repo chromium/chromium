@@ -922,6 +922,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1695510246756136088">Tidak dapat menyambung ke Internet. Cuba lagi.</translation>
 <translation id="1696555181932908973">Anda boleh mencuba cara lain untuk meneruskan pada <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Pelayan SSH telah dikonfigurasikan pada peranti ini. Jangan log masuk menggunakan akaun sensitif.</translation>
+<translation id="1697122132646041614">Isyarat tidak menyukai membuka borang untuk menyerahkan butiran maklum balas tentang sebab anda tidak menyukai hasil ini.</translation>
 <translation id="1697150536837697295">Seni</translation>
 <translation id="1697686431566694143">Edit fail</translation>
 <translation id="1698796500103229697">&amp;Kaedah Pembayaran</translation>
@@ -2312,6 +2313,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2731700343119398978">Sila tunggu...</translation>
 <translation id="2731971182069536520">Apabila anda memulakan semula peranti anda selepas ini, pentadbir anda akan melakukan kemas kini sekali yang akan memadamkan data setempat anda.</translation>
 <translation id="2732134891301408122">Kandungan tambahan <ph name="CURRENT_ELEMENT" /> daripada <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Isyarat menyukai menyerahkan maklum balas yang menunjukkan bahawa anda menyukai hasil ini.</translation>
 <translation id="2733992589856193783">Anda membuat kunci laluan untuk laman ini. Anda memerlukan peranti mudah alih anda untuk log masuk.</translation>
 <translation id="27349076983469322">Latar belakang cerah</translation>
 <translation id="2735712963799620190">Jadual</translation>
@@ -5676,6 +5678,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5431318178759467895">Warna</translation>
 <translation id="5432145523462851548">Paparkan <ph name="FILE_NAME" /> dalam folder</translation>
 <translation id="5432223177001837288">Kongsi tab untuk berkongsi audio</translation>
+<translation id="5432872710261597882">Isyarat menyukai menyerahkan maklum balas yang menunjukkan bahawa anda menyukai ciri ini.</translation>
 <translation id="543338862236136125">Edit kata laluan</translation>
 <translation id="5434065355175441495">PKCS #1 Penyulitan RSA</translation>
 <translation id="5435274640623994081">Dayakan pengelogan ikon audio</translation>
@@ -5711,6 +5714,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Nota skrin kunci</translation>
 <translation id="5459864179070366255">Teruskan memasang</translation>
+<translation id="5460861858595506978">Inspirasi</translation>
 <translation id="5461050611724244538">Sambungan dengan telefon anda terputus</translation>
 <translation id="5463275305984126951">Indeks bagi <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Mendaftar untuk e-mel <ph name="DEVICE_TYPE" /></translation>
@@ -6517,6 +6521,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="610487644502954950">Panel sisi dinyahsematkan</translation>
 <translation id="6104929924898022309">Gunakan kekunci carian untuk mengubah gelagat kekunci fungsi</translation>
 <translation id="6106167152849320869">Jika anda memilih untuk menghantar data diagnostik dan penggunaan pada langkah terdahulu, data ini akan dikumpulkan untuk apl yang dipasang.</translation>
+<translation id="6108952804512516814">Buat dengan AI</translation>
 <translation id="6111718295497931251">Alih keluar akses Google Drive</translation>
 <translation id="6111972606040028426">Dayakan Google Assistant</translation>
 <translation id="6112294629795967147">Sentuh untuk mengubah saiz</translation>
@@ -6629,7 +6634,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6195155925303302899">Jajarkan ke tengah</translation>
 <translation id="6195163219142236913">Kuki pihak ketiga terhad</translation>
 <translation id="6195693561221576702">Peranti ini tidak boleh disediakan dalam mod tunjuk cara luar talian.</translation>
-<translation id="6196607555925437199">Buat semula</translation>
 <translation id="6196640612572343990">Sekat kuki pihak ketiga</translation>
 <translation id="6196854373336333322">Sambungan "<ph name="EXTENSION_NAME" />" telah mengambil alih kawalan tetapan proksi anda, yang bermakna sambungan ini boleh mengubah, menghentikan atau mencuri dengar apa-apa sahaja yang anda lakukan dalam talian. Jika anda tidak pasti mengapa perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="6197128521826316819">Buat Kod QR untuk Halaman ini</translation>
@@ -8884,6 +8888,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7969046989155602842">Perintah</translation>
 <translation id="7970673414865679092">Butiran Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Dengan Penyulitan RSA</translation>
+<translation id="7973149423217802477">Isyarat tidak menyukai menyerahkan maklum balas yang menunjukkan bahawa anda tidak menyukai ciri ini.</translation>
 <translation id="7973776233567882054">Antara yang berikut, manakah yang terbaik menggambarkan rangkaian anda?</translation>
 <translation id="797394244396603170">Pilih peranti yang ingin anda kongsikan fail</translation>
 <translation id="7974566588408714340">Cuba semula menggunakan <ph name="EXTENSIONNAME" /></translation>

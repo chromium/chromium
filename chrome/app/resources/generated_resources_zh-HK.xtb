@@ -922,6 +922,7 @@
 <translation id="1695510246756136088">無法連接互聯網，請再試一次。</translation>
 <translation id="1696555181932908973">你可嘗試在「<ph name="SITE_ETLD_PLUS_ONE" />」上透過其他方法繼續操作。</translation>
 <translation id="169675691788639886">裝置有已設定的 SSH 伺服器。請勿使用敏感帳戶登入。</translation>
+<translation id="1697122132646041614">㩒一下唔鍾意，系統會顯示意見表格。你可以喺表單度詳細講下點解唔鍾意呢啲結果。</translation>
 <translation id="1697150536837697295">藝術</translation>
 <translation id="1697686431566694143">編輯檔案</translation>
 <translation id="1698796500103229697">付款方法(&amp;P)</translation>
@@ -2312,6 +2313,7 @@
 <translation id="2731700343119398978">請稍後…</translation>
 <translation id="2731971182069536520">系統管理員會在您下次重新啟動裝置時執行一次性更新，而此更新會刪除您的本機資料。</translation>
 <translation id="2732134891301408122">第 <ph name="CURRENT_ELEMENT" /> 個額外內容，共 <ph name="TOTAL_ELEMENTS" /> 個</translation>
+<translation id="2733248615007838252">㩒一下鍾意就可以俾正評。</translation>
 <translation id="2733992589856193783">你已為此網站建立密鑰，需要使用流動裝置登入。</translation>
 <translation id="27349076983469322">淺色背景</translation>
 <translation id="2735712963799620190">設定時段</translation>
@@ -5672,6 +5674,7 @@
 <translation id="5431318178759467895">顏色</translation>
 <translation id="5432145523462851548">喺資料夾入面顯示 <ph name="FILE_NAME" /></translation>
 <translation id="5432223177001837288">如要分享音訊，請改為分享分頁</translation>
+<translation id="5432872710261597882">㩒一下鍾意就可以俾正評。</translation>
 <translation id="543338862236136125">修改密碼</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 加密</translation>
 <translation id="5435274640623994081">啟用 Earcon 記錄</translation>
@@ -5707,6 +5710,7 @@
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">上鎖畫面筆記</translation>
 <translation id="5459864179070366255">繼續安裝</translation>
+<translation id="5460861858595506978">靈感</translation>
 <translation id="5461050611724244538">手機連線中斷</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> 的索引</translation>
 <translation id="5463450804024056231">訂閱 <ph name="DEVICE_TYPE" /> 電郵</translation>
@@ -6510,6 +6514,7 @@
 <translation id="610487644502954950">已經取消固定側面板</translation>
 <translation id="6104929924898022309">使用搜尋鍵變更功能鍵的行為</translation>
 <translation id="6106167152849320869">如果亦在上一個步驟中選擇傳送診斷和使用情況資料，系統會針對已安裝的應用程式收集此資料。</translation>
+<translation id="6108952804512516814">以 AI 製作</translation>
 <translation id="6111718295497931251">移除「Google 雲端硬碟」存取權</translation>
 <translation id="6111972606040028426">啟用「Google 助理」</translation>
 <translation id="6112294629795967147">輕觸即可調整大小</translation>
@@ -6623,7 +6628,6 @@
 <translation id="6195155925303302899">置中對齊</translation>
 <translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6195693561221576702">無法在此裝置上設定離線示範模式。</translation>
-<translation id="6196607555925437199">重新建立</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6196854373336333322">您的 Proxy 設定已受到擴充功能「<ph name="EXTENSION_NAME" />」控制，該擴充功能可變更、中斷、或監視您在網上的行為。如果您不確定這項變更為何發生，建議您停用該擴充功能。</translation>
 <translation id="6197128521826316819">為此頁面建立 QR 碼</translation>
@@ -8877,6 +8881,7 @@
 <translation id="7969046989155602842">Command 鍵</translation>
 <translation id="7970673414865679092">以太網詳情</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 (使用 RSA 加密)</translation>
+<translation id="7973149423217802477">㩒一下唔鍾意就可以俾負評。</translation>
 <translation id="7973776233567882054">下列哪一項最符合您的網絡使用情況？</translation>
 <translation id="797394244396603170">選取您要分享檔案的裝置</translation>
 <translation id="7974566588408714340">使用「<ph name="EXTENSIONNAME" />」重試</translation>

@@ -922,6 +922,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1695510246756136088">Nem lehet csatlakozni az internethez. Próbálja újra.</translation>
 <translation id="1696555181932908973">Más módon is próbálkozhat a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyen való folytatással.</translation>
 <translation id="169675691788639886">Az eszközön SSH-szerver van konfigurálva. Ne jelentkezzen be bizalmas fiókkal.</translation>
+<translation id="1697122132646041614">A „Nem tetszik” értékelésre kattintva megnyit egy űrlapot, amelyen részletes visszajelzést adhat arról, hogy miért nem tetszenek Önnek ezek a találatok.</translation>
 <translation id="1697150536837697295">Művészet</translation>
 <translation id="1697686431566694143">Fájl szerkesztése</translation>
 <translation id="1698796500103229697">&amp;Fizetési módok</translation>
@@ -2311,6 +2312,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2731700343119398978">Kérjük, várjon...</translation>
 <translation id="2731971182069536520">Az eszköz következő újraindításakor a rendszergazda egyszeri frissítést fog végezni, amely törli a helyi adatokat.</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" />/<ph name="CURRENT_ELEMENT" />. extra tartalom</translation>
+<translation id="2733248615007838252">A „Tetszik” értékeléssel azt a visszajelzést küldi, hogy tetszenek Önnek ezek a találatok.</translation>
 <translation id="2733992589856193783">Létrehozott egy azonosítókulcsot a webhelyhez. A bejelentkezéshez szüksége lesz a mobileszközére.</translation>
 <translation id="27349076983469322">Világos háttér</translation>
 <translation id="2735712963799620190">Ütemezés</translation>
@@ -5674,6 +5676,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5431318178759467895">Színes</translation>
 <translation id="5432145523462851548">A következő fájl megjelenítése mappában: <ph name="FILE_NAME" /></translation>
 <translation id="5432223177001837288">Hang megosztásához osszon meg inkább lapot</translation>
+<translation id="5432872710261597882">A „Tetszik” értékeléssel azt a visszajelzést küldi, hogy ez tetszik Önnek.</translation>
 <translation id="543338862236136125">Jelszó módosítása</translation>
 <translation id="5434065355175441495">PKCS #1 RSA titkosítás</translation>
 <translation id="5435274640623994081">Hangjelzés naplózásának engedélyezése</translation>
@@ -5709,6 +5712,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">A lezárási képernyőn megjelenő jegyzetek</translation>
 <translation id="5459864179070366255">Telepítés folytatása</translation>
+<translation id="5460861858595506978">Inspiráció</translation>
 <translation id="5461050611724244538">Megszakadt a kapcsolat a telefonnal</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> indexe</translation>
 <translation id="5463450804024056231">Feliratkozás a(z) <ph name="DEVICE_TYPE" /> e-mailjeire</translation>
@@ -6516,6 +6520,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="610487644502954950">Oldalsó panel rögzítése megszüntetve</translation>
 <translation id="6104929924898022309">A funkcióbillentyűk viselkedésének módosítása a keresőgombbal</translation>
 <translation id="6106167152849320869">Ha az előző lépésben elküldte a diagnosztikai és használati adatokat, akkor a rendszer gyűjti majd ezeket az adatokat a telepített alkalmazások esetében.</translation>
+<translation id="6108952804512516814">Létrehozás AI használatával</translation>
 <translation id="6111718295497931251">A Google Drive-hozzáférés megvonása</translation>
 <translation id="6111972606040028426">A Google Segéd aktiválása</translation>
 <translation id="6112294629795967147">Érintse meg az átméretezéshez</translation>
@@ -6628,7 +6633,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6195155925303302899">Középre igazítás</translation>
 <translation id="6195163219142236913">A harmadik féltől származó cookie-k korlátozva vannak</translation>
 <translation id="6195693561221576702">Ezt az eszközt nem lehet offline demó módban beállítani.</translation>
-<translation id="6196607555925437199">Újbóli létrehozás</translation>
 <translation id="6196640612572343990">Harmadik féltől származó cookie-k letiltása</translation>
 <translation id="6196854373336333322">A(z) <ph name="EXTENSION_NAME" /> bővítmény átvette az irányítást proxybeállításai felett, ami azt jelenti, hogy a bővítmény minden internetes tevékenységét módosíthatja, feltörheti vagy lehallgathatja. Ha nem biztos benne, hogy miért történt a változás, akkor valószínűleg nem is akarja azt.</translation>
 <translation id="6197128521826316819">QR-kód létrehozása ehhez az oldalhoz</translation>
@@ -8882,6 +8886,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Ethernet-hálózat részletei</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA titkosítással</translation>
+<translation id="7973149423217802477">A „Nem tetszik” értékeléssel azt a visszajelzést küldi, hogy ez nem tetszik Önnek.</translation>
 <translation id="7973776233567882054">Az alábbiak közül melyik jellemzi legjobban hálózatát?</translation>
 <translation id="797394244396603170">Válassza ki azt az eszközt, amellyel fájlokat szeretne megosztani</translation>
 <translation id="7974566588408714340">A(z) <ph name="EXTENSIONNAME" /> használatának újrapróbálása</translation>

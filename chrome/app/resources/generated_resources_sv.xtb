@@ -922,6 +922,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1695510246756136088">Det gick inte att ansluta till internet. Försök igen.</translation>
 <translation id="1696555181932908973">Du kan testa andra sätt att fortsätta på <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Det har konfigurerats en SSH-server på enheten. Logga inte in med känsliga konton.</translation>
+<translation id="1697122132646041614">En Gillar inte-markering öppnar ett formulär där du kan ange detaljerad feedback om varför du inte gillar dessa resultat.</translation>
 <translation id="1697150536837697295">Konst</translation>
 <translation id="1697686431566694143">Redigera fil</translation>
 <translation id="1698796500103229697">Betalningsmetoder</translation>
@@ -2312,6 +2313,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2731700343119398978">Vänta ...</translation>
 <translation id="2731971182069536520">Administratören gör en engångsuppdatering som raderar din lokala data nästa gång du startar om enheten.</translation>
 <translation id="2732134891301408122">Extrainnehåll <ph name="CURRENT_ELEMENT" /> av <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Gilla-markera för att visa att du gillar dessa resultat.</translation>
 <translation id="2733992589856193783">Du har skapat en nyckel för den här webbplatsen. Du behöver din mobila enhet för att logga in.</translation>
 <translation id="27349076983469322">Ljus bakgrund</translation>
 <translation id="2735712963799620190">Schema</translation>
@@ -5676,6 +5678,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5431318178759467895">Färg</translation>
 <translation id="5432145523462851548">Visa <ph name="FILE_NAME" /> i mappen</translation>
 <translation id="5432223177001837288">Dela en flik i stället om du vill dela ljud</translation>
+<translation id="5432872710261597882">Gilla-markera för att visa att du gillar detta.</translation>
 <translation id="543338862236136125">Redigera lösenord</translation>
 <translation id="5434065355175441495">PKCS #1 RSA-kryptering</translation>
 <translation id="5435274640623994081">Aktivera loggning av ljudikoner</translation>
@@ -5711,6 +5714,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Anteckningar på låsskärmen</translation>
 <translation id="5459864179070366255">Fortsätt installera</translation>
+<translation id="5460861858595506978">Inspiration</translation>
 <translation id="5461050611724244538">Anslutningen till telefonen bröts</translation>
 <translation id="5463275305984126951">Index till <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Registrera dig för e-postmeddelanden gällande <ph name="DEVICE_TYPE" /></translation>
@@ -6517,6 +6521,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="610487644502954950">Sidopanelen har lossats</translation>
 <translation id="6104929924898022309">Använd söktangenten för att ändra vad funktionstangenterna ska göra</translation>
 <translation id="6106167152849320869">Om du även valde att skicka diagnostik- och användningsdata i föregående steg samlas denna data in för installerade appar.</translation>
+<translation id="6108952804512516814">Skapa med AI</translation>
 <translation id="6111718295497931251">Ta bort åtkomst till Google Drive</translation>
 <translation id="6111972606040028426">Aktivera Google Assistent</translation>
 <translation id="6112294629795967147">Ändra storlek genom att trycka</translation>
@@ -6629,7 +6634,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6195155925303302899">Centrera</translation>
 <translation id="6195163219142236913">Tredjepartscookies är begränsade</translation>
 <translation id="6195693561221576702">Den här enheten kan inte konfigureras i offlinedemoläge.</translation>
-<translation id="6196607555925437199">Återskapa</translation>
 <translation id="6196640612572343990">Blockera tredjepartscookies</translation>
 <translation id="6196854373336333322">Tillägget <ph name="EXTENSION_NAME" /> har tagit kontroll över dina proxyinställningar, vilket innebär att det kan ändra, knäcka eller tjuvlyssna på allt du gör på webben. Om du inte vet varför den här ändringen inträffade är den troligen inte önskvärd.</translation>
 <translation id="6197128521826316819">Skapa QR-kod för den här sidan</translation>
@@ -8884,6 +8888,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7969046989155602842">Kommando</translation>
 <translation id="7970673414865679092">Information om Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 med RSA-kryptering</translation>
+<translation id="7973149423217802477">Gilla-markera för att visa att du inte gillar detta.</translation>
 <translation id="7973776233567882054">Vilket av följande beskriver ditt nätverk bäst?</translation>
 <translation id="797394244396603170">Välj den enhet som du vill dela filer med</translation>
 <translation id="7974566588408714340">Försök igen med <ph name="EXTENSIONNAME" /></translation>

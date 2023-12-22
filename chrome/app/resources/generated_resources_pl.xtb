@@ -921,6 +921,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1695510246756136088">Nie udało się połączyć z internetem. Spróbuj jeszcze raz.</translation>
 <translation id="1696555181932908973">Możesz wypróbować inne sposoby logowania na konto <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Urządzenie ma skonfigurowany serwer SSH. Nie loguj się za pomocą poufnych kont.</translation>
+<translation id="1697122132646041614">Opcja Nie lubię otwiera formularz, za pomocą którego możesz przesłać szczegółową opinię o tym, dlaczego te wyniki Ci się nie podobają.</translation>
 <translation id="1697150536837697295">Sztuka</translation>
 <translation id="1697686431566694143">Edytuj plik</translation>
 <translation id="1698796500103229697">&amp;Formy płatności</translation>
@@ -2281,6 +2282,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2731700343119398978">Czekaj...</translation>
 <translation id="2731971182069536520">Po następnym uruchomieniu urządzenia administrator wykona jednorazową aktualizację, która usunie Twoje dane lokalne.</translation>
 <translation id="2732134891301408122">Dodatkowy element zawartości (<ph name="CURRENT_ELEMENT" /> z <ph name="TOTAL_ELEMENTS" />)</translation>
+<translation id="2733248615007838252">Opcja Lubię powoduje przesłanie opinii z informacją, że te wyniki Ci się podobają.</translation>
 <translation id="2733992589856193783">Utworzyłeś(-aś) klucz dostępu do tej witryny. Aby się zalogować, potrzebujesz telefonu komórkowego.</translation>
 <translation id="27349076983469322">Jasne tło</translation>
 <translation id="2735712963799620190">Harmonogram</translation>
@@ -5641,6 +5643,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5431318178759467895">Kolor</translation>
 <translation id="5432145523462851548">Pokaż plik <ph name="FILE_NAME" /> w folderze</translation>
 <translation id="5432223177001837288">Aby udostępnić dźwięk, udostępnij kartę</translation>
+<translation id="5432872710261597882">Opcja Lubię powoduje przesłanie opinii pozytywnej.</translation>
 <translation id="543338862236136125">Edytuj hasło</translation>
 <translation id="5434065355175441495">PKCS #1, szyfrowanie RSA</translation>
 <translation id="5435274640623994081">Włącz rejestrowanie ikony audio</translation>
@@ -5676,6 +5679,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notatki na ekranie blokady</translation>
 <translation id="5459864179070366255">Zainstaluj mimo to</translation>
+<translation id="5460861858595506978">Inspiracja</translation>
 <translation id="5461050611724244538">Utracono połączenie z telefonem</translation>
 <translation id="5463275305984126951">Indeks – <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Zasubskrybuj e-maile na temat urządzenia <ph name="DEVICE_TYPE" /></translation>
@@ -6482,6 +6486,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="610487644502954950">Panel boczny został odpięty</translation>
 <translation id="6104929924898022309">Zmień działanie klawiszy funkcyjnych za pomocą klawisza wyszukiwania</translation>
 <translation id="6106167152849320869">Jeśli w poprzednim kroku zdecydujesz się też wysyłać dane diagnostyczne i dane o korzystaniu, będą one zbierane w przypadku zainstalowanych aplikacji.</translation>
+<translation id="6108952804512516814">Utwórz przy pomocy AI</translation>
 <translation id="6111718295497931251">Usuń dostęp do Dysku Google</translation>
 <translation id="6111972606040028426">Włącz Asystenta Google</translation>
 <translation id="6112294629795967147">Dotknij, by zmienić rozmiar</translation>
@@ -6594,7 +6599,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6195155925303302899">Wyrównaj do środka</translation>
 <translation id="6195163219142236913">Ograniczone pliki cookie innych firm</translation>
 <translation id="6195693561221576702">Na tym urządzeniu nie można skonfigurować trybu demonstracyjnego offline.</translation>
-<translation id="6196607555925437199">Powtórz</translation>
 <translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>
 <translation id="6196854373336333322">Rozszerzenie „<ph name="EXTENSION_NAME" />” przejęło kontrolę nad ustawieniami serwera proxy, co oznacza, że może zmieniać, przerywać lub podglądać wszystko, co robisz online. Jeśli nie masz pewności, skąd wzięła się ta zmiana, prawdopodobnie jej nie chcesz.</translation>
 <translation id="6197128521826316819">Utwórz kod QR powiązany z tą stroną</translation>
@@ -8850,6 +8854,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Szczegóły sieci Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1, SHA-384 z szyfrowaniem RSA</translation>
+<translation id="7973149423217802477">Opcja Nie lubię powoduje przesłanie opinii negatywnej.</translation>
 <translation id="7973776233567882054">Która z tych opcji najlepiej opisuje Twoją sieć?</translation>
 <translation id="797394244396603170">Wybierz urządzenie, któremu chcesz udostępnić pliki.</translation>
 <translation id="7974566588408714340">Ponów za pomocą rozszerzenia <ph name="EXTENSIONNAME" /></translation>

@@ -916,6 +916,7 @@
 <translation id="1695510246756136088">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકાતું નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> પર ચાલુ રાખવા માટે અન્ય રીતો અજમાવી શકો છો.</translation>
 <translation id="169675691788639886">ડિવાઇસ માટે SSH સર્વર ગોઠવવામાં આવ્યું છે. સંવેદનશીલ એકાઉન્ટ વડે સાઇન ઇન કરશો નહીં.</translation>
+<translation id="1697122132646041614">થમ્બ્સ ડાઉન તમને શા માટે આ પરિણામો નાપસંદ છે તે વિશેનો વિગતવાર પ્રતિસાદ સબમિટ કરવા માટેનું ફોર્મ ખોલે છે.</translation>
 <translation id="1697150536837697295">કળા</translation>
 <translation id="1697686431566694143">ફાઇલમાં ફેરફાર કરો</translation>
 <translation id="1698796500103229697">અને ચુકવણી પદ્ધતિઓ</translation>
@@ -2295,6 +2296,7 @@
 <translation id="2731700343119398978">કૃપા કરીને રાહ જુઓ...</translation>
 <translation id="2731971182069536520">આગલી વખતે તમે તમારું ડિવાઇસ ફરી શરૂ કરશો, ત્યારે તમારા વ્યવસ્થાપક એક-સમયનો અપડેટ કરશે, જેના કારણે તમારો બધો સ્થાનિક ડેટા ડિલીટ થઈ જશે.</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" />માંથી વધારાના <ph name="CURRENT_ELEMENT" /> કન્ટેન્ટ</translation>
+<translation id="2733248615007838252">થમ્બ્સ અપ એ પ્રતિસાદ સબમિટ કરે છે કે તમને આ પરિણામો ગમે છે.</translation>
 <translation id="2733992589856193783">તમે આ સાઇટ પર પાસકી બનાવી છે. સાઇન ઇન કરવા માટે તમારે તમારા મોબાઇલની જરૂર છે.</translation>
 <translation id="27349076983469322">આછું બૅકગ્રાઉન્ડ</translation>
 <translation id="2735712963799620190">શેડ્યૂલ</translation>
@@ -5658,6 +5660,7 @@
 <translation id="5431318178759467895">રંગ</translation>
 <translation id="5432145523462851548"><ph name="FILE_NAME" />ને ફોલ્ડરમાં બતાવો</translation>
 <translation id="5432223177001837288">ઑડિયો શેર કરવા માટે, વિન્ડો કે સ્ક્રીનના બદલે ટૅબ શેર કરો</translation>
+<translation id="5432872710261597882">થમ્બ્સ અપ એ પ્રતિસાદ સબમિટ કરે છે કે તમને આ ગમે છે.</translation>
 <translation id="543338862236136125">પાસવર્ડમાં ફેરફાર કરો</translation>
 <translation id="5434065355175441495">PKCS #1 RSA એન્ક્રિપ્શન</translation>
 <translation id="5435274640623994081">ઇઅરકોન લૉગિંગ ચાલુ કરો</translation>
@@ -5693,6 +5696,7 @@
 <translation id="5458214261780477893">ડ્વોરેક</translation>
 <translation id="5458998536542739734">લૉક સ્ક્રીન માટેની નોંધો</translation>
 <translation id="5459864179070366255">ઇન્સ્ટૉલ કરવા આગળ વધો</translation>
+<translation id="5460861858595506978">પ્રેરણા</translation>
 <translation id="5461050611724244538">તમારા ફોન સાથે સંપર્ક ખોરવાઈ ગયો</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" />ની અનુક્રમણિકા</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> સંબંધિત ઇમેઇલ માટે સાઇન અપ કરો</translation>
@@ -6501,6 +6505,7 @@ USB ડિવાઇસ</translation>
 <translation id="610487644502954950">બાજુની પૅનલ અનપિન કરેલી છે</translation>
 <translation id="6104929924898022309">ફંક્શન કીની વર્તણૂંક બદલવા માટે શોધ કીનો ઉપયોગ કરો</translation>
 <translation id="6106167152849320869">જો તમે પાછળના પગલાંમાં ડાયગ્નોસ્ટિક અને વપરાશનો ડેટા મોકલવાનું પણ પસંદ કર્યું હોય, તો આ ડેટા ઇન્સ્ટૉલ કરેલી ઍપ માટે એકત્રિત કરવામાં આવશે.</translation>
+<translation id="6108952804512516814">AI વડે બનાવો</translation>
 <translation id="6111718295497931251">Google Driveનો ઍક્સેસ કાઢી નાખો</translation>
 <translation id="6111972606040028426">Google Assistant ચાલુ કરો</translation>
 <translation id="6112294629795967147">કદ બદલવા માટે સ્પર્શ કરો</translation>
@@ -6613,7 +6618,6 @@ USB ડિવાઇસ</translation>
 <translation id="6195155925303302899">મધ્યમાં સંરેખિત કરો</translation>
 <translation id="6195163219142236913">ત્રીજા પક્ષની કુકી મર્યાદિત છે</translation>
 <translation id="6195693561221576702">આ ડિવાઇસ ઇન્ટરનેટ વગર ડેમો મોડમાં સેટઅપ કરી શકાતું નથી.</translation>
-<translation id="6196607555925437199">ફરીથી બનાવો</translation>
 <translation id="6196640612572343990">ત્રીજા પક્ષની કુકીને બ્લૉક કરો</translation>
 <translation id="6196854373336333322">"<ph name="EXTENSION_NAME" />" એક્સ્ટેન્શને તમારા પ્રૉક્સી સેટિંગનું નિયંત્રણ લઈ લીધું છે, એનો અર્થ છે કે તમે જે કંઈ પણ ઓનલાઇન કરો છો એને એ બદલી, ભંગ કરી કે છુપાઈને પારકી વાતો સાંભળી શકે છે. આ ફેરફાર કેમ થયો એ અંગે જો તમને ખાતરી નથી, તો સંભવિત રૂપે એ તમને જોઈતું નહિ હોય.</translation>
 <translation id="6197128521826316819">આ પેજ માટે QR કોડ બનાવો</translation>
@@ -8869,6 +8873,7 @@ USB ડિવાઇસ</translation>
 <translation id="7969046989155602842">આદેશ</translation>
 <translation id="7970673414865679092">ઇથરનેટની વિગતો</translation>
 <translation id="7972714317346275248">RSA એન્ક્રિપ્શનવાળું PKCS #1 SHA-384</translation>
+<translation id="7973149423217802477">થમ્બ્સ ડાઉન એ પ્રતિસાદ સબમિટ કરે છે કે તમને આ નાપસંદ છે.</translation>
 <translation id="7973776233567882054">નીચેનામાંથી કયું તમારા નેટવર્કનું શ્રેષ્ઠ વર્ણન કરે છે?</translation>
 <translation id="797394244396603170">તમે જે ડિવાઇસ સાથે ફાઇલો શેર કરવા માગો છો, તે પસંદ કરો</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> નો ઉપયોગ કરીને ફરીથી પ્રયાસ કરો</translation>

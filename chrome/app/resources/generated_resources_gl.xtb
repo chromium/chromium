@@ -918,6 +918,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1695510246756136088">Non hai conexión a Internet Téntao de novo.</translation>
 <translation id="1696555181932908973">Podes probar outras maneiras de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">O dispositivo ten configurado un servidor SSH. Non inicies sesión con contas confidenciais.</translation>
+<translation id="1697122132646041614">Ao premer Non me gusta, abrirase un formulario para enviar comentarios detallados sobre o motivo polo que non che gustan estes resultados.</translation>
 <translation id="1697150536837697295">Arte</translation>
 <translation id="1697686431566694143">Editar ficheiro</translation>
 <translation id="1698796500103229697">Métodos de pago</translation>
@@ -2296,6 +2297,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2731700343119398978">Agarda...</translation>
 <translation id="2731971182069536520">A próxima vez que reinicies o dispositivo, o administrador levará a cabo unha actualización única que eliminará os teus datos locais.</translation>
 <translation id="2732134891301408122">Contido extra: <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Coa opción Gústame indicas que che gustan estes resultados.</translation>
 <translation id="2733992589856193783">Creaches unha clave de acceso para este sitio. Necesitas o teu dispositivo móbil para iniciar sesión.</translation>
 <translation id="27349076983469322">Fondo claro</translation>
 <translation id="2735712963799620190">Programación</translation>
@@ -5662,6 +5664,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5431318178759467895">Cor</translation>
 <translation id="5432145523462851548">Mostrar <ph name="FILE_NAME" /> no cartafol</translation>
 <translation id="5432223177001837288">Para compartir o audio, comparte unha pestana</translation>
+<translation id="5432872710261597882">Coa opción Gústame indicas que che gusta esta función.</translation>
 <translation id="543338862236136125">Editar contrasinal</translation>
 <translation id="5434065355175441495">Cifrado PKCS n.º 1 RSA</translation>
 <translation id="5435274640623994081">Activar rexistro de iconas auditivas</translation>
@@ -5697,6 +5700,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Bloquear notas da pantalla</translation>
 <translation id="5459864179070366255">Continuar e instalar</translation>
+<translation id="5460861858595506978">Inspiración</translation>
 <translation id="5461050611724244538">Perdeuse a conexión co teléfono</translation>
 <translation id="5463275305984126951">Índice de <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Iniciar sesión para recibir correos electrónicos de <ph name="DEVICE_TYPE" /></translation>
@@ -6500,6 +6504,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="610487644502954950">Deixou de fixarse o panel lateral</translation>
 <translation id="6104929924898022309">Usar tecla de busca para modificar o comportamento das teclas de función</translation>
 <translation id="6106167152849320869">Se no paso anterior tamén indicaches que aceptas enviar datos de diagnóstico e de uso, recompilaranse estes datos para as aplicacións instaladas.</translation>
+<translation id="6108952804512516814">Crear con IA</translation>
 <translation id="6111718295497931251">Quitar acceso a Google Drive</translation>
 <translation id="6111972606040028426">Activar Asistente de Google</translation>
 <translation id="6112294629795967147">Tocar para cambiar o tamaño</translation>
@@ -6612,7 +6617,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6195155925303302899">Centrar</translation>
 <translation id="6195163219142236913">Cookies de terceiros limitadas</translation>
 <translation id="6195693561221576702">Este dispositivo non se pode configurar no modo de demostración sen conexión.</translation>
-<translation id="6196607555925437199">Crear de novo</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6196854373336333322">A extensión "<ph name="EXTENSION_NAME" />" asumiu o control da túa configuración de proxy, o que significa que pode cambiar, anular ou espiar todo o que fagas en liña. Se non estás seguro de por que se produciu este cambio, é probable que non che interese conservalo.</translation>
 <translation id="6197128521826316819">Crear código QR para esta páxina</translation>
@@ -8866,6 +8870,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7969046989155602842">Comando</translation>
 <translation id="7970673414865679092">Detalles da rede Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 con cifrado RSA</translation>
+<translation id="7973149423217802477">Coa opción Non me gusta indicas que non che gusta esta función.</translation>
 <translation id="7973776233567882054">Cal das seguintes opcións describe mellor a túa rede?</translation>
 <translation id="797394244396603170">Selecciona o dispositivo co que queiras compartir ficheiros</translation>
 <translation id="7974566588408714340">Tentar de novo usando <ph name="EXTENSIONNAME" /></translation>

@@ -919,6 +919,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1695510246756136088">Ezin da konektatu Internetera. Saiatu berriro.</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> webgunean aurrera egiteko beste modu batzuk proba ditzakezu.</translation>
 <translation id="169675691788639886">Gailuak SSH zerbitzari bat dauka konfiguratuta. Ez hasi saioa kontuzko informazioa duten kontuekin.</translation>
+<translation id="1697122132646041614">"Ez zait gustatu" sakatuta, inprimaki bat irekiko da, non emaitzak zergatik gustatu ez zaizkizun azaldu ahal izango duzun.</translation>
 <translation id="1697150536837697295">Artea</translation>
 <translation id="1697686431566694143">Editatu fitxategia</translation>
 <translation id="1698796500103229697">Ordainketa-metodoak</translation>
@@ -2297,6 +2298,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2731700343119398978">Itxaron, mesedez…</translation>
 <translation id="2731971182069536520">Gailua berrabiarazten duzun hurrengo aldian, administratzaileak erabilera bakarreko eguneratze bat egingo du eta, haren ondorioz, gailuan dituzun datu guztiak ezabatuko dira.</translation>
 <translation id="2732134891301408122"><ph name="CURRENT_ELEMENT" /> elementu gehigarritatik <ph name="TOTAL_ELEMENTS" />garrenera</translation>
+<translation id="2733248615007838252">"Gustatu zait" sakatuta, emaitza hauek gustatu zaizkizula esaten duen ohar bat bidaliko da.</translation>
 <translation id="2733992589856193783">Webgune honetarako sarbide-gako bat sortu duzu. Saioa hasteko, gailu mugikorra behar duzu.</translation>
 <translation id="27349076983469322">Atzeko plano argia</translation>
 <translation id="2735712963799620190">Programazioa</translation>
@@ -5660,6 +5662,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5431318178759467895">Kolorez</translation>
 <translation id="5432145523462851548">Erakutsi <ph name="FILE_NAME" /> karpetan</translation>
 <translation id="5432223177001837288">Audioa partekatzeko, partekatu fitxa bat</translation>
+<translation id="5432872710261597882">"Gustatu zait" sakatuta, hau gustatu zaizula esaten duen ohar bat bidaliko da.</translation>
 <translation id="543338862236136125">Editatu pasahitza</translation>
 <translation id="5434065355175441495">PKCS #1 RSA enkriptatzea</translation>
 <translation id="5435274640623994081">Gaitu tonuak erregistratzeko aukera</translation>
@@ -5695,6 +5698,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Pantaila blokeatuko oharrak</translation>
 <translation id="5459864179070366255">Instalatzeko, egin aurrera</translation>
+<translation id="5460861858595506978">Inspirazioa</translation>
 <translation id="5461050611724244538">Gailuaren eta telefonoaren arteko konexioa eten egin da</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> kokapenaren aurkibidea</translation>
 <translation id="5463450804024056231">Erregistratu <ph name="DEVICE_TYPE" />-ari buruzko mezu elektronikoak jasotzeko</translation>
@@ -6498,6 +6502,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="610487644502954950">Kendu da alboko panelaren aingura</translation>
 <translation id="6104929924898022309">Erabili bilaketa-tekla funtzio-teklen portaera aldatzeko</translation>
 <translation id="6106167152849320869">Aurreko urratsean datu diagnostiko- eta erabilera-datuak bidaltzea ere aukeratu baduzu, instalatutako aplikazioei buruzko datu hauek bilduko dira.</translation>
+<translation id="6108952804512516814">Sortu AA bidez</translation>
 <translation id="6111718295497931251">Kendu Google Drive erabiltzeko baimena</translation>
 <translation id="6111972606040028426">Gaitu Google-ren Laguntzailea</translation>
 <translation id="6112294629795967147">Sakatu tamaina aldatzeko</translation>
@@ -6610,7 +6615,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6195155925303302899">Lerrokatu erdian</translation>
 <translation id="6195163219142236913">Hirugarrenen cookieak mugatuta</translation>
 <translation id="6195693561221576702">Ezin da konfiguratu gailua konexiorik gabeko demo moduan.</translation>
-<translation id="6196607555925437199">Sortu berriro</translation>
 <translation id="6196640612572343990">Blokeatu hirugarrenen cookieak</translation>
 <translation id="6196854373336333322"><ph name="EXTENSION_NAME" /> luzapenak zure proxy-ezarpenen kontrola hartu du; alegia, sarean egiten duzun edozer alda, honda edo zelata dezake. Aldaketa zergatik gertatu den ziur ez badakizu, baliteke aldaketa nahi ez izatea.</translation>
 <translation id="6197128521826316819">Sortu orri honen QR kodea</translation>
@@ -8863,6 +8867,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Ethernet-sarearen xehetasunak</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA enkriptatzearekin</translation>
+<translation id="7973149423217802477">"Ez zait gustatu" sakatuta, hau gustatu ez zaizula esaten duen ohar bat bidaliko da.</translation>
 <translation id="7973776233567882054">Hauetako zeinek azaltzen du ongien zure sarea?</translation>
 <translation id="797394244396603170">Hautatu zein gailurekin partekatu nahi dituzun fitxategiak</translation>
 <translation id="7974566588408714340">Saiatu berriro <ph name="EXTENSIONNAME" /> erabilita</translation>

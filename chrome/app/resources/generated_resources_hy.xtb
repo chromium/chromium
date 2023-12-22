@@ -921,6 +921,7 @@
 <translation id="1695510246756136088">Չհաջողվեց միանալ ինտերնետին։ Նորից փորձեք։</translation>
 <translation id="1696555181932908973">Փորձեք մուտքի այլ եղանակներ՝ <ph name="SITE_ETLD_PLUS_ONE" /> կայքում ձեր աշխատանքը շարունակելու համար։</translation>
 <translation id="169675691788639886">Սարքում կարգավորված է SSH սերվեր։ Մի մտեք համակարգ այնպիսի հաշիվներով, որոնք խիստ անձնական տեղեկություններ են պարունակում։</translation>
+<translation id="1697122132646041614">«Վատն է» կոճակը բացում է ձև, որտեղ կարող եք մանրամասն հայտնել ձեր կարծիքը։</translation>
 <translation id="1697150536837697295">Արվեստ</translation>
 <translation id="1697686431566694143">Փոփոխել ֆայլը</translation>
 <translation id="1698796500103229697">&amp;Վճարման եղանակներ</translation>
@@ -2297,6 +2298,7 @@
 <translation id="2731700343119398978">Սպասեք…</translation>
 <translation id="2731971182069536520">Հաջորդ անգամ, երբ վերագործարկեք սարքը, ձեր ադմինիստրատորը մեկանգամյա թարմացում կկատարի, ինչի արդյունքում ձեր լոկալ տվյալները կջնջվեն:</translation>
 <translation id="2732134891301408122">Լրացուցիչ բովանդակություն <ph name="CURRENT_ELEMENT" />՝ <ph name="TOTAL_ELEMENTS" />-ից</translation>
+<translation id="2733248615007838252">«Լավն է» կոճակի սեղմումը դրական կարծիք է ուղարկում այս արդյունքների մասին։</translation>
 <translation id="2733992589856193783">Դուք անցաբառ եք ստեղծել այս կայքի համար։ Մուտք գործելու համար պահանջվում է ձեր բջջային սարքը։</translation>
 <translation id="27349076983469322">Բաց ֆոն</translation>
 <translation id="2735712963799620190">Ժամանակացույց</translation>
@@ -5659,6 +5661,7 @@
 <translation id="5431318178759467895">Գունավոր</translation>
 <translation id="5432145523462851548">Ցույց տալ <ph name="FILE_NAME" /> ֆայլը պանակում</translation>
 <translation id="5432223177001837288">Աուդիո բովանդակությամբ կիսվելու համար հասանելի դարձրեք ներդիրը</translation>
+<translation id="5432872710261597882">«Լավն է» կոճակի սեղմումը դրական կարծիք է ուղարկում այս գործառույթի մասին։</translation>
 <translation id="543338862236136125">Փոխել գաղտնաբառը</translation>
 <translation id="5434065355175441495">PKCS #1 RSA գաղտնագրում</translation>
 <translation id="5435274640623994081">Միացնել ձայնային ազդանշանների գրանցումը</translation>
@@ -5694,6 +5697,7 @@
 <translation id="5458214261780477893">Դվորակ</translation>
 <translation id="5458998536542739734">Կողպէկրանի նշումներ</translation>
 <translation id="5459864179070366255">Շարունակել տեղադրումը</translation>
+<translation id="5460861858595506978">Ոգեշնչում</translation>
 <translation id="5461050611724244538">Ձեր հեռախոսի հետ կապն ընդհատվեց</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" />-ի բովանդակություն</translation>
 <translation id="5463450804024056231">Բաժանորդագրվել <ph name="DEVICE_TYPE" />-ի նամակներին</translation>
@@ -6497,6 +6501,7 @@
 <translation id="610487644502954950">Կողային վահանակն ապամրացվեց</translation>
 <translation id="6104929924898022309">Օգտագործել որոնման ստեղնը՝ գործառական ստեղների գործողությունները փոխելու համար</translation>
 <translation id="6106167152849320869">Եթե նախորդ քայլում նաև որոշեք ուղարկել դիագնոստիկ և օգտագործման տվյալներ, ապա կհավաքվեն տեղադրված հավելվածների այս տվյալները։</translation>
+<translation id="6108952804512516814">Ստեղծեք արհեստական բանականության օգնությամբ</translation>
 <translation id="6111718295497931251">Հեռացնել Google Drive-ի օգտագործման թույլտվությունը</translation>
 <translation id="6111972606040028426">Միացնել Google Օգնականը</translation>
 <translation id="6112294629795967147">Հպեք՝ չափը փոխելու համար</translation>
@@ -6609,7 +6614,6 @@
 <translation id="6195155925303302899">Հավասարեցնել կենտրոնով</translation>
 <translation id="6195163219142236913">Երրորդ կողմի քուքիները սահմանափակված են</translation>
 <translation id="6195693561221576702">Անցանց դեմո ռեժիմն այս սարքի համար հասանելի չէ։</translation>
-<translation id="6196607555925437199">Նորից ստեղծել</translation>
 <translation id="6196640612572343990">Արգելափակել երրորդ կողմի քուքիները</translation>
 <translation id="6196854373336333322">Ձեր պրոքսիի կարգավորումները վերահսկվում են «<ph name="EXTENSION_NAME" />» ընդլայնման կողմից: Դա նշանակում է, որ այն կարող է փոխել, խափանել կամ աննկատ գրառել այն ամենը, ինչ անում եք առցանց: Եթե չգիտեք, թե ինչու է այդ փոփոխությունը տեղի ունեցել, հավանաբար դուք դա չէիք ուզում:</translation>
 <translation id="6197128521826316819">Ստեղծել QR կոդ այս էջի համար</translation>
@@ -8197,7 +8201,7 @@
 <translation id="747114903913869239">Սխալ՝ չհաջողվեց ապակոդավորել ընդլայնումը</translation>
 <translation id="7471520329163184433">Ավելի դանդաղ</translation>
 <translation id="747312361841682912">Ջնջել ցուցադրված տվյալները</translation>
-<translation id="7473891865547856676">Ոչ</translation>
+<translation id="7473891865547856676">Ոչ, պետք չէ</translation>
 <translation id="747459581954555080">Վերականգնել բոլորը</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Անհապաղ վերադարձրեք սարքը}one{Վերադարձրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_DAYS} օրվա ընթացքում}other{Վերադարձրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_DAYS} օրվա ընթացքում}}</translation>
 <translation id="7475671414023905704">Netscape-ի կորցված գաղտնաբառերի URL</translation>
@@ -8864,6 +8868,7 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Տեղեկություններ Ethernet-ի մասին</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384՝ RSA գաղտնագրումով</translation>
+<translation id="7973149423217802477">«Վատն է» կոճակի սեղմումը բացասական կարծիք է ուղարկում այս գործառույթի մասին։</translation>
 <translation id="7973776233567882054">Հետևյալ նկարագրություններից ո՞րն է համապատասխանում ձեր ցանցին։</translation>
 <translation id="797394244396603170">Ընտրեք սարքը, որի հետ ուզում եք կիսվել ֆայլերով</translation>
 <translation id="7974566588408714340">Կրկնել՝ օգտագործելով <ph name="EXTENSIONNAME" />-ը</translation>

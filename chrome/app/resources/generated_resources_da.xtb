@@ -923,6 +923,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1695510246756136088">Der kunne ikke oprettes forbindelse til internettet. Prøv igen.</translation>
 <translation id="1696555181932908973">Du kan prøve at fortsætte på <ph name="SITE_ETLD_PLUS_ONE" /> på andre måder.</translation>
 <translation id="169675691788639886">Enheden har en SSH-server konfigureret. Undlad at logge ind med følsomme konti.</translation>
+<translation id="1697122132646041614">Hvis du giver et dislike, åbnes der en formular, hvor du kan indsende detaljeret feedback om, hvorfor du ikke kan lide disse resultater.</translation>
 <translation id="1697150536837697295">Art</translation>
 <translation id="1697686431566694143">Rediger fil</translation>
 <translation id="1698796500103229697">Betalingsmetoder</translation>
@@ -2313,6 +2314,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2731700343119398978">Vent et øjeblik...</translation>
 <translation id="2731971182069536520">Næste gang du genstarter din enhed, udfører din administrator en engangsopdatering, der sletter dine lokale data.</translation>
 <translation id="2732134891301408122">Yderligere indhold <ph name="CURRENT_ELEMENT" /> ud af <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Hvis du giver et like, indsendes der feedback om, at du kan lide disse resultater.</translation>
 <translation id="2733992589856193783">Du har oprettet en adgangsnøgle til dette website. Du skal bruge din mobilenhed til at logge ind.</translation>
 <translation id="27349076983469322">Lys baggrund</translation>
 <translation id="2735712963799620190">Tidsplan</translation>
@@ -5677,6 +5679,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5431318178759467895">Farve</translation>
 <translation id="5432145523462851548">Vis <ph name="FILE_NAME" /> i mappe</translation>
 <translation id="5432223177001837288">Hvis du vil dele lyd, skal du dele en fane i stedet</translation>
+<translation id="5432872710261597882">Hvis du giver et like, indsendes der feedback om, at du kan lide dette.</translation>
 <translation id="543338862236136125">Rediger adgangskode</translation>
 <translation id="5434065355175441495">PKCS #1 RSA-kryptering</translation>
 <translation id="5435274640623994081">Aktivér logning af lydikoner</translation>
@@ -5712,6 +5715,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Noter i låseskærm</translation>
 <translation id="5459864179070366255">Fortsæt installation</translation>
+<translation id="5460861858595506978">Inspiration</translation>
 <translation id="5461050611724244538">Vi har mistet forbindelsen til din telefon</translation>
 <translation id="5463275305984126951">Indeks over <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Tilmeld dig mails vedrørende <ph name="DEVICE_TYPE" /></translation>
@@ -6518,6 +6522,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="610487644502954950">Sidepanelet er frigjort</translation>
 <translation id="6104929924898022309">Brug søgetasten til at ændre, hvordan funktionstasterne fungerer</translation>
 <translation id="6106167152849320869">Hvis du også valgte at sende diagnostik- og brugsdata i forrige trin, indsamles disse data for installerede apps.</translation>
+<translation id="6108952804512516814">Opret ved hjælp af AI</translation>
 <translation id="6111718295497931251">Fjern adgangen til Google Drev</translation>
 <translation id="6111972606040028426">Aktivér Google Assistent</translation>
 <translation id="6112294629795967147">Tryk for at vælge en anden størrelse</translation>
@@ -6630,7 +6635,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6195155925303302899">Centreret</translation>
 <translation id="6195163219142236913">Tredjepartscookies er begrænset</translation>
 <translation id="6195693561221576702">Enheden kan ikke konfigureres i offlinedemotilstand.</translation>
-<translation id="6196607555925437199">Genskab</translation>
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
 <translation id="6196854373336333322">Udvidelsen <ph name="EXTENSION_NAME" /> har taget kontrol over dine proxyindstillinger, hvilket betyder, at den kan ændre, ødelægge eller aflytte alt, hvad du foretager dig på nettet. Hvis du ikke er sikker på, hvorfor denne ændring er sket, er den sandsynligvis uønsket.</translation>
 <translation id="6197128521826316819">Opret en QR-kode for denne side</translation>
@@ -8886,6 +8890,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7969046989155602842">Kommando</translation>
 <translation id="7970673414865679092">Info om Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 med RSA-kryptering</translation>
+<translation id="7973149423217802477">Hvis du giver et dislike, indsendes der feedback om, at du ikke kan lide dette.</translation>
 <translation id="7973776233567882054">Hvilket af følgende udsagn beskriver bedst dit netværk?</translation>
 <translation id="797394244396603170">Vælg den enhed, du vil dele filer med</translation>
 <translation id="7974566588408714340">Prøv igen ved hjælp af <ph name="EXTENSIONNAME" /></translation>

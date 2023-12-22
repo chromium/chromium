@@ -925,6 +925,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1695510246756136088">Nepavyksta prisijungti prie interneto. Bandykite dar kartą.</translation>
 <translation id="1696555181932908973">Galite išbandyti kitus būdus tęsti veiklą <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Įrenginyje sukonfigūruotas SSH serveris. Prisijungdami nenaudokite paskyrų, kuriose yra neskelbtinos informacijos.</translation>
+<translation id="1697122132646041614">Spustelėjus mygtuką „Nepatinka“ atidaroma forma, kurią naudojant galima pateikti išsamų atsiliepimą apie tai, kodėl jums nepatinka šie rezultatai.</translation>
 <translation id="1697150536837697295">Menas</translation>
 <translation id="1697686431566694143">Redaguoti failą</translation>
 <translation id="1698796500103229697">&amp;Mokėjimo metodai</translation>
@@ -2315,6 +2316,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2731700343119398978">Palaukite...</translation>
 <translation id="2731971182069536520">Kai kitą kartą iš naujo paleisite įrenginį, administratorius pritaikys vienkartinį naujinį ir bus ištrinti jūsų vietiniai duomenys.</translation>
 <translation id="2732134891301408122">Papildomas turinys: <ph name="CURRENT_ELEMENT" /> iš <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Mygtukas „Patinka“ nurodo atsiliepimą, kad jums patinka šie rezultatai.</translation>
 <translation id="2733992589856193783">Sukūrėte šios svetainės prieigos raktą. Norint prisijungti reikia mobiliojo įrenginio.</translation>
 <translation id="27349076983469322">Šviesus fonas</translation>
 <translation id="2735712963799620190">Tvarkaraštis</translation>
@@ -5679,6 +5681,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5431318178759467895">Spalva</translation>
 <translation id="5432145523462851548">Rodyti failą <ph name="FILE_NAME" /> aplanke</translation>
 <translation id="5432223177001837288">Jei norite bendrinti garso įrašą, bendrinkite skirtuką</translation>
+<translation id="5432872710261597882">Mygtukas „Patinka“ – tai atsiliepimas, kad jums tai patinka.</translation>
 <translation id="543338862236136125">Redaguoti slaptažodį</translation>
 <translation id="5434065355175441495">PKCS Nr. 1 RSA šifruotė</translation>
 <translation id="5435274640623994081">Įgalinti garsinio ženklelio įrašymą į žurnalą</translation>
@@ -5714,6 +5717,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5458214261780477893">Dvorako</translation>
 <translation id="5458998536542739734">Užrašai užrakinimo ekrane</translation>
 <translation id="5459864179070366255">Tęsti ir įdiegti</translation>
+<translation id="5460861858595506978">Įkvėpimas</translation>
 <translation id="5461050611724244538">Prarastas ryšys su jūsų telefonu</translation>
 <translation id="5463275305984126951">Turinys iš <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Prisiregistruoti gauti „<ph name="DEVICE_TYPE" />“ el. laiškus</translation>
@@ -6521,6 +6525,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="610487644502954950">Šoninis skydelis atsegtas</translation>
 <translation id="6104929924898022309">Naudodami paieškos klavišą pakeiskite funkcijų klavišų veikimą</translation>
 <translation id="6106167152849320869">Jei atlikdami ankstesnį veiksmą taip pat pasirinkote siųsti diagnostikos ir naudojimo duomenis, bus renkami įdiegtų programų duomenys.</translation>
+<translation id="6108952804512516814">Kurkite su DI</translation>
 <translation id="6111718295497931251">Pašalinti „Google“ disko prieigą</translation>
 <translation id="6111972606040028426">Įgalinti „Google“ padėjėją</translation>
 <translation id="6112294629795967147">Palieskite, kad pakeistumėte dydį</translation>
@@ -6633,7 +6638,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6195155925303302899">Lygiuoti centre</translation>
 <translation id="6195163219142236913">Trečiųjų šalių slapukai apriboti</translation>
 <translation id="6195693561221576702">Šis įrenginys negali būti nustatytas, kai įjungtas neprisijungus pasiekiamas demonstracinis režimas.</translation>
-<translation id="6196607555925437199">Sukurti iš naujo</translation>
 <translation id="6196640612572343990">Blokuoti trečiosios šalies slapukus</translation>
 <translation id="6196854373336333322">Plėtinys „<ph name="EXTENSION_NAME" />“ perėmė tarpinio serverio valdymą. Tai reiškia, kad jis gali keisti, nutraukti ar stebėti visus prisijungus atliekamus veiksmus. Jei nesate tikri, kodėl įvyko šis pakeitimas, tikriausiai jūs jo nenorite.</translation>
 <translation id="6197128521826316819">Sukurti šio puslapio QR kodą</translation>
@@ -8894,6 +8898,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7969046989155602842">Komanda</translation>
 <translation id="7970673414865679092">Išsami eterneto informacija</translation>
 <translation id="7972714317346275248">PKCS Nr. 1 SHA-384 su RSA šifruote</translation>
+<translation id="7973149423217802477">Mygtukas „Nepatinka“ – tai atsiliepimas, kad jums tai nepatinka.</translation>
 <translation id="7973776233567882054">Kuris iš toliau pateiktų teiginių geriausiai apibūdina jūsų tinklą?</translation>
 <translation id="797394244396603170">Pasirinkite įrenginį, su kuriuo norite bendrinti failus</translation>
 <translation id="7974566588408714340">Dar kartą bandyti naudoti „<ph name="EXTENSIONNAME" />“</translation>

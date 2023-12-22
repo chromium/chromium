@@ -919,6 +919,7 @@
 <translation id="1695510246756136088">เชื่อมต่ออินเทอร์เน็ตไม่ได้ โปรดลองอีกครั้ง</translation>
 <translation id="1696555181932908973">คุณลองดำเนินการต่อใน <ph name="SITE_ETLD_PLUS_ONE" /> ด้วยวิธีอื่นๆ ได้</translation>
 <translation id="169675691788639886">อุปกรณ์กำหนดค่าเซิร์ฟเวอร์ SSH เอาไว้ อย่าลงชื่อเข้าใช้ด้วยบัญชีที่มีความละเอียดอ่อน</translation>
+<translation id="1697122132646041614">ปุ่ม "ไม่ชอบ" จะเปิดแบบฟอร์มสำหรับส่งความคิดเห็นโดยละเอียดเกี่ยวกับสาเหตุที่คุณไม่ชอบผลการค้นหาเหล่านี้</translation>
 <translation id="1697150536837697295">ศิลปะ</translation>
 <translation id="1697686431566694143">แก้ไขไฟล์</translation>
 <translation id="1698796500103229697">วิธีการชำระเงิน</translation>
@@ -2297,6 +2298,7 @@
 <translation id="2731700343119398978">โปรดรอสักครู่...</translation>
 <translation id="2731971182069536520">ครั้งถัดไปที่คุณรีสตาร์ทอุปกรณ์ ผู้ดูแลระบบจะดำเนินการอัปเดตแบบครั้งเดียวซึ่งจะลบข้อมูลในเครื่อง</translation>
 <translation id="2732134891301408122">เนื้อหาเพิ่มเติม <ph name="CURRENT_ELEMENT" /> จาก <ph name="TOTAL_ELEMENTS" /> รายการ</translation>
+<translation id="2733248615007838252">ปุ่ม "ชอบ" จะส่งความคิดเห็นว่าคุณชอบผลการค้นหาเหล่านี้</translation>
 <translation id="2733992589856193783">คุณได้สร้างพาสคีย์สำหรับเว็บไซต์นี้ และต้องใช้อุปกรณ์เคลื่อนที่เพื่อลงชื่อเข้าใช้</translation>
 <translation id="27349076983469322">พื้นหลังสีสว่าง</translation>
 <translation id="2735712963799620190">กำหนดการ</translation>
@@ -5660,6 +5662,7 @@
 <translation id="5431318178759467895">สี</translation>
 <translation id="5432145523462851548">แสดง <ph name="FILE_NAME" /> ในโฟลเดอร์</translation>
 <translation id="5432223177001837288">หากต้องการแชร์เสียง ให้แชร์แท็บแทน</translation>
+<translation id="5432872710261597882">ปุ่ม "ชอบ" จะส่งความคิดเห็นว่าคุณชอบสิ่งนี้</translation>
 <translation id="543338862236136125">แก้ไขรหัสผ่าน</translation>
 <translation id="5434065355175441495">PKCS #1 การเข้ารหัส RSA</translation>
 <translation id="5435274640623994081">เปิดใช้การบันทึกเอียร์คอน</translation>
@@ -5695,6 +5698,7 @@
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">โน้ตในหน้าจอล็อก</translation>
 <translation id="5459864179070366255">ทำการติดตั้ง</translation>
+<translation id="5460861858595506978">แรงบันดาลใจ</translation>
 <translation id="5461050611724244538">สูญเสียการเชื่อมต่อกับโทรศัพท์</translation>
 <translation id="5463275305984126951">ดัชนีของ <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">ลงชื่อสมัครรับอีเมลเกี่ยวกับ <ph name="DEVICE_TYPE" /></translation>
@@ -6498,6 +6502,7 @@
 <translation id="610487644502954950">เลิกปักหมุดแผงด้านข้างแล้ว</translation>
 <translation id="6104929924898022309">ใช้แป้นค้นหาเพื่อเปลี่ยนลักษณะการทำงานของแป้นฟังก์ชัน</translation>
 <translation id="6106167152849320869">หากคุณเลือกที่จะส่งข้อมูลการวินิจฉัยและการใช้งานด้วยในขั้นตอนก่อนหน้า ระบบจะเก็บรวบรวมข้อมูลดังกล่าวสำหรับแอปที่ติดตั้ง</translation>
+<translation id="6108952804512516814">สร้างด้วย AI</translation>
 <translation id="6111718295497931251">นำสิทธิ์เข้าถึง Google ไดรฟ์ออก</translation>
 <translation id="6111972606040028426">เปิดใช้ Google Assistant</translation>
 <translation id="6112294629795967147">แตะเพื่อปรับขนาด</translation>
@@ -6610,7 +6615,6 @@
 <translation id="6195155925303302899">จัดกึ่งกลาง</translation>
 <translation id="6195163219142236913">จำกัดคุกกี้ของบุคคลที่สาม</translation>
 <translation id="6195693561221576702">ตั้งค่าอุปกรณ์นี้ในโหมดสาธิตออฟไลน์ไม่ได้</translation>
-<translation id="6196607555925437199">สร้างใหม่</translation>
 <translation id="6196640612572343990">บล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="6196854373336333322">ส่วนขยาย "<ph name="EXTENSION_NAME" />" ได้เข้าควบคุมการตั้งค่าพร็อกซีของคุณ ซึ่งหมายความว่าส่วนขยายนี้จะสามารถเปลี่ยนแปลง ทำให้เสียหาย หรือดักฟังทุกอย่างที่คุณทำทางออนไลน์ได้ หากคุณไม่แน่ใจว่าการเปลี่ยนแปลงนี้เกิดขึ้นได้อย่างไร คุณอาจไม่ต้องการส่วนขยายนี้</translation>
 <translation id="6197128521826316819">สร้างคิวอาร์โค้ดสำหรับหน้านี้</translation>
@@ -8864,6 +8868,7 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">รายละเอียดอีเทอร์เน็ต</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 พร้อมการเข้ารหัส RSA</translation>
+<translation id="7973149423217802477">ปุ่ม "ไม่ชอบ" จะส่งความคิดเห็นว่าคุณไม่ชอบสิ่งนี้</translation>
 <translation id="7973776233567882054">ข้อใดต่อไปนี้อธิบายเครือข่ายของคุณได้ดีที่สุด</translation>
 <translation id="797394244396603170">เลือกอุปกรณ์ที่คุณต้องการแชร์ไฟล์ด้วย</translation>
 <translation id="7974566588408714340">ลองอีกครั้งโดยใช้ <ph name="EXTENSIONNAME" /></translation>

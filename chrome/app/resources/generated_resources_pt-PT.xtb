@@ -919,6 +919,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1695510246756136088">Não é possível ligar à Internet. Tente novamente.</translation>
 <translation id="1696555181932908973">Pode experimentar outras formas de continuar em <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">O dispositivo tem o servidor SSH configurado. Não inicie sessão com contas confidenciais.</translation>
+<translation id="1697122132646041614">A opção Não gosto abre um formulário para enviar feedback detalhado sobre o motivo pelo qual não gosta destes resultados.</translation>
 <translation id="1697150536837697295">Arte</translation>
 <translation id="1697686431566694143">Editar ficheiro</translation>
 <translation id="1698796500103229697">Métodos de pagamento</translation>
@@ -2297,6 +2298,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2731700343119398978">Aguarde...</translation>
 <translation id="2731971182069536520">Da próxima vez que reiniciar o dispositivo, o administrador irá efetuar uma atualização única que elimina os seus dados locais.</translation>
 <translation id="2732134891301408122">Conteúdo adicional <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">A opção Gosto envia feedback a indicar que gosta destes resultados.</translation>
 <translation id="2733992589856193783">Criou uma chave de acesso para este site. Precisa do seu dispositivo móvel para iniciar sessão.</translation>
 <translation id="27349076983469322">Fundo claro</translation>
 <translation id="2735712963799620190">Programação</translation>
@@ -5661,6 +5663,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5431318178759467895">Cor</translation>
 <translation id="5432145523462851548">Mostrar <ph name="FILE_NAME" /> numa pasta</translation>
 <translation id="5432223177001837288">Para partilhar o áudio, partilhe um separador</translation>
+<translation id="5432872710261597882">A opção Gosto envia feedback de que gosta disto.</translation>
 <translation id="543338862236136125">Editar palavra-passe</translation>
 <translation id="5434065355175441495">PKCS #1 Encriptação RSA</translation>
 <translation id="5435274640623994081">Ativar o registo do ícone sonoro</translation>
@@ -5696,6 +5699,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notas no ecrã de bloqueio</translation>
 <translation id="5459864179070366255">Continuar instalação</translation>
+<translation id="5460861858595506978">Inspiração</translation>
 <translation id="5461050611724244538">Ligação ao telefone perdida</translation>
 <translation id="5463275305984126951">Índice de <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Inscrever-se para receber emails sobre o <ph name="DEVICE_TYPE" /></translation>
@@ -6503,6 +6507,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="610487644502954950">Painel lateral desafixado</translation>
 <translation id="6104929924898022309">Usar a tecla de pesquisa para alterar o comportamento das teclas de função</translation>
 <translation id="6106167152849320869">Se também tiver optado por enviar dados de diagnóstico e utilização no passo anterior, estes dados são recolhidos para as apps instaladas.</translation>
+<translation id="6108952804512516814">Criar com IA</translation>
 <translation id="6111718295497931251">Remover acesso ao Google Drive</translation>
 <translation id="6111972606040028426">Ativar Assistente Google</translation>
 <translation id="6112294629795967147">Tocar para redimensionar</translation>
@@ -6615,7 +6620,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6195155925303302899">Alinhar ao centro</translation>
 <translation id="6195163219142236913">Cookies de terceiros limitados</translation>
 <translation id="6195693561221576702">Não é possível configurar este dispositivo no modo de demonstração offline.</translation>
-<translation id="6196607555925437199">Recriar</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6196854373336333322">A extensão "<ph name="EXTENSION_NAME" />" apoderou-se das suas definições de proxy, o que significa que pode alterar, interromper ou intercetar qualquer coisa que esteja a fazer online. Se não tem a certeza do motivo pelo qual aconteceu esta alteração, é provável que não a queira.</translation>
 <translation id="6197128521826316819">Criar código QR para esta página</translation>
@@ -8870,6 +8874,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Detalhes de Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Com encriptação RSA</translation>
+<translation id="7973149423217802477">O ícone não gosto envia feedback a indicar que não gosta disto.</translation>
 <translation id="7973776233567882054">Qual das seguintes alternativas melhor descreve a sua rede?</translation>
 <translation id="797394244396603170">Selecione o dispositivo com o qual quer partilhar ficheiros.</translation>
 <translation id="7974566588408714340">Tente novamente com <ph name="EXTENSIONNAME" /></translation>

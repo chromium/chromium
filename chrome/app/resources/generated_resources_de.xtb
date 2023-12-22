@@ -916,6 +916,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1695510246756136088">Keine Internetverbindung verfügbar. Versuche es noch einmal.</translation>
 <translation id="1696555181932908973">Du kannst andere Möglichkeiten zum Fortfahren auf <ph name="SITE_ETLD_PLUS_ONE" /> ausprobieren.</translation>
 <translation id="169675691788639886">Für dieses Gerät ist ein SSH-Server eingerichtet. Melde dich nicht mit vertraulichen Konten an.</translation>
+<translation id="1697122132646041614">Wenn du „Mag ich nicht“ auswählst, wird ein Formular geöffnet, über das du detailliertes Feedback dazu geben kannst, warum dir diese Ergebnisse nicht gefallen.</translation>
 <translation id="1697150536837697295">Kunst</translation>
 <translation id="1697686431566694143">Datei bearbeiten</translation>
 <translation id="1698796500103229697">&amp;Zahlungsmethoden</translation>
@@ -2294,6 +2295,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2731700343119398978">Bitte warten...</translation>
 <translation id="2731971182069536520">Beim nächsten Neustart deines Geräts führt dein Administrator ein einmaliges Update durch, bei dem deine lokalen Daten gelöscht werden.</translation>
 <translation id="2732134891301408122">Zusätzlicher Inhalt <ph name="CURRENT_ELEMENT" /> von <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Mit „Mag ich“ gibst du an, dass dir diese Ergebnisse gefallen.</translation>
 <translation id="2733992589856193783">Du hast für diese Website einen Passkey erstellt. Du brauchst zur Anmeldung dein Mobilgerät.</translation>
 <translation id="27349076983469322">Heller Hintergrund</translation>
 <translation id="2735712963799620190">Zeitplan</translation>
@@ -5657,6 +5659,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5431318178759467895">Farbe</translation>
 <translation id="5432145523462851548">„<ph name="FILE_NAME" />“ in Ordner anzeigen</translation>
 <translation id="5432223177001837288">Wenn du Audio teilen möchtest, musst du stattdessen einen Tab teilen</translation>
+<translation id="5432872710261597882">Mit „Mag ich“ gibst du an, dass dir die Funktion gefällt.</translation>
 <translation id="543338862236136125">Passwort ändern</translation>
 <translation id="5434065355175441495">PKCS #1 RSA-Verschlüsselung</translation>
 <translation id="5435274640623994081">Earcon-Protokollierung aktivieren</translation>
@@ -5692,6 +5695,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notizen auf Sperrbildschirm</translation>
 <translation id="5459864179070366255">Trotzdem installieren</translation>
+<translation id="5460861858595506978">Zur Inspiration</translation>
 <translation id="5461050611724244538">Die Verbindung zu deinem Smartphone wurde unterbrochen</translation>
 <translation id="5463275305984126951">Index von <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Für <ph name="DEVICE_TYPE" />-E-Mails anmelden</translation>
@@ -6495,6 +6499,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="610487644502954950">Seitenleiste wurde losgelöst</translation>
 <translation id="6104929924898022309">Mit der Suchtaste kannst du das Verhalten der Funktionstasten ändern</translation>
 <translation id="6106167152849320869">Wenn du im vorherigen Schritt festgelegt hast, dass auch die Diagnose- und Nutzungsdaten gesendet werden, werden diese für installierte Apps erhoben.</translation>
+<translation id="6108952804512516814">Mit KI erstellen</translation>
 <translation id="6111718295497931251">Google Drive-Zugriff entfernen</translation>
 <translation id="6111972606040028426">Google Assistant aktivieren</translation>
 <translation id="6112294629795967147">Zum Anpassen der Größe tippen</translation>
@@ -6600,14 +6605,13 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6184868291074982484">Chrome schränkt Drittanbieter-Cookies automatisch ein</translation>
 <translation id="6185132558746749656">Gerätestandort</translation>
 <translation id="6190953336330058278">Phone Hub-Apps</translation>
-<translation id="6192333916571137726">Download-Datei</translation>
+<translation id="6192333916571137726">Datei herunterladen</translation>
 <translation id="6192413564913825901">In Ordner „Alle Lesezeichen“ verschieben</translation>
 <translation id="6194333736420234626">&amp;Zahlungsmethoden</translation>
 <translation id="6195005504600220730">Informationen zu deinem Browser, Betriebssystem und Gerät abrufen</translation>
 <translation id="6195155925303302899">Zentriert</translation>
 <translation id="6195163219142236913">Drittanbieter-Cookies eingeschränkt</translation>
 <translation id="6195693561221576702">Dieses Gerät kann nicht im Offlinedemomodus eingerichtet werden.</translation>
-<translation id="6196607555925437199">Neu erstellen</translation>
 <translation id="6196640612572343990">Drittanbieter-Cookies blockieren</translation>
 <translation id="6196854373336333322">Die Erweiterung <ph name="EXTENSION_NAME" /> hat die Kontrolle über deine Proxyeinstellungen übernommen. Das bedeutet, dass sie sämtliche Onlineaktivitäten ändern, abbrechen oder überwachen kann. Wenn du nicht sicher bist, wie es zu dieser Änderung gekommen ist, war sie wahrscheinlich nicht beabsichtigt.</translation>
 <translation id="6197128521826316819">QR-Code für diese Seite erstellen</translation>
@@ -8862,6 +8866,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7969046989155602842">Befehl</translation>
 <translation id="7970673414865679092">Ethernet-Details</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 mit RSA-Verschlüsselung</translation>
+<translation id="7973149423217802477">Mit „Mag ich nicht“ gibst du an, dass dir die Funktion nicht gefällt.</translation>
 <translation id="7973776233567882054">Welche dieser Aussagen beschreibt dein Netzwerk am besten?</translation>
 <translation id="797394244396603170">Wähle das Gerät aus, mit dem du Dateien teilen möchtest</translation>
 <translation id="7974566588408714340">Über <ph name="EXTENSIONNAME" /> erneut versuchen</translation>

@@ -919,6 +919,7 @@
 <translation id="1695510246756136088">انٹرنیٹ سے منسلک نہیں کیا جا سکتا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="1696555181932908973">آپ <ph name="SITE_ETLD_PLUS_ONE" /> پر جاری رکھنے کے لیے دوسرے طریقے آزما سکتے ہیں۔</translation>
 <translation id="169675691788639886">‏آلہ میں SSH سرور کنفیگر ہو گیا ہے۔ حساس اکاؤنٹس کے ساتھ سائن ان نہ کریں۔</translation>
+<translation id="1697122132646041614">اظہار ناپسندیدگی آپ کو ان نتائج کو ناپسند کرنے کے بارے میں تفصیلی تاثرات جمع کرانے کے لیے ایک فارم کھولتا ہے۔</translation>
 <translation id="1697150536837697295">آرٹ</translation>
 <translation id="1697686431566694143">فائل میں ترمیم کریں</translation>
 <translation id="1698796500103229697">&amp;ادائیگی کے طریقے</translation>
@@ -2299,6 +2300,7 @@
 <translation id="2731700343119398978">براہ کرم انتظار کریں…</translation>
 <translation id="2731971182069536520">اگلی بار جب آپ اپنا آلہ دوبارہ شروع کریں گے تو آپ کا منتظم یک وقتی اپ ڈیٹ کرے گا جس سے آپ کا مقامی ڈیٹا حذف ہو جائے گا۔</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" /> میں سے اضافی مواد <ph name="CURRENT_ELEMENT" /></translation>
+<translation id="2733248615007838252">اظہار پسندیدگی تاثرات جمع کراتا ہے کہ آپ کو یہ نتائج پسند ہیں۔</translation>
 <translation id="2733992589856193783">آپ نے اس سائٹ کے لیے ایک پاس کی بنائی ہے۔ سائن ان کرنے کے لیے آپ کو اپنے موبائل آلہ کی ضرورت ہے۔</translation>
 <translation id="27349076983469322">ہلکا پس منظر</translation>
 <translation id="2735712963799620190">شیڈول</translation>
@@ -5661,6 +5663,7 @@
 <translation id="5431318178759467895">رنگ</translation>
 <translation id="5432145523462851548">فولڈر میں <ph name="FILE_NAME" /> دکھائیں</translation>
 <translation id="5432223177001837288">آڈیو کا اشتراک کرنے کے لیے، اس کے بجائے ایک ٹیب کا اشتراک کریں</translation>
+<translation id="5432872710261597882">اظہار پسندیدگی یہ تاثرات جمع کراتا ہے کہ آپ کو یہ پسند ہے۔</translation>
 <translation id="543338862236136125">پاس ورڈ میں ترمیم کریں</translation>
 <translation id="5434065355175441495">‏PKCS #1 RSA مرموزکاری</translation>
 <translation id="5435274640623994081">ایئرکون لاگنگ کو فعال کریں</translation>
@@ -5696,6 +5699,7 @@
 <translation id="5458214261780477893">ڈوراک</translation>
 <translation id="5458998536542739734">اسکرین نوٹس مقفل کریں</translation>
 <translation id="5459864179070366255">انسٹال کرنا جاری رکھیں</translation>
+<translation id="5460861858595506978">ترغیب</translation>
 <translation id="5461050611724244538">آپ کے فون کا کنکشن منقطع ہو گیا</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> کا انڈیکس</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> ای میلز کے لیے سائن اپ کریں</translation>
@@ -6502,6 +6506,7 @@
 <translation id="610487644502954950">سائیڈ پینل کا پن ہٹایا گیا</translation>
 <translation id="6104929924898022309">فنکشن کلیدوں کے رویے کو تبدیل کرنے کے لیے تلاش کی کلید کا استعمال کریں</translation>
 <translation id="6106167152849320869">اگر آپ گزشتہ مرحلے میں ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجنے کا بھی انتخاب کرتے ہیں تو یہ ڈیٹا انسٹال شدہ ایپس کے لیے جمع کیا جائے گا۔</translation>
+<translation id="6108952804512516814">‏AI کے ذریعے تخلیق کریں</translation>
 <translation id="6111718295497931251">‏Google Drive تک رسائی کو ہٹائیں</translation>
 <translation id="6111972606040028426">‏Google اسسٹنٹ کو فعال کریں</translation>
 <translation id="6112294629795967147">سائز تبدیل کرنے کے لیے ٹچ کریں</translation>
@@ -6614,7 +6619,6 @@
 <translation id="6195155925303302899">بیچ میں موافق بنائیں</translation>
 <translation id="6195163219142236913">فریق ثالث کوکیز محدود ہیں</translation>
 <translation id="6195693561221576702">اس آلہ کو آف لائن ڈیمو موڈ میں سیٹ نہیں کیا جا سکتا ہے۔</translation>
-<translation id="6196607555925437199">دوبارہ تخلیق کریں</translation>
 <translation id="6196640612572343990">فریق ثالث کوکیز کو مسدود کریں</translation>
 <translation id="6196854373336333322">ایکسٹینشن "<ph name="EXTENSION_NAME" />" نے آپ کی پراکسی ترتیبات کو کنٹرول میں لے لیا ہے، جس کا مطلب ہے کہ آپ آن لائن جو بھی کرتے ہیں وہ اسے تبدیل کر سکتی، بریک کر سکتی یا اس کی جاسوسی کر سکتی ہے۔ اگر آپ کو اس تبدیلی کی وجہ ٹھیک سے معلوم نہیں تو غالباً آپ کو اس کی ضرورت نہیں ہے۔</translation>
 <translation id="6197128521826316819">‏اس صفحہ کیلئے QR کوڈ تخلیق کریں</translation>
@@ -8868,6 +8872,7 @@
 <translation id="7969046989155602842">کمانڈ</translation>
 <translation id="7970673414865679092">ایتھرنیٹ کی تفصیلات</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 مع RSA مرموز کاری</translation>
+<translation id="7973149423217802477">اظہار پسندیدگی یہ تاثرات جمع کراتا ہے کہ آپ اسے ناپسند کرتے ہیں۔</translation>
 <translation id="7973776233567882054">درج ذیل میں سے کون آپ کے نیٹ ورک کی بہترین وضاحت کرتا ہے؟</translation>
 <translation id="797394244396603170">وہ آلہ منتخب کریں جس کے ساتھ آپ فائلز کا اشتراک کرنا چاہتے ہیں</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> کو دوبارہ استعمال کرنے کی کوشش کریں</translation>

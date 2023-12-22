@@ -920,6 +920,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1695510246756136088">Nu se poate conecta la internet. Încearcă din nou.</translation>
 <translation id="1696555181932908973">Poți încerca alte metode pentru a accesa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Dispozitivul are serverul SSH configurat. Nu te conecta folosind conturi cu informații sensibile.</translation>
+<translation id="1697122132646041614">Nu îmi place deschide un formular pentru a trimite feedback detaliat despre motivele pentru care nu apreciezi aceste rezultate.</translation>
 <translation id="1697150536837697295">Artă</translation>
 <translation id="1697686431566694143">Editează fișierul</translation>
 <translation id="1698796500103229697">&amp;Metode de plată</translation>
@@ -2298,6 +2299,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2731700343119398978">Așteptați...</translation>
 <translation id="2731971182069536520">Data viitoare când repornești dispozitivul, administratorul va face o actualizare unică ce va șterge datele locale.</translation>
 <translation id="2732134891301408122">Conținutul suplimentar <ph name="CURRENT_ELEMENT" /> din <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Îmi place trimite feedback conform căruia îți plac aceste rezultate.</translation>
 <translation id="2733992589856193783">Ai creat o cheie de acces pentru acest site. Ai nevoie de dispozitivul mobil pentru a te conecta.</translation>
 <translation id="27349076983469322">Fundal deschis</translation>
 <translation id="2735712963799620190">Program</translation>
@@ -5661,6 +5663,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5431318178759467895">Color</translation>
 <translation id="5432145523462851548">Afișează <ph name="FILE_NAME" /> în dosar</translation>
 <translation id="5432223177001837288">Pentru a trimite conținut audio, permite accesul la o filă</translation>
+<translation id="5432872710261597882">Îmi place trimite feedback conform căruia îți place acest conținut.</translation>
 <translation id="543338862236136125">Editează parola</translation>
 <translation id="5434065355175441495">Criptare RSA PKCS #1</translation>
 <translation id="5435274640623994081">Activează înregistrarea audiogramei</translation>
@@ -5696,6 +5699,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notele pe ecranul de blocare</translation>
 <translation id="5459864179070366255">Continuă instalarea</translation>
+<translation id="5460861858595506978">Inspirație</translation>
 <translation id="5461050611724244538">Conexiunea cu telefonul a fost întreruptă</translation>
 <translation id="5463275305984126951">Index pentru <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Înscrie-te pentru e-mailuri de pe <ph name="DEVICE_TYPE" /></translation>
@@ -6502,6 +6506,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="610487644502954950">S-a anulat fixarea panoului lateral</translation>
 <translation id="6104929924898022309">Folosește tasta de căutare pentru a schimba comportamentul tastelor de funcții</translation>
 <translation id="6106167152849320869">Dacă la pasul anterior ai ales și să trimiți date de diagnosticare și de utilizare, aceste date vor fi colectate pentru aplicațiile instalate.</translation>
+<translation id="6108952804512516814">Creează cu AI</translation>
 <translation id="6111718295497931251">Elimină accesul la Google Drive</translation>
 <translation id="6111972606040028426">Activează Asistentul Google</translation>
 <translation id="6112294629795967147">Atinge pentru a redimensiona</translation>
@@ -6614,7 +6619,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6195155925303302899">Aliniază la centru</translation>
 <translation id="6195163219142236913">Cookie-uri terță parte limitate</translation>
 <translation id="6195693561221576702">Acest dispozitiv nu poate fi configurat în modul demo offline.</translation>
-<translation id="6196607555925437199">Creează din nou</translation>
 <translation id="6196640612572343990">Blochează cookie-urile terță parte</translation>
 <translation id="6196854373336333322">Extensia „<ph name="EXTENSION_NAME" />” a preluat controlul asupra setărilor de proxy, ceea ce înseamnă că poate modifica, întrerupe sau intercepta tot ceea ce faci online. Dacă nu știi sigur de ce a apărut această modificare, probabil că nu ai aprobat-o.</translation>
 <translation id="6197128521826316819">Creează un cod QR pentru această pagină</translation>
@@ -8871,6 +8875,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7969046989155602842">Tasta Command</translation>
 <translation id="7970673414865679092">Detalii despre Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 cu criptare RSA</translation>
+<translation id="7973149423217802477">Nu îmi place trimite feedback conform căruia nu apreciezi acest conținut.</translation>
 <translation id="7973776233567882054">Care dintre următoarele descrie cel mai bine rețeaua ta?</translation>
 <translation id="797394244396603170">Selectează dispozitivul căruia vrei să îi trimiți fișiere</translation>
 <translation id="7974566588408714340">Reîncearcă folosind <ph name="EXTENSIONNAME" /></translation>

@@ -920,6 +920,7 @@
 <translation id="1695510246756136088">ከበይነመረቡ ጋር መገናኘት አልተቻለም። እንደገና ይሞክሩ።</translation>
 <translation id="1696555181932908973">በ<ph name="SITE_ETLD_PLUS_ONE" /> ላይ ለመቀጠል ሌሎች መንገዶችን መሞከር ይችላሉ።</translation>
 <translation id="169675691788639886">መሣሪያው የተዋቀረ የኤስኤስኤች አገልጋይ አለው። ሚስጥራዊነት ባላቸው መለያዎች አይግቡ።</translation>
+<translation id="1697122132646041614">ደባሪ ነው የሚለው እርስዎ እነዚህን ውጤቶች ለምን እንዳልወደዱ ዝርዝር ግብረመልስ ለማስገባት ቅጽ ይከፍታል።</translation>
 <translation id="1697150536837697295">ሥነ ጥበብ</translation>
 <translation id="1697686431566694143">ፋይል አርትዕ ያድርጉ</translation>
 <translation id="1698796500103229697">&amp;የመክፈያ ዘዴዎች</translation>
@@ -2306,6 +2307,7 @@
 <translation id="2731700343119398978">እባክዎ ይጠብቁ...</translation>
 <translation id="2731971182069536520">መሣሪያዎን ዳግም በሚያስነሱበት ቀጣዩ ጊዜ ላይ አስተዳዳሪዎ አካባቢያዊ ውሂብዎን የሚሰርዝ የአንድ ጊዜ ዝማኔ ያከናውናል።</translation>
 <translation id="2732134891301408122">ተጨማሪ ይዘት <ph name="CURRENT_ELEMENT" /> ከ<ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">አሪፍ የሚለው እርስዎ እነዚህን ውጤቶች እንደወደዱ ግብረመልስ ያቀርባል።</translation>
 <translation id="2733992589856193783">ለዚህ ጣቢያ የይለፍ ቁልፍ ፈጥረዋል። ለመግባት ተንቀሳቃሽ መሣሪያዎ ያስፈልግዎታል።</translation>
 <translation id="27349076983469322">ፈዛዝ ያለ ጀርባ</translation>
 <translation id="2735712963799620190">የጊዜ ሰሌዳ</translation>
@@ -5667,6 +5669,7 @@
 <translation id="5431318178759467895">ቀለም</translation>
 <translation id="5432145523462851548"><ph name="FILE_NAME" />ን በአቃፊ ውስጥ ያሳዩ</translation>
 <translation id="5432223177001837288">ኦዲዮን ለማጋራት በምትኩ አንድን ትር ያጋሩ</translation>
+<translation id="5432872710261597882">አሪፍ የሚለው እርስዎ ይህን እንደወደዱ ግብረመልስ ያቀርባል።</translation>
 <translation id="543338862236136125">የይለፍ ቃል አርትዕ</translation>
 <translation id="5434065355175441495">PKCS #1 RSA ምስጠራ</translation>
 <translation id="5435274640623994081">የጆሮ አዶ ምዝግብ ማስታወሻን ያንቁ</translation>
@@ -5702,6 +5705,7 @@
 <translation id="5458214261780477893">ድቮራክ</translation>
 <translation id="5458998536542739734">የማያ ገፅ ቁልፍ ማስታወሻዎች</translation>
 <translation id="5459864179070366255">ለመጫን ይቀጥሉ</translation>
+<translation id="5460861858595506978">መነሳሳት</translation>
 <translation id="5461050611724244538">የስልክዎ ግንኙነት ጠፍቷል</translation>
 <translation id="5463275305984126951">የ<ph name="LOCATION" /> ጠቋሚ</translation>
 <translation id="5463450804024056231">ለ<ph name="DEVICE_TYPE" /> ኢሜይሎች ይመዝገቡ</translation>
@@ -6508,6 +6512,7 @@
 <translation id="610487644502954950">የጎን ፓነል ተነቅሏል።</translation>
 <translation id="6104929924898022309">የተግባር ቁልፎች ባህሪን ለመለወጥ የማስጀመሪያ ቁልፍን ይጠቀሙ</translation>
 <translation id="6106167152849320869">እንዲሁም በቀዳሚው እርምጃ የምርመራ እና የአጠቃቀም ውሂብን ለመላክ ከመረጡ ይህ ውሂብ ለተጫኑ መተግበሪያዎች ይሰበሰባል።</translation>
+<translation id="6108952804512516814">በAI ፍጠር</translation>
 <translation id="6111718295497931251">Google Drive መዳረሻ ይወገድ?</translation>
 <translation id="6111972606040028426">Google ረዳትን አንቃ</translation>
 <translation id="6112294629795967147">መጠን ለመቀየር ይንኩ</translation>
@@ -6620,7 +6625,6 @@
 <translation id="6195155925303302899">ወደ መሃል አሰልፍ</translation>
 <translation id="6195163219142236913">የሦስተኛ ወገን ኩኪ ተገድቧል</translation>
 <translation id="6195693561221576702">ይህ መሣሪያ በመስመር ውጭ የቅንጭብ ማሳያ ሁነታ ላይ ሊቀናበር አይችልም።</translation>
-<translation id="6196607555925437199">እንደገና ፍጠር</translation>
 <translation id="6196640612572343990">የሦስተኛ ወገን ኩኪዎችን አግድ</translation>
 <translation id="6196854373336333322">ይህ «<ph name="EXTENSION_NAME" />» ቅጥያ የተኪ ቅንብሮችዎን ተቆጣጥሯል፣ ይሄ ማለት መስመር ላይ የሚያደርጉት ማንኛውም ነገር ሊቀይር፣ ሊሰብር ወይም በድብቅ ሊከታተል ይችላል። ይሄ ለውጥ ለምን እንደተከሰተ እርግጠኛ ካልሆኑ የማይፈልጉት ነገር ሳይሆን አይቀርም።</translation>
 <translation id="6197128521826316819">ለዚህ ገፅ የQR ኮድ ፍጠር</translation>
@@ -8877,6 +8881,7 @@
 <translation id="7969046989155602842">ትእዛዝ</translation>
 <translation id="7970673414865679092">የኢተርኔት ዝርዝሮች</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 ከRSA ምስጠራ ጋር</translation>
+<translation id="7973149423217802477">ደባሪ ነው የሚለው እርስዎ ይህን አንዳልወደዱ ግብረመልስ ያቀርባል።</translation>
 <translation id="7973776233567882054">ከሚከተሉት ውስጥ የትኛው የእርስዎን አውታረ መረብ በደንብ የሚገልጸው?</translation>
 <translation id="797394244396603170">ፋይሎችን ሊያጋሩት የሚፈልጉትን መሣሪያ ይምረጡ</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" />ን መጠቀም እንደገና ይሞክሩ</translation>

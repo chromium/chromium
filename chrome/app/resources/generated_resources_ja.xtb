@@ -267,7 +267,7 @@
 <translation id="1197935538609051549">無効にする</translation>
 <translation id="1198066799963193307">ロービジョン音声ツール</translation>
 <translation id="119944043368869598">すべて削除</translation>
-<translation id="1199814941632954229">次の証明書プロフィールに対する証明書を準備しています</translation>
+<translation id="1199814941632954229">次の証明書プロファイルに対する証明書を準備しています</translation>
 <translation id="120069043972472860">視聴不能</translation>
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1201564082781748151">パスワードを忘れてもローカルデータを復元できます</translation>
@@ -918,6 +918,7 @@
 <translation id="1695510246756136088">インターネットに接続できません。もう一度お試しください。</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> で続行するには、別の方法をお試しください。</translation>
 <translation id="169675691788639886">デバイスに SSH サーバーが設定されています。慎重な取り扱いが必要なアカウントではログインしないでください。</translation>
+<translation id="1697122132646041614">低く評価すると、これらの結果が気に入らなかった理由について詳細なフィードバックを送信するためのフォームが開きます。</translation>
 <translation id="1697150536837697295">アート</translation>
 <translation id="1697686431566694143">ファイルを編集</translation>
 <translation id="1698796500103229697">お支払い方法(&amp;P)</translation>
@@ -2291,6 +2292,7 @@
 <translation id="2731700343119398978">お待ちください...</translation>
 <translation id="2731971182069536520">次回デバイスを再起動すると、管理者による 1 回限りの更新が行われ、ローカルデータが削除されます。</translation>
 <translation id="2732134891301408122">追加コンテンツ <ph name="TOTAL_ELEMENTS" /> 件中 <ph name="CURRENT_ELEMENT" /> 件目</translation>
+<translation id="2733248615007838252">高く評価すると、この結果が気に入ったというフィードバックが送信されます。</translation>
 <translation id="2733992589856193783">このサイトのパスキーを作成しました。モバイル デバイスを使用してログインする必要があります。</translation>
 <translation id="27349076983469322">明るい背景</translation>
 <translation id="2735712963799620190">スケジュール</translation>
@@ -5650,6 +5652,7 @@
 <translation id="5431318178759467895">カラー</translation>
 <translation id="5432145523462851548">フォルダで <ph name="FILE_NAME" /> を表示</translation>
 <translation id="5432223177001837288">音声を共有するには、タブを共有してください</translation>
+<translation id="5432872710261597882">高く評価すると、気に入ったというフィードバックが送信されます。</translation>
 <translation id="543338862236136125">パスワードを編集</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 暗号化</translation>
 <translation id="5435274640623994081">イアコンのログを有効にする</translation>
@@ -5685,6 +5688,7 @@
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">ロック画面のメモ</translation>
 <translation id="5459864179070366255">インストールに進む</translation>
+<translation id="5460861858595506978">インスピレーション</translation>
 <translation id="5461050611724244538">スマートフォンとの接続が切断されました</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> のインデックス</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> のメール通知に登録する</translation>
@@ -6491,6 +6495,7 @@
 <translation id="610487644502954950">サイドパネルの固定を解除しました</translation>
 <translation id="6104929924898022309">検索キーを使用してファンクション キーの動作を変更する</translation>
 <translation id="6106167152849320869">前の手順で診断データと使用状況データを送信するよう選択した場合、インストール済みのアプリでこれらのデータが収集されます。</translation>
+<translation id="6108952804512516814">AI を使用して作成</translation>
 <translation id="6111718295497931251">Google ドライブへのアクセスを削除</translation>
 <translation id="6111972606040028426">Google アシスタントの有効化</translation>
 <translation id="6112294629795967147">タップしてサイズを変更</translation>
@@ -6603,7 +6608,6 @@
 <translation id="6195155925303302899">中央揃え</translation>
 <translation id="6195163219142236913">サードパーティ Cookie が制限されています</translation>
 <translation id="6195693561221576702">このデバイスはオフライン デモモードで設定できません。</translation>
-<translation id="6196607555925437199">再作成</translation>
 <translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
 <translation id="6196854373336333322">拡張機能「<ph name="EXTENSION_NAME" />」によってプロキシ設定が制御されています。オンラインで行う操作は、この拡張機能によって変更、遮断、傍受される可能性があります。この変更が行われた理由に心当たりがない場合、これは不正な変更と考えられます。</translation>
 <translation id="6197128521826316819">このページの QR コードを作成</translation>
@@ -8854,6 +8858,7 @@
 <translation id="7969046989155602842">コマンド</translation>
 <translation id="7970673414865679092">イーサネットの詳細</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 with RSA 暗号化</translation>
+<translation id="7973149423217802477">低く評価すると、気に入らなかったというフィードバックが送信されます。</translation>
 <translation id="7973776233567882054">ご利用のネットワークの説明として最も近いのは次のうちどれですか？</translation>
 <translation id="797394244396603170">ファイルを共有するデバイスを選択してください</translation>
 <translation id="7974566588408714340">「<ph name="EXTENSIONNAME" />」で再試行</translation>

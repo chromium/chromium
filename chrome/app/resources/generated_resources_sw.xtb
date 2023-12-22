@@ -919,6 +919,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1695510246756136088">Imeshindwa kuunganisha kwenye intaneti. Jaribu tena.</translation>
 <translation id="1696555181932908973">Unaweza kujaribu njia nyingine ili uendelee kwenye <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Kifaa kina mipangilio ya seva ya SSH. Usiingie katika akaunti zenye maelezo nyeti.</translation>
+<translation id="1697122132646041614">Alama ya sijaipenda hufungua fomu ya kutuma maoni ya kina kuhusu ni kwa nini hupendi matokeo haya.</translation>
 <translation id="1697150536837697295">Sanaa</translation>
 <translation id="1697686431566694143">Badilisha faili</translation>
 <translation id="1698796500103229697">Njia za Kulipa</translation>
@@ -2309,6 +2310,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2731700343119398978">Tafadhali subiri...</translation>
 <translation id="2731971182069536520">Utakapozima na kuwasha tena kifaa chako, msimamizi wako atatekeleza sasisho la mara moja ambalo litafuta data ya kifaa chako.</translation>
 <translation id="2732134891301408122">Maudhui mengine <ph name="CURRENT_ELEMENT" /> kati ya <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Alama ya bomba hutuma maoni kuwa unapenda matokeo haya.</translation>
 <translation id="2733992589856193783">Umeunda ufunguo wa siri wa tovuti hii. Unahitaji kifaa chako cha mkononi ili uingie katika akaunti.</translation>
 <translation id="27349076983469322">Mandhari-nyuma meupe</translation>
 <translation id="2735712963799620190">Ratiba</translation>
@@ -5671,6 +5673,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5431318178759467895">Rangi</translation>
 <translation id="5432145523462851548">Onyesha <ph name="FILE_NAME" /> katika folda</translation>
 <translation id="5432223177001837288">Ili ushiriki sauti, shiriki kichupo badala yake</translation>
+<translation id="5432872710261597882">Alama ya bomba inatuma maoni kuwa unapenda kipengele hiki.</translation>
 <translation id="543338862236136125">Badilisha nenosiri</translation>
 <translation id="5434065355175441495">PKCS #1 Usimbaji wa RSA</translation>
 <translation id="5435274640623994081">Washa kumbukumbu za sehemu ya kiashiria cha sauti</translation>
@@ -5706,6 +5709,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Kuandika kwenye skrini iliyofungwa</translation>
 <translation id="5459864179070366255">Endelea kusakinisha</translation>
+<translation id="5460861858595506978">Hamasisho</translation>
 <translation id="5461050611724244538">Muunganisho wa simu yako umekatika</translation>
 <translation id="5463275305984126951">Fahirisi ya <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Jisajili kwa ajili ya barua pepe za <ph name="DEVICE_TYPE" /></translation>
@@ -6512,6 +6516,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="610487644502954950">Kidirisha cha pembeni kimebanduliwa</translation>
 <translation id="6104929924898022309">Tumia kitufe cha utafutaji kubadilisha vitendo vya vitufe vya utendaji</translation>
 <translation id="6106167152849320869">Pia, ukichagua kutuma data ya uchunguzi na matumizi katika hatua iliyotangulia, data hii itakusanywa kwa ajili ya programu ulizosakinisha.</translation>
+<translation id="6108952804512516814">Kutayarisha kwa kutumia AI</translation>
 <translation id="6111718295497931251">Ondoa idhini ya kufikia Hifadhi ya Google</translation>
 <translation id="6111972606040028426">Washa programu ya Mratibu wa Google</translation>
 <translation id="6112294629795967147">Gusa ili ubadilishe ukubwa</translation>
@@ -6624,7 +6629,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6195155925303302899">Pangilia katikati</translation>
 <translation id="6195163219142236913">Vidakuzi vya washirika wengine vinadhibitiwa</translation>
 <translation id="6195693561221576702">Kifaa hiki hakiwezi kuwekewa mipangilio katika hali ya onyesho la nje ya mtandao.</translation>
-<translation id="6196607555925437199">Buni tena</translation>
 <translation id="6196640612572343990">Zuia vidakuzi vya tovuti nyingine</translation>
 <translation id="6196854373336333322">Kiendelezi hiki "<ph name="EXTENSION_NAME" />" kinadhibiti mipangilio yako ya seva mbadala, kumaanisha kuwa kinaweza kubadilisha, kuvunja, au kufuatilia chochote unachokifanya mtandaoni. Ikiwa huna uhakika kwa nini mabadiliko haya yamefanyika, huenda huyahitaji.</translation>
 <translation id="6197128521826316819">Tunga Msimbo wa QR wa Ukurasa huu</translation>
@@ -8880,6 +8884,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7969046989155602842">Amri</translation>
 <translation id="7970673414865679092">Maelezo ya Ethaneti</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Na Usimbaji wa RSA</translation>
+<translation id="7973149423217802477">Alama ya sijaipenda hutuma maoni kuwa hupendi kipengele hiki.</translation>
 <translation id="7973776233567882054">Ni kauli gani kati ya zifuatazo inayoelezea mtandao wako vizuri zaidi?</translation>
 <translation id="797394244396603170">Chagua kifaa ambacho ungependa kushiriki faili nacho</translation>
 <translation id="7974566588408714340">Jaribu tena kutumia <ph name="EXTENSIONNAME" /></translation>

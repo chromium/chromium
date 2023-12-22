@@ -56,7 +56,7 @@
 <translation id="1042174272890264476">Votre ordinateur est fourni avec la bibliothèque RLZ de <ph name="SHORT_PRODUCT_NAME" />. RLZ attribue un tag non unique (et qui n'identifie pas personnellement les internautes) afin de mesurer les recherches et l'utilisation de <ph name="SHORT_PRODUCT_NAME" /> générées par une campagne de promotion spécifique. Ces libellés s'affichent parfois dans les requêtes de recherche Google dans <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1042248468362992359">Connectez-vous aux données mobiles pour utiliser le point d'accès. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1043505821207197890">Un problème est survenu. La mise à niveau Linux risque de n'être que partielle. Pour en savoir plus, consultez les journaux enregistrés dans Fichiers &gt; Mes fichiers &gt; <ph name="LOG_FILE" /></translation>
-<translation id="104419033123549300">Style de mappage du clavier</translation>
+<translation id="104419033123549300">Style de jeu de raccourcis clavier</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 mot de passe importé dans le <ph name="BRAND" /> sur cet appareil}one{{NUM_PASSWORDS} mot de passe importé dans le <ph name="BRAND" /> sur cet appareil}other{{NUM_PASSWORDS} mots de passe importés dans le <ph name="BRAND" /> sur cet appareil}}</translation>
 <translation id="104710386808485638">Redémarrer Linux ?</translation>
 <translation id="1047431265488717055">Copier le te&amp;xte du lien</translation>
@@ -266,7 +266,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1197185198920566650">Il sera enregistré dans le <ph name="GOOGLE_PASSWORD_MANAGER" /> pour <ph name="EMAIL" />.</translation>
 <translation id="11978075283960463">Données stockées dans l'appli : <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">Désactiver</translation>
-<translation id="1198066799963193307">Outils de synthèse vocale pour déficients visuels</translation>
+<translation id="1198066799963193307">Outils de synthèse vocale pour personnes malvoyantes</translation>
 <translation id="119944043368869598">Tout effacer</translation>
 <translation id="1199814941632954229">Les certificats sont en cours de préparation pour ces profils</translation>
 <translation id="120069043972472860">Impossible à regarder</translation>
@@ -685,7 +685,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1533948060140843887">Je comprends que ce téléchargement peut endommager mon ordinateur</translation>
 <translation id="1535228823998016251">Fort</translation>
 <translation id="1535597783576881392">Ce guide vous aide à comprendre vos choix, afin que Chrome fonctionne comme vous le souhaitez</translation>
-<translation id="1535753739390684432">En bas de l'écran, sélectionnez l'icône Sélectionner pour prononcer, puis mettez en surbrillance le texte qui vous sera lu à voix haute</translation>
+<translation id="1535753739390684432">En bas de l'écran, sélectionnez l'icône Sélectionner pour écouter, puis mettez en surbrillance le texte qui vous sera lu à voix haute</translation>
 <translation id="1536754031901697553">Déconnexion…</translation>
 <translation id="1537254971476575106">Loupe plein écran</translation>
 <translation id="15373452373711364">Grand curseur</translation>
@@ -888,7 +888,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1663698992894057019">Passez à un nouveau Chromebook pour bénéficier des dernières mises à jour logicielles et de sécurité</translation>
 <translation id="1665328953287874063">Utilisez un mot de passe ou un code pour déverrouiller votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Désactiver la protection de l'accès aux données pour les périphériques</translation>
-<translation id="1667842670298352129">En bas de l'écran, sélectionnez l'icône Sélectionner pour prononcer, puis mettez en surbrillance le texte qui vous sera lu à voix haute. Vous pouvez aussi utiliser un raccourci clavier : mettez le texte en surbrillance, puis appuyer sur Recherche+S.</translation>
+<translation id="1667842670298352129">En bas de l'écran, sélectionnez l'icône Sélectionner pour écouter, puis mettez en surbrillance le texte qui vous sera lu à voix haute. Vous pouvez aussi utiliser un raccourci clavier : mettez le texte en surbrillance, puis appuyer sur Recherche+S.</translation>
 <translation id="1668435968811469751">Faire l'enregistrement manuellement</translation>
 <translation id="1668804837842452164">Enregistrer dans le <ph name="BRAND" /> pour <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">En savoir plus sur les suggestions</translation>
@@ -920,6 +920,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1695510246756136088">Impossible de se connecter à Internet. Réessayez.</translation>
 <translation id="1696555181932908973">Vous pouvez essayer d'autres méthodes afin de poursuivre sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Serveur SSH configuré sur l'appareil. Ne vous connectez pas avec un compte sensible.</translation>
+<translation id="1697122132646041614">"Je n'aime pas" permet d'ouvrir un formulaire où indiquer précisément pourquoi ces résultats ne vous conviennent pas.</translation>
 <translation id="1697150536837697295">Art</translation>
 <translation id="1697686431566694143">Modifier le fichier</translation>
 <translation id="1698796500103229697">Modes de paiement</translation>
@@ -1117,7 +1118,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="184183613002882946">Non, rester avec 1 contacteur</translation>
 <translation id="184273675144259287">Remplacer vos applications et fichiers Linux avec une sauvegarde existante</translation>
 <translation id="1842766183094193446">Voulez-vous vraiment activer le mode de démonstration ?</translation>
-<translation id="1845060436536902492">ChromeVox, le lecteur d'écran sur ChromeOS Flex, est principalement utilisé par des personnes non-voyantes ou souffrant de déficience visuelle pour lire du texte à l'écran avec un synthétiseur vocal ou une plage braille. Appuyez sur la barre d'espace pour activer ChromeVox. Une fois activé, ChromeVox propose une présentation rapide.</translation>
+<translation id="1845060436536902492">ChromeVox, le lecteur d'écran sur ChromeOS Flex, est principalement utilisé par des personnes aveugles ou malvoyantes pour lire du texte à l'écran avec un synthétiseur vocal ou une plage braille. Appuyez sur la barre d'espace pour activer ChromeVox. Une fois activé, ChromeVox propose une présentation rapide.</translation>
 <translation id="1845727111305721124">Autorisé à lire des sons</translation>
 <translation id="1846308012215045257">Cliquez ici en maintenant la touche Ctrl enfoncée pour exécuter <ph name="PLUGIN_NAME" />.</translation>
 <translation id="1848219224579402567">Se déconnecter quand l'écran est rabattu</translation>
@@ -2298,6 +2299,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2731700343119398978">Veuillez patienter…</translation>
 <translation id="2731971182069536520">La prochaine fois que vous redémarrerez votre appareil, l'administrateur effectuera une mise à jour exceptionnelle qui entraînera la suppression de vos données locales.</translation>
 <translation id="2732134891301408122">Contenu supplémentaire <ph name="CURRENT_ELEMENT" /> sur <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">"J'aime" indique que ces résultats vous conviennent.</translation>
 <translation id="2733992589856193783">Vous avez créé une clé d'accès pour ce site. Vous aurez besoin de votre appareil mobile pour vous connecter.</translation>
 <translation id="27349076983469322">Arrière-plan clair</translation>
 <translation id="2735712963799620190">Horaires</translation>
@@ -2391,7 +2393,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2795950023277268902">Connectez-vous à <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> pour accéder à vos fichiers Drive dans l'appli Fichiers</translation>
 <translation id="2798347533012571708">Garder les mises à jour</translation>
 <translation id="2799223571221894425">Relancer</translation>
-<translation id="2800309299477632167">Mappage du clavier personnalisé</translation>
+<translation id="2800309299477632167">Jeu de raccourcis clavier personnalisé</translation>
 <translation id="2800760947029405028">Importer une image</translation>
 <translation id="2801134910297796778">Connecté à <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Taille de l'écran</translation>
@@ -2691,7 +2693,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3021902017511220299">Échec de l'analyse. Votre administrateur a bloqué cette action.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> sera supprimé de ce Chromebook et ne sera pas enregistré dans <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Je n'ai pas compris.</translation>
-<translation id="3023464535986383522">Sélectionner pour prononcer</translation>
+<translation id="3023464535986383522">Sélectionner pour écouter</translation>
 <translation id="3024374909719388945">Utiliser l'horloge au format 24 heures</translation>
 <translation id="3025174326431589540">{COUNT,plural, =0{Aucun mot de passe enregistré}=1{Mots de passe vérifiés pour {COUNT} site}one{Mots de passe vérifiés pour {COUNT} site ou appli}other{Mots de passe vérifiés pour {COUNT} sites ou applis}}</translation>
 <translation id="3027296729579831126">Activer le Partage à proximité</translation>
@@ -3104,7 +3106,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3388788256054548012">Ce fichier étant chiffré, demandez à son propriétaire de le déchiffrer.</translation>
 <translation id="3390013585654699824">Informations sur l'application</translation>
 <translation id="3390530051434634135">Remarque : <ph name="NOTE" /></translation>
-<translation id="3391721320619127327">ChromeVox, le lecteur d'écran sur ChromeOS Flex, est principalement utilisé par des personnes non-voyantes ou souffrant de déficience visuelle pour lire du texte à l'écran avec un synthétiseur vocal ou une plage braille. Appuyez sur les deux boutons de volume pendant cinq secondes pour activer ChromeVox. Une fois activé, ChromeVox propose une présentation rapide.</translation>
+<translation id="3391721320619127327">ChromeVox, le lecteur d'écran sur ChromeOS Flex, est principalement utilisé par des personnes aveugles ou malvoyantes pour lire du texte à l'écran avec un synthétiseur vocal ou une plage braille. Appuyez sur les deux boutons de volume pendant cinq secondes pour activer ChromeVox. Une fois activé, ChromeVox propose une présentation rapide.</translation>
 <translation id="3393554941209044235">Analyse de documents Chrome</translation>
 <translation id="3393582007140394275">Impossible de caster l'écran.</translation>
 <translation id="3394850431319394743">Sites autorisés à utiliser des ID pour lire du contenu protégé</translation>
@@ -4243,7 +4245,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
 <translation id="4281849573951338030">Personnaliser les boutons du stylet</translation>
 <translation id="4282196459431406533">Smart Lock est activé</translation>
-<translation id="4284903252249997120">Lecteur d'écran ChromeVox et Sélectionner pour prononcer</translation>
+<translation id="4284903252249997120">Lecteur d'écran ChromeVox et Sélectionner pour écouter</translation>
 <translation id="4285418559658561636">Mettre à jour le mot de passe</translation>
 <translation id="4285498937028063278">Retirer</translation>
 <translation id="428565720843367874">Le logiciel antivirus a rencontré une erreur inattendue pendant l'analyse de ce fichier.</translation>
@@ -5421,7 +5423,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5233231016133573565">ID du processus</translation>
 <translation id="5233638681132016545">Nouvel onglet</translation>
 <translation id="5233736638227740678">&amp;Coller</translation>
-<translation id="5234523649284990414">ChromeVox, le lecteur d'écran sur ChromeOS, est principalement utilisé par des personnes non-voyantes ou souffrant de déficience visuelle pour lire du texte à l'écran avec un synthétiseur vocal ou une plage braille. Appuyez sur la barre d'espace pour activer ChromeVox. Une fois activé, ChromeVox propose une présentation rapide.</translation>
+<translation id="5234523649284990414">ChromeVox, le lecteur d'écran sur ChromeOS, est principalement utilisé par des personnes aveugles ou malvoyantes pour lire du texte à l'écran avec un synthétiseur vocal ou une plage braille. Appuyez sur la barre d'espace pour activer ChromeVox. Une fois activé, ChromeVox propose une présentation rapide.</translation>
 <translation id="5234764350956374838">Ignorer</translation>
 <translation id="5235050375939235066">Désinstaller l'application ?</translation>
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
@@ -5661,6 +5663,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5431318178759467895">Couleur</translation>
 <translation id="5432145523462851548">Afficher <ph name="FILE_NAME" /> dans le dossier</translation>
 <translation id="5432223177001837288">Pour partager l'audio, partagez plutôt un onglet</translation>
+<translation id="5432872710261597882">"J'aime" indique que cela vous convient.</translation>
 <translation id="543338862236136125">Modifier le mot de passe</translation>
 <translation id="5434065355175441495">Chiffrement RSA PKCS #1</translation>
 <translation id="5435274640623994081">Activer la journalisation des icônes sonores</translation>
@@ -5696,6 +5699,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Prise de notes sur l'écran de verrouillage</translation>
 <translation id="5459864179070366255">Poursuivre l'installation</translation>
+<translation id="5460861858595506978">Inspiration</translation>
 <translation id="5461050611724244538">Connexion perdue avec votre téléphone</translation>
 <translation id="5463275305984126951">Index de <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Inscrivez-vous pour recevoir des e-mails concernant votre <ph name="DEVICE_TYPE" /></translation>
@@ -6318,7 +6322,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5955304353782037793">application</translation>
 <translation id="5955721306465922729">Un site Web souhaite ouvrir cette application.</translation>
 <translation id="5955809630138889698">Il se peut que cet appareil soit seulement compatible avec le mode de démonstration en ligne. Pour en savoir plus, veuillez contacter le service d'assistance.</translation>
-<translation id="5957987129450536192">Appuyez sur l'icône Sélectionner pour prononcer, située à côté de votre image de profil, puis choisissez ce que vous voulez entendre.</translation>
+<translation id="5957987129450536192">Appuyez sur l'icône Sélectionner pour écouter, située à côté de votre image de profil, puis choisissez ce que vous voulez entendre.</translation>
 <translation id="5959471481388474538">Réseau indisponible</translation>
 <translation id="5963413905009737549">Section</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (pic : <ph name="NUM_KILOBYTES_LIVE" />)</translation>
@@ -6416,7 +6420,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6043994281159824495">Se déconnecter maintenant</translation>
 <translation id="6045114302329202345">Bouton TrackPoint principal</translation>
 <translation id="6047632800149092791">La synchronisation ne fonctionne pas. Essayez de vous déconnecter, puis de vous reconnecter.</translation>
-<translation id="6048747414605857443">Sélectionnez et personnalisez les voix de la synthèse vocale pour ChromeVox et Sélectionner pour prononcer</translation>
+<translation id="6048747414605857443">Sélectionnez et personnalisez les voix de la synthèse vocale pour ChromeVox et Sélectionner pour écouter</translation>
 <translation id="6050189528197190982">Niveaux de gris</translation>
 <translation id="6051354611314852653">Petit problème… Échec de l'autorisation d'accès à l'API pour cet appareil.</translation>
 <translation id="6051811090255711417">Votre organisation a bloqué ce fichier, car il ne respectait pas l'une des règles de sécurité</translation>
@@ -6503,6 +6507,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="610487644502954950">Panneau latéral retiré</translation>
 <translation id="6104929924898022309">Utiliser la touche de recherche pour modifier le comportement des touches de fonction</translation>
 <translation id="6106167152849320869">Si vous avez aussi choisi d'envoyer des données d'utilisation et de diagnostic à l'étape précédente, elles seront collectées pour les applis installées.</translation>
+<translation id="6108952804512516814">Créer avec l'IA</translation>
 <translation id="6111718295497931251">Supprimer l'accès à Google Drive</translation>
 <translation id="6111972606040028426">Activer l'Assistant Google</translation>
 <translation id="6112294629795967147">Appuyer pour redimensionner</translation>
@@ -6615,7 +6620,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6195155925303302899">Centrer</translation>
 <translation id="6195163219142236913">Cookies tiers limités</translation>
 <translation id="6195693561221576702">Impossible de configurer cet appareil en mode de démonstration hors connexion.</translation>
-<translation id="6196607555925437199">Recréer</translation>
 <translation id="6196640612572343990">Bloquer les cookies tiers</translation>
 <translation id="6196854373336333322">L'extension <ph name="EXTENSION_NAME" /> a pris le contrôle de vos paramètres de proxy, ce qui signifie que toutes vos activités en ligne peuvent être modifiées, interrompues ou espionnées. Si vous ne savez pas pourquoi cette modification s'est produite, c'est qu'elle est probablement indésirable.</translation>
 <translation id="6197128521826316819">Créer un code QR pour cette page</translation>
@@ -8208,7 +8212,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="747459581954555080">Tout restaurer</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Retour immédiat requis}one{Retourner le <ph name="DEVICE_TYPE" /> sous {NUM_DAYS} jour}other{Retourner le <ph name="DEVICE_TYPE" /> sous {NUM_DAYS} jours}}</translation>
 <translation id="7475671414023905704">URL de mot de passe perdu Netscape</translation>
-<translation id="7475742997309661417">ChromeVox, le lecteur d'écran sur ChromeOS, est principalement utilisé par des personnes non-voyantes ou souffrant de déficience visuelle pour lire du texte à l'écran avec un synthétiseur vocal ou une plage braille. Appuyez sur les deux boutons de volume pendant cinq secondes pour activer ChromeVox. Une fois activé, ChromeVox propose une présentation rapide.</translation>
+<translation id="7475742997309661417">ChromeVox, le lecteur d'écran sur ChromeOS, est principalement utilisé par des personnes aveugles ou malvoyantes pour lire du texte à l'écran avec un synthétiseur vocal ou une plage braille. Appuyez sur les deux boutons de volume pendant cinq secondes pour activer ChromeVox. Une fois activé, ChromeVox propose une présentation rapide.</translation>
 <translation id="7476454130948140105">Batterie trop faible pour la mise à jour (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7476989672001283112">Autorisations bloquées automatiquement : <ph name="PERMISSION" /> (et <ph name="COUNT" /> de plus)</translation>
 <translation id="7477460499687558352">Sélectionnez un profil eSIM à télécharger</translation>
@@ -8479,7 +8483,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7681095912841365527">Le site peut utiliser le Bluetooth</translation>
 <translation id="7681597159868843240">Les sites utilisent généralement les capteurs de mouvement de votre appareil pour proposer des fonctionnalités comme la réalité virtuelle ou le suivi de vos activités de remise en forme</translation>
 <translation id="7683373461016844951">Pour continuer, cliquez sur "OK", puis sur "Ajouter une personne" afin de créer un profil pour votre adresse e-mail <ph name="DOMAIN" />.</translation>
-<translation id="7683834360226457448">Outils d'affichage pour déficients visuels</translation>
+<translation id="7683834360226457448">Outils d'affichage pour malvoyants</translation>
 <translation id="7684212569183643648">Installée par votre administrateur</translation>
 <translation id="7684559058815332124">Accéder à la page de connexion du portail captif</translation>
 <translation id="7684718995427157417">Pour créer et tester vos applications, activez Android Debug Bridge (ADB). Notez que cette action autorise l'installation d'applications Android non vérifiées par Google et ne pourra être désactivée qu'en rétablissant la configuration d'usine.</translation>
@@ -8595,7 +8599,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7768507955883790804">Les sites se basent automatiquement sur ce paramètre lorsque vous les consultez</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> pourra consulter les fichiers du dossier <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Modifier</translation>
-<translation id="7768784765476638775">Sélectionner pour prononcer</translation>
+<translation id="7768784765476638775">Sélectionner pour écouter</translation>
 <translation id="7769748505895274502">Réduire "Récemment fermés"</translation>
 <translation id="7770072242481632881">Sélecteur du panneau latéral</translation>
 <translation id="7770450735129978837">Clic droit de la souris</translation>
@@ -8775,7 +8779,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Rendre les ports Linux disponibles pour les autres appareils de votre réseau.</translation>
 <translation id="7906440585529721295">Les données locales seront supprimées</translation>
-<translation id="7907837847548254634">Mettre en surbrillance rapidement l'objet ciblé</translation>
+<translation id="7907837847548254634">Entourer brièvement l'objet sélectionné</translation>
 <translation id="7908378463497120834">Désolé, impossible d'installer au moins une partition de votre périphérique de stockage externe.</translation>
 <translation id="7908835530772972485">Supprimer les données lorsque vous fermez toutes les fenêtres</translation>
 <translation id="7909324225945368569">Renommer votre profil</translation>
@@ -8872,6 +8876,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7969046989155602842">Commande</translation>
 <translation id="7970673414865679092">Informations sur le réseau Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 avec chiffrement RSA</translation>
+<translation id="7973149423217802477">"Je n'aime pas" indique que cela ne vous convient pas.</translation>
 <translation id="7973776233567882054">Parmi les propositions suivantes, laquelle décrit le mieux votre réseau ?</translation>
 <translation id="797394244396603170">Sélectionnez l'appareil avec lequel vous souhaitez partager des fichiers</translation>
 <translation id="7974566588408714340">Réessayer avec "<ph name="EXTENSIONNAME" />"</translation>
@@ -9415,7 +9420,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8389492867173948260">Autorisez cette extension à lire et à modifier toutes vos données sur les sites Web que vous consultez :</translation>
 <translation id="8390449457866780408">Serveur indisponible.</translation>
 <translation id="8391218455464584335">Vinyle</translation>
-<translation id="8392726714909453725">Paramètres de Sélectionner pour prononcer</translation>
+<translation id="8392726714909453725">Paramètres Sélectionner pour écouter</translation>
 <translation id="8393511274964623038">Arrêter le plug-in</translation>
 <translation id="839363317075970734">Infos sur l'appareil Bluetooth</translation>
 <translation id="8393700583063109961">Envoyer un message</translation>
@@ -10064,7 +10069,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8899851313684471736">Ouvrir le lien dans une nouvelle &amp;fenêtre</translation>
 <translation id="8900413463156971200">Activer le réseau mobile</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner cet appareil (<ph name="DEVICE_TYPE" />) aujourd'hui.}one{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner cet appareil (<ph name="DEVICE_TYPE" />) avant la date limite.}other{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner cet appareil (<ph name="DEVICE_TYPE" />) avant la date limite.}}</translation>
-<translation id="8902667442496790482">Ouvrir les paramètres de "Sélectionner pour prononcer"</translation>
+<translation id="8902667442496790482">Ouvrir les paramètres Sélectionner pour écouter</translation>
 <translation id="890616557918890486">Modifier la source</translation>
 <translation id="8907701755790961703">Veuillez sélectionner un pays.</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> a été désinstallé</translation>

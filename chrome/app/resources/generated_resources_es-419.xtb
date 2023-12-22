@@ -916,6 +916,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1695510246756136088">No se puede establecer la conexión a Internet. Vuelve a intentarlo.</translation>
 <translation id="1696555181932908973">Puedes probar otras formas de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">El dispositivo tiene configurado un servidor SSH. No accedas con cuentas sensibles.</translation>
+<translation id="1697122132646041614">La opción No me gusta abre un formulario para enviar comentarios detallados sobre los motivos por los que no te gustan estos resultados.</translation>
 <translation id="1697150536837697295">Arte</translation>
 <translation id="1697686431566694143">Editar archivo</translation>
 <translation id="1698796500103229697">&amp;Formas de pago</translation>
@@ -2294,6 +2295,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2731700343119398978">Espera...</translation>
 <translation id="2731971182069536520">La próxima vez que reinicies el dispositivo, tu administrador realizará una actualización única que borrará tus datos locales.</translation>
 <translation id="2732134891301408122">Contenido adicional: <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">La opción Me gusta envía comentarios que indican que te gustan estos resultados.</translation>
 <translation id="2733992589856193783">Creaste una llave de acceso para este sitio. Necesitas tu dispositivo móvil para acceder.</translation>
 <translation id="27349076983469322">Fondo claro</translation>
 <translation id="2735712963799620190">Programar</translation>
@@ -5657,6 +5659,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5431318178759467895">Color</translation>
 <translation id="5432145523462851548">Mostrar <ph name="FILE_NAME" /> en carpeta</translation>
 <translation id="5432223177001837288">Para compartir audio, comparte una pestaña</translation>
+<translation id="5432872710261597882">La opción Me gusta envía comentarios que indican que te gusta esta función.</translation>
 <translation id="543338862236136125">Editar contraseña</translation>
 <translation id="5434065355175441495">PKCS N. º 1, Encriptación RSA</translation>
 <translation id="5435274640623994081">Habilitar el acceso con íconos sonoros</translation>
@@ -5692,6 +5695,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notas con la pantalla bloqueada</translation>
 <translation id="5459864179070366255">Continuar a la instalación</translation>
+<translation id="5460861858595506978">Inspiración</translation>
 <translation id="5461050611724244538">Se perdió la conexión con tu teléfono</translation>
 <translation id="5463275305984126951">Índice de <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Regístrate para recibir correos electrónicos de <ph name="DEVICE_TYPE" /></translation>
@@ -6498,6 +6502,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="610487644502954950">Se dejó de fijar el panel lateral</translation>
 <translation id="6104929924898022309">Usar la tecla de búsqueda para cambiar el comportamiento de las teclas de función</translation>
 <translation id="6106167152849320869">Si además elegiste enviar datos de uso y diagnóstico en el paso anterior, se recopilarán estos datos para las apps instaladas.</translation>
+<translation id="6108952804512516814">Crea con IA</translation>
 <translation id="6111718295497931251">Quitar el acceso a Google Drive</translation>
 <translation id="6111972606040028426">Habilitar el Asistente de Google</translation>
 <translation id="6112294629795967147">Tocar para cambiar el tamaño</translation>
@@ -6610,7 +6615,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6195155925303302899">Centrar</translation>
 <translation id="6195163219142236913">Se limitaron las cookies de terceros</translation>
 <translation id="6195693561221576702">Este dispositivo no puede configurarse en el modo de demostración sin conexión.</translation>
-<translation id="6196607555925437199">Volver a crear</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6196854373336333322">La extensión "<ph name="EXTENSION_NAME" />" tomó el control de la configuración de proxy, lo que significa que puede modificar, dañar o espiar cualquier actividad que lleves a cabo en línea. Si no sabes con certeza por qué se produjo este cambio, probablemente no lo desees.</translation>
 <translation id="6197128521826316819">Crear un código QR para esta página</translation>
@@ -8865,6 +8869,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7969046989155602842">Comando</translation>
 <translation id="7970673414865679092">Detalles de Ethernet</translation>
 <translation id="7972714317346275248">PKCS N. º 1, SHA-384 con encriptación RSA</translation>
+<translation id="7973149423217802477">La opción No me gusta envía comentarios que indican que no te gusta esta función.</translation>
 <translation id="7973776233567882054">¿Cuál de las siguientes respuestas describe mejor la red?</translation>
 <translation id="797394244396603170">Selecciona el dispositivo con el que quieres compartir archivos.</translation>
 <translation id="7974566588408714340">Volver a intentarlo con <ph name="EXTENSIONNAME" /></translation>

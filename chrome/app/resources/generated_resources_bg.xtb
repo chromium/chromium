@@ -919,6 +919,7 @@
 <translation id="1695510246756136088">Не може да се установи връзка с интернет. Опитайте отново.</translation>
 <translation id="1696555181932908973">Можете да изпробвате други начини за продължаване към <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">На устройството е конфигуриран SSH сървър. Не влизайте с поверителни профили.</translation>
+<translation id="1697122132646041614">Чрез бутона „Не ми харесва“ се отваря формуляр за изпращане на подробни отзиви за причината, поради която не харесвате съответните резултати.</translation>
 <translation id="1697150536837697295">Изкуство</translation>
 <translation id="1697686431566694143">Редактиране на файла</translation>
 <translation id="1698796500103229697">&amp;Начини на плащане</translation>
@@ -2308,6 +2309,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2731700343119398978">Моля, изчакайте...</translation>
 <translation id="2731971182069536520">При следващото рестартиране на устройството администраторът ви ще извърши еднократна актуализация, при която ще бъдат изтрити локалните ви данни.</translation>
 <translation id="2732134891301408122">Допълнително съдържание <ph name="CURRENT_ELEMENT" /> от <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Чрез бутона „Харесва ми“ отбелязвате, че харесвате съответните резултати.</translation>
 <translation id="2733992589856193783">Създадохте ключ за достъп за този сайт. За да влезете в профила си, ви е необходимо мобилното ви устройство.</translation>
 <translation id="27349076983469322">Светъл фон</translation>
 <translation id="2735712963799620190">График</translation>
@@ -5673,6 +5675,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5431318178759467895">Цветно</translation>
 <translation id="5432145523462851548">Показване на <ph name="FILE_NAME" /> в папката</translation>
 <translation id="5432223177001837288">За да споделите звук, трябва да споделите раздел</translation>
+<translation id="5432872710261597882">Чрез бутона „Харесва ми“ отбелязвате, че харесвате това.</translation>
 <translation id="543338862236136125">Редактиране на паролата</translation>
 <translation id="5434065355175441495">PKCS 1 с RSA шифроване</translation>
 <translation id="5435274640623994081">Активиране на записването в регистрационен файл за аудиоиконите</translation>
@@ -5708,6 +5711,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5458214261780477893">Дворак</translation>
 <translation id="5458998536542739734">Бележки на заключения екран</translation>
 <translation id="5459864179070366255">Продължаване с инсталирането</translation>
+<translation id="5460861858595506978">Вдъхновение</translation>
 <translation id="5461050611724244538">Връзката с телефона ви прекъсна</translation>
 <translation id="5463275305984126951">Индекс на <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Регистрация за имейли относно <ph name="DEVICE_TYPE" /></translation>
@@ -6515,6 +6519,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="610487644502954950">Страничният панел е освободен</translation>
 <translation id="6104929924898022309">Използвайте клавиша „търсене“, за да промените поведението на функционалните клавиши</translation>
 <translation id="6106167152849320869">Ако в предишната стъпка сте избрали също да се изпращат данни за диагностиката и употребата, тези данни ще се събират за инсталираните приложения.</translation>
+<translation id="6108952804512516814">Създаване с AI</translation>
 <translation id="6111718295497931251">Премахване на достъпа до Google Диск</translation>
 <translation id="6111972606040028426">Активиране на Google Асистент</translation>
 <translation id="6112294629795967147">Докоснете за преоразмеряване</translation>
@@ -6627,7 +6632,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6195155925303302899">Подравняване в средата</translation>
 <translation id="6195163219142236913">„Бисквитките“ на трети страни са ограничени</translation>
 <translation id="6195693561221576702">Това устройство не може да бъде настроено в офлайн демонстрационен режим.</translation>
-<translation id="6196607555925437199">Повторно създаване</translation>
 <translation id="6196640612572343990">Блокиране на „бисквитките“ на трети страни</translation>
 <translation id="6196854373336333322">Разширението „<ph name="EXTENSION_NAME" />“ е поело контрол над настройките ви за прокси сървър. Това означава, че то може да променя, прекъсва или следи всичко, което правите онлайн. Ако не сте сигурни какво е причинило тази промяна, вероятно не искате тя да остава в сила.</translation>
 <translation id="6197128521826316819">Създаване на QR код за тази страница</translation>
@@ -8882,6 +8886,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Подробности за Ethernet</translation>
 <translation id="7972714317346275248">PKCS 1 SHA-384 с RSA шифроване</translation>
+<translation id="7973149423217802477">Чрез бутона „Не ми харесва“ отбелязвате, че не харесвате това.</translation>
 <translation id="7973776233567882054">Кое от следните твърдения описва най-добре мрежата ви?</translation>
 <translation id="797394244396603170">Изберете устройството, с което искате да споделите файлове</translation>
 <translation id="7974566588408714340">Нов опит посредством <ph name="EXTENSIONNAME" /></translation>
