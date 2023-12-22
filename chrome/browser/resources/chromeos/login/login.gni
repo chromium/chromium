@@ -148,7 +148,7 @@ common_screens_js_files = [
   "screens/common/signin_fatal_error.js",
   "screens/common/smart_privacy_protection.ts",
   "screens/common/sync_consent.js",
-  "screens/common/theme_selection.js",
+  "screens/common/theme_selection.ts",
   "screens/common/touchpad_scroll.js",
   "screens/common/tpm_error.ts",
   "screens/common/user_allowlist_check_screen.js",

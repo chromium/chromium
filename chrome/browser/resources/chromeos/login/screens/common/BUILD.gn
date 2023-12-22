@@ -47,7 +47,6 @@ js_type_check("closure_compile_local") {
     ":saml_confirm_password",
     ":signin_fatal_error",
     ":sync_consent",
-    ":theme_selection",
     ":touchpad_scroll",
   ]
 }
@@ -361,19 +360,6 @@ js_library("sync_consent") {
     "../../components/dialogs:oobe_loading_dialog",
     "//ash/webui/common/resources:assert",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("theme_selection") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/theme_selection.js" ]
-  deps = [
-    "../../components:display_manager_types",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//ash/webui/common/resources:load_time_data.m",
   ]
   extra_deps = [ ":web_components" ]
 }
