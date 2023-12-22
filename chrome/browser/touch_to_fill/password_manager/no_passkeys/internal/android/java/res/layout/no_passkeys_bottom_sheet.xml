@@ -24,7 +24,8 @@
       android:layout_marginHorizontal="@dimen/ttf_sheet_padding"
       android:textAlignment="center"
       android:textAppearance="@style/TextAppearance.Headline.Primary"
-      android:text="@string/no_passkeys_sheet_title"/>
+      android:text="@string/no_passkeys_sheet_title"
+      android:screenReaderFocusable="true"/>
 
   <TextView
       android:id="@+id/no_passkeys_sheet_subtitle"
@@ -35,7 +36,8 @@
       android:layout_marginBottom="24dp"
       android:textAlignment="center"
       android:text="@string/no_passkeys_sheet_subtitle"
-      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+      android:screenReaderFocusable="true"/>
 
     <LinearLayout
         android:layout_width="match_parent"
