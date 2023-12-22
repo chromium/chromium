@@ -123,6 +123,10 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), nullptr);
     web_contents_->Resize({0, 0, 1024, 768});
+    // Make sure the element is inside the web contents area.
+    autofill_popup_controller_.set_element_bounds(
+        autofill_popup_controller_.element_bounds() +
+        web_contents_->GetContainerBounds().OffsetFromOrigin());
     ON_CALL(autofill_popup_controller_, GetWebContents())
         .WillByDefault(Return(web_contents_.get()));
     ON_CALL(autofill_popup_controller_, OpenSubPopup)
@@ -195,6 +199,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
 
   // Simulates the keyboard event and returns whether the event was handled.
   bool SimulateKeyPress(int windows_key_code,
+                        PopupViewViews& view,
                         bool shift_modifier_pressed = false,
                         bool non_shift_modifier_pressed = false) {
     int modifiers = blink::WebInputEvent::kNoModifiers;
@@ -209,7 +214,13 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
         blink::WebKeyboardEvent::Type::kRawKeyDown, modifiers,
         ui::EventTimeForNow());
     event.windows_key_code = windows_key_code;
-    return test_api(view()).HandleKeyPressEvent(event);
+    return test_api(view).HandleKeyPressEvent(event);
+  }
+  bool SimulateKeyPress(int windows_key_code,
+                        bool shift_modifier_pressed = false,
+                        bool non_shift_modifier_pressed = false) {
+    return SimulateKeyPress(windows_key_code, view(), shift_modifier_pressed,
+                            non_shift_modifier_pressed);
   }
 
  protected:
@@ -454,6 +465,34 @@ TEST_F(PopupViewViewsTest, ClickDisabledEntry) {
   widget().OnMouseEvent(&click_mouse_event);
 }
 
+TEST_F(PopupViewViewsTest, KeyboardFocusIsNotCapturedAutomaticallyForSubPopup) {
+  CreateAndShowView({PopupItemId::kAddressEntry});
+  auto [sub_controller, sub_view] = OpenSubView(view());
+
+  SimulateKeyPress(ui::VKEY_DOWN, *sub_view);
+  EXPECT_FALSE(sub_view->GetSelectedCell().has_value());
+
+  // VKEY_RIGHT is the focus capturing combination
+  SimulateKeyPress(ui::VKEY_RIGHT, *sub_view);
+  SimulateKeyPress(ui::VKEY_DOWN, *sub_view);
+  EXPECT_TRUE(sub_view->GetSelectedCell().has_value());
+}
+
+TEST_F(PopupViewViewsTest,
+       KeyboardFocusIsNotCapturedAutomaticallyForSubPopupRTL) {
+  base::i18n::SetRTLForTesting(true);
+
+  CreateAndShowView({PopupItemId::kAddressEntry});
+  auto [sub_controller, sub_view] = OpenSubView(view());
+
+  // VKEY_LEFT is the focus capturing combination for RTL environment.
+  SimulateKeyPress(ui::VKEY_LEFT, *sub_view);
+  SimulateKeyPress(ui::VKEY_DOWN, *sub_view);
+  EXPECT_TRUE(sub_view->GetSelectedCell().has_value());
+
+  base::i18n::SetRTLForTesting(false);
+}
+
 TEST_F(PopupViewViewsTest, CursorUpDownForSelectableCells) {
   // Set up the popup.
   CreateAndShowView(
@@ -521,6 +560,8 @@ TEST_F(PopupViewViewsTest, LeftAndRightKeyEventsAreHandledForRTL) {
 
   EXPECT_FALSE(SimulateKeyPress(ui::VKEY_LEFT));
   EXPECT_EQ(view().GetSelectedCell()->second, CellType::kControl);
+
+  base::i18n::SetRTLForTesting(false);
 }
 
 TEST_F(PopupViewViewsTest, LeftAndRightKeyEventsAreHandledWithoutControl) {

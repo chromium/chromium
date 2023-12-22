@@ -259,11 +259,15 @@ bool CanShowDropdownHere(int item_height,
 // Keep in sync with TryToCloseAllPrompts() from autofill_uitest.cc.
 bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
                                     content::WebContents* web_contents) {
-  gfx::NativeView top_level_view =
-      platform_util::GetViewForWindow(web_contents->GetTopLevelNativeWindow());
-  if (!top_level_view) {
+  gfx::NativeWindow top_level_window = web_contents->GetTopLevelNativeWindow();
+  // `top_level_window` can be `nullptr` if `web_contents` is not attached to
+  // a window, e.g. in unit test runs.
+  if (!top_level_window) {
     return false;
   }
+  gfx::NativeView top_level_view =
+      platform_util::GetViewForWindow(top_level_window);
+
   // We generally want to ensure that no prompt overlaps with |screen_bounds|.
   // It is possible, however, that a <datalist> is part of a prompt (e.g. an
   // extension popup can render a <datalist>). Therefore, we exclude the widget

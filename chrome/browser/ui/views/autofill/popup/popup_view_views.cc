@@ -187,6 +187,9 @@ bool PopupViewViews::Show(
   if (!DoShow()) {
     return false;
   }
+
+  has_keyboard_focus_ = !parent_;
+
   if (autoselect_first_suggestion) {
     SetSelectedCell(CellIndex{0u, PopupRowView::CellType::kContent},
                     PopupCellSelectionSource::kNonUserInput);
@@ -246,6 +249,8 @@ void PopupViewViews::SetSelectedCell(std::optional<CellIndex> cell_index,
   }
 
   if (cell_index && HasPopupRowViewAt(cell_index->first)) {
+    has_keyboard_focus_ = true;
+
     row_with_selected_cell_ = cell_index->first;
     PopupRowView& new_row = GetPopupRowViewAt(cell_index->first);
     new_row.SetSelectedCell(cell_index->second);
@@ -271,6 +276,22 @@ void PopupViewViews::SetSelectedCell(std::optional<CellIndex> cell_index,
 
 bool PopupViewViews::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
+  // If a subpopup has not received focus yet but a horizontal key press event
+  // happens, this means the user wants to navigate from a selected cell in
+  // the parent to the currently open subpopup. In this case, we select
+  // the first subpopup cell.
+  if (!has_keyboard_focus_) {
+    bool capture_keyboard_focus =
+        (event.windows_key_code == ui::VKEY_RIGHT && !base::i18n::IsRTL()) ||
+        (event.windows_key_code == ui::VKEY_LEFT && base::i18n::IsRTL());
+    if (capture_keyboard_focus) {
+      SetSelectedCell(CellIndex{0u, PopupRowView::CellType::kContent},
+                      PopupCellSelectionSource::kKeyboard);
+      return true;
+    }
+    return false;
+  }
+
   // If the row can handle the event itself (e.g. switching between cells in the
   // same row), we let it.
   if (std::optional<CellIndex> selected_cell = GetSelectedCell()) {

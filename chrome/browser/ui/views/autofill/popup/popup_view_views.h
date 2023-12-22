@@ -205,6 +205,16 @@ class PopupViewViews : public PopupBaseView,
   base::OneShotTimer open_sub_popup_timer_;
   base::OneShotTimer no_selection_sub_popup_close_timer_;
 
+  // Defines whether the popup handles keyboard events like UP/DOWN/ESC/etc.
+  // This value is important for defining which popup handles the event when
+  // a chain of (sub-)popups is open: having no focus for a sub-popup means
+  // that its parent will take care of handling it.
+  // It's automatically set `true` for the root popup (so that it always handles
+  // events) and when something is selected in sub-popups. The initial value is
+  // set in `Show()`, but after that once it is `true` the value never gets back
+  // to `false.`
+  bool has_keyboard_focus_ = false;
+
   base::WeakPtrFactory<PopupViewViews> weak_ptr_factory_{this};
 };
 
