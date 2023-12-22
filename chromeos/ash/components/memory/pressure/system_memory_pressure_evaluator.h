@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "components/memory_pressure/memory_pressure_voter.h"
+#include "components/memory_pressure/reclaim_target.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
 namespace ash {
@@ -37,7 +38,7 @@ class COMPONENT_EXPORT(ASH_MEMORY) SystemMemoryPressureEvaluator
   static SystemMemoryPressureEvaluator* Get();
 
   // Returns the cached amount of memory to reclaim.
-  uint64_t GetCachedReclaimTargetKB();
+  memory_pressure::ReclaimTarget GetCachedReclaimTarget();
 
  protected:
   // This constructor is only used for testing.
@@ -47,12 +48,17 @@ class COMPONENT_EXPORT(ASH_MEMORY) SystemMemoryPressureEvaluator
 
   // Implements ResourcedClient::Observer, protected for testing.
   void OnMemoryPressure(ResourcedClient::PressureLevel level,
-                        uint64_t reclaim_target_kb) override;
+                        memory_pressure::ReclaimTarget target) override;
 
  private:
   // Member variables.
 
-  std::atomic<uint64_t> cached_reclaim_target_kb_{0};
+  // Used to enforce thread-safe access to cached_reclaim_target_.
+  base::Lock reclaim_target_lock_;
+
+  // A cached copy of the reclaim target received from resourced.
+  memory_pressure::ReclaimTarget cached_reclaim_target_
+      GUARDED_BY(reclaim_target_lock_){};
 
   // We keep track of how long it has been since we last notified at the
   // moderate level.

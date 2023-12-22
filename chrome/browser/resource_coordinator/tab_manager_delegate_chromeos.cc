@@ -220,10 +220,11 @@ class TabManagerDelegate::FocusedProcess {
 
 // Target memory to free is the amount which brings available
 // memory back to the margin.
-int TabManagerDelegate::MemoryStat::TargetMemoryToFreeKB() {
+memory_pressure::ReclaimTarget
+TabManagerDelegate::MemoryStat::TargetMemoryToFree() {
   auto* monitor = ash::memory::SystemMemoryPressureEvaluator::Get();
   if (monitor) {
-    return monitor->GetCachedReclaimTargetKB();
+    return monitor->GetCachedReclaimTarget();
   } else {
     // When TabManager::DiscardTab(LifecycleUnitDiscardReason::EXTERNAL) is
     // called by an integration test, TabManagerDelegate might be used without
@@ -233,7 +234,7 @@ int TabManagerDelegate::MemoryStat::TargetMemoryToFreeKB() {
     // TODO(vovoy): Remove this code path and modify the related browser tests.
     LOG(WARNING) << "SystemMemoryPressureEvaluator is not available";
     constexpr int kDefaultLowMemoryMarginKb = 50 * 1024;
-    return kDefaultLowMemoryMarginKb;
+    return memory_pressure::ReclaimTarget(kDefaultLowMemoryMarginKb);
   }
 }
 
@@ -576,7 +577,8 @@ void TabManagerDelegate::LowMemoryKillImpl(
   std::vector<Candidate> candidates =
       GetSortedCandidates(GetLifecycleUnits(), arc_processes);
 
-  int target_memory_to_free_kb = mem_stat_->TargetMemoryToFreeKB();
+  memory_pressure::ReclaimTarget target_memory_to_free =
+      mem_stat_->TargetMemoryToFree();
 
   MEMORY_LOG(ERROR) << "List of low memory kill candidates "
                        "(sorted from low priority to high priority):";
@@ -592,22 +594,23 @@ void TabManagerDelegate::LowMemoryKillImpl(
   const TimeTicks now = TimeTicks::Now();
 
   for (auto& candidate : base::Reversed(candidates)) {
-    MEMORY_LOG(ERROR) << "Target memory to free: " << target_memory_to_free_kb
-                      << " KB";
-    if (target_memory_to_free_kb <= 0)
+    MEMORY_LOG(ERROR) << "Target memory to free: "
+                      << target_memory_to_free.target_kb << " KB";
+    if (target_memory_to_free.target_kb <= 0) {
       break;
+    }
 
-    int freed_memory_kb =
-        ProcessCandidate(reason, now, candidate, target_memory_to_free_kb);
+    int freed_memory_kb = ProcessCandidate(reason, now, candidate,
+                                           target_memory_to_free.target_kb);
 
-    target_memory_to_free_kb -= freed_memory_kb;
+    target_memory_to_free.target_kb -= freed_memory_kb;
 
     if (freed_memory_kb > 0 && !first_kill_time) {
       first_kill_time = base::TimeTicks::Now();
     }
   }
 
-  if (target_memory_to_free_kb > 0) {
+  if (target_memory_to_free.target_kb > 0) {
     MEMORY_LOG(ERROR)
         << "Unable to kill enough candidates to meet target_memory_to_free_kb ";
   }

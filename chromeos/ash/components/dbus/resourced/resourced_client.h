@@ -8,7 +8,9 @@
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "base/process/process_handle.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "components/memory_pressure/reclaim_target.h"
 
 #include <cstdint>
 #include <vector>
@@ -42,7 +44,7 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
     ~Observer() override = default;
 
     virtual void OnMemoryPressure(PressureLevel level,
-                                  uint64_t reclaim_target_kb) = 0;
+                                  memory_pressure::ReclaimTarget target) = 0;
   };
 
   enum class PressureLevelArcVm {

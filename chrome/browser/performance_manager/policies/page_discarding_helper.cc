@@ -116,7 +116,7 @@ void PageDiscardingHelper::DiscardAPage(
 }
 
 void PageDiscardingHelper::DiscardMultiplePages(
-    absl::optional<uint64_t> reclaim_target_kb,
+    absl::optional<memory_pressure::ReclaimTarget> reclaim_target,
     bool discard_protected_tabs,
     base::OnceCallback<void(bool)> post_discard_cb,
     DiscardReason discard_reason,
@@ -124,7 +124,7 @@ void PageDiscardingHelper::DiscardMultiplePages(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   LOG(WARNING) << "Discarding multiple pages with target (kb): "
-               << (reclaim_target_kb ? *reclaim_target_kb : 0);
+               << (reclaim_target ? reclaim_target->target_kb : 0);
 
   // Ensures running post_discard_cb on early return.
   auto split_callback = base::SplitOnceCallback(std::move(post_discard_cb));
@@ -161,11 +161,11 @@ void PageDiscardingHelper::DiscardMultiplePages(
   }
   std::vector<const PageNode*> discard_attempts;
 
-  if (reclaim_target_kb == absl::nullopt) {
+  if (!reclaim_target) {
     const PageNode* oldest = candidates[0].page_node();
     discard_attempts.emplace_back(oldest);
   } else {
-    const uint64_t reclaim_target_kb_value = *reclaim_target_kb;
+    const uint64_t reclaim_target_kb_value = reclaim_target->target_kb;
     uint64_t total_reclaim_kb = 0;
     NodeRssMap page_node_rss_kb = GetPageNodeRssEstimateKb(candidates);
     for (auto& candidate : candidates) {
@@ -203,7 +203,7 @@ void PageDiscardingHelper::DiscardMultiplePages(
   page_discarder_->DiscardPageNodes(
       discard_attempts, discard_reason,
       base::BindOnce(&PageDiscardingHelper::PostDiscardAttemptCallback,
-                     weak_factory_.GetWeakPtr(), reclaim_target_kb,
+                     weak_factory_.GetWeakPtr(), reclaim_target,
                      discard_protected_tabs, std::move(split_callback.second),
                      discard_reason, minimum_time_in_background));
 }
@@ -465,7 +465,7 @@ base::Value::Dict PageDiscardingHelper::DescribePageNodeData(
 }
 
 void PageDiscardingHelper::PostDiscardAttemptCallback(
-    absl::optional<uint64_t> reclaim_target_kb,
+    absl::optional<memory_pressure::ReclaimTarget> reclaim_target,
     bool discard_protected_tabs,
     base::OnceCallback<void(bool)> post_discard_cb,
     DiscardReason discard_reason,
@@ -475,7 +475,7 @@ void PageDiscardingHelper::PostDiscardAttemptCallback(
   // early and PostDiscardAttemptCallback is not called.
   if (!success) {
     // DiscardAttemptMarker will force the retry to choose different pages.
-    DiscardMultiplePages(reclaim_target_kb, discard_protected_tabs,
+    DiscardMultiplePages(reclaim_target, discard_protected_tabs,
                          std::move(post_discard_cb), discard_reason,
                          minimum_time_in_background);
     return;

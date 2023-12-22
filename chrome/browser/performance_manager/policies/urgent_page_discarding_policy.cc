@@ -25,17 +25,17 @@ namespace performance_manager::policies {
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
-absl::optional<uint64_t> GetReclaimTargetKB() {
-  absl::optional<uint64_t> reclaim_target_kb = absl::nullopt;
+absl::optional<memory_pressure::ReclaimTarget> GetReclaimTarget() {
+  absl::optional<memory_pressure::ReclaimTarget> reclaim_target = absl::nullopt;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* evaluator = LacrosMemoryPressureEvaluator::Get();
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   auto* evaluator = ash::memory::SystemMemoryPressureEvaluator::Get();
 #endif
   if (evaluator) {
-    reclaim_target_kb = evaluator->GetCachedReclaimTargetKB();
+    reclaim_target = evaluator->GetCachedReclaimTarget();
   }
-  return reclaim_target_kb;
+  return reclaim_target;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -62,9 +62,9 @@ void UrgentPageDiscardingPolicy::OnTakenFromGraph(Graph* graph) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 void UrgentPageDiscardingPolicy::OnReclaimTarget(
-    absl::optional<uint64_t> reclaim_target_kb) {
+    absl::optional<memory_pressure::ReclaimTarget> reclaim_target) {
   PageDiscardingHelper::GetFromGraph(graph_)->DiscardMultiplePages(
-      reclaim_target_kb, true,
+      reclaim_target, true,
       base::BindOnce(
           [](UrgentPageDiscardingPolicy* policy, bool success_unused) {
             DCHECK(policy->handling_memory_pressure_notification_);
@@ -103,7 +103,7 @@ void UrgentPageDiscardingPolicy::OnMemoryPressure(
   // leave critical memory pressure. When Chrome OS is under heavy memory
   // pressure, discards multiple tabs to meet the memory reclaim target.
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(GetReclaimTargetKB),
+      FROM_HERE, base::BindOnce(GetReclaimTarget),
       base::BindOnce(&UrgentPageDiscardingPolicy::OnReclaimTarget,
                      base::Unretained(this)));
 #else

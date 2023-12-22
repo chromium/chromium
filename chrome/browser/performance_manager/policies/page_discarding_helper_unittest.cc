@@ -454,7 +454,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoCandidate) {
 
   // When discard_protected_tabs is false, protected page can not be discarded.
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target_kb*/ 1024,
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1024),
       /*discard_protected_tabs*/ false,
       base::BindOnce([](bool success) { EXPECT_FALSE(success); }),
       DiscardReason::URGENT);
@@ -469,7 +469,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesDiscardProtected) {
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target_kb*/ 1024,
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1024),
       /*discard_protected_tabs*/ true,
       base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
       DiscardReason::URGENT);
@@ -495,7 +495,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidates) {
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target_kb*/ 2048,
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 2048),
       /*discard_protected_tabs*/ true,
       base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
       DiscardReason::URGENT);
@@ -523,7 +523,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesProtected) {
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target_kb*/ 1000000,
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1000000),
       /*discard_protected_tabs*/ false,
       base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
       DiscardReason::URGENT);
@@ -565,7 +565,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesThreeCandidates) {
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target_kb*/ 1500,
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1500),
       /*discard_protected_tabs*/ true,
       base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
       DiscardReason::URGENT);
@@ -613,7 +613,7 @@ TEST_F(PageDiscardingHelperTest,
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target_kb*/ 1500,
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1500),
       /*discard_protected_tabs*/ true,
       base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
       DiscardReason::URGENT);
@@ -639,7 +639,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoDiscardable) {
       .WillOnce(Return(false));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target_kb*/ 10240,
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 10240),
       /*discard_protected_tabs*/ true,
       base::BindOnce([](bool success) { EXPECT_FALSE(success); }),
       DiscardReason::URGENT);
@@ -816,7 +816,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesNoRSSData) {
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target_kb*/ absl::nullopt,
+      /*reclaim_target*/ absl::nullopt,
       /*discard_protected_tabs*/ true,
       base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
       DiscardReason::URGENT);

@@ -28,7 +28,7 @@ class ResourceManagerAsh : public mojom::ResourceManager,
 
   // ash::ResourcedClient::Observer:
   void OnMemoryPressure(ash::ResourcedClient::PressureLevel level,
-                        uint64_t reclaim_target_kb) override;
+                        memory_pressure::ReclaimTarget target) override;
 
   // crosapi::mojom::ResourceManager:
   void AddMemoryPressureObserver(

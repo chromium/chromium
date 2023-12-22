@@ -29,11 +29,12 @@ void ResourceManagerAsh::BindReceiver(
 
 void ResourceManagerAsh::OnMemoryPressure(
     ash::ResourcedClient::PressureLevel level,
-    uint64_t reclaim_target_kb) {
+    memory_pressure::ReclaimTarget target) {
   for (auto& observer : observers_) {
     mojom::MemoryPressurePtr pressure = mojom::MemoryPressure::New();
     pressure->level = static_cast<mojom::MemoryPressureLevel>(level);
-    pressure->reclaim_target_kb = reclaim_target_kb;
+    pressure->reclaim_target_kb = target.target_kb;
+    pressure->signal_origin = target.origin_time;
     observer->MemoryPressure(std::move(pressure));
   }
 }

@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
+#include "components/memory_pressure/reclaim_target.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -131,12 +132,13 @@ class PageDiscardingHelper : public GraphOwned,
   // kProtected) can also be discarded.
   // `minimum_time_in_background` is passed to `CanDiscard()`, see the comment
   // there about its usage.
-  void DiscardMultiplePages(absl::optional<uint64_t> reclaim_target_kb,
-                            bool discard_protected_tabs,
-                            base::OnceCallback<void(bool)> post_discard_cb,
-                            DiscardReason discard_reason,
-                            base::TimeDelta minimum_time_in_background =
-                                kNonVisiblePagesUrgentProtectionTime);
+  void DiscardMultiplePages(
+      absl::optional<memory_pressure::ReclaimTarget> reclaim_target,
+      bool discard_protected_tabs,
+      base::OnceCallback<void(bool)> post_discard_cb,
+      DiscardReason discard_reason,
+      base::TimeDelta minimum_time_in_background =
+          kNonVisiblePagesUrgentProtectionTime);
 
   void ImmediatelyDiscardSpecificPage(
       const PageNode* page_node,
@@ -184,7 +186,7 @@ class PageDiscardingHelper : public GraphOwned,
   // there's been at least one successful discard or if there's no more discard
   // candidates.
   void PostDiscardAttemptCallback(
-      absl::optional<uint64_t> reclaim_target_kb,
+      absl::optional<memory_pressure::ReclaimTarget> reclaim_target,
       bool discard_protected_tabs,
       base::OnceCallback<void(bool)> post_discard_cb,
       DiscardReason discard_reason,

@@ -494,7 +494,7 @@ void ArcAppQueueRestoreHandler::PrepareAppLaunching(const std::string& app_id) {
 
 void ArcAppQueueRestoreHandler::OnMemoryPressure(
     ResourcedClient::PressureLevel level,
-    uint64_t reclaim_target_kb) {
+    memory_pressure::ReclaimTarget) {
   pressure_level_ = level;
 }
 
