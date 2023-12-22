@@ -291,9 +291,9 @@ void EncodeFormFieldsForUpload(const FormStructure& form,
 }
 
 void EncodeFormForQuery(const autofill::FormStructure& form,
-                        AutofillPageQueryRequest* query,
-                        std::vector<FormSignature>* queried_form_signatures,
-                        std::set<FormSignature>* processed_forms) {
+                        AutofillPageQueryRequest& query,
+                        std::vector<FormSignature>& queried_form_signatures,
+                        std::set<FormSignature>& processed_forms) {
   DCHECK(!IsMalformed(form));
   // Adds a request to |query| that contains all (|form|, |field|) for every
   // |field| from |fields_| that meets |necessary_condition|. Repeated calls for
@@ -303,14 +303,14 @@ void EncodeFormForQuery(const autofill::FormStructure& form,
       [&](const std::vector<std::unique_ptr<AutofillField>>& fields,
           FormSignature form, FormSignature alternative_signature,
           auto necessary_condition) mutable {
-        if (!processed_forms->insert(form).second) {
+        if (!processed_forms.insert(form).second) {
           return;
         }
 
-        AutofillPageQueryRequest::Form* query_form = query->add_forms();
+        AutofillPageQueryRequest::Form* query_form = query.add_forms();
         query_form->set_signature(form.value());
         query_form->set_alternative_signature(alternative_signature.value());
-        queried_form_signatures->push_back(form);
+        queried_form_signatures.push_back(form);
 
         for (const auto& field : fields) {
           if (IsCheckable(field->check_status) || !necessary_condition(field)) {
@@ -447,15 +447,14 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   return uploads;
 }
 
-bool EncodeAutofillPageQueryRequest(
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
-    AutofillPageQueryRequest* query,
-    std::vector<FormSignature>* queried_form_signatures) {
-  DCHECK(queried_form_signatures);
-  queried_form_signatures->clear();
-  queried_form_signatures->reserve(forms.size());
+std::pair<AutofillPageQueryRequest, std::vector<FormSignature>>
+EncodeAutofillPageQueryRequest(
+    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
+  AutofillPageQueryRequest query;
+  std::vector<FormSignature> queried_form_signatures;
+  queried_form_signatures.reserve(forms.size());
 
-  query->set_client_version(
+  query.set_client_version(
       std::string(version_info::GetProductNameAndVersionForUserAgent()));
 
   // If a page contains repeated forms, detect that and encode only one form as
@@ -475,10 +474,10 @@ bool EncodeAutofillPageQueryRequest(
       continue;
     }
 
-    EncodeFormForQuery(*form, query, queried_form_signatures, &processed_forms);
+    EncodeFormForQuery(*form, query, queried_form_signatures, processed_forms);
   }
 
-  return !queried_form_signatures->empty();
+  return std::make_pair(std::move(query), std::move(queried_form_signatures));
 }
 
 }  // namespace autofill

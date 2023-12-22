@@ -2097,10 +2097,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
     query_form->add_fields()->set_signature(2226358947U);
   }
 
-  AutofillPageQueryRequest encoded_query;
-  std::vector<FormSignature> encoded_signatures;
-  ASSERT_TRUE(EncodeAutofillPageQueryRequest(forms, &encoded_query,
-                                             &encoded_signatures));
+  auto [encoded_query, encoded_signatures] =
+      EncodeAutofillPageQueryRequest(forms);
   EXPECT_EQ(encoded_signatures, expected_signatures);
   EXPECT_THAT(encoded_query, SerializesSameAs(query));
 
@@ -2110,11 +2108,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   forms.push_back(&form_structure2);
 
   std::vector<FormSignature> expected_signatures2 = expected_signatures;
-
-  AutofillPageQueryRequest encoded_query2;
-  std::vector<FormSignature> encoded_signatures2;
-  ASSERT_TRUE(EncodeAutofillPageQueryRequest(forms, &encoded_query2,
-                                             &encoded_signatures2));
+  auto [encoded_query2, encoded_signatures2] =
+      EncodeAutofillPageQueryRequest(forms);
   EXPECT_EQ(encoded_signatures2, expected_signatures2);
   EXPECT_THAT(encoded_query2, SerializesSameAs(query));
 
@@ -2155,10 +2150,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
     }
   }
 
-  AutofillPageQueryRequest encoded_query3;
-  std::vector<FormSignature> encoded_signatures3;
-  ASSERT_TRUE(EncodeAutofillPageQueryRequest(forms, &encoded_query3,
-                                             &encoded_signatures3));
+  auto [encoded_query3, encoded_signatures3] =
+      EncodeAutofillPageQueryRequest(forms);
   EXPECT_EQ(encoded_signatures3, expected_signatures3);
   EXPECT_THAT(encoded_query3, SerializesSameAs(query));
 
@@ -2170,10 +2163,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
 
   std::vector<FormSignature> expected_signatures4 = expected_signatures3;
 
-  AutofillPageQueryRequest encoded_query4;
-  std::vector<FormSignature> encoded_signatures4;
-  ASSERT_TRUE(EncodeAutofillPageQueryRequest(forms, &encoded_query4,
-                                             &encoded_signatures4));
+  auto [encoded_query4, encoded_signatures4] =
+      EncodeAutofillPageQueryRequest(forms);
   EXPECT_EQ(encoded_signatures4, expected_signatures4);
   EXPECT_THAT(encoded_query4, SerializesSameAs(query));
 
@@ -2192,20 +2183,17 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
 
   std::vector<FormSignature> expected_signatures5 = expected_signatures4;
 
-  AutofillPageQueryRequest encoded_query5;
-  std::vector<FormSignature> encoded_signatures5;
-  ASSERT_TRUE(EncodeAutofillPageQueryRequest(forms, &encoded_query5,
-                                             &encoded_signatures5));
+  auto [encoded_query5, encoded_signatures5] =
+      EncodeAutofillPageQueryRequest(forms);
   EXPECT_EQ(encoded_signatures5, expected_signatures5);
   EXPECT_THAT(encoded_query5, SerializesSameAs(query));
 
   // Check that we fail if there are only bad form(s).
   std::vector<raw_ptr<FormStructure, VectorExperimental>> bad_forms;
   bad_forms.push_back(&malformed_form_structure);
-  AutofillPageQueryRequest encoded_query6;
-  std::vector<FormSignature> encoded_signatures6;
-  EXPECT_FALSE(EncodeAutofillPageQueryRequest(bad_forms, &encoded_query6,
-                                              &encoded_signatures6));
+  auto [encoded_query6, encoded_signatures6] =
+      EncodeAutofillPageQueryRequest(bad_forms);
+  EXPECT_TRUE(encoded_signatures6.empty());
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, SkipFieldTest) {
@@ -2238,8 +2226,6 @@ TEST_F(AutofillCrowdsourcingEncoding, SkipFieldTest) {
   FormStructure form_structure(form);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
   forms.push_back(&form_structure);
-  std::vector<FormSignature> encoded_signatures;
-  AutofillPageQueryRequest encoded_query;
 
   // Create the expected query and serialize it to a string.
   AutofillPageQueryRequest query;
@@ -2254,8 +2240,8 @@ TEST_F(AutofillCrowdsourcingEncoding, SkipFieldTest) {
 
   const FormSignature kExpectedSignature(18006745212084723782UL);
 
-  ASSERT_TRUE(EncodeAutofillPageQueryRequest(forms, &encoded_query,
-                                             &encoded_signatures));
+  auto [encoded_query, encoded_signatures] =
+      EncodeAutofillPageQueryRequest(forms);
   ASSERT_EQ(1U, encoded_signatures.size());
   EXPECT_EQ(kExpectedSignature, encoded_signatures.front());
   EXPECT_THAT(encoded_query, SerializesSameAs(query));
@@ -2290,8 +2276,6 @@ TEST_F(AutofillCrowdsourcingEncoding,
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
   FormStructure form_structure(form);
   forms.push_back(&form_structure);
-  std::vector<FormSignature> encoded_signatures;
-  AutofillPageQueryRequest encoded_query;
 
   // Create the expected query and serialize it to a string.
   AutofillPageQueryRequest query;
@@ -2305,8 +2289,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
   query_form->add_fields()->set_signature(420638584U);
   query_form->add_fields()->set_signature(2051817934U);
 
-  EXPECT_TRUE(EncodeAutofillPageQueryRequest(forms, &encoded_query,
-                                             &encoded_signatures));
+  auto [encoded_query, encoded_signatures] =
+      EncodeAutofillPageQueryRequest(forms);
+  ASSERT_TRUE(!encoded_signatures.empty());
   EXPECT_THAT(encoded_query, SerializesSameAs(query));
 }
 
@@ -2344,8 +2329,6 @@ TEST_F(AutofillCrowdsourcingEncoding,
   FormStructure form_structure(form);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
   forms.push_back(&form_structure);
-  std::vector<FormSignature> encoded_signatures;
-  AutofillPageQueryRequest encoded_query;
 
   // Create the expected query and serialize it to a string.
   AutofillPageQueryRequest query;
@@ -2359,8 +2342,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
   query_form->add_fields()->set_signature(420638584U);
   query_form->add_fields()->set_signature(2051817934U);
 
-  EXPECT_TRUE(EncodeAutofillPageQueryRequest(forms, &encoded_query,
-                                             &encoded_signatures));
+  auto [encoded_query, encoded_signatures] =
+      EncodeAutofillPageQueryRequest(forms);
+  ASSERT_TRUE(!encoded_signatures.empty());
   EXPECT_THAT(encoded_query, SerializesSameAs(query));
 }
 
@@ -2394,8 +2378,6 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
   forms.push_back(&form_structure);
-  std::vector<FormSignature> encoded_signatures;
-  AutofillPageQueryRequest encoded_query;
 
   // Create the expected query and serialize it to a string.
   AutofillPageQueryRequest query;
@@ -2409,9 +2391,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
   query_form->add_fields()->set_signature(1318412689U);
 
   const FormSignature kExpectedSignature(16416961345885087496UL);
-
-  ASSERT_TRUE(EncodeAutofillPageQueryRequest(forms, &encoded_query,
-                                             &encoded_signatures));
+  auto [encoded_query, encoded_signatures] =
+      EncodeAutofillPageQueryRequest(forms);
   ASSERT_EQ(1U, encoded_signatures.size());
   EXPECT_EQ(kExpectedSignature, encoded_signatures.front());
   EXPECT_THAT(encoded_query, SerializesSameAs(query));
@@ -2433,11 +2414,8 @@ TEST_F(AutofillCrowdsourcingEncoding, AllowBigForms) {
 
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
   forms.push_back(&form_structure);
-  std::vector<FormSignature> encoded_signatures;
-
-  AutofillPageQueryRequest encoded_query;
-  ASSERT_TRUE(EncodeAutofillPageQueryRequest(forms, &encoded_query,
-                                             &encoded_signatures));
+  auto [encoded_query, encoded_signatures] =
+      EncodeAutofillPageQueryRequest(forms);
   EXPECT_EQ(1u, encoded_signatures.size());
 }
 
