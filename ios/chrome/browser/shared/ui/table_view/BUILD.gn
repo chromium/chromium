@@ -4,6 +4,8 @@
 
 source_set("table_view") {
   sources = [
+    "chrome_table_view_controller.h",
+    "chrome_table_view_controller.mm",
     "legacy_chrome_table_view_consumer.h",
     "legacy_chrome_table_view_controller.h",
     "legacy_chrome_table_view_controller.mm",

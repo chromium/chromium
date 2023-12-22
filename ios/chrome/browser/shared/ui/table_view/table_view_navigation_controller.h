@@ -7,13 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-@class LegacyChromeTableViewController;
-
-// TableViewNavigationController encapsulates a LegacyChromeTableViewController
-// inside a UINavigationController.
+// TableViewNavigationController encapsulates a UIViewController inside a
+// UINavigationController with a styling used for TableViews.
 @interface TableViewNavigationController : UINavigationController
 
-- (instancetype)initWithTable:(LegacyChromeTableViewController*)table
+- (instancetype)initWithTable:(UIViewController*)table
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithRootViewController:(UIViewController*)rootViewController
     NS_UNAVAILABLE;
