@@ -30,7 +30,6 @@ bool HasPageActionVisibilityReachedTarget(
 }
 
 bool HaveAllExtensionRenderFrameHostsFinishedLoading(ProcessManager* manager) {
-  ProcessManager::FrameSet all_views = manager->GetAllFrames();
   for (content::RenderFrameHost* host : manager->GetAllFrames()) {
     if (content::WebContents::FromRenderFrameHost(host)->IsLoading())
       return false;
