@@ -23,6 +23,22 @@ std::ostream& operator<<(std::ostream& o, const {{enum.type_name}} v) {
   return o;
 }
 
+{% elif enum.set_type == 'multi' %}
+std::ostream& operator<<(std::ostream& o, const {{enum.type_name}} v) {
+  {% for value in enum.values %}
+  {% if loop.first %}
+  if (v == {{enum.type_name}}::{{value}}) {
+    return o << "{{enum.keywords[loop.index0]}}";
+  }
+  {% else %}
+  if ((v & {{enum.type_name}}::{{value}}) == {{enum.type_name}}::{{value}}) {
+    o << "{{enum.keywords[loop.index0]}} ";
+  }
+  {% endif %}
+  {% endfor %}
+  return o;
+}
+
 {% endif %}
 {% endfor %}
 #endif

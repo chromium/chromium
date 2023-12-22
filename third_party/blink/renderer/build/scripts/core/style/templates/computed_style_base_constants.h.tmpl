@@ -56,7 +56,7 @@ inline {{enum.type_name}} operator~({{enum.type_name}} x) {
 
 #if DCHECK_IS_ON()
 {% for enum in enums %}
-{% if not enum.set_type %}
+{% if not enum.set_type or enum.set_type == 'multi' %}
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const {{enum.type_name}});
 {% endif %}
 {% endfor %}
