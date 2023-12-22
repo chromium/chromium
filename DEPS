@@ -3956,6 +3956,12 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
+  'src/components/plus_addresses/resources/internal': {
+      'url': Var('chrome_git') + '/chrome/components/plus_addresses/resources.git' + '@' +
+        '8babd9da0911bfc8afe09c49358d10be85a2558e',
+      'condition': 'checkout_src_internal',
+  },
+
   'src/components/resources/default_100_percent/google_chrome': {
       'url': Var('chrome_git') + '/chrome/components/default_100_percent/google_chrome.git' + '@' +
         '69df46289768ecced37b6c82f067c0c5f484b691',

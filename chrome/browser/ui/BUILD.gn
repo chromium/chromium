@@ -695,6 +695,10 @@ static_library("ui") {
     "//v8:v8_version",
   ]
 
+  if (is_chrome_branded) {
+    deps += [ "//components/plus_addresses/resources:vector_icons" ]
+  }
+
   # TODO(crbug.com/925153): Remove this circular dependency.
   allow_circular_includes_from = [
     # TODO(crbug.com/1158905): Remove this circular dependency.
