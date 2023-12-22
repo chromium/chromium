@@ -141090,6 +141090,19 @@
         {}
        ]
       ],
+      "grid-gap-012.html": [
+       "02d9a0e80115439f3ecf36e881ad9a325cdc7b50",
+       [
+        null,
+        [
+         [
+          "/css/css-grid/subgrid/grid-gap-012-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "grid-gap-larger-001.html": [
        "85725d52925b898f562329256cf60ea24486f517",
        [
@@ -273364,6 +273377,19 @@
          {}
         ]
        ],
+       "input-type-button-clip.html": [
+        "db1ad35cce5b8830cba06e19b3b6d5dbcfc7c005",
+        [
+         null,
+         [
+          [
+           "/html/rendering/widgets/button-layout/input-type-button-clip-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "input-type-button-newline-2.html": [
         "6e21c9e98e5514bc7ebe8a650c83f3e770defce4",
         [
@@ -321662,6 +321688,10 @@
        "23bcdfaa5ae3dd0b3a76d2b208b965a8ba4254ce",
        []
       ],
+      "grid-gap-012-ref.html": [
+       "347fc79098747a213cf1a2bdbc230ac39a1246b3",
+       []
+      ],
       "grid-gap-larger-001-ref.html": [
        "0d3050f568bd0c7ce6ee295335b17bd7e29a3c5d",
        []
@@ -367114,7 +367144,7 @@
         []
        ],
        "computed-style-expected.txt": [
-        "d7a2575bac9b30ca05383b33b139bcd75b5c558c",
+        "ba78f3f8fa33e909b62fc07fd0ba8d8d0360a59e",
         []
        ],
        "display-other-expected.txt": [
@@ -367123,6 +367153,10 @@
        ],
        "inline-level-ref.html": [
         "3784cc30dbee61cae594c92e59883c18142336ba",
+        []
+       ],
+       "input-type-button-clip-ref.html": [
+        "8f956d36f56b4f18f8f3c94959b802a72442454d",
         []
        ],
        "input-type-button-newline-2-mismatch.html": [
@@ -374861,6 +374895,10 @@
      ],
      "interacted_window.html": [
       "708cb9a84b5a28e4a3e586b9f05264907c2efb9c",
+      []
+     ],
+     "set_get_window_rect-expected.txt": [
+      "33d33e9dbf52550031030eb8ec95ed6a96c53457",
       []
      ]
     },
@@ -384105,7 +384143,7 @@
      []
     ],
     "testdriver.js": [
-     "70c799167f9eb2c887695ef42b47363a9b4fe284",
+     "20140b2fc0a0b7c5bb32089b4e8283ffbb6e2a01",
      []
     ],
     "testdriver.js.headers": [
@@ -395917,11 +395955,11 @@
      []
     ],
     "expand.https.any-expected.txt": [
-     "eecb000ba8324a93fef5185c1cb37bda704916fe",
+     "42b5354d80c95871e290363c7842e8eae46c76f5",
      []
     ],
     "expand.https.any.worker-expected.txt": [
-     "eecb000ba8324a93fef5185c1cb37bda704916fe",
+     "27de098a173b66d87595c2fdbbe2d7cb3612eb05",
      []
     ],
     "gemm.https.any-expected.txt": [
@@ -396080,6 +396118,10 @@
       ],
       "exp.json": [
        "8a86edec3b8e5ed460ca8d00242d97e5f110a35f",
+       []
+      ],
+      "expand.json": [
+       "be56ca14890db4b002efa72b57d92111e6c6befd",
        []
       ],
       "floor.json": [
@@ -396273,6 +396315,10 @@
       "transpose.json": [
        "03092031d9c407fe0df1009dc49b3aa138d3de38",
        []
+      ],
+      "where.json": [
+       "ce3cda4bad3a079558c2e15a3272670cc01af0f2",
+       []
       ]
      },
      "utils.js": [
@@ -396329,11 +396375,11 @@
      []
     ],
     "where.https.any-expected.txt": [
-     "056d0296554963f8ccefbb5ebf7b6b475966c3a2",
+     "029df46e089e3f397eb41d9603f1e59139b6e519",
      []
     ],
     "where.https.any.worker-expected.txt": [
-     "056d0296554963f8ccefbb5ebf7b6b475966c3a2",
+     "665faace5aa608f52ded60a74701b447a6cd0a61",
      []
     ]
    },
@@ -470737,7 +470783,7 @@
       ]
      ],
      "cssstyledeclaration-csstext-all-shorthand.html": [
-      "6619538cf109e0fed0a15ba37eddba72e708abdd",
+      "3b408f4cd6740e37451d2cd2a3669fb107427ae8",
       [
        null,
        {}
@@ -561820,7 +561866,7 @@
       ],
       "button-layout": {
        "computed-style.html": [
-        "764e0844069af07dd7c3b454e4dc94eed4c0551f",
+        "d18e5d365d824e9c8f3a8a82b8241f7a60981913",
         [
          null,
          {}
@@ -582910,6 +582956,15 @@
      ],
      "send_keys.html": [
       "71ca4405f48dae89c820775a10f1d000866380d8",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "set_get_window_rect.html": [
+      "e5e243b6808c9ee41d7c796976c23655fda218b2",
       [
        null,
        {

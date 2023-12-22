@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 82 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] computed display of <input type=reset> with display: inline
   assert_equals: expected "inline" but got "inline-block"
 [FAIL] computed display of <input type=button> with display: inline
@@ -128,6 +128,8 @@ Found 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: display: ruby-base is not supported got disallowed value ""
 [FAIL] computed display of <input type=color> with display: ruby-base
   assert_not_equals: display: ruby-base is not supported got disallowed value ""
+[FAIL] computed display of <input type=image> with display: ruby-base
+  assert_not_equals: display: ruby-base is not supported got disallowed value ""
 [FAIL] computed display of <button type=submit> with display: ruby-base
   assert_not_equals: display: ruby-base is not supported got disallowed value ""
 [FAIL] computed display of <input type=reset> with display: ruby-base-container
@@ -137,6 +139,8 @@ Found 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] computed display of <input type=submit> with display: ruby-base-container
   assert_not_equals: display: ruby-base-container is not supported got disallowed value ""
 [FAIL] computed display of <input type=color> with display: ruby-base-container
+  assert_not_equals: display: ruby-base-container is not supported got disallowed value ""
+[FAIL] computed display of <input type=image> with display: ruby-base-container
   assert_not_equals: display: ruby-base-container is not supported got disallowed value ""
 [FAIL] computed display of <button type=submit> with display: ruby-base-container
   assert_not_equals: display: ruby-base-container is not supported got disallowed value ""
@@ -148,7 +152,17 @@ Found 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: display: ruby-text-container is not supported got disallowed value ""
 [FAIL] computed display of <input type=color> with display: ruby-text-container
   assert_not_equals: display: ruby-text-container is not supported got disallowed value ""
+[FAIL] computed display of <input type=image> with display: ruby-text-container
+  assert_not_equals: display: ruby-text-container is not supported got disallowed value ""
 [FAIL] computed display of <button type=submit> with display: ruby-text-container
   assert_not_equals: display: ruby-text-container is not supported got disallowed value ""
+[FAIL] <input type=reset> overflow/overflow-clip-margin
+  assert_equals: Should be clip by default expected "clip" but got "visible"
+[FAIL] <input type=button> overflow/overflow-clip-margin
+  assert_equals: Should be clip by default expected "clip" but got "visible"
+[FAIL] <input type=submit> overflow/overflow-clip-margin
+  assert_equals: Should be clip by default expected "clip" but got "visible"
+[FAIL] <input type=color> overflow/overflow-clip-margin
+  assert_equals: Should be clip by default expected "clip" but got "visible"
 Harness: the test ran to completion.
 
