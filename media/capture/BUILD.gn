@@ -548,6 +548,7 @@ test("capture_unittests") {
     ]
     deps += [
       "//build/config/linux/libdrm",
+      "//chromeos/ash/components/mojo_service_manager",
       "//media/capture/video/chromeos/mojom:cros_camera",
       "//media/capture/video/chromeos/public",
       "//mojo/core/embedder",
