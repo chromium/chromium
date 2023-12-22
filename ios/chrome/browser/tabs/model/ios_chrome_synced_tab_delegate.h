@@ -23,13 +23,17 @@ class IOSChromeSyncedTabDelegate
   IOSChromeSyncedTabDelegate& operator=(const IOSChromeSyncedTabDelegate&) =
       delete;
 
+  // Resets the cached last_active_time value, allowing the next call to
+  // GetLastActiveTime() to return the actual value.
+  void ResetCachedLastActiveTime();
+
   ~IOSChromeSyncedTabDelegate() override;
 
   // SyncedTabDelegate:
   SessionID GetWindowId() const override;
   SessionID GetSessionId() const override;
   bool IsBeingDestroyed() const override;
-  base::Time GetLastActiveTime() const override;
+  base::Time GetLastActiveTime() override;
   std::string GetExtensionAppId() const override;
   bool IsInitialBlankNavigation() const override;
   int GetCurrentEntryIndex() const override;
@@ -69,6 +73,10 @@ class IOSChromeSyncedTabDelegate
   // The session storage for the WebState. Used only when the support for
   // placeholder tabs is not enabled. Invalid to use otherwise.
   mutable CRWSessionStorage* session_storage_;
+
+  // Cached value of last_active_time, sometimes returned instead of the
+  // last_active_time from the WebState.
+  std::optional<base::Time> cached_last_active_time_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

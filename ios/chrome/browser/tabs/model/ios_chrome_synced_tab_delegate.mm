@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "components/sessions/ios/ios_serialized_navigation_builder.h"
+#import "components/sync/base/features.h"
 #import "components/sync_sessions/sync_sessions_client.h"
 #import "components/sync_sessions/synced_window_delegates_getter.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
@@ -60,6 +61,10 @@ IOSChromeSyncedTabDelegate::IOSChromeSyncedTabDelegate(web::WebState* web_state)
 
 IOSChromeSyncedTabDelegate::~IOSChromeSyncedTabDelegate() {}
 
+void IOSChromeSyncedTabDelegate::ResetCachedLastActiveTime() {
+  cached_last_active_time_.reset();
+}
+
 SessionID IOSChromeSyncedTabDelegate::GetWindowId() const {
   return IOSChromeSessionTabHelper::FromWebState(web_state_)->window_id();
 }
@@ -72,8 +77,17 @@ bool IOSChromeSyncedTabDelegate::IsBeingDestroyed() const {
   return web_state_->IsBeingDestroyed();
 }
 
-base::Time IOSChromeSyncedTabDelegate::GetLastActiveTime() const {
-  return web_state_->GetLastActiveTime();
+base::Time IOSChromeSyncedTabDelegate::GetLastActiveTime() {
+  base::Time last_active_time = web_state_->GetLastActiveTime();
+  if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
+    if (cached_last_active_time_.has_value() &&
+        last_active_time - cached_last_active_time_.value() <
+            syncer::kSyncSessionOnVisibilityChangedTimeThreshold.Get()) {
+      return cached_last_active_time_.value();
+    }
+    cached_last_active_time_ = last_active_time;
+  }
+  return last_active_time;
 }
 
 std::string IOSChromeSyncedTabDelegate::GetExtensionAppId() const {

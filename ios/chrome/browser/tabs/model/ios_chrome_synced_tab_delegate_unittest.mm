@@ -6,6 +6,8 @@
 
 #import <memory>
 
+#import "base/test/scoped_feature_list.h"
+#import "components/sync/base/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -32,6 +34,74 @@ TEST_F(IOSChromeSyncedTabDelegateTest, ShouldHandleNullItem) {
       IOSChromeSyncedTabDelegate::FromWebState(&web_state);
 
   EXPECT_EQ(GURL(), tab_delegate->GetVirtualURLAtIndex(0));
+}
+
+// Tests that GetLastActiveTime() is returning the cached value if less time
+// than a threshold has passed, and is returning the WebState last active time
+// if more time has passed.
+TEST_F(IOSChromeSyncedTabDelegateTest, CachedLastActiveTime) {
+  base::TimeDelta threshold = base::Minutes(3);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{syncer::kSyncSessionOnVisibilityChanged,
+        {{"SyncSessionOnVisibilityChangedTimeThreshold",
+          base::NumberToString(threshold.InMinutes()) + "m"}}}},
+      /*disabled_features=*/{});
+
+  web::FakeWebState web_state;
+  IOSChromeSyncedTabDelegate::CreateForWebState(&web_state);
+
+  IOSChromeSyncedTabDelegate* tab_delegate =
+      IOSChromeSyncedTabDelegate::FromWebState(&web_state);
+
+  base::Time original_time = base::Time::Now();
+  web_state.SetLastActiveTime(original_time);
+
+  EXPECT_EQ(original_time, tab_delegate->GetLastActiveTime());
+
+  // If not enough time has passed, the cached time should be returned.
+  base::Time before_threshold = original_time + threshold - base::Minutes(1);
+  web_state.SetLastActiveTime(before_threshold);
+  EXPECT_EQ(original_time, tab_delegate->GetLastActiveTime());
+
+  // After the threshold has passed, the new value should be returned.
+  base::Time after_threshold = original_time + threshold + base::Minutes(1);
+  web_state.SetLastActiveTime(after_threshold);
+  EXPECT_EQ(after_threshold, tab_delegate->GetLastActiveTime());
+}
+
+// Tests that the resetting the cached value of last_active_time allows to
+// return the value from the WebState even if less time than the threshold has
+// passed.
+TEST_F(IOSChromeSyncedTabDelegateTest, ResetCachedLastActiveTime) {
+  base::TimeDelta threshold = base::Minutes(3);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{syncer::kSyncSessionOnVisibilityChanged,
+        {{"SyncSessionOnVisibilityChangedTimeThreshold",
+          base::NumberToString(threshold.InMinutes()) + "m"}}}},
+      /*disabled_features=*/{});
+
+  web::FakeWebState web_state;
+  IOSChromeSyncedTabDelegate::CreateForWebState(&web_state);
+
+  IOSChromeSyncedTabDelegate* tab_delegate =
+      IOSChromeSyncedTabDelegate::FromWebState(&web_state);
+
+  base::Time original_time = base::Time::Now();
+  web_state.SetLastActiveTime(original_time);
+
+  EXPECT_EQ(original_time, tab_delegate->GetLastActiveTime());
+
+  tab_delegate->ResetCachedLastActiveTime();
+
+  // Even if the threshold is not passed, the cached value has been reset so the
+  // new time should be returned.
+  base::Time before_threshold = original_time + threshold - base::Minutes(1);
+  web_state.SetLastActiveTime(before_threshold);
+  EXPECT_EQ(before_threshold, tab_delegate->GetLastActiveTime());
 }
 
 }  // namespace
