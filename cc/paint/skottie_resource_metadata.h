@@ -5,12 +5,12 @@
 #ifndef CC_PAINT_SKOTTIE_RESOURCE_METADATA_H_
 #define CC_PAINT_SKOTTIE_RESOURCE_METADATA_H_
 
-#include <string>
-
 #include <optional>
+#include <string>
+#include <string_view>
+
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "base/types/id_type.h"
 #include "cc/paint/paint_export.h"
 #include "ui/gfx/geometry/size.h"
@@ -43,9 +43,9 @@ class CC_PAINT_EXPORT SkottieResourceMetadataMap {
   // Adds a new asset to the map. Returns true on success; false if an asset
   // with the provided |resource_id| already exists or if the |resource_id| is
   // invalid.
-  bool RegisterAsset(base::StringPiece resource_path,
-                     base::StringPiece resource_name,
-                     base::StringPiece resource_id,
+  bool RegisterAsset(std::string_view resource_path,
+                     std::string_view resource_name,
+                     std::string_view resource_id,
                      std::optional<gfx::Size> size);
 
   const Storage& asset_storage() const { return asset_storage_; }
@@ -59,7 +59,7 @@ class CC_PAINT_EXPORT SkottieResourceMetadataMap {
 using SkottieResourceIdHash =
     base::IdType<SkottieResourceMetadataMap, size_t, 0>;
 SkottieResourceIdHash CC_PAINT_EXPORT
-HashSkottieResourceId(base::StringPiece resource_id);
+HashSkottieResourceId(std::string_view resource_id);
 
 }  // namespace cc
 

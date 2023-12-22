@@ -4,14 +4,14 @@
 
 #include "cc/paint/skottie_mru_resource_provider.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
-#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/skottie_resource_metadata.h"
 #include "cc/test/lottie_test_data.h"
@@ -38,7 +38,7 @@ class FrameDataStub {
  public:
   using FrameData = skresources::ImageAsset::FrameData;
 
-  void SetAssetFrameData(base::StringPiece asset_id,
+  void SetAssetFrameData(std::string_view asset_id,
                          FrameData current_frame_data) {
     asset_to_frame_data_[HashSkottieResourceId(asset_id)] =
         std::move(current_frame_data);
@@ -46,7 +46,7 @@ class FrameDataStub {
         SkottieWrapper::FrameDataFetchResult::kNewDataAvailable;
   }
 
-  void SetAssetResult(base::StringPiece asset_id,
+  void SetAssetResult(std::string_view asset_id,
                       SkottieWrapper::FrameDataFetchResult current_result) {
     asset_to_result_[HashSkottieResourceId(asset_id)] = current_result;
   }
@@ -73,7 +73,7 @@ class FrameDataStub {
 
 class SkottieMRUResourceProviderTest : public ::testing::Test {
  protected:
-  void Init(base::StringPiece animation_json) {
+  void Init(std::string_view animation_json) {
     provider_ = sk_make_sp<SkottieMRUResourceProvider>(
         base::BindRepeating(&FrameDataStub::GetFrameDataForAsset,
                             base::Unretained(&frame_data_stub_)),

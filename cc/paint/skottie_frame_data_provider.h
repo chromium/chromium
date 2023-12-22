@@ -6,10 +6,11 @@
 #define CC_PAINT_SKOTTIE_FRAME_DATA_PROVIDER_H_
 
 #include <optional>
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "ui/gfx/geometry/size.h"
@@ -64,7 +65,7 @@ class CC_PAINT_EXPORT SkottieFrameDataProvider {
   // their images if desired. May be null if the asset didn't have dimensions
   // specified in the Lottie file.
   virtual scoped_refptr<ImageAsset> LoadImageAsset(
-      base::StringPiece resource_id,
+      std::string_view resource_id,
       const base::FilePath& resource_path,
       const std::optional<gfx::Size>& size) = 0;
 };

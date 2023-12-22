@@ -8,6 +8,7 @@
 
 #include <limits>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/base64.h"
@@ -28,7 +29,7 @@ void PictureDebugUtil::SerializeAsBase64(const SkPicture* picture,
   }};
   sk_sp<SkData> data = picture->serialize(&procs);
   base::Base64Encode(
-      base::StringPiece(static_cast<const char*>(data->data()), data->size()),
+      std::string_view(static_cast<const char*>(data->data()), data->size()),
       output);
 }
 

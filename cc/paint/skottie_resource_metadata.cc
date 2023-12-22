@@ -28,9 +28,9 @@ SkottieResourceMetadataMap& SkottieResourceMetadataMap::operator=(
 
 SkottieResourceMetadataMap::~SkottieResourceMetadataMap() = default;
 
-bool SkottieResourceMetadataMap::RegisterAsset(base::StringPiece resource_path,
-                                               base::StringPiece resource_name,
-                                               base::StringPiece resource_id,
+bool SkottieResourceMetadataMap::RegisterAsset(std::string_view resource_path,
+                                               std::string_view resource_name,
+                                               std::string_view resource_id,
                                                std::optional<gfx::Size> size) {
   DCHECK(!size || !size->IsEmpty());
   if (resource_id.empty()) {
@@ -61,7 +61,7 @@ bool SkottieResourceMetadataMap::RegisterAsset(base::StringPiece resource_path,
   return inserted;
 }
 
-SkottieResourceIdHash HashSkottieResourceId(base::StringPiece resource_id) {
+SkottieResourceIdHash HashSkottieResourceId(std::string_view resource_id) {
   return SkottieResourceIdHash::FromUnsafeValue(
       base::PersistentHash(resource_id));
 }
