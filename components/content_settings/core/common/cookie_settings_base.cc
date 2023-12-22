@@ -4,6 +4,8 @@
 
 #include "components/content_settings/core/common/cookie_settings_base.h"
 
+#include <functional>
+
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -271,15 +273,15 @@ CookieSettingsBase::GetCookieSettingInternal(
       "ContentSettings.GetCookieSettingInternal.Duration");
 
   // Apply http and https exceptions to ws and wss schemes.
-  const GURL* url = &request_url;
+  std::reference_wrapper<const GURL> url = request_url;
   GURL websocket_mapped_url;
-  if (url->SchemeIsWSOrWSS()) {
+  if (url.get().SchemeIsWSOrWSS()) {
     websocket_mapped_url = net::ChangeWebSocketSchemeToHttpScheme(request_url);
-    url = &websocket_mapped_url;
+    url = websocket_mapped_url;
   }
 
   // Auto-allow in extensions or for WebUI embedding a secure origin.
-  if (ShouldAlwaysAllowCookies(*url, first_party_url)) {
+  if (ShouldAlwaysAllowCookies(url, first_party_url)) {
     return {/*cookie_setting=*/CONTENT_SETTING_ALLOW,
             /*third_party_blocking_scope=*/absl::nullopt,
             /*is_explicit_setting=*/false,
@@ -290,7 +292,7 @@ CookieSettingsBase::GetCookieSettingInternal(
   // First get any host-specific settings.
   SettingInfo setting_info;
   ContentSetting setting = GetContentSetting(
-      *url, first_party_url, ContentSettingsType::COOKIES, &setting_info);
+      url, first_party_url, ContentSettingsType::COOKIES, &setting_info);
   if (info) {
     *info = setting_info;
   }
@@ -326,7 +328,7 @@ CookieSettingsBase::GetCookieSettingInternal(
   }
 
   if (block_third && ShouldConsider3pcdMetadataGrantsSettings(overrides) &&
-      IsAllowed(GetContentSetting(*url, first_party_url,
+      IsAllowed(GetContentSetting(url, first_party_url,
                                   ContentSettingsType::TPCD_METADATA_GRANTS))) {
     block_third = false;
     third_party_cookie_allow_mechanism =
@@ -339,7 +341,7 @@ CookieSettingsBase::GetCookieSettingInternal(
   }
 
   if (block_third && ShouldConsider3pcdSupportSettings(overrides) &&
-      GetContentSetting(*url, first_party_url,
+      GetContentSetting(url, first_party_url,
                         ContentSettingsType::TPCD_SUPPORT) ==
           CONTENT_SETTING_ALLOW) {
     block_third = false;
@@ -353,7 +355,7 @@ CookieSettingsBase::GetCookieSettingInternal(
   }
 
   if (block_third && ShouldConsider3pcdHeuristicsGrantsSettings(overrides) &&
-      GetContentSetting(*url, first_party_url,
+      GetContentSetting(url, first_party_url,
                         ContentSettingsType::TPCD_HEURISTICS_GRANTS) ==
           CONTENT_SETTING_ALLOW) {
     block_third = false;
@@ -367,7 +369,7 @@ CookieSettingsBase::GetCookieSettingInternal(
     bool has_storage_access_opt_in =
         ShouldConsiderStorageAccessGrants(overrides);
     bool has_storage_access_permission_grant =
-        IsAllowedByStorageAccessGrant(*url, first_party_url);
+        IsAllowedByStorageAccessGrant(url, first_party_url);
 
     net::cookie_util::FireStorageAccessInputHistogram(
         has_storage_access_opt_in, has_storage_access_permission_grant);
@@ -383,7 +385,7 @@ CookieSettingsBase::GetCookieSettingInternal(
 
     if (IsStorageAccessApiEnabled() &&
         ShouldConsiderTopLevelStorageAccessGrants(overrides) &&
-        GetContentSetting(*url, first_party_url,
+        GetContentSetting(url, first_party_url,
                           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS) ==
             CONTENT_SETTING_ALLOW) {
       block_third = false;
