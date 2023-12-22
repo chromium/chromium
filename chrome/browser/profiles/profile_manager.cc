@@ -1890,6 +1890,10 @@ void ProfileManager::OnProfileCreationFinished(Profile* profile,
 
 void ProfileManager::OnProfileCreationStarted(Profile* profile,
                                               Profile::CreateMode create_mode) {
+  for (auto& observer : observers_) {
+    observer.OnProfileCreationStarted(profile);
+  }
+
   if (create_mode == Profile::CREATE_MODE_ASYNCHRONOUS) {
     // Profile will be registered later, in CreateProfileAsync().
     return;

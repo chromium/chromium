@@ -77,7 +77,9 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
@@ -1075,6 +1077,29 @@ bool ChromeUserManagerImpl::IsGaiaUserAllowed(
 
 void ChromeUserManagerImpl::OnMinimumVersionStateChanged() {
   NotifyUsersSignInConstraintsChanged();
+}
+
+void ChromeUserManagerImpl::OnProfileCreationStarted(Profile* profile) {
+  // Find a User instance from directory path, and annotate the AccountId.
+  // Hereafter, we can use AnnotatedAccountId::Get() to find the User.
+  if (ash::IsUserBrowserContext(profile)) {
+    bool found = false;
+    std::string username_hash =
+        ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(profile);
+    for (const user_manager::User* user : GetLoggedInUsers()) {
+      if (user->username_hash() == username_hash) {
+        found = true;
+        ash::AnnotatedAccountId::Set(profile, user->GetAccountId());
+        break;
+      }
+    }
+    // For user profile, corresponding User instance must be found.
+    if (!found) {
+      // User may not be found for now on testing.
+      // TODO(crbug.com/1325210): fix tests to annotate AccountId properly.
+      CHECK_IS_TEST();
+    }
+  }
 }
 
 void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {

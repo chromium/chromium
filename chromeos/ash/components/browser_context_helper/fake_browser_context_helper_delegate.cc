@@ -65,6 +65,12 @@ FakeBrowserContextHelperDelegate::GetOrCreatePrimaryOTRBrowserContext(
   return CreateBrowserContext(path, /*is_off_the_record=*/true);
 }
 
+content::BrowserContext*
+FakeBrowserContextHelperDelegate::GetOriginalBrowserContext(
+    content::BrowserContext* browser_context) {
+  return GetBrowserContextByPath(browser_context->GetPath());
+}
+
 const base::FilePath* FakeBrowserContextHelperDelegate::GetUserDataDir() {
   return &user_data_dir_.GetPath();
 }
