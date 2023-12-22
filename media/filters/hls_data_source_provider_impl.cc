@@ -37,8 +37,7 @@ void OnMultiBufferReadComplete(
     }
     default: {
       CHECK_GE(read_size, 0);
-      stream->UnlockStreamPostWrite(read_size,
-                                    requested_read_size != read_size);
+      stream->UnlockStreamPostWrite(read_size, 0 == read_size);
       std::move(callback).Run(std::move(stream));
     }
   }

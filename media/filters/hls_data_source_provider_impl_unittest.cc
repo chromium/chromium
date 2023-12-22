@@ -149,17 +149,18 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlOnce) {
       }));
   task_environment_.RunUntilIdle();
 
-  // Only got 400 bytes of requested, which means that there is no more to read.
+  // Only got 400 bytes of requested, so the stream is _probably_ ended, but
+  // we'd have to read again (and get a 0) to be sure.
   factory_->AddReadExpectation(0, 16384, 400);
   impl_->ReadFromUrl(
       {GURL("example.com"), absl::nullopt},
       base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
+        ASSERT_TRUE(stream->CanReadMore());
         ASSERT_EQ(stream->read_position(), 400lu);
-        ASSERT_EQ(stream->buffer_size(), 400lu);
+        ASSERT_EQ(stream->buffer_size(), 16384lu);
         ASSERT_EQ(stream->max_read_position(), absl::nullopt);
-        ASSERT_FALSE(stream->CanReadMore());
       }));
   task_environment_.RunUntilIdle();
 
@@ -183,6 +184,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlThenReadAgain) {
   factory_->AddReadExpectation(0, 16384, 16384);
   factory_->AddReadExpectation(16384, 16384, 16384);
   factory_->AddReadExpectation(32768, 16384, 3);
+  factory_->AddReadExpectation(32771, 16384, 0);
   impl_->ReadFromUrl(
       {GURL("example.com"), absl::nullopt},
       base::BindOnce(
@@ -208,14 +210,30 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlThenReadAgain) {
                       impl_ptr->ReadFromExistingStream(
                           std::move(stream),
                           base::BindOnce(
-                              [](HlsDataSourceProvider::ReadResult
-                                     result) {
+                              [](HlsDataSourceProviderImpl* impl_ptr,
+                                 HlsDataSourceProvider::ReadResult result) {
                                 ASSERT_TRUE(result.has_value());
                                 auto stream = std::move(result).value();
                                 ASSERT_EQ(stream->read_position(), 32771lu);
-                                ASSERT_EQ(stream->buffer_size(), 32771lu);
-                                ASSERT_FALSE(stream->CanReadMore());
-                              }));
+                                ASSERT_EQ(stream->buffer_size(), 49152lu);
+                                ASSERT_TRUE(stream->CanReadMore());
+
+                                impl_ptr->ReadFromExistingStream(
+                                    std::move(stream),
+                                    base::BindOnce(
+                                        [](HlsDataSourceProvider::ReadResult
+                                               result) {
+                                          ASSERT_TRUE(result.has_value());
+                                          auto stream =
+                                              std::move(result).value();
+                                          ASSERT_EQ(stream->read_position(),
+                                                    32771lu);
+                                          ASSERT_EQ(stream->buffer_size(),
+                                                    32771lu);
+                                          ASSERT_FALSE(stream->CanReadMore());
+                                        }));
+                              },
+                              impl_ptr));
                     },
                     impl_ptr));
           },
@@ -294,8 +312,10 @@ TEST_F(HlsDataSourceProviderImplUnittest, ReadMultipleSegments) {
   segments.emplace(GURL("example.com"), absl::nullopt);
   segments.emplace(GURL("foo.com"), absl::nullopt);
 
-  // Request 16k, but only 4k is read. This means the stream has ended.
+  // Request 16k, but only 4k is read. Another read then happens and the 0 byte
+  // EOS read happens.
   factory_->AddReadExpectation(0, 16384, 4096);
+  factory_->AddReadExpectation(4096, 16384, 0);
 
   std::unique_ptr<HlsDataSourceStream> read_result;
   impl_->ReadFromCombinedUrlQueue(
@@ -305,13 +325,40 @@ TEST_F(HlsDataSourceProviderImplUnittest, ReadMultipleSegments) {
                                  *extract = std::move(result).value();
                                },
                                &read_result));
+  task_environment_.RunUntilIdle();
+  ASSERT_NE(read_result, nullptr);
+  ASSERT_TRUE(read_result->CanReadMore());
+  ASSERT_FALSE(read_result->RequiresNextDataSource());
 
+  impl_->ReadFromExistingStream(
+      std::move(read_result),
+      base::BindOnce(
+          [](std::unique_ptr<HlsDataSourceStream>* extract,
+             HlsDataSourceProvider::ReadResult result) {
+            *extract = std::move(result).value();
+          },
+          &read_result));
   task_environment_.RunUntilIdle();
   ASSERT_NE(read_result, nullptr);
   ASSERT_TRUE(read_result->CanReadMore());
   ASSERT_TRUE(read_result->RequiresNextDataSource());
 
   factory_->AddReadExpectation(0, 16384, 4096);
+  factory_->AddReadExpectation(4096, 16384, 0);
+  impl_->ReadFromExistingStream(
+      std::move(read_result),
+      base::BindOnce(
+          [](std::unique_ptr<HlsDataSourceStream>* extract,
+             HlsDataSourceProvider::ReadResult result) {
+            *extract = std::move(result).value();
+          },
+          &read_result));
+
+  task_environment_.RunUntilIdle();
+  ASSERT_NE(read_result, nullptr);
+  ASSERT_TRUE(read_result->CanReadMore());
+  ASSERT_FALSE(read_result->RequiresNextDataSource());
+
   impl_->ReadFromExistingStream(
       std::move(read_result),
       base::BindOnce(
