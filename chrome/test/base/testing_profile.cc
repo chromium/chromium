@@ -831,19 +831,6 @@ TestingProfile::GetURLLoaderFactory() {
   return url_loader_factory_;
 }
 
-content::ResourceContext* TestingProfile::GetResourceContext() {
-  // TODO(arthursonzogni): This should only be called on the IO thread. Consider
-  // adding a DCHECK_CURRENTLY_ON(content::BrowserThread::IO) after fixing the
-  // non compliant tests: SpellingMenuObserverTest.SuggestionsForceTopSeparator
-  if (!resource_context_) {
-    resource_context_ =
-        std::unique_ptr<content::ResourceContext,
-                        content::BrowserThread::DeleteOnIOThread>(
-            new content::ResourceContext);
-  }
-  return resource_context_.get();
-}
-
 content::BrowserPluginGuestManager* TestingProfile::GetGuestManager() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   return guest_view::GuestViewManager::FromBrowserContext(this);

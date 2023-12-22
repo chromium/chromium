@@ -46,8 +46,7 @@ content::BrowserContext* ContentBrowserContext::FromBrowserState(
 }
 
 ContentBrowserContext::ContentBrowserContext(web::BrowserState* browser_state)
-    : resource_context_(std::make_unique<content::ResourceContext>()),
-      browser_state_(browser_state) {
+    : browser_state_(browser_state) {
   InitWhileIOAllowed();
 
   // This should depend on browser_state_->GetStatePath(), but it is probably
@@ -60,15 +59,6 @@ ContentBrowserContext::ContentBrowserContext(web::BrowserState* browser_state)
 
 ContentBrowserContext::~ContentBrowserContext() {
   NotifyWillBeDestroyed();
-
-  // Need to destruct the ResourceContext before posting tasks which may delete
-  // the URLRequestContext because ResourceContext's destructor will remove any
-  // outstanding request while URLRequestContext's destructor ensures that there
-  // are no more outstanding requests.
-  if (resource_context_) {
-    GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                          resource_context_.release());
-  }
   ShutdownStoragePartitions();
 }
 
@@ -94,10 +84,6 @@ bool ContentBrowserContext::IsOffTheRecord() {
 content::DownloadManagerDelegate*
 ContentBrowserContext::GetDownloadManagerDelegate() {
   return nullptr;
-}
-
-content::ResourceContext* ContentBrowserContext::GetResourceContext() {
-  return resource_context_.get();
 }
 
 content::BrowserPluginGuestManager* ContentBrowserContext::GetGuestManager() {

@@ -105,6 +105,11 @@ BrowserContextImpl::~BrowserContextImpl() {
 
   TtsControllerImpl::GetInstance()->OnBrowserContextDestroyed(self_);
 
+  if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
+    GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                          std::move(resource_context_));
+  }
+
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       "shutdown", "BrowserContextImpl::NotifyWillBeDestroyed() called.", this,
       "browser_context_impl", static_cast<void*>(this));

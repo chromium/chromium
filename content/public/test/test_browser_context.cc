@@ -103,12 +103,6 @@ DownloadManagerDelegate* TestBrowserContext::GetDownloadManagerDelegate() {
   return nullptr;
 }
 
-ResourceContext* TestBrowserContext::GetResourceContext() {
-  if (!resource_context_)
-    resource_context_ = std::make_unique<content::ResourceContext>();
-  return resource_context_.get();
-}
-
 BrowserPluginGuestManager* TestBrowserContext::GetGuestManager() {
   return nullptr;
 }

@@ -41,7 +41,6 @@ class WebEngineBrowserContext final : public content::BrowserContext {
       const base::FilePath& partition_path) override;
   base::FilePath GetPath() override;
   bool IsOffTheRecord() override;
-  content::ResourceContext* GetResourceContext() override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
@@ -73,7 +72,6 @@ class WebEngineBrowserContext final : public content::BrowserContext {
   const std::unique_ptr<WebEngineNetLogObserver> net_log_observer_;
   SimpleFactoryKey simple_factory_key_;
   WebEnginePermissionDelegate permission_delegate_;
-  std::unique_ptr<content::ResourceContext> resource_context_;
   client_hints::InMemoryClientHintsControllerDelegate client_hints_delegate_;
 };
 

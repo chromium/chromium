@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/resource_context.h"
 
 namespace chromecast {
 namespace shell {
@@ -32,7 +31,6 @@ class CastBrowserContext final : public content::BrowserContext {
       const base::FilePath& partition_path) override;
   base::FilePath GetPath() override;
   bool IsOffTheRecord() override;
-  content::ResourceContext* GetResourceContext() override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
@@ -58,7 +56,6 @@ class CastBrowserContext final : public content::BrowserContext {
   void InitWhileIOAllowed();
 
   base::FilePath path_;
-  std::unique_ptr<content::ResourceContext> resource_context_;
   std::unique_ptr<content::PermissionControllerDelegate> permission_manager_;
   std::unique_ptr<SimpleFactoryKey> simple_factory_key_;
 };

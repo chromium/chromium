@@ -188,10 +188,6 @@ bool HeadlessBrowserContextImpl::IsOffTheRecord() {
   return context_options_->incognito_mode();
 }
 
-content::ResourceContext* HeadlessBrowserContextImpl::GetResourceContext() {
-  return request_context_manager_->GetResourceContext();
-}
-
 content::DownloadManagerDelegate*
 HeadlessBrowserContextImpl::GetDownloadManagerDelegate() {
   return nullptr;

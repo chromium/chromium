@@ -70,7 +70,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_request_utils.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -411,13 +410,6 @@ base::FilePath AwBrowserContext::GetPath() {
 bool AwBrowserContext::IsOffTheRecord() {
   // Android WebView does not support off the record profile yet.
   return false;
-}
-
-content::ResourceContext* AwBrowserContext::GetResourceContext() {
-  if (!resource_context_) {
-    resource_context_ = std::make_unique<content::ResourceContext>();
-  }
-  return resource_context_.get();
 }
 
 content::DownloadManagerDelegate*

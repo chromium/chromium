@@ -322,6 +322,10 @@ void BrowserContext::WriteIntoTrace(
   perfetto::WriteIntoTracedProto(std::move(proto), impl());
 }
 
+ResourceContext* BrowserContext::GetResourceContext() const {
+  return impl()->GetResourceContext();
+}
+
 base::WeakPtr<BrowserContext> BrowserContext::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

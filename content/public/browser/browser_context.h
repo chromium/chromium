@@ -311,6 +311,10 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // to the declaration of ChromeBrowserContext proto.
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const;
 
+  // Deprecated. Do not add new callers.
+  // TODO(https://crbug.com/908955): Get rid of ResourceContext.
+  ResourceContext* GetResourceContext() const;
+
   base::WeakPtr<BrowserContext> GetWeakPtr();
 
   //////////////////////////////////////////////////////////////////////////////
@@ -336,9 +340,6 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Note that for Chrome this does not imply Incognito as Guest sessions are
   // also off the record.
   virtual bool IsOffTheRecord() = 0;
-
-  // Returns the resource context.
-  virtual ResourceContext* GetResourceContext() = 0;
 
   // Returns the DownloadManagerDelegate for this context. This will be called
   // once per context. The embedder owns the delegate and is responsible for
