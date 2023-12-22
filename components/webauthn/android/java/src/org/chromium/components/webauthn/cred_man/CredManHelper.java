@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.webauthn;
+package org.chromium.components.webauthn.cred_man;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -33,10 +33,15 @@ import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.components.version_info.VersionInfo;
-import org.chromium.components.webauthn.CredManMetricsHelper.CredManCreateRequestEnum;
-import org.chromium.components.webauthn.CredManMetricsHelper.CredManGetRequestEnum;
-import org.chromium.components.webauthn.CredManMetricsHelper.CredManPrepareRequestEnum;
+import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.Fido2CredentialRequest.ConditionalUiState;
+import org.chromium.components.webauthn.Fido2CredentialRequestJni;
+import org.chromium.components.webauthn.GetAssertionResponseCallback;
+import org.chromium.components.webauthn.MakeCredentialResponseCallback;
+import org.chromium.components.webauthn.WebAuthnBrowserBridge;
+import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManCreateRequestEnum;
+import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManGetRequestEnum;
+import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManPrepareRequestEnum;
 import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -751,14 +756,14 @@ public class CredManHelper {
         Log.e(
                 TAG,
                 "Failed to parse Mojo object. If this is happening in a test, and"
-                        + " authenticator.mojom was updated, then you'll need to update the fake Mojo"
-                        + " structures in Fido2ApiTestHelper. Robolectric doesn't support JNI calls so"
-                        + " the JNI calls to translate from JSON -> serialized Mojo are mocked out and"
-                        + " the responses are hard-coded. If the Mojo structure is updated then the"
-                        + " responses also need to be updated. Flip `kUpdateRobolectricTests` in"
-                        + " `value_conversions_unittest.cc`, run `component_unittests"
-                        + " --gtest_filter=\"WebAuthnentication*\"` and it'll print out updated Java"
-                        + " literals for `Fido2ApiTestHelper.java`.",
+                    + " authenticator.mojom was updated, then you'll need to update the fake Mojo"
+                    + " structures in Fido2ApiTestHelper. Robolectric doesn't support JNI calls so"
+                    + " the JNI calls to translate from JSON -> serialized Mojo are mocked out and"
+                    + " the responses are hard-coded. If the Mojo structure is updated then the"
+                    + " responses also need to be updated. Flip `kUpdateRobolectricTests` in"
+                    + " `value_conversions_unittest.cc`, run `component_unittests"
+                    + " --gtest_filter=\"WebAuthnentication*\"` and it'll print out updated Java"
+                    + " literals for `Fido2ApiTestHelper.java`.",
                 e);
     }
 }

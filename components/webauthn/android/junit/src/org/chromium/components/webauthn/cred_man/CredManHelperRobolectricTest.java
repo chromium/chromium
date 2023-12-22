@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.webauthn;
+package org.chromium.components.webauthn.cred_man;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -52,9 +52,13 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
-import org.chromium.components.webauthn.CredManMetricsHelper.CredManCreateRequestEnum;
-import org.chromium.components.webauthn.CredManMetricsHelper.CredManGetRequestEnum;
-import org.chromium.components.webauthn.CredManMetricsHelper.CredManPrepareRequestEnum;
+import org.chromium.components.webauthn.Barrier;
+import org.chromium.components.webauthn.Fido2ApiTestHelper;
+import org.chromium.components.webauthn.ShadowWebContentStatics;
+import org.chromium.components.webauthn.WebAuthnBrowserBridge;
+import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManCreateRequestEnum;
+import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManGetRequestEnum;
+import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManPrepareRequestEnum;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 
@@ -405,7 +409,6 @@ public class CredManHelperRobolectricTest {
     @Test
     @SmallTest
     public void testStartGetRequest_noCredentials_errorHandlerCalledIfNoFallbackSet() {
-        Runnable noCredentialsFallback = Mockito.mock(Runnable.class);
 
         int result =
                 mCredManHelper.startGetRequest(

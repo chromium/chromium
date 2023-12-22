@@ -36,6 +36,8 @@ import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.components.payments.PaymentFeatureList;
+import org.chromium.components.webauthn.cred_man.CredManHelper;
+import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -51,10 +53,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Uses the Google Play Services Fido2 APIs.
- * Holds the logic of each request.
- */
+/** Uses the Google Play Services Fido2 APIs. Holds the logic of each request. */
 @JNINamespace("webauthn")
 public class Fido2CredentialRequest
         implements Callback<Pair<Integer, Intent>>, CredManHelper.BridgeProvider {
@@ -163,7 +162,7 @@ public class Fido2CredentialRequest
      * @param context The context used for both Play Services and CredMan calls.
      * @param options The arguments to create()
      * @param frameHost The source RenderFrameHost, or null. If null, `maybeClientDataHash` must be
-     *         non-null and no security checks will be performed.
+     *     non-null and no security checks will be performed.
      * @param maybeClientDataHash The SHA-256 of the ClientDataJSON. Non-null iff frameHost is null.
      * @param origin The origin that made the WebAuthn call.
      * @param callback Success callback.
@@ -291,14 +290,14 @@ public class Fido2CredentialRequest
      *
      * @param context The context used for both Play Services and CredMan calls.
      * @param options The arguments to get(). If `isConditional` is true then `frameHost` must be
-     *         non-null.
+     *     non-null.
      * @param frameHost The source RenderFrameHost, or null. If null, `maybeClientDataHash` must be
-     *         non-null and no security checks will be performed.
+     *     non-null and no security checks will be performed.
      * @param maybeClientDataHash The SHA-256 of the ClientDataJSON. Non-null iff frameHost is null.
      * @param origin The origin that made the WebAuthn call.
      * @param topOrigin The origin of the main frame.
      * @param payment Options for Secure Payment Confirmation. May only be non-null if `frameHost`
-     *         is non-null.
+     *     is non-null.
      * @param callback Success callback.
      * @param errorCallback Failure callback.
      */
@@ -1021,6 +1020,7 @@ public class Fido2CredentialRequest
 
     /**
      * Helper method to convert AuthenticatorErrorResponse errors.
+     *
      * @param errorCode
      * @return error code corresponding to an AuthenticatorStatus.
      */
