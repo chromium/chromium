@@ -172,7 +172,10 @@ BPF_TEST_C(BaselinePolicyAndroid,
   BPF_ASSERT_NE(-1, pid);
 
   pthread_t thread;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnonnull"
   int ret = pthread_create(&thread, nullptr, nullptr, nullptr);
+#pragma clang diagnostic pop
   BPF_ASSERT_EQ(0, ret);
 }
 
