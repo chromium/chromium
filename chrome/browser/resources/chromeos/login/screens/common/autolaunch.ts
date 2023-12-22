@@ -13,96 +13,105 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/buttons/oobe_text_button.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 
 import {getTemplate} from './autolaunch.html.js';
 
+interface AppData {
+  appName: string;
+  appIconUrl: string;
+}
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- */
 const AutolaunchBase = mixinBehaviors(
     [OobeI18nBehavior, LoginScreenBehavior, OobeDialogHostBehavior],
-    PolymerElement);
+    PolymerElement) as { new (): PolymerElement
+      & OobeI18nBehaviorInterface
+      & LoginScreenBehaviorInterface
+      & OobeDialogHostBehaviorInterface,
+    };
 
-/**
- * @polymer
- */
-class Autolaunch extends AutolaunchBase {
+export class Autolaunch extends AutolaunchBase {
   static get is() {
-    return 'autolaunch-element';
+    return 'autolaunch-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
-      appName_: {type: String},
-      appIconUrl_: {type: String},
+      appName: {
+        type: String,
+        value: '',
+      },
+      appIconUrl: {
+        type: String,
+        value: '',
+      },
     };
   }
 
+  private appName: string;
+  private appIconUrl: string;
+
   constructor() {
     super();
-    this.appName_ = '';
-    this.appIconUrl_ = '';
   }
 
-  /** Overridden from LoginScreenBehavior. */
-  // clang-format off
-  get EXTERNAL_API() {
+  override get EXTERNAL_API(): string[] {
     return [
       'updateApp',
     ];
   }
-  // clang-format on
 
-  ready() {
+  override ready() {
     super.ready();
     this.initializeLoginScreen('AutolaunchScreen');
   }
 
-  onConfirm_() {
+  private onConfirm(): void {
     this.userActed('confirm');
   }
 
-  onCancel_() {
+  private onCancel(): void {
     this.userActed('cancel');
   }
 
   /**
    * Event handler invoked when the page is shown and ready.
    */
-  onBeforeShow() {
+  override onBeforeShow(): void {
     chrome.send('autolaunchVisible');
   }
 
   /**
    * Cancels the reset and drops the user back to the login screen.
    */
-  cancel() {
+  private cancel(): void {
     this.userActed('cancel');
   }
 
   /**
    * Sets app to be displayed in the auto-launch warning.
-   * @param {!Object} app An dictionary with app info.
+   * @param app An dictionary with app info.
    */
-  updateApp(app) {
-    this.appName_ = app.appName;
+  updateApp(app: AppData): void {
+    this.appName = app.appName;
     if (app.appIconUrl && app.appIconUrl.length) {
-      this.appIconUrl_ = app.appIconUrl;
+      this.appIconUrl = app.appIconUrl;
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [Autolaunch.is]: Autolaunch;
   }
 }
 

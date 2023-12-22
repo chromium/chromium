@@ -30,7 +30,6 @@ js_type_check("closure_compile_local") {
     ":app_launch_splash",
 
     #":assistant_optin",
-    ":autolaunch",
     ":consolidated_consent",
     ":device_disabled",
     ":error_message",
@@ -88,16 +87,6 @@ js_library("assistant_optin") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("autolaunch") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/autolaunch.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-}
 
 js_library("consolidated_consent") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/consolidated_consent.js" ]
