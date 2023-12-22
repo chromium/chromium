@@ -93,7 +93,6 @@ FormData CreateTestForm() {
   f.id_attribute = u"form_id";
   f.url = GURL("https://foo.com");
   f.action = GURL("https://bar.com");
-  f.is_action_empty = false;
   f.is_form_tag = true;
   return f;
 }
@@ -112,7 +111,7 @@ TEST(FormDataAndroidTest, Form) {
 }
 
 // Tests that form similarity checks include name, name_attribute, id_attribute,
-// url, action, is_action_empty, and is_form_tag.
+// url, action, and is_form_tag.
 // Similarity checks are used to determine whether a web page has modified a
 // field significantly enough to warrant restarting an ongoing Autofill session,
 // e.g., because their change would lead to a change in type predictions. As a
@@ -148,11 +147,6 @@ TEST(FormDataAndroidTest, SimilarFormAs) {
   // If actions differ, they are not similar.
   f = af.form();
   f.action = GURL("https://other.com");
-  EXPECT_FALSE(af.SimilarFormAs(f));
-
-  // If is_action_empty differs, they are not similar.
-  f = af.form();
-  f.is_action_empty = !f.is_action_empty;
   EXPECT_FALSE(af.SimilarFormAs(f));
 
   // If is_form_tag differs, they are not similar.
