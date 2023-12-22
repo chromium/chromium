@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) AudioStreamHandler {
   // C-tor for AudioStreamHandler. |wav_data| should be a raw
   // uncompressed WAVE data which will be sent to the audio output device.
   AudioStreamHandler(SoundsManager::StreamFactoryBinder stream_factory_binder,
-                     const std::string_view& audio_data,
+                     std::string_view audio_data,
                      media::AudioCodec codec);
 
   AudioStreamHandler(const AudioStreamHandler&) = delete;
