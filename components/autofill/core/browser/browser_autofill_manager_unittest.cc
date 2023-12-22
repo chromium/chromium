@@ -31,7 +31,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
@@ -48,11 +47,8 @@
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
-#include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/mock_autofill_compose_delegate.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
-#include "components/autofill/core/browser/mock_iban_manager.h"
-#include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
@@ -712,15 +708,6 @@ class BrowserAutofillManagerTest : public testing::Test {
     personal_data().SetPrefService(autofill_client_.GetPrefs());
     personal_data().SetSyncServiceForTest(&sync_service_);
 
-    autocomplete_history_manager_ =
-        std::make_unique<NiceMock<MockAutocompleteHistoryManager>>();
-    iban_manager_ =
-        std::make_unique<NiceMock<MockIbanManager>>(&personal_data());
-    merchant_promo_code_manager_ =
-        std::make_unique<NiceMock<MockMerchantPromoCodeManager>>();
-    merchant_promo_code_manager_->Init(&personal_data(),
-                                       /*is_off_the_record=*/false);
-
     autofill_driver_ = std::make_unique<NiceMock<MockAutofillDriver>>();
     autofill_client_.set_test_payments_network_interface(
         std::make_unique<payments::TestPaymentsNetworkInterface>(
@@ -1116,8 +1103,9 @@ class BrowserAutofillManagerTest : public testing::Test {
     test_api(*browser_autofill_manager_)
         .set_single_field_form_fill_router(
             std::make_unique<NiceMock<MockSingleFieldFormFillRouter>>(
-                autocomplete_history_manager_.get(), iban_manager_.get(),
-                merchant_promo_code_manager_.get()));
+                autofill_client_.GetMockAutocompleteHistoryManager(),
+                autofill_client_.GetMockIbanManager(),
+                autofill_client_.GetMockMerchantPromoCodeManager()));
     test_api(*browser_autofill_manager_)
         .SetExternalDelegate(std::make_unique<TestAutofillExternalDelegate>(
             browser_autofill_manager_.get(),
@@ -1328,9 +1316,6 @@ class BrowserAutofillManagerTest : public testing::Test {
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
   syncer::TestSyncService sync_service_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
-  std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
-  std::unique_ptr<MockIbanManager> iban_manager_;
-  std::unique_ptr<MockMerchantPromoCodeManager> merchant_promo_code_manager_;
 
  private:
   int ToHistogramSample(autofill_metrics::CardUploadDecision metric) {
