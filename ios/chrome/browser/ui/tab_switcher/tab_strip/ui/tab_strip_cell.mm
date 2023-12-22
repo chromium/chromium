@@ -6,6 +6,7 @@
 
 #import <MaterialComponents/MaterialActivityIndicator.h>
 
+#import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -24,8 +25,14 @@ const CGFloat kCornerSize = 16;
 // Threshold width for collapsing the cell and hiding the close button.
 const CGFloat kCollapsedWidthThreshold = 150;
 
+// Separator constraints.
+const CGFloat kSeparatorWidth = 2;
+const CGFloat kSeparatorCornerRadius = 1;
+const CGFloat kSeparatorMaxHeight = 18;
+const CGFloat kSeparatorHorizontalInset = 2;
+
 // Content view constants.
-const CGFloat kFaviconLeadingMargin = 16;
+const CGFloat kFaviconLeadingMargin = 10;
 const CGFloat kCloseButtonMargin = 10;
 const CGFloat kTitleInset = 10.0;
 const CGFloat kFontSize = 14.0;
@@ -49,6 +56,9 @@ UIImage* DefaultFavicon() {
   UIView* _rightTailView;
   UIView* _topLeftCornerView;
   UIView* _topRightCornerView;
+
+  // Cell separator.
+  UIView* _trailingSeparatorView;
 
   // Wether the decoration layers have been updated.
   BOOL _decorationLayersUpdated;
@@ -91,6 +101,9 @@ UIImage* DefaultFavicon() {
 
     _rightTailView = [self createTailView];
     [self addSubview:_rightTailView];
+
+    _trailingSeparatorView = [self createSepartorView];
+    [self addSubview:_trailingSeparatorView];
 
     [self setupConstraints];
     [self setupDecorationLayers];
@@ -142,12 +155,10 @@ UIImage* DefaultFavicon() {
   // Style the favicon tint color.
   _faviconView.tintColor = selected ? [UIColor colorNamed:kCloseButtonColor]
                                     : [UIColor colorNamed:kGrey500Color];
-  // Style the close button tint color.
-  _closeButton.tintColor = selected ? [UIColor colorNamed:kCloseButtonColor]
-                                    : [UIColor colorNamed:kGrey500Color];
-  // Style the title text color.
-  _titleLabel.textColor = selected ? [UIColor colorNamed:kTextPrimaryColor]
-                                   : [UIColor colorNamed:kGrey600Color];
+
+  // Style the separator color.
+  _trailingSeparatorView.backgroundColor =
+      selected ? UIColor.clearColor : [UIColor colorNamed:kGrey400Color];
 
   // Update decoration views visibility.
   _leftTailView.hidden = !selected;
@@ -172,6 +183,16 @@ UIImage* DefaultFavicon() {
   _titleLabel.text = nil;
   self.selected = NO;
   [self setFaviconImage:nil];
+}
+
+#pragma mark - Setters
+
+- (void)setSeparatorHidden:(BOOL)separatorHidden {
+  if (separatorHidden == _separatorHidden) {
+    return;
+  }
+  _separatorHidden = separatorHidden;
+  _trailingSeparatorView.hidden = _separatorHidden;
 }
 
 #pragma mark - Private
@@ -319,6 +340,19 @@ UIImage* DefaultFavicon() {
     [_rightTailView.widthAnchor constraintEqualToConstant:kCornerSize],
     [_rightTailView.heightAnchor constraintEqualToConstant:kCornerSize],
   ]];
+
+  /// `_trailingSeparatorView` constraints.
+  [NSLayoutConstraint activateConstraints:@[
+    [_trailingSeparatorView.leadingAnchor
+        constraintEqualToAnchor:contentView.trailingAnchor
+                       constant:kSeparatorHorizontalInset],
+    [_trailingSeparatorView.widthAnchor
+        constraintEqualToConstant:kSeparatorWidth],
+    [_trailingSeparatorView.heightAnchor
+        constraintLessThanOrEqualToConstant:kSeparatorMaxHeight],
+    [_trailingSeparatorView.centerYAnchor
+        constraintEqualToAnchor:contentView.centerYAnchor],
+  ]];
 }
 
 // Selector registered to the close button.
@@ -362,6 +396,7 @@ UIImage* DefaultFavicon() {
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   titleLabel.font = [UIFont systemFontOfSize:kFontSize
                                       weight:UIFontWeightMedium];
+  titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   return titleLabel;
 }
 
@@ -388,8 +423,16 @@ UIImage* DefaultFavicon() {
   topCornerView.backgroundColor = [UIColor colorNamed:kGrey200Color];
   topCornerView.translatesAutoresizingMaskIntoConstraints = NO;
   topCornerView.hidden = YES;
-
   return topCornerView;
+}
+
+// Returns a new separator view.
+- (UIView*)createSepartorView {
+  UIView* separatorView = [[UIView alloc] init];
+  separatorView.backgroundColor = [UIColor colorNamed:kGrey400Color];
+  separatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  separatorView.layer.cornerRadius = kSeparatorCornerRadius;
+  return separatorView;
 }
 
 @end

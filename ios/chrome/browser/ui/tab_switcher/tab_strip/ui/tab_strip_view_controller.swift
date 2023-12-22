@@ -98,6 +98,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   }
 
   func selectItem(_ item: TabSwitcherItem?) {
+    layout.selectedIndexPath = nil
     if let indexPaths = collectionView.indexPathsForSelectedItems {
       for indexPath in indexPaths {
         collectionView.deselectItem(at: indexPath, animated: false)
@@ -107,6 +108,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
       let item = item, let diffableDataSource = diffableDataSource,
       let indexPath = diffableDataSource.indexPath(for: item)
     else { return }
+    layout.selectedIndexPath = indexPath
 
     /// `.centeredHorizontally` is needed when the selected cell is not dequeued.
     /// If the item is dequeued `.centeredVertically` will not update the layout.

@@ -9,6 +9,9 @@ class TabStripLayout: UICollectionViewFlowLayout {
   /// Wether the flow layout needs to be updated.
   public var needsUpdate: Bool = true
 
+  /// IndexPath of the selected item.
+  public var selectedIndexPath: IndexPath?
+
   /// Dynamic size of a tab.
   private var tabCellSize: CGSize = .zero
 
@@ -23,8 +26,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
   override init() {
     super.init()
     scrollDirection = .horizontal
-    minimumInteritemSpacing = TabStripConstants.TabItem.horizontalSpacing
-    minimumLineSpacing = 0
+    minimumLineSpacing = TabStripConstants.TabItem.horizontalSpacing
   }
 
   required init?(coder: NSCoder) {
@@ -121,7 +123,10 @@ class TabStripLayout: UICollectionViewFlowLayout {
     let collectionViewSizeWidth = collectionView.bounds.size.width
 
     // The selected cell should remain on top of other cells within collection view's bounds.
-    if cell.isSelected {
+    if indexPath == selectedIndexPath {
+      // Update cell separator.
+      cell.separatorHidden = true
+
       var origin = layoutAttributes.frame.origin
       layoutAttributes.zIndex = TabStripConstants.TabItem.selectedZindex
 
@@ -132,6 +137,12 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
       layoutAttributes.frame = CGRect(origin: origin, size: frame.size)
       return layoutAttributes
+    }
+    // Update cell separator.
+    // Hide the separtor if the next cell is selected.
+    if let selectedIndexPath = selectedIndexPath {
+      let nextCellSelected: Bool = (indexPath.row + 1) == selectedIndexPath.row
+      cell.separatorHidden = nextCellSelected
     }
 
     // Recalculate the cell width and origin when it intersects with the left collection view's bounds.
@@ -157,8 +168,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
   override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]?
   {
     guard
-      var computedAttributes = super.layoutAttributesForElements(in: rect),
-      let collectionView = collectionView
+      var computedAttributes = super.layoutAttributesForElements(in: rect)
     else { return nil }
 
     computedAttributes = computedAttributes.compactMap { layoutAttribute in
@@ -166,11 +176,11 @@ class TabStripLayout: UICollectionViewFlowLayout {
     }
 
     // Explicitly update the layout of the selected item.
-    for indexPath in collectionView.indexPathsForSelectedItems ?? [] {
-      if let attr = layoutAttributesForItem(at: indexPath) {
-        computedAttributes.append(attr)
-      }
+    guard let selectedIndexPath = selectedIndexPath else { return computedAttributes }
+    if let attr = layoutAttributesForItem(at: selectedIndexPath) {
+      computedAttributes.append(attr)
     }
+
     return computedAttributes
   }
 
@@ -201,7 +211,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
     }
 
     let collectionViewWidth: CGFloat = CGRectGetWidth(collectionView.bounds)
-    let itemSpacingSum: CGFloat = minimumInteritemSpacing * (cellCount - 1)
+    let itemSpacingSum: CGFloat = minimumLineSpacing * (cellCount - 1)
 
     var itemWidth: CGFloat =
       (collectionViewWidth - itemSpacingSum - groupCellWidthSum) / tabCellCount
