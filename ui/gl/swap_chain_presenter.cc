@@ -697,18 +697,22 @@ gfx::Size SwapChainPresenter::GetMonitorSize() const {
   }
 }
 
-void SwapChainPresenter::SetTargetToFullScreen(gfx::Transform* visual_transform,
-                                               gfx::Rect* visual_clip_rect,
-                                               const gfx::Rect& target_rect) {
-  if (base::FeatureList::IsEnabled(kApplyTransformToLetterboxing)) {
+void SwapChainPresenter::SetTargetToFullScreen(
+    gfx::Transform* visual_transform,
+    gfx::Rect* visual_clip_rect,
+    const absl::optional<gfx::Rect>& target_rect) {
+  if (base::FeatureList::IsEnabled(kApplyTransformToLetterboxing) &&
+      target_rect.has_value()) {
     // Reset the horizontal/vertical shift according to the target_rect and
     // original transform, since DWM will do the positioning in case of overlay.
-    visual_transform->set_rc(0, 3,
-                             visual_transform->rc(0, 3) -
-                                 target_rect.x() * visual_transform->rc(0, 0));
-    visual_transform->set_rc(1, 3,
-                             visual_transform->rc(1, 3) -
-                                 target_rect.y() * visual_transform->rc(1, 1));
+    visual_transform->set_rc(
+        0, 3,
+        visual_transform->rc(0, 3) -
+            target_rect.value().x() * visual_transform->rc(0, 0));
+    visual_transform->set_rc(
+        1, 3,
+        visual_transform->rc(1, 3) -
+            target_rect.value().y() * visual_transform->rc(1, 1));
   } else {
     // Reset the horizontal/vertical shift according to the visual clip and
     // original transform, since DWM will do the positioning in case of overlay.
@@ -1494,7 +1498,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     // But the visual transform and clip rectangle for DCLayerTree update need
     // to keep the same as the last presentation when desktop plane was removed.
     if (last_desktop_plane_removed_) {
-      SetTargetToFullScreen(visual_transform, visual_clip_rect, *target_rect);
+      SetTargetToFullScreen(visual_transform, visual_clip_rect, target_rect);
     }
 
     return true;
@@ -1512,7 +1516,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     // Only NV12 format is supported in zero copy presentation path.
     if (dest_size.has_value() && target_rect.has_value() &&
         params.z_order > 0) {
-      SetTargetToFullScreen(visual_transform, visual_clip_rect, *target_rect);
+      SetTargetToFullScreen(visual_transform, visual_clip_rect, target_rect);
     } else {
       last_desktop_plane_removed_ = false;
     }
@@ -1657,7 +1661,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   // Update |visual_transform| and |visual_clip_rect| for the full screen
   // letterboxing overlay presentation.
   if (is_letterboxing_overlay_ready) {
-    SetTargetToFullScreen(visual_transform, visual_clip_rect, *target_rect);
+    SetTargetToFullScreen(visual_transform, visual_clip_rect, target_rect);
   } else {
     last_desktop_plane_removed_ = false;
   }

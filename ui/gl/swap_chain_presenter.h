@@ -132,7 +132,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // and DWM will take care of the letterboxing info setup automatically.
   void SetTargetToFullScreen(gfx::Transform* visual_transform,
                              gfx::Rect* visual_clip_rect,
-                             const gfx::Rect& target_rect);
+                             const absl::optional<gfx::Rect>& target_rect);
 
   // Takes in input DC layer params and the video overlay quad. The swap chain
   // backbuffer size will be rounded to the monitor size if it is within a close
