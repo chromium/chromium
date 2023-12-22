@@ -26,6 +26,7 @@ namespace media {
 
 class H264FrameReassembler;
 class H264Parser;
+class V4L2FrameRateControl;
 class V4L2Queue;
 
 // V4L2StatefulVideoDecoder is an implementation of VideoDecoderMixin
@@ -160,6 +161,10 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/dev-decoder.html#glossary
   scoped_refptr<V4L2Queue> OUTPUT_queue_ GUARDED_BY_CONTEXT(sequence_checker_);
   scoped_refptr<V4L2Queue> CAPTURE_queue_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Some drivers, e.g. QC SC7180, require the client to inform the driver of
+  // the framerate (to tweak internal resources).
+  std::unique_ptr<V4L2FrameRateControl> framerate_control_;
 
   // A sequenced TaskRunner to wait for events coming from |CAPTURE_queue_| or
   // |wake_event_|.

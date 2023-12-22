@@ -23,6 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/media_log.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/v4l2/v4l2_framerate_control.h"
 #include "media/gpu/v4l2/v4l2_queue.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/video/h264_parser.h"
@@ -379,6 +380,10 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
     // This will also Deallocate() all buffers and issue a VIDIOC_STREAMOFF.
     OUTPUT_queue_.reset();
     CAPTURE_queue_.reset();
+
+    framerate_control_ = std::make_unique<V4L2FrameRateControl>(
+        base::BindRepeating(&HandledIoctl, device_fd_.get()),
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   // At this point we initialize the |OUTPUT_queue_| only, following
@@ -975,7 +980,9 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
         VLOGF(3) << wrapped_frame->AsHumanReadableString();
         output_cb_.Run(std::move(wrapped_frame));
       } else {
+        DCHECK_EQ(queue_type, V4L2_MEMORY_DMABUF);
         VLOGF(3) << video_frame->AsHumanReadableString();
+        framerate_control_->AttachToVideoFrame(video_frame);
         output_cb_.Run(std::move(video_frame));
       }
 
