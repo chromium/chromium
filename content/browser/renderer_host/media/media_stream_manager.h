@@ -49,7 +49,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "content/browser/renderer_host/media/captured_surface_controller.h"
 #endif
 
@@ -132,7 +132,7 @@ class CONTENT_EXPORT MediaStreamManager
   using GenerateStreamTestCallback =
       base::OnceCallback<bool(const blink::StreamControls&)>;
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   using CapturedSurfaceControllerFactoryCallback =
       ::base::RepeatingCallback<std::unique_ptr<CapturedSurfaceController>(
           GlobalRenderFrameHostId,
@@ -365,7 +365,7 @@ class CONTENT_EXPORT MediaStreamManager
                           blink::mojom::MediaStreamType stream_type,
                           MediaRequestState new_state);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SetCapturedSurfaceControllerFactoryForTesting(
       CapturedSurfaceControllerFactoryCallback factory);
 
@@ -391,7 +391,7 @@ class CONTENT_EXPORT MediaStreamManager
       const base::UnguessableToken& session_id,
       const absl::optional<gfx::Rect>& region_capture_rect);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Determines whether the captured surface (tab/window) should be focused.
   // This can be called at most once, and only within the first 1s of the
   // capture session being initiated. If a call with |focus=false| is not
@@ -414,7 +414,7 @@ class CONTENT_EXPORT MediaStreamManager
       blink::mojom::CapturedWheelActionPtr action,
       base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
           callback);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   void RegisterDispatcherHost(
       std::unique_ptr<blink::mojom::MediaStreamDispatcherHost> host,
@@ -737,7 +737,7 @@ class CONTENT_EXPORT MediaStreamManager
       const MediaDeviceEnumeration& enumeration,
       DeviceRequest* request);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Defines a window of opportunity for the Web-application to decide
   // whether a display-surface which it's capturing should be focused.
   // After |kConditionalFocusWindow| past the beginning of the capture,

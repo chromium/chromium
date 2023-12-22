@@ -64,7 +64,7 @@ class MODULES_EXPORT UserMediaClient
 
   static UserMediaClient* From(LocalDOMWindow*);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void FocusCapturedSurface(const String& label, bool focus);
 #endif
 

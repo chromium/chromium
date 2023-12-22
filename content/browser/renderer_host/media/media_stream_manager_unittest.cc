@@ -75,7 +75,7 @@ using ::blink::mojom::StreamSelectionStrategy;
 using ::testing::_;
 using ::testing::Invoke;
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 using CapturedWheelAction = ::blink::mojom::CapturedWheelAction;
 using CapturedWheelActionPtr = ::blink::mojom::CapturedWheelActionPtr;
 using CapturedSurfaceControllerFactoryCallback =
@@ -297,7 +297,7 @@ class TestMediaStreamDispatcherHost
       bool is_secure) override {}
   void OnStreamStarted(const std::string& label) override {}
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SendWheel(const base::UnguessableToken& device_id,
                  blink::mojom::CapturedWheelActionPtr action,
                  SendWheelCallback callback) override {}
@@ -350,7 +350,7 @@ class TestVideoCaptureHost : public media::mojom::VideoCaptureHost {
              const std::string& reason) override {}
 };
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // TODO(crbug.com/1466247): Add other APIs (setZoomLevel, getZoomLevel).
 enum class CapturedSurfaceControlAPI {
   kSendWheel,
@@ -364,7 +364,7 @@ CapturedWheelActionPtr MakeCapturedWheelActionPtr() {
       /*wheel_delta_x=*/0,
       /*wheel_delta_y=*/0);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -389,7 +389,7 @@ class MediaStreamManagerTest : public ::testing::Test
     video_capture_provider_ = video_capture_provider.get();
     media_stream_manager_ = std::make_unique<MediaStreamManager>(
         audio_system_.get(), std::move(video_capture_provider));
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     media_stream_manager_->SetCapturedSurfaceControllerFactoryForTesting(
         base::BindRepeating(
             [](GlobalRenderFrameHostId, WebContentsMediaCaptureId) {
@@ -1615,7 +1615,7 @@ TEST_F(MediaStreamManagerTestForTransfers,
   EXPECT_EQ(result_, blink::mojom::MediaStreamRequestResult::INVALID_STATE);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 class MediaStreamManagerCapturedSurfaceControlTest
     : public MediaStreamManagerTest,
       public testing::WithParamInterface<CapturedSurfaceControlAPI> {
@@ -1826,6 +1826,6 @@ TEST_P(MediaStreamManagerCapturedSurfaceControlTest, FailsIfCapturingScreen) {
   // TODO(crbug.com/1512926): Use a dedicated error.
   EXPECT_EQ(result_, CapturedSurfaceControlResult::kUnknownError);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace content

@@ -79,7 +79,7 @@ StartObservingWebContents(GlobalRenderFrameHostId render_frame_host_id,
   return web_contents_observer;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Checks whether a track living in the WebContents indicated by
 // (render_process_id, render_frame_id) may be cropped or restricted
 // to the target indicated by |target|.
@@ -138,7 +138,7 @@ WrapApplySubCaptureTarget(
       },
       std::move(callback), std::move(bad_message_callback));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 bool AllowedStreamTypeCombination(
     blink::mojom::MediaStreamType audio_stream_type,
@@ -628,7 +628,7 @@ void MediaStreamDispatcherHost::KeepDeviceAliveForTransfer(
       render_frame_host_id_, requester_id_, session_id, transfer_id));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void MediaStreamDispatcherHost::FocusCapturedSurface(const std::string& label,
                                                      bool focus) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);

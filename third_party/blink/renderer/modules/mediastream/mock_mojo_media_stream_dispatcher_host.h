@@ -56,7 +56,7 @@ class MockMojoMediaStreamDispatcherHost
                void(const base::UnguessableToken&,
                     const base::UnguessableToken&,
                     KeepDeviceAliveForTransferCallback));
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MOCK_METHOD3(SendWheel,
                void(const base::UnguessableToken&,
                     mojom::blink::CapturedWheelActionPtr,

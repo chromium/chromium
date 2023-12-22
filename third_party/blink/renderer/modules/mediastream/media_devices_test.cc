@@ -248,7 +248,7 @@ class MockMediaDevicesDispatcherHost final
     }
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void CloseFocusWindowOfOpportunity(const String& label) override {}
 
   void ProduceSubCaptureTargetId(
@@ -435,7 +435,7 @@ void VerifyVideoInputCapabilities(
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 SubCaptureTarget* ToSubCaptureTarget(const blink::ScriptValue& value) {
   if (CropTarget* crop_target =
           V8CropTarget::ToWrappable(value.GetIsolate(), value.V8Value())) {
@@ -449,7 +449,7 @@ SubCaptureTarget* ToSubCaptureTarget(const blink::ScriptValue& value) {
 
   NOTREACHED_NORETURN();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -912,7 +912,7 @@ TEST_F(MediaDevicesTest,
             ToExceptionCode(DOMExceptionCode::kNotSupportedError));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // This test logically belongs to the ProduceSubCaptureTargetTest suite,
 // but does not require parameterization.
 TEST_F(MediaDevicesTest, DistinctIdsForDistinctTypes) {
@@ -961,7 +961,7 @@ TEST_F(MediaDevicesTest, DistinctIdsForDistinctTypes) {
 
   EXPECT_NE(first_result, second_result);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 class ProduceSubCaptureTargetTest
     : public MediaDevicesTest,
@@ -994,7 +994,7 @@ TEST_P(ProduceSubCaptureTargetTest, IdUnsupportedOnAndroid) {
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   ASSERT_TRUE(media_devices);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Note that the test will NOT produce false-positive on failure to call this.
   // Rather, GTEST_FAIL would be called by ProduceSubCaptureTarget if it
   // ends up being called.
@@ -1012,7 +1012,7 @@ TEST_P(ProduceSubCaptureTargetTest, IdUnsupportedOnAndroid) {
   const ScriptPromise div_promise = media_devices->ProduceSubCaptureTarget(
       scope.GetScriptState(), div, scope.GetExceptionState(), type_);
   platform()->RunUntilIdle();
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_TRUE(scope.GetExceptionState().HadException());
 #else  // Non-Android shown to work, proving the test is sane.
   EXPECT_FALSE(div_promise.IsEmpty());
@@ -1020,7 +1020,7 @@ TEST_P(ProduceSubCaptureTargetTest, IdUnsupportedOnAndroid) {
 #endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_P(ProduceSubCaptureTargetTest, IdWithValidElement) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());

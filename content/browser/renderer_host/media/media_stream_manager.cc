@@ -513,7 +513,7 @@ bool ChangeSourceSupported(const MediaStreamDevices& devices) {
   return true;  // getDisplayMedia() and killswitches did not trigger.
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 base::TimeDelta GetConditionalFocusWindow() {
   const std::string custom_window =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -881,7 +881,7 @@ class MediaStreamManager::DeviceRequest {
       blink::mojom::MediaStreamType type,
       media::mojom::CaptureHandlePtr capture_handle) {}
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // If capturing a tab, returns the tab's |WebContentsMediaCaptureId|.
   // Otherwise, returns an empty |WebContentsMediaCaptureId|.
   WebContentsMediaCaptureId GetCapturedTabId() const {
@@ -928,7 +928,7 @@ class MediaStreamManager::DeviceRequest {
 
     return captured_surface_controller_.get();
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // The render frame host id that requested this stream to be generated and
   // that will receive a handle to the MediaStream. This may be different from
@@ -1033,7 +1033,7 @@ class MediaStreamManager::DeviceRequest {
   MediaStreamType video_type_;
   GlobalRenderFrameHostId target_render_frame_host_id_;
   std::string label_;
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // If an attempt to access any of the Captured Surface Control APIs is made,
   // a controller is instantiated to manage state.
   std::unique_ptr<CapturedSurfaceController> captured_surface_controller_;
@@ -1510,7 +1510,7 @@ MediaStreamManager::MediaStreamManager(
     media::AudioSystem* audio_system,
     std::unique_ptr<VideoCaptureProvider> video_capture_provider)
     :
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       conditional_focus_window_(GetConditionalFocusWindow()),
       captured_surface_controller_factory_(
           MakeDefaultCapturedSurfaceControllerFactory()),
@@ -2288,7 +2288,7 @@ MediaStreamManager::DeviceRequest* MediaStreamManager::FindRequest(
   return (it != requests_.end()) ? it->second.get() : nullptr;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 MediaStreamManager::DeviceRequest*
 MediaStreamManager::FindRequestByVideoSessionId(
     const base::UnguessableToken& session_id) const {
@@ -3000,7 +3000,7 @@ void MediaStreamManager::PanTiltZoomPermissionChecked(
     return;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // 1. Only the first call to SetCapturedDisplaySurfaceFocus() has an
   //    effect, so a direct call to SetCapturedDisplaySurfaceFocus()
   //    before the scheduled task is executed would render the scheduled
@@ -3584,14 +3584,14 @@ void MediaStreamManager::HandleChangeSourceRequestResponse(
                             ? request->stream_controls().audio.stream_type
                             : MediaStreamType::NO_SERVICE);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (request->HasCapturedSurfaceController()) {
     // Either inform the controller that it's now controlling a new tab,
     // or neutralize it if it's no longer capturing a tab.
     request->GetCapturedSurfaceController()->UpdateCaptureTarget(
         request->GetCapturedTabId());
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 void MediaStreamManager::StopMediaStreamFromBrowser(const std::string& label) {
@@ -3892,7 +3892,7 @@ void MediaStreamManager::SetStateForTesting(
   requests_iterator->second->SetState(stream_type, new_state);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void MediaStreamManager::SetCapturedSurfaceControllerFactoryForTesting(
     CapturedSurfaceControllerFactoryCallback factory) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -3907,7 +3907,7 @@ MediaStreamManager::MakeCapturedSurfaceController(
   return captured_surface_controller_factory_.Run(capturer_rfh_id,
                                                   captured_wc_id);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void MediaStreamManager::SetGenerateStreamsCallbackForTesting(
     GenerateStreamTestCallback test_callback) {
@@ -4047,7 +4047,7 @@ void MediaStreamManager::OnRegionCaptureRectChanged(
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void MediaStreamManager::SetCapturedDisplaySurfaceFocus(
     const std::string& label,
     bool focus,
@@ -4121,7 +4121,7 @@ void MediaStreamManager::SendWheel(
 
   controller->SendWheel(std::move(action), std::move(callback));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void MediaStreamManager::RegisterDispatcherHost(
     std::unique_ptr<blink::mojom::MediaStreamDispatcherHost> host,

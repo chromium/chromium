@@ -37,7 +37,7 @@ bool IsCaptureType(const MediaStreamTrack* track,
       types, [display_surface](SurfaceType t) { return t == display_surface; });
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool IsValid(CapturedWheelAction* action) {
   CHECK(action->hasX());
   CHECK(action->hasY());
@@ -68,7 +68,7 @@ void OnCapturedSurfaceControlResult(ScriptPromiseResolver* resolver,
   }
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -127,7 +127,7 @@ ScriptPromise CaptureController::sendWheel(ScriptState* script_state,
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   const ScriptPromise promise = resolver->Promise();
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   resolver->Reject(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kNotSupportedError, "Unsupported."));
   return promise;
@@ -212,7 +212,7 @@ ScriptPromise CaptureController::setZoomLevel(ScriptState* script_state,
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   const ScriptPromise promise = resolver->Promise();
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   resolver->Reject(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kNotSupportedError, "Unsupported."));
   return promise;
@@ -280,7 +280,7 @@ void CaptureController::FinalizeFocusDecision() {
     return;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   client->FocusCapturedSurface(
       String(descriptor_id_),
       ShouldFocusCapturedSurface(focus_behavior_.value()));

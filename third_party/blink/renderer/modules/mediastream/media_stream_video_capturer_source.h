@@ -93,7 +93,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   void RestartSourceImpl(const media::VideoCaptureFormat& new_format) override;
   absl::optional<media::VideoCaptureFormat> GetCurrentFormat() const override;
   void ChangeSourceImpl(const MediaStreamDevice& new_device) override;
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SendWheel(
       CapturedWheelAction* action,
       base::OnceCallback<void(bool, const String&)> callback) override;

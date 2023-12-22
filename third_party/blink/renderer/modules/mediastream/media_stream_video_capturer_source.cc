@@ -31,7 +31,7 @@ using mojom::blink::MediaStreamRequestResult;
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 String CscResultToString(CapturedSurfaceControlResult result) {
   switch (result) {
     case CapturedSurfaceControlResult::kSuccess:
@@ -61,7 +61,7 @@ void OnGetZoomLevelResult(
   const String error_string = CscResultToString(result);
   std::move(callback).Run(/*zoom_level=*/zoom_level, /*error=*/error_string);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -235,7 +235,7 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
                          weak_factory_.GetWeakPtr(), capture_params_));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void MediaStreamVideoCapturerSource::SendWheel(
     CapturedWheelAction* action,
     base::OnceCallback<void(bool, const String&)> callback) {
