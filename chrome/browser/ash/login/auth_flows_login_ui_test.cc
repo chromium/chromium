@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/auth_ui_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
+#include "chrome/browser/ash/login/test/fake_recovery_service_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -76,6 +77,8 @@ class AuthFlowsLoginTestBase : public LoginManagerTest {
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   base::AutoReset<bool> branded_build{&WizardContext::g_is_branded_build, true};
   LoginManagerMixin login_mixin_;
+  FakeRecoveryServiceMixin fake_recovery_service_{&mixin_host_,
+                                                  embedded_test_server()};
 };
 
 class AuthFlowsLoginReauthTest : public AuthFlowsLoginTestBase {
@@ -86,25 +89,45 @@ class AuthFlowsLoginReauthTest : public AuthFlowsLoginTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest, GaiaPasswordNotChanged) {
-  ConfigureFakeGaiaFor(with_gaia_pw_);
+  const auto& user = with_gaia_pw_recovery_;
+  ConfigureFakeGaiaFor(user);
 
-  test::OnLoginScreen()->SelectUserPod(with_gaia_pw_.account_id);
+  test::OnLoginScreen()->SelectUserPod(user.account_id);
   auto gaia = test::AwaitGaiaSigninUI();
 
-  gaia->ReauthConfirmEmail(with_gaia_pw_.account_id);
+  gaia->ReauthConfirmEmail(user.account_id);
   gaia->TypePassword(test::kGaiaPassword);
   gaia->ContinueLogin();
 
   login_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest, GaiaPasswordChangedManual) {
-  ConfigureFakeGaiaFor(with_gaia_pw_);
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest, GaiaPasswordChangedRecovery) {
+  const auto& user = with_gaia_pw_recovery_;
+  ConfigureFakeGaiaFor(user);
 
-  test::OnLoginScreen()->SelectUserPod(with_gaia_pw_.account_id);
+  test::OnLoginScreen()->SelectUserPod(user.account_id);
   auto gaia = test::AwaitGaiaSigninUI();
 
-  gaia->ReauthConfirmEmail(with_gaia_pw_.account_id);
+  gaia->ReauthConfirmEmail(user.account_id);
+  gaia->TypePassword(test::kNewPassword);
+  gaia->ContinueLogin();
+
+  auto pw_updated = test::AwaitPasswordUpdatedUI();
+  pw_updated->ExpectPasswordUpdateState();
+  pw_updated->ConfirmPasswordUpdate();
+
+  login_mixin_.WaitForActiveSession();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest, GaiaPasswordChangedManual) {
+  const auto& user = with_gaia_pw_;
+  ConfigureFakeGaiaFor(user);
+
+  test::OnLoginScreen()->SelectUserPod(user.account_id);
+  auto gaia = test::AwaitGaiaSigninUI();
+
+  gaia->ReauthConfirmEmail(user.account_id);
   gaia->TypePassword(test::kNewPassword);
   gaia->ContinueLogin();
 
