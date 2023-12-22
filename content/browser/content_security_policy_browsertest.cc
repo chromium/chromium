@@ -176,8 +176,8 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, FileURLs) {
   struct {
     const char* csp;
     std::string element_name;
-    const raw_ref<const GURL::Replacements, ExperimentalAsh> document_host;
-    const raw_ref<const GURL::Replacements, ExperimentalAsh> element_host;
+    const raw_ref<const GURL::Replacements> document_host;
+    const raw_ref<const GURL::Replacements> element_host;
     bool expect_allowed;
   } test_cases[] = {
       {"img-src 'none'", "img", raw_ref(none), raw_ref(none), false},

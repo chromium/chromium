@@ -195,7 +195,7 @@ class MockTtsControllerDelegate : public TtsControllerDelegate {
                                         double* volume) override {}
 
  private:
-  raw_ptr<BrowserContext, ExperimentalAsh> last_browser_context_ = nullptr;
+  raw_ptr<BrowserContext> last_browser_context_ = nullptr;
   PreferredVoiceIds ids_;
 };
 #endif

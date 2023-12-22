@@ -235,7 +235,7 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   }
 
   SEQUENCE_CHECKER(ui_sequence_checker_);
-  raw_ptr<tracing::PerfettoProducer, ExperimentalAsh> producer_ = nullptr;
+  raw_ptr<tracing::PerfettoProducer> producer_ = nullptr;
   std::unique_ptr<CrOSSystemTracingSession> session_;
   bool session_started_ = false;
   base::OnceClosure on_session_started_callback_;
