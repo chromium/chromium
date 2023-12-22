@@ -1920,6 +1920,19 @@ inline constexpr char kCaptureModeEducationShownCount[] =
 inline constexpr char kCaptureModeEducationLastShown[] =
     "ash.capture_mode.capture_mode_education_last_shown";
 
+// A dictionary that stores app icons' light vibrant colors.
+inline constexpr char kAshAppIconLightVibrantColorCache[] =
+    "ash.app_icon_light_vibrant_color_cache";
+
+// A dictionary that stores the color group component of app icons' sortable
+// colors.
+inline constexpr char kAshAppIconSortableColorGroupCache[] =
+    "ash.app_icon_sortable_color_group_cache";
+
+// A dictionary that stores the hue component of app icons' sortable colors.
+inline constexpr char kAshAppIconSortableColorHueCache[] =
+    "ash.app_icon_sortable_color_hue_cache";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------

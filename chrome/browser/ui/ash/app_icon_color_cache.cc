@@ -4,19 +4,34 @@
 
 #include "chrome/browser/ui/ash/app_icon_color_cache.h"
 
+#include <array>
+#include <memory>
+#include <optional>
+#include <set>
+
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/functional/callback.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_service.h"
+#include "services/preferences/public/cpp/dictionary_value_update.h"
+#include "services/preferences/public/cpp/scoped_pref_update.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
+BASE_FEATURE(kEnablePersistentAshIconColorCache,
+             "EnablePersistentAshIconColorCache",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
-// Constants ----------------------------------------------------------
+// Constants -------------------------------------------------------------------
 
 // An hsv color with a value less than this cutoff will be categorized as black.
 constexpr float kBlackValueCutoff = 0.35f;
@@ -37,10 +52,87 @@ constexpr SkColor kDefaultLightVibrantColor = SK_ColorWHITE;
 // indicate that any value equal to or higher than this is considered red.
 constexpr float kRedHueCutoff = 315.0f;
 
-// Color Utilities ------------------------------------------------------
+// Utilities for the vibrant color prefs cache ---------------------------------
+
+// Returns the vibrant color of the app icon specified by `key` from the
+// prefs cache associated with `profile`. Returns `std::nullopt` if the queried
+// color cannot be found.
+std::optional<SkColor> GetLightVibrantColorForAppFromPrefsCache(
+    Profile* profile,
+    const std::string& key) {
+  return profile->GetPrefs()
+      ->GetDict(prefs::kAshAppIconLightVibrantColorCache)
+      .FindInt(key);
+}
+
+// Sets the vibrant color of the app icon specified by `key` in the prefs
+// cache associated with the `profile`. Overwrites the existing color in the
+// cache if any.
+void SetLightVibrantColorForAppInPrefsCache(Profile* profile,
+                                            const std::string& key,
+                                            SkColor color) {
+  ::prefs::ScopedDictionaryPrefUpdate(profile->GetPrefs(),
+                                      prefs::kAshAppIconLightVibrantColorCache)
+      ->SetInteger(key, color);
+}
+
+// Utilities for the icon color prefs cache -----------------------------------
+// NOTE: Prefs cache can only store primitive types. Therefore, we cache color
+// groups and hues instead of `IconColor` instances.
+
+void SetIntegerInPrefsDict(Profile* profile,
+                           const std::string& dictionary,
+                           const std::string& key,
+                           int value) {
+  ::prefs::ScopedDictionaryPrefUpdate(profile->GetPrefs(), dictionary)
+      ->SetInteger(key, value);
+}
+
+void RemoveEntryFromColorPrefsCache(Profile* profile,
+                                    const std::string& dictionary,
+                                    const std::string& key) {
+  ::prefs::ScopedDictionaryPrefUpdate(profile->GetPrefs(), dictionary)
+      ->Remove(key);
+}
+
+std::optional<sync_pb::AppListSpecifics::ColorGroup>
+GetColorGroupFromPrefsCache(Profile* profile, const std::string& app_id) {
+  const auto result = profile->GetPrefs()
+                          ->GetDict(prefs::kAshAppIconSortableColorGroupCache)
+                          .FindInt(app_id);
+  return result && sync_pb::AppListSpecifics::ColorGroup_IsValid(*result)
+             ? std::optional<sync_pb::AppListSpecifics::ColorGroup>(
+                   sync_pb::AppListSpecifics::ColorGroup(*result))
+             : std::nullopt;
+}
+
+std::optional<int> GetHueFromPrefsCache(Profile* profile,
+                                        const std::string& app_id) {
+  const auto result = profile->GetPrefs()
+                          ->GetDict(prefs::kAshAppIconSortableColorHueCache)
+                          .FindInt(app_id);
+  return result >= IconColor::kHueMin && result <= IconColor::kHueMax
+             ? result
+             : std::nullopt;
+}
+
+void StoreColorGroupToPrefsCache(
+    Profile* profile,
+    const std::string& app_id,
+    sync_pb::AppListSpecifics::ColorGroup color_group) {
+  SetIntegerInPrefsDict(profile, prefs::kAshAppIconSortableColorGroupCache,
+                        app_id, color_group);
+}
+
+void StoreHueToPrefsCache(Profile* profile,
+                          const std::string& app_id,
+                          int hue) {
+  SetIntegerInPrefsDict(profile, prefs::kAshAppIconSortableColorHueCache,
+                        app_id, hue);
+}
 
 // Uses the icon image to calculate the light vibrant color.
-std::optional<SkColor> CalculateLightVibrantColor(gfx::ImageSkia image) {
+std::optional<SkColor> CalculateLightVibrantColor(const gfx::ImageSkia& image) {
   TRACE_EVENT0("ui",
                "app_icon_color_cache::{anonynous}::CalculateLightVibrantColor");
   const SkBitmap* source = image.bitmap();
@@ -48,8 +140,8 @@ std::optional<SkColor> CalculateLightVibrantColor(gfx::ImageSkia image) {
     return std::nullopt;
 
   std::vector<color_utils::ColorProfile> color_profiles;
-  color_profiles.push_back(color_utils::ColorProfile(
-      color_utils::LumaRange::LIGHT, color_utils::SaturationRange::VIBRANT));
+  color_profiles.emplace_back(color_utils::LumaRange::LIGHT,
+                              color_utils::SaturationRange::VIBRANT);
 
   std::vector<color_utils::Swatch> best_swatches =
       color_utils::CalculateProminentColorsOfBitmap(
@@ -66,7 +158,7 @@ std::optional<SkColor> CalculateLightVibrantColor(gfx::ImageSkia image) {
 
 // Categorizes `color` into one color group.
 sync_pb::AppListSpecifics::ColorGroup ColorToColorGroup(SkColor color) {
-  TRACE_EVENT0("ui", "app_icon_color_cache::ColorToColorGroup");
+  TRACE_EVENT0("ui", "app_list::reorder::ColorToColorGroup");
   SkScalar hsv[3];
   SkColorToHSV(color, hsv);
 
@@ -127,7 +219,7 @@ sync_pb::AppListSpecifics::ColorGroup ColorToColorGroup(SkColor color) {
 sync_pb::AppListSpecifics::ColorGroup CalculateBackgroundColorGroup(
     const SkBitmap& source,
     sync_pb::AppListSpecifics::ColorGroup light_vibrant_group) {
-  TRACE_EVENT0("ui", "app_icon_color_cache::CalculateBackgroundColorGroup");
+  TRACE_EVENT0("ui", "app_list::reorder::CalculateBackgroundColorGroup");
   if (source.empty()) {
     return sync_pb::AppListSpecifics::ColorGroup::
         AppListSpecifics_ColorGroup_COLOR_WHITE;
@@ -200,10 +292,9 @@ sync_pb::AppListSpecifics::ColorGroup CalculateBackgroundColorGroup(
 // Returns a `IconColor` which can be used to sort icons by their
 // background color and light vibrant color.
 IconColor CalculateIconColorForApp(const std::string& id,
+                                   SkColor extracted_light_vibrant_color,
                                    const gfx::ImageSkia& image) {
   TRACE_EVENT0("ui", "app_icon_color_cache::CalculateIconColorForApp");
-  const SkColor extracted_light_vibrant_color =
-      AppIconColorCache::GetInstance().GetLightVibrantColorForApp(id, image);
 
   const sync_pb::AppListSpecifics::ColorGroup light_vibrant_color_group =
       ColorToColorGroup(extracted_light_vibrant_color);
@@ -253,36 +344,172 @@ IconColor CalculateIconColorForApp(const std::string& id,
       hue);
 }
 
-}  // namespace
+bool IsPersistentCacheEnabled() {
+  return base::FeatureList::IsEnabled(kEnablePersistentAshIconColorCache);
+}
 
-AppIconColorCache& AppIconColorCache::GetInstance() {
-  static base::NoDestructor<AppIconColorCache> color_cache;
+std::map<Profile*, std::unique_ptr<AppIconColorCache>>&
+GetInstanceStorageMap() {
+  static base::NoDestructor<
+      std::map<Profile*, std::unique_ptr<AppIconColorCache>>>
+      color_cache;
   return *color_cache;
 }
 
-AppIconColorCache::AppIconColorCache() = default;
+void DestroyInstance(Profile* profile) {
+  GetInstanceStorageMap().erase(profile);
+}
+
+}  // namespace
+
+AppIconColorCache& AppIconColorCache::GetInstance(Profile* profile) {
+  auto& color_cache = GetInstanceStorageMap();
+  auto it = color_cache.find(profile);
+  if (it == color_cache.end()) {
+    const auto [new_it, success] = color_cache.emplace(
+        profile, std::make_unique<AppIconColorCache>(profile));
+    CHECK(success);
+    it = new_it;
+  }
+  return *(it->second);
+}
+
+// PartitionAlloc DanglingRawPtr detector will check on unused pointer so we
+// only initialize it when needed.
+AppIconColorCache::AppIconColorCache(Profile* profile)
+    : profile_(IsPersistentCacheEnabled() ? profile : nullptr) {
+  // AppIconColorCache is only valid for a real user so profile must be valid
+  // if it is not used.
+  DCHECK(profile);
+  if (IsPersistentCacheEnabled()) {
+    profile_observation_.Observe(profile);
+  }
+  // Clean up cached data.
+  if (profile && !IsPersistentCacheEnabled()) {
+    for (const auto* const dictionary :
+         {prefs::kAshAppIconLightVibrantColorCache,
+          prefs::kAshAppIconSortableColorGroupCache,
+          prefs::kAshAppIconSortableColorHueCache}) {
+      profile->GetPrefs()->ClearPref(dictionary);
+    }
+  }
+}
 
 AppIconColorCache::~AppIconColorCache() = default;
 
-SkColor AppIconColorCache::GetLightVibrantColorForApp(const std::string& app_id,
-                                                      gfx::ImageSkia icon) {
+void AppIconColorCache::OnProfileWillBeDestroyed(Profile* profile) {
+  profile_observation_.Reset();
+  DestroyInstance(profile_);
+}
+
+SkColor AppIconColorCache::GetLightVibrantColorForApp(
+    const std::string& app_id,
+    const gfx::ImageSkia& icon) {
+  if (IsPersistentCacheEnabled() && !profile_) {
+    // This could happen when `profile_` is removed before the destruction of
+    // `AppIconColorCache`.
+    return kDefaultLightVibrantColor;
+  }
   AppIdLightVibrantColor::const_iterator it =
-      app_id_light_vibrant_color_map_.find(app_id);
-  if (it != app_id_light_vibrant_color_map_.end()) {
+      vibrant_colors_by_ids_.find(app_id);
+  if (it != vibrant_colors_by_ids_.end()) {
     return it->second;
+  }
+
+  if (HasPrefsCache()) {
+    if (const auto result =
+            GetLightVibrantColorForAppFromPrefsCache(profile_, app_id)) {
+      vibrant_colors_by_ids_[app_id] = *result;
+      return *result;
+    }
   }
 
   SkColor light_vibrant_color =
       CalculateLightVibrantColor(icon).value_or(kDefaultLightVibrantColor);
   // TODO(crbug.com/1197249): Find a way to evict stale items in the
   // AppIconColorCache.
-  app_id_light_vibrant_color_map_[app_id] = light_vibrant_color;
+  vibrant_colors_by_ids_[app_id] = light_vibrant_color;
+
+  if (HasPrefsCache()) {
+    SetLightVibrantColorForAppInPrefsCache(profile_, app_id,
+                                           light_vibrant_color);
+  }
+
   return light_vibrant_color;
 }
 
 IconColor AppIconColorCache::GetIconColorForApp(const std::string& app_id,
                                                 const gfx::ImageSkia& image) {
-  return CalculateIconColorForApp(app_id, image);
+  if (IsPersistentCacheEnabled()) {
+    if (!profile_) {
+      // This could happen when `profile_` is removed before the destruction of
+      // `AppIconColorCache`.
+      return IconColor();
+    }
+    if (const AppIdIconColor::const_iterator it =
+            icon_colors_by_ids_.find(app_id);
+        it != icon_colors_by_ids_.end()) {
+      return it->second;
+    }
+  }
+
+  std::optional<IconColor> result = GetIconColorForAppFromPrefsCache(app_id);
+  if (!result) {
+    result = CalculateIconColorForApp(
+        app_id, GetLightVibrantColorForApp(app_id, image), image);
+  }
+  if (IsPersistentCacheEnabled()) {
+    icon_colors_by_ids_[app_id] = *result;
+  }
+  MaybeStoreIconColorToPrefsCache(app_id, *result);
+  return *result;
+}
+
+void AppIconColorCache::RemoveColorDataForApp(const std::string& app_id) {
+  icon_colors_by_ids_.erase(app_id);
+  vibrant_colors_by_ids_.erase(app_id);
+  if (!HasPrefsCache()) {
+    return;
+  }
+  RemoveEntryFromColorPrefsCache(
+      profile_, prefs::kAshAppIconLightVibrantColorCache, app_id);
+  RemoveEntryFromColorPrefsCache(
+      profile_, prefs::kAshAppIconSortableColorGroupCache, app_id);
+  RemoveEntryFromColorPrefsCache(
+      profile_, prefs::kAshAppIconSortableColorHueCache, app_id);
+}
+
+std::optional<IconColor> AppIconColorCache::GetIconColorForAppFromPrefsCache(
+    const std::string& app_id) {
+  if (!HasPrefsCache()) {
+    return std::nullopt;
+  }
+
+  const auto color_group = GetColorGroupFromPrefsCache(profile_, app_id);
+  if (!color_group) {
+    return std::nullopt;
+  }
+
+  const auto hue = GetHueFromPrefsCache(profile_, app_id);
+  if (!hue) {
+    return std::nullopt;
+  }
+
+  return IconColor(*color_group, *hue);
+}
+
+void AppIconColorCache::MaybeStoreIconColorToPrefsCache(
+    const std::string& app_id,
+    const IconColor& icon_color) {
+  if (HasPrefsCache()) {
+    StoreColorGroupToPrefsCache(profile_, app_id,
+                                icon_color.background_color());
+    StoreHueToPrefsCache(profile_, app_id, icon_color.hue());
+  }
+}
+
+bool AppIconColorCache::HasPrefsCache() const {
+  return IsPersistentCacheEnabled() && profile_;
 }
 
 }  // namespace ash

@@ -505,8 +505,8 @@ void ChromeShelfController::SetItemImage(const ash::ShelfID& shelf_id,
     ash::ShelfItem new_item = *item;
     new_item.image = image;
     new_item.notification_badge_color =
-        ash::AppIconColorCache::GetInstance().GetLightVibrantColorForApp(
-            new_item.id.app_id, image);
+        ash::AppIconColorCache::GetInstance(profile())
+            .GetLightVibrantColorForApp(new_item.id.app_id, image);
     model_->Set(model_->ItemIndexByID(shelf_id), new_item);
   }
 
@@ -1259,8 +1259,8 @@ void ChromeShelfController::UpdateAppImage(
     item.has_placeholder_icon = is_placeholder_icon;
     shelf_spinner_controller_->MaybeApplySpinningEffect(app_id, &item.image);
     item.notification_badge_color =
-        ash::AppIconColorCache::GetInstance().GetLightVibrantColorForApp(app_id,
-                                                                         image);
+        ash::AppIconColorCache::GetInstance(profile())
+            .GetLightVibrantColorForApp(app_id, image);
     model_->Set(index, item);
     // It's possible we're waiting on more than one item, so don't break.
   }
@@ -1592,7 +1592,7 @@ void ChromeShelfController::CreateBrowserShortcutItem(bool pinned) {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   browser_shortcut.image = *rb.GetImageSkiaNamed(IDR_CHROME_APP_ICON_192);
   browser_shortcut.notification_badge_color =
-      ash::AppIconColorCache::GetInstance().GetLightVibrantColorForApp(
+      ash::AppIconColorCache::GetInstance(profile()).GetLightVibrantColorForApp(
           kChromeAppId, browser_shortcut.image);
   browser_shortcut.title = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
 

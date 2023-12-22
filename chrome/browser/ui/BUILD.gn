@@ -664,6 +664,7 @@ static_library("ui") {
     "//services/device/public/cpp/geolocation",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/mojom",
+    "//services/preferences/public/cpp",
     "//skia",
     "//storage/browser",
     "//storage/common",

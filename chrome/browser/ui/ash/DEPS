@@ -17,6 +17,10 @@ specific_include_rules = {
     "+components/user_education/views",
     "+ui/message_center/message_center.h",
   ],
+  "app_icon_color_cache.cc": [
+    "+services/preferences/public/cpp/dictionary_value_update.h",
+    "+services/preferences/public/cpp/scoped_pref_update.h",
+  ],
   "assistant_timers_browsertest\.cc": [
     "+ui/message_center",
   ],

@@ -613,6 +613,10 @@ void Preferences::RegisterProfilePrefs(
                                 true);
   registry->RegisterListPref(prefs::kUserFeedbackWithLowLevelDebugDataAllowed);
   registry->RegisterBooleanPref(prefs::kIsolatedWebAppsEnabled, false);
+
+  registry->RegisterDictionaryPref(prefs::kAshAppIconLightVibrantColorCache);
+  registry->RegisterDictionaryPref(prefs::kAshAppIconSortableColorGroupCache);
+  registry->RegisterDictionaryPref(prefs::kAshAppIconSortableColorHueCache);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {

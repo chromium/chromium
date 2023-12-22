@@ -167,6 +167,10 @@ void ChromeAppListItem::LoadIcon() {
 void ChromeAppListItem::IncrementIconVersion() {
   ++metadata_->icon_version;
 
+  // The icon is going to update. Therefore, we remove the currently cached
+  // color.
+  ash::AppIconColorCache::GetInstance(profile()).RemoveColorDataForApp(id());
+
   AppListModelUpdater* updater = model_updater();
   if (updater)
     updater->SetItemIconVersion(id(), metadata_->icon_version);
@@ -178,14 +182,13 @@ void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon,
   metadata_->icon = icon;
   metadata_->icon.EnsureRepsForSupportedScales();
   metadata_->badge_color =
-      ash::AppIconColorCache::GetInstance().GetLightVibrantColorForApp(id(),
-                                                                       icon);
+      ash::AppIconColorCache::GetInstance(profile()).GetLightVibrantColorForApp(
+          id(), icon);
   metadata_->icon_color =
       is_place_holder_icon
           ? ash::IconColor()
-          : ash::AppIconColorCache::GetInstance().GetIconColorForApp(id(),
-                                                                     icon);
-  metadata_->is_placeholder_icon = is_place_holder_icon;
+          : ash::AppIconColorCache::GetInstance(profile()).GetIconColorForApp(
+                id(), icon);
 
   AppListModelUpdater* updater = model_updater();
   if (updater) {
