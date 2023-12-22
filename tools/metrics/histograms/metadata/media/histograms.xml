@@ -374,17 +374,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audible.CloseNewestToExitConcurrentPlayback"
-    enum="ExitConcurrentPlaybackContents" expires_after="2023-09-15">
-  <owner>evliu@google.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records when an audible tab is closed and we now only have one audible tab
-    open. Warning: this histogram was expired from 2019-05-30 to 4-18-22; data
-    may be missing.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audible.ConcurrentTabsTime" units="ms"
     expires_after="2024-05-05">
   <owner>evliu@google.com</owner>
