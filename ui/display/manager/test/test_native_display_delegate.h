@@ -153,8 +153,7 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
   // If true, the callbacks are posted on the message loop.
   bool run_async_;
 
-  raw_ptr<ActionLogger, DanglingUntriaged | ExperimentalAsh>
-      log_;  // Not owned.
+  raw_ptr<ActionLogger, DanglingUntriaged> log_;  // Not owned.
 
   base::ObserverList<NativeDisplayObserver>::Unchecked observers_;
 };

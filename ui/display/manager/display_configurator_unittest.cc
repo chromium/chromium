@@ -111,7 +111,7 @@ class TestObserver : public DisplayConfigurator::Observer {
   }
 
  private:
-  raw_ptr<DisplayConfigurator, ExperimentalAsh> configurator_;  // Not owned.
+  raw_ptr<DisplayConfigurator> configurator_;  // Not owned.
 
   // Number of times that OnDisplayMode*() has been called.
   int num_changes_;
@@ -219,8 +219,7 @@ class ConfigurationWaiter {
     callback_result_ = status ? CALLBACK_SUCCESS : CALLBACK_FAILURE;
   }
 
-  raw_ptr<DisplayConfigurator::TestApi, ExperimentalAsh>
-      test_api_;  // Not owned.
+  raw_ptr<DisplayConfigurator::TestApi> test_api_;  // Not owned.
 
   // The status of the display configuration.
   CallbackResult callback_result_;
@@ -379,8 +378,7 @@ class DisplayConfiguratorTest : public testing::Test {
   DisplayConfigurator configurator_;
   TestObserver observer_{&configurator_};
   std::unique_ptr<ActionLogger> log_;
-  raw_ptr<TestNativeDisplayDelegate, ExperimentalAsh>
-      native_display_delegate_;  // not owned
+  raw_ptr<TestNativeDisplayDelegate> native_display_delegate_;  // not owned
   DisplayConfigurator::TestApi test_api_{&configurator_};
   ConfigurationWaiter config_waiter_{&test_api_};
   base::test::ScopedFeatureList scoped_feature_list_;

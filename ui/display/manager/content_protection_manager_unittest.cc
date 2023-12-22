@@ -47,7 +47,7 @@ class TestObserver : public ContentProtectionManager::Observer {
     security_changes_.emplace(display_id, secure);
   }
 
-  const raw_ptr<ContentProtectionManager, ExperimentalAsh> manager_;
+  const raw_ptr<ContentProtectionManager> manager_;
   SecurityChanges security_changes_;
 };
 

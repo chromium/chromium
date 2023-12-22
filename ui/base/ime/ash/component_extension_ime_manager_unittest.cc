@@ -132,8 +132,7 @@ class ComponentExtensionIMEManagerTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<MockComponentExtensionIMEManagerDelegate,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<MockComponentExtensionIMEManagerDelegate, DanglingUntriaged>
       mock_delegate_;
   std::unique_ptr<ComponentExtensionIMEManager> component_ext_mgr_;
   std::vector<ComponentExtensionIME> ime_list_;

@@ -48,7 +48,7 @@ class DrmOverlayManagerGpu : public DrmOverlayManager {
       const std::vector<OverlaySurfaceCandidate>& candidates,
       const std::vector<OverlayStatus>& status);
 
-  const raw_ptr<DrmThreadProxy, ExperimentalAsh> drm_thread_proxy_;
+  const raw_ptr<DrmThreadProxy> drm_thread_proxy_;
 
   bool has_set_displays_configured_callback_ = false;
 

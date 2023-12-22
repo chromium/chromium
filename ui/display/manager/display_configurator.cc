@@ -39,13 +39,13 @@ namespace {
 typedef std::vector<const DisplayMode*> DisplayModeList;
 
 struct DisplayState {
-  raw_ptr<DisplaySnapshot, ExperimentalAsh> display = nullptr;  // Not owned.
+  raw_ptr<DisplaySnapshot> display = nullptr;  // Not owned.
 
   // User-selected mode for the display.
-  raw_ptr<const DisplayMode, ExperimentalAsh> selected_mode = nullptr;
+  raw_ptr<const DisplayMode> selected_mode = nullptr;
 
   // Mode used when displaying the same desktop on multiple displays.
-  raw_ptr<const DisplayMode, ExperimentalAsh> mirror_mode = nullptr;
+  raw_ptr<const DisplayMode> mirror_mode = nullptr;
 };
 
 // Returns whether |display_id| can be found in |display_list|,
@@ -169,7 +169,7 @@ class DisplayConfigurator::DisplayLayoutManagerImpl
   bool FindExactMatchingMirrorMode(const std::vector<DisplayState*>& displays,
                                    bool preserve_native_aspect_ratio) const;
 
-  raw_ptr<DisplayConfigurator, ExperimentalAsh> configurator_;  // Not owned.
+  raw_ptr<DisplayConfigurator> configurator_;  // Not owned.
 
   bool configure_displays_ = false;
 };

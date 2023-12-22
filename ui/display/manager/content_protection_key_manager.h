@@ -71,7 +71,7 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionKeyManager {
   // change throughout the life of the process.
   std::string cached_provisioned_key_;
 
-  raw_ptr<NativeDisplayDelegate, ExperimentalAsh> native_display_delegate_ =
+  raw_ptr<NativeDisplayDelegate> native_display_delegate_ =
       nullptr;  // Not owned.
 
   base::flat_map<int64_t, KeySetCallback> pending_display_callbacks_;

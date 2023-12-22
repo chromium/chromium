@@ -35,8 +35,8 @@ struct DISPLAY_MANAGER_EXPORT DisplayConfigureRequest {
                           const DisplayMode* mode,
                           const gfx::Point& origin);
 
-  raw_ptr<DisplaySnapshot, ExperimentalAsh> display;
-  raw_ptr<const DisplayMode, ExperimentalAsh> mode;
+  raw_ptr<DisplaySnapshot> display;
+  raw_ptr<const DisplayMode> mode;
   gfx::Point origin;
   bool enable_vrr;
 };
@@ -109,8 +109,8 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
     RequestToOriginalMode(DisplayConfigureRequest* request,
                           const DisplayMode* original_mode);
 
-    raw_ptr<DisplayConfigureRequest, ExperimentalAsh> request;
-    const raw_ptr<const DisplayMode, ExperimentalAsh> original_mode;
+    raw_ptr<DisplayConfigureRequest> request;
+    const raw_ptr<const DisplayMode> original_mode;
   };
   using PartitionedRequestsQueue =
       std::queue<std::vector<RequestToOriginalMode>>;
@@ -148,7 +148,7 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   // requests). Return false if no request was downgraded.
   bool DowngradeDisplayRequestGroup();
 
-  raw_ptr<NativeDisplayDelegate, ExperimentalAsh> delegate_;  // Not owned.
+  raw_ptr<NativeDisplayDelegate> delegate_;  // Not owned.
 
   // Holds the next configuration request to attempt modeset.
   std::vector<DisplayConfigureRequest> requests_;

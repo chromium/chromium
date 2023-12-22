@@ -50,8 +50,7 @@ class DrmDisplay {
     drmModePropertyRes* GetWritePrivacyScreenProperty() const;
 
     const scoped_refptr<DrmDevice> drm_;
-    raw_ptr<drmModeConnector, ExperimentalAsh> connector_ =
-        nullptr;  // not owned.
+    raw_ptr<drmModeConnector> connector_ = nullptr;  // not owned.
 
     display::PrivacyScreenState property_last_ =
         display::kPrivacyScreenStateLast;

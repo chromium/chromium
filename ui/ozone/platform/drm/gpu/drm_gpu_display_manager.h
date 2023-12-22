@@ -99,9 +99,8 @@ class DrmGpuDisplayManager {
       const std::vector<std::unique_ptr<DrmDisplay>>& new_displays,
       const std::vector<std::unique_ptr<DrmDisplay>>& old_displays) const;
 
-  const raw_ptr<ScreenManager, ExperimentalAsh> screen_manager_;  // Not owned.
-  const raw_ptr<DrmDeviceManager, ExperimentalAsh>
-      drm_device_manager_;  // Not owned.
+  const raw_ptr<ScreenManager> screen_manager_;         // Not owned.
+  const raw_ptr<DrmDeviceManager> drm_device_manager_;  // Not owned.
 
   std::vector<std::unique_ptr<DrmDisplay>> displays_;
 

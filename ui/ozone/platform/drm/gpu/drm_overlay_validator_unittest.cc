@@ -132,10 +132,10 @@ class MAYBE_DrmOverlayValidatorTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   scoped_refptr<MockDrmDevice> drm_;
-  raw_ptr<MockGbmDevice, ExperimentalAsh> gbm_ = nullptr;
+  raw_ptr<MockGbmDevice> gbm_ = nullptr;
   std::unique_ptr<ScreenManager> screen_manager_;
   std::unique_ptr<DrmDeviceManager> drm_device_manager_;
-  raw_ptr<DrmWindow, DanglingUntriaged | ExperimentalAsh> window_;
+  raw_ptr<DrmWindow, DanglingUntriaged> window_;
   std::unique_ptr<DrmOverlayValidator> overlay_validator_;
   std::vector<OverlaySurfaceCandidate> overlay_params_;
   DrmOverlayPlaneList plane_list_;

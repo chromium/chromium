@@ -126,7 +126,7 @@ class DrmCursor : public CursorDelegateEvdev {
   // The bounds that the cursor is confined to in |window|.
   gfx::Rect confined_bounds_ GUARDED_BY(lock_);
 
-  const raw_ptr<DrmWindowHostManager, ExperimentalAsh> window_manager_
+  const raw_ptr<DrmWindowHostManager> window_manager_
       GUARDED_BY_CONTEXT(ui_thread_checker_);  // Not owned.
 
   std::unique_ptr<DrmCursorProxy> proxy_ GUARDED_BY(lock_);

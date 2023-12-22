@@ -235,7 +235,7 @@ class HardwareDisplayController {
   std::unique_ptr<DrmDumbBuffer> cursor_buffers_[2];
   gfx::Point cursor_location_;
   int cursor_frontbuffer_ = 0;
-  raw_ptr<DrmDumbBuffer, ExperimentalAsh> current_cursor_ = nullptr;
+  raw_ptr<DrmDumbBuffer> current_cursor_ = nullptr;
 
   // Maps each fourcc_format to its preferred modifier which was generated
   // through modeset-test and updated in UpdatePreferredModifierForFormat().

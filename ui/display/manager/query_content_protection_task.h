@@ -46,10 +46,8 @@ class DISPLAY_MANAGER_EXPORT QueryContentProtectionTask
                       HDCPState state,
                       ContentProtectionMethod protection_method);
 
-  const raw_ptr<DisplayLayoutManager, ExperimentalAsh>
-      layout_manager_;  // Not owned.
-  const raw_ptr<NativeDisplayDelegate, ExperimentalAsh>
-      native_display_delegate_;  // Not owned.
+  const raw_ptr<DisplayLayoutManager> layout_manager_;            // Not owned.
+  const raw_ptr<NativeDisplayDelegate> native_display_delegate_;  // Not owned.
 
   const int64_t display_id_;
 

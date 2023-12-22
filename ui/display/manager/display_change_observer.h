@@ -92,7 +92,7 @@ class DISPLAY_MANAGER_EXPORT DisplayChangeObserver
   absl::optional<gfx::RoundedCornersF> internal_panel_radii_;
 
   // |display_manager_| is not owned and must outlive DisplayChangeObserver.
-  raw_ptr<DisplayManager, ExperimentalAsh> display_manager_;
+  raw_ptr<DisplayManager> display_manager_;
 };
 
 }  // namespace display

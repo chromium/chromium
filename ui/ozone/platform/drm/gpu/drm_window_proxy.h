@@ -43,7 +43,7 @@ class DrmWindowProxy {
  private:
   const gfx::AcceleratedWidget widget_;
 
-  const raw_ptr<DrmThread, ExperimentalAsh> drm_thread_;
+  const raw_ptr<DrmThread> drm_thread_;
 };
 
 }  // namespace ui

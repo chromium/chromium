@@ -86,7 +86,7 @@ class DISPLAY_EXPORT DisplayManagerTestApi {
   // Indicate the maximum number of displays that chrome device can support.
   static size_t maximum_support_display_;
 
-  raw_ptr<DisplayManager, ExperimentalAsh> display_manager_;  // not owned
+  raw_ptr<DisplayManager> display_manager_;  // not owned
 };
 
 class DISPLAY_EXPORT ScopedSetInternalDisplayId {

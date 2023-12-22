@@ -278,7 +278,7 @@ class HardwareDisplayPlaneManager {
 
   // Object containing the connection to the graphics device and wraps the API
   // calls to control it. Not owned.
-  const raw_ptr<DrmDevice, ExperimentalAsh> drm_;
+  const raw_ptr<DrmDevice> drm_;
 
   bool has_universal_planes_ = false;
 

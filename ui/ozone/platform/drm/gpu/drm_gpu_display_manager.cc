@@ -41,7 +41,7 @@ const char* kBlockedEventsByTriggerProperty[] = {"Content Protection"};
 struct DrmDisplayParams {
   scoped_refptr<DrmDevice> drm;
   std::unique_ptr<HardwareDisplayControllerInfo> display_info;
-  raw_ptr<display::DisplaySnapshot, ExperimentalAsh> snapshot;
+  raw_ptr<display::DisplaySnapshot> snapshot;
 };
 
 class DisplayComparator {

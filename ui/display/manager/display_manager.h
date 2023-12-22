@@ -531,7 +531,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
     DisplayManagerObserver::DisplayConfigurationChange CreateConfigChange()
         const;
 
-    raw_ptr<DisplayManager, ExperimentalAsh> display_manager_;
+    raw_ptr<DisplayManager> display_manager_;
   };
 
   // Tracks the in-progress change to the current display configuration. This is
@@ -620,7 +620,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
 
   void UpdateLayoutForMixedMode();
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;  // not owned.
+  raw_ptr<Delegate> delegate_ = nullptr;  // not owned.
 
   // When set to true, DisplayManager will use DisplayConfigurator to configure
   // displays. By default, this is set to true when running on device and false

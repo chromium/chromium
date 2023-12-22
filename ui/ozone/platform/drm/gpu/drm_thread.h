@@ -218,7 +218,7 @@ class DrmThread : public base::Thread,
  private:
   struct TaskInfo {
     base::OnceClosure task;
-    raw_ptr<base::WaitableEvent, ExperimentalAsh> done;
+    raw_ptr<base::WaitableEvent> done;
 
     TaskInfo(base::OnceClosure task, base::WaitableEvent* done);
     TaskInfo(TaskInfo&& other);

@@ -178,7 +178,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
   using EnglishToIDMap = base::flat_map<std::string, int>;
   EnglishToIDMap english_to_resource_id_;
 
-  raw_ptr<InputMethodDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<InputMethodDelegate> delegate_;
 
   base::ThreadChecker thread_checker_;
   std::vector<std::string> hardware_layouts_;

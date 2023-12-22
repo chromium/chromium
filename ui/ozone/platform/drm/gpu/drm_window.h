@@ -107,17 +107,15 @@ class DrmWindow {
 
   const gfx::AcceleratedWidget widget_;
 
-  const raw_ptr<DrmDeviceManager, ExperimentalAsh>
-      device_manager_;                                            // Not owned.
-  const raw_ptr<ScreenManager, ExperimentalAsh> screen_manager_;  // Not owned.
+  const raw_ptr<DrmDeviceManager> device_manager_;  // Not owned.
+  const raw_ptr<ScreenManager> screen_manager_;     // Not owned.
 
   // The current bounds of the window.
   gfx::Rect bounds_;
 
   // The controller associated with the current window. This may be nullptr if
   // the window isn't over an active display.
-  raw_ptr<HardwareDisplayController, DanglingUntriaged | ExperimentalAsh>
-      controller_ = nullptr;
+  raw_ptr<HardwareDisplayController, DanglingUntriaged> controller_ = nullptr;
   std::unique_ptr<DrmOverlayValidator> overlay_validator_;
 
   base::RepeatingTimer cursor_timer_;

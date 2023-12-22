@@ -69,7 +69,7 @@ class UI_CHROMEOS_EXPORT UserActivityPowerManagerNotifier
   void MaybeNotifyUserActivity(
       power_manager::UserActivityType user_activity_type);
 
-  raw_ptr<UserActivityDetector, ExperimentalAsh> detector_;  // not owned
+  raw_ptr<UserActivityDetector> detector_;  // not owned
 
   mojo::Remote<device::mojom::Fingerprint> fingerprint_;
   mojo::Receiver<device::mojom::FingerprintObserver>

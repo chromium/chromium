@@ -97,8 +97,8 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
   // variable refresh rate setting.
   bool ShouldConfigureVrr() const;
 
-  raw_ptr<NativeDisplayDelegate, ExperimentalAsh> delegate_;       // Not owned.
-  raw_ptr<DisplayLayoutManager, ExperimentalAsh> layout_manager_;  // Not owned.
+  raw_ptr<NativeDisplayDelegate> delegate_;       // Not owned.
+  raw_ptr<DisplayLayoutManager> layout_manager_;  // Not owned.
 
   // Requested display state.
   MultipleDisplayState new_display_state_;
