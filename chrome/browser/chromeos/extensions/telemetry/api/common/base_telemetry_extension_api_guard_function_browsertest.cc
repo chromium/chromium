@@ -630,6 +630,21 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      // Management APIs.
+      async function setAudioGain() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.management.setAudioGain(
+              {
+                nodeId: 1,
+                gain: 100,
+              }
+            ),
+            'Error: Unauthorized access to ' +
+            'chrome.os.management.setAudioGain. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
     ];
 
     chrome.test.runTests([
@@ -644,7 +659,8 @@ std::string GetServiceWorkerForError(const std::string& error) {
         apiNames = [
           ...getMethods(chrome.os.telemetry).sort(),
           ...getMethods(chrome.os.diagnostics).sort(),
-          ...getMethods(chrome.os.events).sort()
+          ...getMethods(chrome.os.events).sort(),
+          ...getMethods(chrome.os.management).sort()
         ];
         chrome.test.assertEq(getTestNames(tests), apiNames);
         chrome.test.succeed();

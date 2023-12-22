@@ -33,6 +33,25 @@
     ],
     "channel": "stable"
   },
+  "os.management": {
+    // Right now Management API is limited to audio control.
+    "dependencies": [
+      "permission:os.management.audio"
+    ],
+    "contexts": [
+      "blessed_extension"
+    ],
+    "platforms": [
+      "chromeos",
+      "lacros"
+    ],
+    "channel": "stable"
+  },
+  "os.management.setAudioGain": {
+    "dependencies": [
+      "permission:os.management.audio"
+    ]
+  },
   "os.telemetry": {
     "dependencies": [
       "permission:os.telemetry"

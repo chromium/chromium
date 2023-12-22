@@ -1,8 +1,7 @@
 # Telemetry Extension API overview
 
 This document gives a function-level documentation of the Telemetry Extension
-API. It is separated in the three namespaces **telemetry**, **diagnostics**
-and **events**.
+API. It is separated in the three namespaces **telemetry**, **diagnostics**, **events** and **management**.
 
 [TOC]
 
@@ -1059,3 +1058,19 @@ Source:
 | getAudioInfo | () => Promise<AudioInfo\> | `os.telemetry` | M111 |
 | getMarketingInfo | () => Promise<MarketingInfo\> | `os.telemetry` | M111 |
 | getUsbBusInfo | () => Promise<UsbDevicesInfo\> | `os.telemetry`, `os.attached_device_info` | M114 |
+
+# Management
+
+## Types
+
+### SetAudioGainArguments
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| nodeId | number | Node id of the audio device to be configured |
+| gain | number | Target gain percent in [0, 100]. Sets to 0 or 100 if outside |
+
+## Functions
+
+| Function Name | Definition | Permission needed to access | Released in Chrome version | Description |
+------------ | ------------- | ------------- | ------------- | ------------- |
+| setAudioGain | (args: SetAudioGainArguments) => Promise<void\> | `os.management.audio` | M122 | Sets the specified input audio device's gain to value. No-op if `args.nodeId` is invalid |
