@@ -603,42 +603,22 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                      (GridItemIdentifier*)itemIdentifier {
   switch (itemIdentifier.type) {
     case GridItemType::Tab: {
-      // Handle GridCell-s.
-      NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
-      // In some cases, this is called with an index path that doesn't match the
-      // data source -- see crbug.com/1068136. Presumably this is a race
-      // condition where an item has been deleted at the same time as the
-      // collection is doing layout (potentially during rotation?). Fudge by
-      // returning an unconfigured cell. The assumption is that there will be
-      // another – correct – layout shortly after the incorrect one.
-      // Keep `items`' bounds valid.
-      if (self.items.count == 0 || itemIndex >= self.items.count) {
-        if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
-          return [self.collectionView
-              dequeueReusableCellWithReuseIdentifier:kGroupCellIdentifier
-                                        forIndexPath:indexPath];
-        }
-        // Dequeue using the reuse identifier, not the registration, as there is
-        // no valid `item` that could be passed in for the configuration.
-        return [self.collectionView
-            dequeueReusableCellWithReuseIdentifier:kCellIdentifier
-                                      forIndexPath:indexPath];
-      }
-      TabSwitcherItem* item = self.items[itemIndex];
       if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
-        UICollectionViewCellRegistration* groupCellRegistration =
+        UICollectionViewCellRegistration* registration =
             self.groupGridCellRegistration;
         return [self.collectionView
-            dequeueConfiguredReusableCellWithRegistration:groupCellRegistration
+            dequeueConfiguredReusableCellWithRegistration:registration
                                              forIndexPath:indexPath
-                                                     item:item];
+                                                     item:itemIdentifier
+                                                              .tabSwitcherItem];
       }
       UICollectionViewCellRegistration* registration =
           self.gridCellRegistration;
       return [self.collectionView
           dequeueConfiguredReusableCellWithRegistration:registration
                                            forIndexPath:indexPath
-                                                   item:item];
+                                                   item:itemIdentifier
+                                                            .tabSwitcherItem];
     }
     case GridItemType::SuggestedActions:
       UICollectionViewCellRegistration* registration =
