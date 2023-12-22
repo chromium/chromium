@@ -155,7 +155,36 @@ class CORE_EXPORT StylePropertySerializer {
       return HasAllProperty() && need_to_expand_all_;
     }
     bool HasAllProperty() const { return all_index_ != -1; }
-
+    bool IsIndexInPropertySet(unsigned index) const {
+      return index < property_set_->PropertyCount();
+    }
+    CSSPropertyID IndexToPropertyID(unsigned index) const {
+      // Iterating over "all"-expanded longhands is done using indices greater
+      // than, or equal to, the property set size. Map the index to the property
+      // ID based on the property set size.
+      //
+      // For this property set:
+      //
+      // div {
+      //   --foo: bar;
+      //   all: initial;
+      //   background-color: green;
+      // }
+      //
+      // We end up with indices (This method is supposed to do the mapping from
+      // index to property ID for the enumerated properties from color and
+      // onwards):
+      //
+      // 0: --foo
+      // 1: all
+      // 2: background-color
+      // 3: color (this is kIntFirstCSSProperty)
+      // 4: ...
+      //
+      DCHECK_GE(index, property_set_->PropertyCount());
+      return static_cast<CSSPropertyID>(index - property_set_->PropertyCount() +
+                                        kIntFirstCSSProperty);
+    }
     Member<const CSSPropertyValueSet> property_set_;
     int all_index_;
     std::bitset<kNumCSSProperties> longhand_property_used_;
