@@ -1285,6 +1285,8 @@ void BrowserCommandController::InitCommandState() {
                                         !guest_session);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_PASSWORD_MANAGER,
                                         !guest_session);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_PASSWORD_CHECKUP,
+                                        !guest_session);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_PAYMENT_METHODS,
                                         !guest_session);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_SYNC_SETTINGS, true);
