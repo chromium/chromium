@@ -210,8 +210,11 @@ void ProcessMirrorHeader(
       base::FeatureList::IsEnabled(kVerifyRequestInitiatorForMirrorHeaders)) {
     GURL initiator_url =
         request_initiator ? request_initiator->GetURL() : GURL();
-    const bool is_request_initiated_by_google_domain =
-        google_util::IsGoogleAssociatedDomainUrl(initiator_url);
+    bool is_request_initiated_by_google_domain =
+        IsGoogleDomainUrl(initiator_url, google_util::ALLOW_SUBDOMAIN,
+                          google_util::ALLOW_NON_STANDARD_PORTS) ||
+        IsYoutubeDomainUrl(initiator_url, google_util::ALLOW_SUBDOMAIN,
+                           google_util::ALLOW_NON_STANDARD_PORTS);
     base::UmaHistogramBoolean(
         "Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito",
         is_request_initiated_by_google_domain);
