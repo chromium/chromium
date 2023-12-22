@@ -354,39 +354,6 @@ void FormStructure::DetermineHeuristicTypes(
 }
 
 // static
-bool FormStructure::EncodeQueryRequest(
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
-    AutofillPageQueryRequest* query,
-    std::vector<FormSignature>* queried_form_signatures) {
-  DCHECK(queried_form_signatures);
-  queried_form_signatures->clear();
-  queried_form_signatures->reserve(forms.size());
-
-  query->set_client_version(
-      std::string(version_info::GetProductNameAndVersionForUserAgent()));
-
-  // If a page contains repeated forms, detect that and encode only one form as
-  // the returned data would be the same for all the repeated forms.
-  // TODO(crbug/1064709#c11): the statement is not entirely correct because
-  // (1) distinct forms can have identical form signatures because we truncate
-  // (large) numbers in the form signature calculation while these are
-  // considered for field signatures; (2) for dynamic forms we will hold on to
-  // the original form signature.
-  std::set<FormSignature> processed_forms;
-  for (const autofill::FormStructure* form : forms) {
-    if (base::Contains(processed_forms, form->form_signature()))
-      continue;
-    UMA_HISTOGRAM_COUNTS_1000("Autofill.FieldCount", form->field_count());
-    if (form->IsMalformed())
-      continue;
-
-    form->EncodeFormForQuery(query, queried_form_signatures, &processed_forms);
-  }
-
-  return !queried_form_signatures->empty();
-}
-
-// static
 void FormStructure::ParseApiQueryResponse(
     std::string_view payload,
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
@@ -1160,65 +1127,6 @@ FormData FormStructure::ToFormData() const {
   }
 
   return data;
-}
-
-void FormStructure::EncodeFormForQuery(
-    AutofillPageQueryRequest* query,
-    std::vector<FormSignature>* queried_form_signatures,
-    std::set<FormSignature>* processed_forms) const {
-  DCHECK(!IsMalformed());
-  // Adds a request to |query| that contains all (|form|, |field|) for every
-  // |field| from |fields_| that meets |necessary_condition|. Repeated calls for
-  // the same |form| have no effect (early return if |processed_forms| contains
-  // |form|).
-  auto AddFormIf = [&](FormSignature form, FormSignature alternative_signature,
-                       auto necessary_condition) mutable {
-    if (!processed_forms->insert(form).second)
-      return;
-
-    AutofillPageQueryRequest::Form* query_form = query->add_forms();
-    query_form->set_signature(form.value());
-    query_form->set_alternative_signature(alternative_signature.value());
-    queried_form_signatures->push_back(form);
-
-    for (const auto& field : fields_) {
-      if (IsCheckable(field->check_status) || !necessary_condition(field)) {
-        continue;
-      }
-
-      AutofillPageQueryRequest::Form::Field* added_field =
-          query_form->add_fields();
-      added_field->set_signature(field->GetFieldSignature().value());
-    }
-  };
-
-  AddFormIf(form_signature(), alternative_form_signature(),
-            [](auto& f) { return true; });
-
-  for (const auto& field : fields_) {
-    if (field->host_form_signature) {
-      AddFormIf(field->host_form_signature, alternative_form_signature(),
-                [&](const auto& f) {
-                  return f->host_form_signature == field->host_form_signature;
-                });
-    }
-  }
-}
-
-bool FormStructure::IsMalformed() const {
-  if (!field_count()) {  // Nothing to add.
-    return true;
-  }
-
-  // Some badly formatted web sites repeat fields - limit number of fields to
-  // 250, which is far larger than any valid form and proto still fits into 10K.
-  // Do not send requests for forms with more than this many fields, as they are
-  // near certainly not valid/auto-fillable.
-  const size_t kMaxFieldsOnTheForm = 250;
-  if (field_count() > kMaxFieldsOnTheForm) {
-    return true;
-  }
-  return false;
 }
 
 void FormStructure::IdentifySectionsWithNewMethod() {

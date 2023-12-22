@@ -76,16 +76,6 @@ class FormStructure {
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       LogManager* log_manager);
 
-  // Encodes the proto |query| request for the list of |forms| and their fields
-  // that are valid. The queried FormSignatures and FieldSignatures are stored
-  // in |queried_form_signatures| in the same order as in |query|. In case
-  // multiple FormStructures have the same FormSignature, only the first one is
-  // included in |query| and |queried_form_signatures|.
-  static bool EncodeQueryRequest(
-      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
-      AutofillPageQueryRequest* query,
-      std::vector<FormSignature>* queried_form_signatures);
-
   // Parses `payload` as AutofillQueryResponse proto and calls
   // ProcessQueryResponse().
   static void ParseApiQueryResponse(
@@ -385,9 +375,6 @@ class FormStructure {
 
   FormAssociations form_associations() const { return form_associations_; }
 
-  // Returns true if the form has no fields, or too many.
-  bool IsMalformed() const;
-
  private:
   friend class FormStructureTestApi;
 
@@ -422,9 +409,9 @@ class FormStructure {
                std::deque<FieldSuggestion>>& fields_suggestions);
 
   // Parses the field types from the server query response. |forms| must be the
-  // same as the one passed to EncodeQueryRequest when constructing the query.
-  // |form_interactions_ukm_logger| is used to provide logs to UKM and can be
-  // null in tests.
+  // same as the one passed to EncodeAutofillPageQueryRequest when constructing
+  // the query. |form_interactions_ukm_logger| is used to provide logs to UKM
+  // and can be null in tests.
   static void ProcessQueryResponse(
       const AutofillQueryResponse& response,
       const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
@@ -437,11 +424,6 @@ class FormStructure {
 
   [[nodiscard]] bool ShouldBeParsed(ShouldBeParsedParams params,
                                     LogManager* log_manager = nullptr) const;
-
-  void EncodeFormForQuery(AutofillPageQueryRequest* query,
-                          std::vector<FormSignature>* queried_form_signatures,
-                          std::set<FormSignature>* processed_forms) const;
-
 
   // Classifies each field in `fields_` into a logical section.
   // The function consists of 2 passes:

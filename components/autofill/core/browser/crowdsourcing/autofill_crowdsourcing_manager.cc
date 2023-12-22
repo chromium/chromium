@@ -639,8 +639,8 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
   // Encode the query for the requested forms.
   AutofillPageQueryRequest query;
   std::vector<FormSignature> queried_form_signatures;
-  if (!FormStructure::EncodeQueryRequest(forms, &query,
-                                         &queried_form_signatures)) {
+  if (!EncodeAutofillPageQueryRequest(forms, &query,
+                                      &queried_form_signatures)) {
     return false;
   }
 
