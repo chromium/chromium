@@ -7,8 +7,8 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -17,7 +17,8 @@ import {PasswordManagerImpl} from '../password_manager_proxy.js';
 import {Page, Router, UrlParam} from '../router.js';
 
 import {getTemplate} from './promo_card.html.js';
-import {PromoCard, PromoCardsProxyImpl} from './promo_cards_browser_proxy.js';
+import type {PromoCard} from './promo_cards_browser_proxy.js';
+import {PromoCardsProxyImpl} from './promo_cards_browser_proxy.js';
 
 // WARNING: Keep synced with
 // chrome/browser/ui/webui/password_manager/promo_cards_handler.cc.

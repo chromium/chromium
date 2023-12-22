@@ -10,12 +10,14 @@ import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import './icons.html.js';
 
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
-import {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CredentialsChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
-import {Page, Route, RouteObserverMixin, Router, UrlParam} from './router.js';
+import type {CredentialsChangedListener} from './password_manager_proxy.js';
+import {PasswordManagerImpl} from './password_manager_proxy.js';
+import type {Route} from './router.js';
+import {Page, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {getTemplate} from './side_bar.html.js';
 
 /**

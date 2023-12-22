@@ -7,12 +7,13 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './shared_style.css.js';
 
-import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PasswordManagerImpl, PasswordsFileExportProgressListener} from './password_manager_proxy.js';
+import type {PasswordsFileExportProgressListener} from './password_manager_proxy.js';
+import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_exporter.html.js';
 
 const ProgressStatus = chrome.passwordsPrivate.ExportProgressStatus;

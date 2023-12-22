@@ -9,16 +9,18 @@ import './shared_style.css.js';
 import './checkup_list_item.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './checkup_details_section.html.js';
-import {CheckupListItemElement} from './checkup_list_item.js';
-import {CredentialsChangedListener, PasswordCheckInteraction, PasswordManagerImpl} from './password_manager_proxy.js';
-import {CheckupSubpage, Page, Route, RouteObserverMixin, Router} from './router.js';
+import type {CheckupListItemElement} from './checkup_list_item.js';
+import type {CredentialsChangedListener} from './password_manager_proxy.js';
+import {PasswordCheckInteraction, PasswordManagerImpl} from './password_manager_proxy.js';
+import type {Route} from './router.js';
+import {CheckupSubpage, Page, RouteObserverMixin, Router} from './router.js';
 
 export class ReusedPasswordInfo {
   constructor(credentials: chrome.passwordsPrivate.PasswordUiEntry[]) {
