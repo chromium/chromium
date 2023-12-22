@@ -36,7 +36,7 @@ class ComposeSessionBrowserTest : public InteractiveBrowserTest {
         {compose::features::kEnableCompose,
          optimization_guide::features::kOptimizationGuideModelExecution},
         {});
-    InProcessBrowserTest::SetUp();
+    InteractiveBrowserTest::SetUp();
   }
 
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
@@ -45,14 +45,7 @@ class ComposeSessionBrowserTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if BUILDFLAG(IS_MAC)
-// Mac failures: b/311208586
-#define MAYBE_LifetimeOfBubbleWrapper DISABLED_LifetimeOfBubbleWrapper
-#else
-#define MAYBE_LifetimeOfBubbleWrapper LifetimeOfBubbleWrapper
-#endif
-IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest,
-                       MAYBE_LifetimeOfBubbleWrapper) {
+IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, LifetimeOfBubbleWrapper) {
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
