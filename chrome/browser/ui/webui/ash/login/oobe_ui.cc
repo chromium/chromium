@@ -428,8 +428,9 @@ void OobeUI::ConfigureOobeDisplay() {
 
     AddScreenHandler(std::make_unique<DemoPreferencesScreenHandler>());
 
-    AddScreenHandler(std::make_unique<QuickStartScreenHandler>());
   }
+
+  AddScreenHandler(std::make_unique<QuickStartScreenHandler>());
 
   AddScreenHandler(std::make_unique<NetworkScreenHandler>());
 
