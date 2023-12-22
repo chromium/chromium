@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
@@ -84,7 +85,11 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
                                           std::u16string* body) = 0;
 
   // Returns the popup type corresponding to the controller.
+  // TODO(b/316859406): Replace with `GetMainFillingProduct`.
   virtual PopupType GetPopupType() const = 0;
+
+  // Returns the main filling product corresponding to the controller.
+  virtual FillingProduct GetMainFillingProduct() const = 0;
 
   // Returns whether the popup should ignore the check that the mouse was
   // observed out of bounds - see PopupCellView for more detail.

@@ -177,6 +177,11 @@ PopupType AutofillKeyboardAccessoryAdapter::GetPopupType() const {
   return controller_->GetPopupType();
 }
 
+FillingProduct AutofillKeyboardAccessoryAdapter::GetMainFillingProduct() const {
+  CHECK(controller_) << "Call GetPopupType only from its owner!";
+  return controller_->GetMainFillingProduct();
+}
+
 bool AutofillKeyboardAccessoryAdapter::
     ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const {
   CHECK(controller_) << "Call ShouldIgnoreMouseObservedOutsideItemBoundsCheck "
