@@ -336,7 +336,7 @@ TEST_F(FormAutofillUtilsTest, FindChildTextSkipElementTest) {
     }
 
     EXPECT_EQ(test_case.expected_label,
-              FindChildTextWithIgnoreListForTesting(target, to_skip));
+              FindChildTextWithIgnoreList(target, to_skip));
   }
 }
 
@@ -406,7 +406,7 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
     FormFieldData::LabelSource label_source =
         FormFieldData::LabelSource::kUnknown;
     std::u16string label;
-    InferLabelForElementForTesting(form_target, label, label_source);
+    InferLabelForElement(form_target, label, label_source);
     EXPECT_EQ(test_case.expected_label, label);
   }
 }
@@ -456,8 +456,8 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
     FormFieldData::LabelSource label_source =
         FormFieldData::LabelSource::kUnknown;
     std::u16string label;
-    EXPECT_TRUE(autofill::form_util::InferLabelForElementForTesting(
-        form_target, label, label_source));
+    EXPECT_TRUE(autofill::form_util::InferLabelForElement(form_target, label,
+                                                          label_source));
     EXPECT_EQ(kLabelSourceExpectedLabel, label);
     EXPECT_EQ(test_case.label_source, label_source);
   }

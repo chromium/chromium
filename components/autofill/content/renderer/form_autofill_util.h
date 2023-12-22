@@ -418,13 +418,16 @@ std::u16string FindChildText(const blink::WebNode& node);
 ButtonTitleList GetButtonTitles(const blink::WebFormElement& web_form,
                                 ButtonTitlesCache* button_titles_cache);
 
-// Exposed for testing purposes.
-std::u16string FindChildTextWithIgnoreListForTesting(
+// Same as FindChildText() below, but with a list of div nodes to skip.
+std::u16string FindChildTextWithIgnoreList(
     const blink::WebNode& node,
     const std::set<blink::WebNode>& divs_to_skip);
-bool InferLabelForElementForTesting(const blink::WebFormControlElement& element,
-                                    std::u16string& label,
-                                    FormFieldData::LabelSource& label_source);
+
+// Infers corresponding label for `element` from surrounding context in the DOM,
+// e.g. the contents of the preceding <p> tag or text element.
+bool InferLabelForElement(const blink::WebFormControlElement& element,
+                          std::u16string& label,
+                          FormFieldData::LabelSource& label_source);
 
 // Returns the form element by unique renderer id. Returns the null element if
 // there is no form with the |form_renderer_id|.

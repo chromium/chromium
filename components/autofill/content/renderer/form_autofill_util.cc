@@ -328,22 +328,6 @@ std::u16string FindChildTextInner(const WebNode& node,
   return node_text;
 }
 
-// Same as FindChildText() below, but with a list of div nodes to skip.
-std::u16string FindChildTextWithIgnoreList(
-    const WebNode& node,
-    const std::set<WebNode>& divs_to_skip) {
-  if (node.IsTextNode())
-    return node.NodeValue().Utf16();
-
-  WebNode child = node.FirstChild();
-
-  const int kChildSearchDepth = 10;
-  std::u16string node_text =
-      FindChildTextInner(child, kChildSearchDepth, divs_to_skip);
-  base::TrimWhitespace(node_text, base::TRIM_ALL, &node_text);
-  return node_text;
-}
-
 bool IsLabelValid(base::StringPiece16 inferred_label) {
   // List of characters a label can't be entirely made of (this list can grow).
   const base::StringPiece16 invalid_chars =
@@ -856,58 +840,6 @@ bool InferLabelFromAncestors(const WebFormControlElement& element,
       label = std::move(inferred_label);
       return true;
     }
-  }
-  return false;
-}
-
-// Infers corresponding label for `element` from surrounding context in the DOM,
-// e.g. the contents of the preceding <p> tag or text element.
-bool InferLabelForElement(const WebFormControlElement& element,
-                          std::u16string& label,
-                          FormFieldData::LabelSource& label_source) {
-  if (IsCheckableElement(element)) {
-    if (InferLabelFromNext(element, label, label_source))
-      return true;
-  }
-
-  if (InferLabelFromPrevious(element, label, label_source))
-    return true;
-
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAlwaysParsePlaceholders)) {
-    std::u16string inferred_label = InferLabelFromPlaceholder(element);
-    if (IsLabelValid(inferred_label)) {
-      label_source = FormFieldData::LabelSource::kPlaceHolder;
-      label = std::move(inferred_label);
-      return true;
-    }
-  }
-
-  std::u16string inferred_label = InferLabelFromOverlayingSuccessor(element);
-  if (IsLabelValid(inferred_label)) {
-    label_source = FormFieldData::LabelSource::kOverlayingLabel;
-    label = std::move(inferred_label);
-    return true;
-  }
-
-  // If we didn't find a placeholder, check for aria-label text.
-  inferred_label = GetAriaLabel(element.GetDocument(), element);
-  if (IsLabelValid(inferred_label)) {
-    label_source = FormFieldData::LabelSource::kAriaLabel;
-    label = std::move(inferred_label);
-    return true;
-  }
-
-  // If we didn't find a label, check the `element`'s ancestors.
-  if (InferLabelFromAncestors(element, label, label_source))
-    return true;
-
-  // If we didn't find a label, check the value attr used as the placeholder.
-  inferred_label = InferLabelFromValueAttr(element);
-  if (IsLabelValid(inferred_label)) {
-    label_source = FormFieldData::LabelSource::kValue;
-    label = std::move(inferred_label);
-    return true;
   }
   return false;
 }
@@ -2608,16 +2540,73 @@ ButtonTitleList GetButtonTitles(const WebFormElement& web_form,
   return form_position->second;
 }
 
-std::u16string FindChildTextWithIgnoreListForTesting(
+std::u16string FindChildTextWithIgnoreList(
     const WebNode& node,
     const std::set<WebNode>& divs_to_skip) {
-  return FindChildTextWithIgnoreList(node, divs_to_skip);
+  if (node.IsTextNode()) {
+    return node.NodeValue().Utf16();
+  }
+
+  WebNode child = node.FirstChild();
+
+  const int kChildSearchDepth = 10;
+  std::u16string node_text =
+      FindChildTextInner(child, kChildSearchDepth, divs_to_skip);
+  base::TrimWhitespace(node_text, base::TRIM_ALL, &node_text);
+  return node_text;
 }
 
-bool InferLabelForElementForTesting(const WebFormControlElement& element,
-                                    std::u16string& label,
-                                    FormFieldData::LabelSource& label_source) {
-  return InferLabelForElement(element, label, label_source);
+bool InferLabelForElement(const WebFormControlElement& element,
+                          std::u16string& label,
+                          FormFieldData::LabelSource& label_source) {
+  if (IsCheckableElement(element)) {
+    if (InferLabelFromNext(element, label, label_source)) {
+      return true;
+    }
+  }
+
+  if (InferLabelFromPrevious(element, label, label_source)) {
+    return true;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAlwaysParsePlaceholders)) {
+    std::u16string inferred_label = InferLabelFromPlaceholder(element);
+    if (IsLabelValid(inferred_label)) {
+      label_source = FormFieldData::LabelSource::kPlaceHolder;
+      label = std::move(inferred_label);
+      return true;
+    }
+  }
+
+  std::u16string inferred_label = InferLabelFromOverlayingSuccessor(element);
+  if (IsLabelValid(inferred_label)) {
+    label_source = FormFieldData::LabelSource::kOverlayingLabel;
+    label = std::move(inferred_label);
+    return true;
+  }
+
+  // If we didn't find a placeholder, check for aria-label text.
+  inferred_label = GetAriaLabel(element.GetDocument(), element);
+  if (IsLabelValid(inferred_label)) {
+    label_source = FormFieldData::LabelSource::kAriaLabel;
+    label = std::move(inferred_label);
+    return true;
+  }
+
+  // If we didn't find a label, check the `element`'s ancestors.
+  if (InferLabelFromAncestors(element, label, label_source)) {
+    return true;
+  }
+
+  // If we didn't find a label, check the value attr used as the placeholder.
+  inferred_label = InferLabelFromValueAttr(element);
+  if (IsLabelValid(inferred_label)) {
+    label_source = FormFieldData::LabelSource::kValue;
+    label = std::move(inferred_label);
+    return true;
+  }
+  return false;
 }
 
 WebFormElement FindFormByRendererId(const WebDocument& doc,
