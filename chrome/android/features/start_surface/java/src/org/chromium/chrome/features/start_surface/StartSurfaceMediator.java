@@ -138,7 +138,6 @@ class StartSurfaceMediator
     private final boolean mIsStartSurfaceEnabled;
     private final ObserverList<StartSurface.StateObserver> mStateObservers = new ObserverList<>();
     private final boolean mHadWarmStart;
-    private final boolean mExcludeQueryTiles;
     private final Runnable mInitializeMVTilesRunnable;
     private final Supplier<Tab> mParentTabSupplier;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
@@ -241,7 +240,6 @@ class StartSurfaceMediator
             BrowserControlsStateProvider browserControlsStateProvider,
             ActivityStateChecker activityStateChecker,
             @Nullable TabCreatorManager tabCreatorManager,
-            boolean excludeQueryTiles,
             OneshotSupplier<StartSurface> startSurfaceSupplier,
             boolean hadWarmStart,
             Runnable initializeMVTilesRunnable,
@@ -270,7 +268,6 @@ class StartSurfaceMediator
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mActivityStateChecker = activityStateChecker;
         mTabCreatorManager = tabCreatorManager;
-        mExcludeQueryTiles = excludeQueryTiles;
         mStartSurfaceSupplier = startSurfaceSupplier;
         mHadWarmStart = hadWarmStart;
         mLaunchOrigin = NewTabPageLaunchOrigin.UNKNOWN;
@@ -713,8 +710,6 @@ class StartSurfaceMediator
         setLogoVisibility(!mIsIncognito);
         setTabCardVisibility(getNormalTabCount() > 0 && !mIsIncognito);
         setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
-        // TODO(qinmin): show query tiles when flag is enabled.
-        setQueryTilesVisibility(false);
         setFakeBoxVisibility(!mIsIncognito);
         updateTopToolbarPlaceholderHeight();
         // Set the top margin to the top controls min height (indicator height if it's shown)
@@ -894,7 +889,6 @@ class StartSurfaceMediator
             setLogoVisibility(!mIsIncognito);
             setTabCardVisibility(hasNormalTab && !mIsIncognito);
             setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
-            setQueryTilesVisibility(!mIsIncognito);
             setFakeBoxVisibility(!mIsIncognito);
             setSecondaryTasksSurfaceVisibility(mIsIncognito, /* skipUpdateController= */ false);
             updateTopToolbarPlaceholderHeight();
@@ -916,7 +910,6 @@ class StartSurfaceMediator
             setTabCardVisibility(false);
             setMVTilesVisibility(false);
             setLogoVisibility(false);
-            setQueryTilesVisibility(false);
             setFakeBoxVisibility(false);
             setSecondaryTasksSurfaceVisibility(
                     /* isVisible= */ true, /* skipUpdateController= */ false);
@@ -1481,11 +1474,6 @@ class StartSurfaceMediator
             mLogoCoordinator.updateVisibilityAndMaybeCleanUp(
                     isShowingHomepage && isVisible, !isShowingHomepage, false);
         }
-    }
-
-    private void setQueryTilesVisibility(boolean isVisible) {
-        if (mExcludeQueryTiles || isVisible == mPropertyModel.get(QUERY_TILES_VISIBLE)) return;
-        mPropertyModel.set(QUERY_TILES_VISIBLE, isVisible);
     }
 
     private void setFakeBoxVisibility(boolean isVisible) {

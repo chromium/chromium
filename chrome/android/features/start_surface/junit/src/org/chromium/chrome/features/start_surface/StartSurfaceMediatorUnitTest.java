@@ -2089,7 +2089,6 @@ public class StartSurfaceMediatorUnitTest {
                 mBrowserControlsStateProvider,
                 mActivityStateChecker,
                 /* tabCreatorManager= */ null,
-                /* excludeQueryTiles= */ true,
                 mStartSurfaceSupplier,
                 hadWarmStart,
                 isStartSurfaceEnabled ? mInitializeMVTilesRunnable : null,

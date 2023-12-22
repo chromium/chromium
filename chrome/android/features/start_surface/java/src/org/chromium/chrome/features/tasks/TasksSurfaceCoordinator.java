@@ -91,7 +91,6 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             @TabSwitcherType int tabSwitcherType,
             @NonNull Supplier<Tab> parentTabSupplier,
             boolean hasMVTiles,
-            boolean hasQueryTiles,
             @NonNull WindowAndroid windowAndroid,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull TabModelSelector tabModelSelector,
