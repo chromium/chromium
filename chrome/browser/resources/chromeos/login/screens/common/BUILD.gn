@@ -39,7 +39,6 @@ js_type_check("closure_compile_local") {
     ":managed_terms_of_service",
     ":offline_ad_login",
     ":os_install",
-    ":os_trial",
     ":placeholder",
     ":quick_start",
     ":recommend_apps",
@@ -260,25 +259,6 @@ js_library("quick_start") {
     "../../components/dialogs:oobe_loading_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("os_trial") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/os_trial.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-
-  externs_list = [
-    "$externs_path/webview_tag.js",
-    "//third_party/cros-components/externs/cros_lottie_renderer_externs.js",
-    "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
-  ]
-
   extra_deps = [ ":web_components" ]
 }
 

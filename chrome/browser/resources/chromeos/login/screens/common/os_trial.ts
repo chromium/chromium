@@ -20,10 +20,11 @@ import '../../components/hd_iron_icon.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 
 import {getTemplate} from './os_trial.html.js';
@@ -31,36 +32,30 @@ import {getTemplate} from './os_trial.html.js';
 
 /**
  * Trial option for setting up the device.
- * @enum {string}
  */
-const TrialOption = {
-  INSTALL: 'install',
-  TRY: 'try',
-};
+enum TrialOption {
+  INSTALL = 'install',
+  TRY = 'try',
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- */
-const OsTrialScreenElementBase = mixinBehaviors(
-    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    PolymerElement);
+const OsTrialScreenElementBase =
+    mixinBehaviors(
+        [OobeI18nBehavior, LoginScreenBehavior, OobeDialogHostBehavior],
+        PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
+    };
 
-/**
- * @polymer
- */
-class OsTrial extends OsTrialScreenElementBase {
+export class OsTrial extends OsTrialScreenElementBase {
   static get is() {
-    return 'os-trial-element';
+    return 'os-trial-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * The currently selected trial option.
@@ -72,21 +67,21 @@ class OsTrial extends OsTrialScreenElementBase {
     };
   }
 
+  private selectedTrialOption: TrialOption;
+
   constructor() {
     super();
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('OsTrialScreen');
   }
 
   /**
    * This is the 'on-click' event handler for the 'next' button.
-   * @private
    */
-  onNextButtonClick_() {
+  private onNextButtonClick(): void {
     if (this.selectedTrialOption == TrialOption.TRY) {
       this.userActed('os-trial-try');
     } else {
@@ -96,10 +91,16 @@ class OsTrial extends OsTrialScreenElementBase {
 
   /**
    * This is the 'on-click' event handler for the 'back' button.
-   * @private
    */
-  onBackButtonClick_() {
+  private onBackButtonClick(): void {
     this.userActed('os-trial-back');
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OsTrial.is]: OsTrial;
+  }
+}
+
 customElements.define(OsTrial.is, OsTrial);
