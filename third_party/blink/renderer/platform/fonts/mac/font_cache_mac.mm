@@ -279,27 +279,49 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
   if (!matched_font)
     return nullptr;
 
-  NSFontManager* font_manager = NSFontManager.sharedFontManager;
-  NSFontTraitMask actual_traits = 0;
-  if (font_description.Style())
-    actual_traits =
-        [font_manager traitsOfFont:CFToNSPtrCast(matched_font.get())];
-  NSInteger actual_weight =
-      [font_manager weightOfFont:CFToNSPtrCast(matched_font.get())];
+  bool synthetic_bold, synthetic_italic;
+  if (RuntimeEnabledFeatures::FontMatchingCTMigrationEnabled()) {
+    CTFontSymbolicTraits matched_font_traits =
+        CTFontGetSymbolicTraits(matched_font.get());
 
-  NSInteger app_kit_weight = ToAppKitFontWeight(font_description.Weight());
+    bool desired_bold = font_description.Weight() > FontSelectionValue(500);
+    bool matched_font_bold = matched_font_traits & kCTFontTraitBold;
+    bool synthetic_bold_requested = (desired_bold && !matched_font_bold) ||
+                                    font_description.IsSyntheticBold();
+    synthetic_bold =
+        synthetic_bold_requested && font_description.SyntheticBoldAllowed();
 
-  bool synthetic_bold_requested = (IsAppKitFontWeightBold(app_kit_weight) &&
-                                   !IsAppKitFontWeightBold(actual_weight)) ||
-                                  font_description.IsSyntheticBold();
-  bool synthetic_bold =
-      synthetic_bold_requested && font_description.SyntheticBoldAllowed();
+    bool desired_italic = font_description.Style();
+    bool matched_font_italic = matched_font_traits & kCTFontTraitItalic;
+    bool synthetic_italic_requested =
+        (desired_italic && !matched_font_italic) ||
+        font_description.IsSyntheticItalic();
+    synthetic_italic =
+        synthetic_italic_requested && font_description.SyntheticItalicAllowed();
+  } else {
+    NSFontManager* font_manager = NSFontManager.sharedFontManager;
+    NSFontTraitMask actual_traits = 0;
+    if (font_description.Style()) {
+      actual_traits =
+          [font_manager traitsOfFont:CFToNSPtrCast(matched_font.get())];
+    }
+    NSInteger actual_weight =
+        [font_manager weightOfFont:CFToNSPtrCast(matched_font.get())];
 
-  bool synthetic_italic_requested =
-      ((traits & NSFontItalicTrait) && !(actual_traits & NSFontItalicTrait)) ||
-      font_description.IsSyntheticItalic();
-  bool synthetic_italic =
-      synthetic_italic_requested && font_description.SyntheticItalicAllowed();
+    NSInteger app_kit_weight = ToAppKitFontWeight(font_description.Weight());
+
+    bool synthetic_bold_requested = (IsAppKitFontWeightBold(app_kit_weight) &&
+                                     !IsAppKitFontWeightBold(actual_weight)) ||
+                                    font_description.IsSyntheticBold();
+    synthetic_bold =
+        synthetic_bold_requested && font_description.SyntheticBoldAllowed();
+
+    bool synthetic_italic_requested = ((traits & NSFontItalicTrait) &&
+                                       !(actual_traits & NSFontItalicTrait)) ||
+                                      font_description.IsSyntheticItalic();
+    synthetic_italic =
+        synthetic_italic_requested && font_description.SyntheticItalicAllowed();
+  }
 
   // FontPlatformData::typeface() is null in the case of Chromium out-of-process
   // font loading failing.  Out-of-process loading occurs for registered fonts
