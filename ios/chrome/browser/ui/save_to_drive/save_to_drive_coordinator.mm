@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/save_to_drive/save_to_drive_coordinator.h"
 
-#import "base/apple/foundation_util.h"
-#import "base/files/file_path.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -19,43 +17,9 @@
 #import "ios/chrome/browser/ui/account_picker/account_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/save_to_drive/save_to_drive_mediator.h"
-#import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/browser/ui/save_to_drive/save_to_drive_util.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/web_state.h"
-#import "ui/base/l10n/l10n_util_mac.h"
-
-namespace {
-
-// Returns formatted size string.
-NSString* GetSizeString(int64_t size_in_bytes) {
-  NSByteCountFormatter* formatter = [[NSByteCountFormatter alloc] init];
-  formatter.countStyle = NSByteCountFormatterCountStyleFile;
-  formatter.zeroPadsFractionDigits = YES;
-  NSString* result = [formatter stringFromByteCount:size_in_bytes];
-  // Replace spaces with non-breaking spaces.
-  result = [result stringByReplacingOccurrencesOfString:@" "
-                                             withString:@"\u00A0"];
-  return result;
-}
-
-// Returns the appropriate account picker body text given `file_name` and
-// `file_size`. If `file_size` is negative, then it will not appear in the body
-// text.
-NSString* GetAccountPickerBodyText(NSString* file_name, int64_t file_size) {
-  const auto file_name_u16string = base::SysNSStringToUTF16(file_name);
-  if (file_size > -1) {
-    const auto file_size_u16string =
-        base::SysNSStringToUTF16(GetSizeString(file_size));
-    return l10n_util::GetNSStringF(
-        IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_BODY_WITH_SIZE,
-        file_name_u16string, file_size_u16string);
-  } else {
-    return l10n_util::GetNSStringF(IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_BODY,
-                                   file_name_u16string);
-  }
-}
-
-}  // namespace
 
 @interface SaveToDriveCoordinator () <AccountPickerCoordinatorDelegate>
 
@@ -88,15 +52,7 @@ NSString* GetAccountPickerBodyText(NSString* file_name, int64_t file_size) {
       saveToDriveCommandsHandler:saveToDriveCommandsHandler];
 
   AccountPickerConfiguration* accountPickerConfiguration =
-      [[AccountPickerConfiguration alloc] init];
-  accountPickerConfiguration.titleText =
-      l10n_util::GetNSString(IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_TITLE);
-  accountPickerConfiguration.bodyText = GetAccountPickerBodyText(
-      base::apple::FilePathToNSString(_downloadTask->GenerateFileName()),
-      _downloadTask->GetTotalBytes());
-  accountPickerConfiguration.submitButtonTitle =
-      l10n_util::GetNSString(IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_SUBMIT);
-
+      drive::GetAccountPickerConfiguration(_downloadTask);
   _accountPickerCoordinator = [[AccountPickerCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser

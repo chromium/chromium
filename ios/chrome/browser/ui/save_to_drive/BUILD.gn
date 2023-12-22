@@ -10,6 +10,7 @@ source_set("save_to_drive") {
     "save_to_drive_mediator.mm",
   ]
   deps = [
+    ":util",
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/download/model",
@@ -23,4 +24,47 @@ source_set("save_to_drive") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("util") {
+  sources = [
+    "save_to_drive_util.h",
+    "save_to_drive_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui/account_picker:account_picker_configuration",
+    "//ios/web/public/download",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "save_to_drive_coordinator_unittest.mm",
+    "save_to_drive_mediator_unittest.mm",
+  ]
+  deps = [
+    ":save_to_drive",
+    ":util",
+    "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/account_picker",
+    "//ios/chrome/browser/ui/account_picker:account_picker_configuration",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ios/chrome/test/fakes",
+    "//ios/web/public/download",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
 }
