@@ -1485,7 +1485,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests the Open in New Window context menu action for a reading list entry.
 // TODO(crbug.com/1274099): Test is flaky
-- (void)DISABLED_testContextMenuOpenInNewWindow {
+- (void)testContextMenuOpenInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
