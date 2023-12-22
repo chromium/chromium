@@ -16,28 +16,27 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/buttons/oobe_text_button.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 
 import {getTemplate} from './oobe_reset.html.js';
 
 /**
  * UI state for the dialog.
- * @enum {string}
  */
-const ResetScreenUiState = {
-  RESTART_REQUIRED: 'restart-required',
-  REVERT_PROMISE: 'revert-promise',
+enum ResetScreenUiState {
+  RESTART_REQUIRED = 'restart-required',
+  REVERT_PROMISE = 'revert-promise',
   // POWERWASH_PROPOSAL supports 2 ui-states: with or without rollback
-  POWERWASH_PROPOSAL: 'powerwash-proposal',
-  ERROR: 'error',
-};
+  POWERWASH_PROPOSAL = 'powerwash-proposal',
+  ERROR = 'error',
+}
 
 /**
  * The order should be in sync with the ResetView::State enum.
@@ -50,17 +49,22 @@ const ResetScreenUiStateMapping = [
 ];
 
 // When the screen is in the powerwash proposal state, it depends on the mode
-/** @enum {number} */
-const POWERWASH_MODE = {
-  'POWERWASH_WITH_ROLLBACK': 0,
-  'POWERWASH_ONLY': 1,
-};
+enum PowerwashMode {
+  'POWERWASH_WITH_ROLLBACK' = 0,
+  'POWERWASH_ONLY' = 1,
+}
+
+interface DialogRessources {
+  subtitleText: string;
+  dialogTitle: string;
+  dialogContent: string;
+  buttonTextKey: string;
+}
 
 // Powerwash mode details. Used by the UI for the two different modes
-/** @type {Map<number, Object<string,string>>} */
-const POWERWASH_MODE_DETAILS = new Map([
+const POWERWASH_MODE_DETAILS: Map<number, DialogRessources> = new Map([
   [
-    POWERWASH_MODE.POWERWASH_WITH_ROLLBACK,
+    PowerwashMode.POWERWASH_WITH_ROLLBACK,
     {
       subtitleText: 'resetPowerwashRollbackWarningDetails',
       dialogTitle: 'confirmRollbackTitle',
@@ -69,7 +73,7 @@ const POWERWASH_MODE_DETAILS = new Map([
     },
   ],
   [
-    POWERWASH_MODE.POWERWASH_ONLY,
+    PowerwashMode.POWERWASH_ONLY,
     {
       subtitleText: 'resetPowerwashWarningDetails',
       dialogTitle: 'confirmPowerwashTitle',
@@ -79,50 +83,31 @@ const POWERWASH_MODE_DETAILS = new Map([
   ],
 ]);
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- */
-const ResetScreenElementBase = mixinBehaviors(
-    [
-      OobeI18nBehavior,
-      OobeDialogHostBehavior,
-      LoginScreenBehavior,
-      MultiStepBehavior,
-    ],
-    PolymerElement);
+const ResetScreenElementBase =
+    mixinBehaviors(
+        [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+        PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
+    };
 
-/**
- * @typedef {{
- *   resetDialog:  OobeAdaptiveDialog,
- *   confirmationDialog:  OobeModalDialog,
- *   tpmFirmwareUpdateCheckbox, CrCheckBox,
- * }}
- */
-ResetScreenElementBase.$;
 
-/**
- * @polymer
- */
-class OobeReset extends ResetScreenElementBase {
+export class OobeReset extends ResetScreenElementBase {
   static get is() {
-    return 'oobe-reset-element';
+    return 'oobe-reset-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /** Whether rollback is available */
       isRollbackAvailable_: {
         type: Boolean,
         value: false,
-        observer: 'updatePowerwashModeBasedOnRollbackOptions_',
+        observer: 'updatePowerwashModeBasedOnRollbackOptions',
       },
 
       /**
@@ -131,7 +116,7 @@ class OobeReset extends ResetScreenElementBase {
       isRollbackRequested_: {
         type: Boolean,
         value: false,
-        observer: 'updatePowerwashModeBasedOnRollbackOptions_',
+        observer: 'updatePowerwashModeBasedOnRollbackOptions',
       },
 
       /**
@@ -165,37 +150,37 @@ class OobeReset extends ResetScreenElementBase {
       // Title to be shown on the confirmation dialog.
       confirmationDialogTitle_: {
         type: String,
-        computed: 'getConfirmationDialogTitle_(locale, powerwashMode_)',
+        computed: 'getConfirmationDialogTitle(locale, powerwashMode_)',
       },
 
       // Content to be shown on the confirmation dialog.
       confirmationDialogText_: {
         type: String,
-        computed: 'getConfirmationDialogText_(locale, powerwashMode_)',
+        computed: 'getConfirmationDialogText(locale, powerwashMode_)',
       },
 
       // The subtitle to be shown while the screen is in POWERWASH_PROPOSAL
       powerwashStateSubtitle_: {
         type: String,
-        computed: 'getPowerwashStateSubtitle_(locale, powerwashMode_)',
+        computed: 'getPowerwashStateSubtitle(locale, powerwashMode_)',
       },
 
       // The text shown on the powerwash button. (depends on powerwash mode)
       powerwashButtonTextKey_: {
         type: String,
-        computed: 'getPowerwashButtonTextKey_(locale, powerwashMode_)',
+        computed: 'getPowerwashButtonTextKey(locale, powerwashMode_)',
       },
 
       // Whether the powerwash button is disabled.
       powerwashButtonDisabled_: {
         type: Boolean,
-        computed: 'isPowerwashDisabled_(powerwashMode_, tpmUpdateChecked_)',
+        computed: 'isPowerwashDisabled(powerwashMode_, tpmUpdateChecked_)',
       },
 
       // The chosen powerwash mode
       powerwashMode_: {
         type: Number,
-        value: POWERWASH_MODE.POWERWASH_ONLY,
+        value: PowerwashMode.POWERWASH_ONLY,
       },
 
       inRevertState_: {
@@ -205,117 +190,118 @@ class OobeReset extends ResetScreenElementBase {
     };
   }
 
+  private isRollbackAvailable_: boolean;
+  private isRollbackRequested_: boolean;
+  private tpmUpdateAvailable_: boolean;
+  private tpmUpdateChecked_: boolean;
+  private tpmUpdateEditable_: boolean;
+  private tpmUpdateMode_: string;
+  private confirmationDialogTitle_: string;
+  private confirmationDialogText_: string;
+  private powerwashStateSubtitle_: string;
+  private powerwashButtonTextKey_: string;
+  private powerwashButtonDisabled_: boolean;
+  private powerwashMode_: number;
+  private inRevertState_: boolean;
+
+
+
   /** Overridden from LoginScreenBehavior. */
-  // clang-format off
-  get EXTERNAL_API() {
-    return ['setIsRollbackAvailable',
-            'setIsRollbackRequested',
-            'setIsTpmFirmwareUpdateAvailable',
-            'setIsTpmFirmwareUpdateChecked',
-            'setIsTpmFirmwareUpdateEditable',
-            'setTpmFirmwareUpdateMode',
-            'setShouldShowConfirmationDialog',
-            'setScreenState',
+  override get EXTERNAL_API(): string[] {
+    return [
+      'setIsRollbackAvailable',
+      'setIsRollbackRequested',
+      'setIsTpmFirmwareUpdateAvailable',
+      'setIsTpmFirmwareUpdateChecked',
+      'setIsTpmFirmwareUpdateEditable',
+      'setTpmFirmwareUpdateMode',
+      'setShouldShowConfirmationDialog',
+      'setScreenState',
     ];
   }
 
-  // clang-format on
-
-  /**
-   * @return {string}
-   */
-  defaultUIStep() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep(): ResetScreenUiState {
     return ResetScreenUiState.RESTART_REQUIRED;
   }
 
-  get UI_STEPS() {
+  override get UI_STEPS() {
     return ResetScreenUiState;
   }
 
-  /** @override */
-  ready() {
+
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('ResetScreen');
   }
 
-  reset() {
+  reset(): void {
     this.setUIStep(ResetScreenUiState.RESTART_REQUIRED);
-    this.onScreenStateChanged_();
+    this.onScreenStateChanged();
 
-    this.powerwashMode_ = POWERWASH_MODE.POWERWASH_ONLY;
+    this.powerwashMode_ = PowerwashMode.POWERWASH_ONLY;
     this.tpmUpdateAvailable_ = false;
     this.isRollbackAvailable_ = false;
     this.isRollbackRequested_ = false;
   }
 
   /* ---------- EXTERNAL API BEGIN ---------- */
-  /** @param {boolean} rollbackAvailable  */
-  setIsRollbackAvailable(rollbackAvailable) {
+  setIsRollbackAvailable(rollbackAvailable: boolean): void {
     this.isRollbackAvailable_ = rollbackAvailable;
   }
 
-  /**
-   * @param {boolean} rollbackRequested
-   */
-  setIsRollbackRequested(rollbackRequested) {
+  setIsRollbackRequested(rollbackRequested: boolean): void {
     this.isRollbackRequested_ = rollbackRequested;
   }
 
-  /** @param {boolean} value  */
-  setIsTpmFirmwareUpdateAvailable(value) {
+  setIsTpmFirmwareUpdateAvailable(value: boolean): void {
     this.tpmUpdateAvailable_ = value;
   }
 
-  /** @param {boolean} value  */
-  setIsTpmFirmwareUpdateChecked(value) {
+  setIsTpmFirmwareUpdateChecked(value: boolean): void {
     this.tpmUpdateChecked_ = value;
   }
 
-  /** @param {boolean} value  */
-  setIsTpmFirmwareUpdateEditable(value) {
+  setIsTpmFirmwareUpdateEditable(value: boolean): void {
     this.tpmUpdateEditable_ = value;
   }
 
-  /** @param {string} value  */
-  setTpmFirmwareUpdateMode(value) {
+  setTpmFirmwareUpdateMode(value: string): void {
     this.tpmUpdateMode_ = value;
   }
 
-  /**
-   * @param {boolean} should_show
-   */
-  setShouldShowConfirmationDialog(should_show) {
-    if (should_show) {
-      this.$.confirmationDialog.showDialog();
+
+  setShouldShowConfirmationDialog(shouldShow: boolean) {
+    const confirmationDialog =
+        this.shadowRoot!.querySelector<OobeModalDialog>('#confirmationDialog')!;
+    if (shouldShow) {
+      confirmationDialog.showDialog();
     } else {
-      this.$.confirmationDialog.hideDialog();
+      confirmationDialog.hideDialog();
     }
   }
 
-  /** @param {number} state  */
-  setScreenState(state) {
+  setScreenState(state: number): void {
     this.setUIStep(ResetScreenUiStateMapping[state]);
-    this.onScreenStateChanged_();
+    this.onScreenStateChanged();
   }
   /* ---------- EXTERNAL API END ---------- */
 
   /**
    *  When rollback is available and requested, the powerwash mode changes
    *  to POWERWASH_WITH_ROLLBACK.
-   *  @private
    */
-  updatePowerwashModeBasedOnRollbackOptions_() {
+  private updatePowerwashModeBasedOnRollbackOptions(): void {
     if (this.isRollbackAvailable_ && this.isRollbackRequested_) {
-      this.powerwashMode_ = POWERWASH_MODE.POWERWASH_WITH_ROLLBACK;
+      this.powerwashMode_ = PowerwashMode.POWERWASH_WITH_ROLLBACK;
       this.classList.add('rollback-proposal-view');
     } else {
-      this.powerwashMode_ = POWERWASH_MODE.POWERWASH_ONLY;
+      this.powerwashMode_ = PowerwashMode.POWERWASH_ONLY;
       this.classList.remove('rollback-proposal-view');
     }
   }
 
-  /** @private */
-  onScreenStateChanged_() {
+  private onScreenStateChanged(): void {
     if (this.uiStep == ResetScreenUiState.REVERT_PROMISE) {
       getAnnouncerInstance().announce(this.i18n('resetRevertSpinnerMessage'));
       this.classList.add('revert-promise-view');
@@ -327,148 +313,138 @@ class OobeReset extends ResetScreenElementBase {
 
   /**
    * Determines the subtitle based on the current powerwash mode
-   * @param {*} locale
-   * @param {POWERWASH_MODE} mode
-   * @private
    */
-  getPowerwashStateSubtitle_(locale, mode) {
+  private getPowerwashStateSubtitle(_locale: string, _mode: PowerwashMode):
+      string {
     if (this.powerwashMode_ === undefined) {
       return '';
     }
     const modeDetails = POWERWASH_MODE_DETAILS.get(this.powerwashMode_);
-    return this.i18n(modeDetails.subtitleText);
+    return this.i18n(modeDetails!.subtitleText);
   }
 
   /**
    * The powerwash button text depends on the powerwash mode
-   * @param {*} locale
-   * @param {POWERWASH_MODE} mode
-   * @private
    */
-  getPowerwashButtonTextKey_(locale, mode) {
+  private getPowerwashButtonTextKey(_locale: string, _mode: PowerwashMode):
+      string {
     if (this.powerwashMode_ === undefined) {
       return '';
     }
-    return POWERWASH_MODE_DETAILS.get(this.powerwashMode_).buttonTextKey;
+    return POWERWASH_MODE_DETAILS.get(this.powerwashMode_)!.buttonTextKey;
   }
 
   /**
    * Cannot powerwash with rollback when the TPM update checkbox is checked
-   * @param {POWERWASH_MODE} mode
-   * @param {boolean} tpmUpdateChecked
-   * @private
    */
-  isPowerwashDisabled_(mode, tpmUpdateChecked) {
+  private isPowerwashDisabled(
+      _mode: PowerwashMode, _tpmUpdateChecked: boolean): boolean {
     return this.tpmUpdateChecked_ &&
-        (this.powerwashMode_ == POWERWASH_MODE.POWERWASH_WITH_ROLLBACK);
+        (this.powerwashMode_ == PowerwashMode.POWERWASH_WITH_ROLLBACK);
   }
 
   /* ---------- CONFIRMATION DIALOG ---------- */
 
   /**
    * Determines the confirmation dialog title.
-   * @param {*} locale
-   * @param {POWERWASH_MODE} mode
-   * @private
    */
-  getConfirmationDialogTitle_(locale, mode) {
+  private getConfirmationDialogTitle(_locale: string, _mode: PowerwashMode):
+      string {
     if (this.powerwashMode_ === undefined) {
       return '';
     }
     const modeDetails = POWERWASH_MODE_DETAILS.get(this.powerwashMode_);
-    return this.i18n(modeDetails.dialogTitle);
+    return this.i18n(modeDetails!.dialogTitle);
   }
 
   /**
    * Determines the confirmation dialog content
-   * @param {*} locale
-   * @param {POWERWASH_MODE} mode
-   * @private
    */
-  getConfirmationDialogText_(locale, mode) {
+  private getConfirmationDialogText(_locale: string, _mode: PowerwashMode):
+      string {
     if (this.powerwashMode_ === undefined) {
       return '';
     }
     const modeDetails = POWERWASH_MODE_DETAILS.get(this.powerwashMode_);
-    return this.i18n(modeDetails.dialogContent);
+    return this.i18n(modeDetails!.dialogContent);
   }
 
   /**
    * On-tap event handler for confirmation dialog continue button.
-   * @private
    */
-  onDialogContinueTap_() {
+  private onDialogContinueClick(): void {
     this.userActed('powerwash-pressed');
   }
 
   /**
    * On-tap event handler for confirmation dialog cancel button.
-   * @private
-   * @suppress {missingProperties}
    */
-  onDialogCancelTap_() {
-    this.$.confirmationDialog.hideDialog();
+  private onDialogCancelClick(): void {
+    const confirmationDialog =
+        this.shadowRoot!.querySelector<OobeModalDialog>('#confirmationDialog')!;
+    confirmationDialog.hideDialog();
     this.userActed('reset-confirm-dismissed');
   }
 
   /**
    * Catch 'close' event through escape key
-   * @private
    */
-  onDialogClosed_() {
+  private onDialogClosed(): void {
     this.userActed('reset-confirm-dismissed');
   }
 
   /* ---------- SIMPLE EVENT HANDLERS ---------- */
   /**
    * On-tap event handler for cancel button.
-   * @private
    */
-  onCancelTap_() {
+  private onCancelClick(): void {
     this.userActed('cancel-reset');
   }
 
   /**
    * On-tap event handler for restart button.
-   * @private
    */
-  onRestartTap_() {
+  private onRestartClick(): void {
     this.userActed('restart-pressed');
   }
 
   /**
    * On-tap event handler for powerwash button.
-   * @private
    */
-  onPowerwashTap_() {
+  private onPowerwashClick(): void {
     this.userActed('show-confirmation');
   }
 
   /**
    * On-tap event handler for learn more link.
-   * @private
    */
-  onLearnMoreTap_() {
+  private onLearnMoreClick(): void {
     this.userActed('learn-more-link');
   }
 
   /**
    * Change handler for TPM firmware update checkbox.
-   * @private
    */
-  onTPMFirmwareUpdateChanged_() {
-    const checked = this.$.tpmFirmwareUpdateCheckbox.checked;
+  private onTpmFirmwareUpdateChanged(): void {
+    const tpmFirmwareUpdateCheckbox =
+        this.shadowRoot!.querySelector<CrCheckboxElement>(
+            '#tpmFirmwareUpdateCheckbox')!;
+    const checked = tpmFirmwareUpdateCheckbox.checked;
     this.userActed(['tpmfirmware-update-checked', checked]);
   }
 
   /**
    * On-tap event handler for the TPM firmware update learn more link.
-   * @param {!Event} event
-   * @private
    */
-  onTPMFirmwareUpdateLearnMore_(event) {
+  private onTpmFirmwareUpdateLearnMore(event: Event): void {
     this.userActed('tpm-firmware-update-learn-more-link');
     event.stopPropagation();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OobeReset.is]: OobeReset;
   }
 }
 

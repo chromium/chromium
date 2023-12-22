@@ -39,7 +39,6 @@ js_type_check("closure_compile_local") {
     ":hw_data_collection",
     ":managed_terms_of_service",
     ":offline_ad_login",
-    ":oobe_reset",
     ":os_install",
     ":os_trial",
     ":placeholder",
@@ -240,22 +239,6 @@ js_library("offline_ad_login") {
     "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("oobe_reset") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/oobe_reset.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_modal_dialog",
-    "//ash/webui/common/resources:util",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "//ui/webui/resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer_externs.js" ]
   extra_deps = [ ":web_components" ]
 }
 

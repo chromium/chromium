@@ -134,7 +134,7 @@ common_screens_js_files = [
   "screens/common/multidevice_setup.js",
   "screens/common/offline_ad_login.js",
   "screens/common/online_authentication_screen.js",
-  "screens/common/oobe_reset.js",
+  "screens/common/oobe_reset.ts",
   "screens/common/os_install.js",
   "screens/common/os_trial.js",
   "screens/common/parental_handoff.ts",
