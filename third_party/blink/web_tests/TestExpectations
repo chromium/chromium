@@ -1620,12 +1620,11 @@ crbug.com/470482 fast/cookies/local-file-can-set-cookies.html [ Crash Failure Pa
 
 crbug.com/411164 [ Win ] http/tests/security/powerfulFeatureRestrictions/serviceworker-on-insecure-origin.html [ Pass ]
 
-crbug.com/686118 http/tests/security/setDomainRelaxationForbiddenForURLScheme.html [ Crash Pass ]
+crbug.com/686118 [ Release Win11-arm64 ] http/tests/security/setDomainRelaxationForbiddenForURLScheme.html [ Crash Pass ]
 
 # Flaky tests on Mac after enabling scroll animations in web_tests
 crbug.com/944583 [ Mac ] fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html [ Failure Pass ]
 crbug.com/944583 [ Mac12 ] fast/scrolling/percentage-mousewheel-scroll-on-iframe.html [ Failure Pass ]
-crbug.com/944583 [ Mac12-arm64 Release ] fast/scrolling/percentage-mousewheel-scroll-on-iframe.html [ Failure Pass ]
 # Sheriff: 2020-05-18
 
 # In external/wpt/html/, we prefer checking in failure
@@ -2691,7 +2690,6 @@ crbug.com/626703 [ Mac12 ] external/wpt/performance-timeline/back-forward-cache-
 crbug.com/626703 [ Mac12 ] virtual/pna-navigations-warning/external/wpt/fetch/private-network-access/shared-worker-fetch.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/prefetch-no-vary-search/external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?3-3 [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/prefetch-reusable/external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?27-27 [ Timeout ]
-crbug.com/626703 [ Mac12 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?28-last [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single.https.html?15-15 [ Timeout ]
 crbug.com/626703 external/wpt/css/css-backgrounds/border-image-image-type-001.htm [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-image-type-001.htm [ Failure ]
@@ -6393,7 +6391,7 @@ crbug.com/1448021 fast/webgl/texture-color-profile.html [ Failure Pass ]
 crbug.com/1448043 virtual/compositor-threaded-percent-based-scrolling-dsf-2/virtual/percent-based-scrolling/max-percent-delta-pinch-zoom.html [ Pass Timeout ]
 crbug.com/1448024 external/wpt/scroll-animations/scroll-timelines/scroll-timeline-invalidation.html [ Failure Pass ]
 crbug.com/1447101 media/video-source-none-supported.html [ Failure Pass Timeout ]
-crbug.com/1430215 external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Pass ]
+crbug.com/1430215 [ Debug Mac13-arm64 ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Pass ]
 crbug.com/1434378 virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/permissions-policy-fenced-frame.https.js [ Pass Timeout ]
 
 # Sheriff 2023-05-26
@@ -6832,7 +6830,6 @@ crbug.com/1510005 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effec
 crbug.com/1511492 [ Linux ] external/wpt/event-timing/first-input-interactionid-tap.html [ Crash Failure Pass Timeout ]
 crbug.com/1511492 [ Linux ] external/wpt/event-timing/interactionid-tap.html [ Crash Failure Pass Timeout ]
 crbug.com/1511492 [ Linux ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Crash Failure Pass Timeout ]
-crbug.com/1511492 [ Linux ] external/wpt/event-timing/external/wpt/event-timing/interactionid-tap.html [ Crash Failure Timeout ]
 
 # TODO(crbug.com/1496375): Re-enable these tests.
 crbug.com/1496375 [ Linux ] http/tests/loading/image-picture-download-after-shrink.html [ Failure Pass ]
