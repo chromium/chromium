@@ -97,6 +97,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_network.h"
+
 namespace blink {
 
 constexpr uint32_t ResourceFetcher::kKeepaliveInflightBytesQuota;
@@ -602,6 +604,12 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
     const ResourceRequest& request,
     bool is_static_data,
     RenderBlockingBehavior render_blocking_behavior) {
+  recordreplay::OnNetworkPrepareRequest(request);
+  recordreplay::OnNetworkReceiveResponse(resource->InspectorId(), resource->GetResponse());
+  recordreplay::OnNetworkFinishLoading(resource->InspectorId(),
+                                       resource->GetResponse().EncodedBodyLength(),
+                                       resource->GetResponse().DecodedBodyLength());
+
   if (IsDetached() || !resource_load_observer_)
     return;
 
@@ -2103,14 +2111,17 @@ bool ResourceFetcher::StartLoad(
 
     const ResourceRequestHead& request_head = resource->GetResourceRequest();
 
-    if (resource_load_observer_) {
+    {
       DCHECK(!IsDetached());
       ResourceRequest request(request_head);
       request.SetHttpBody(request_body.FormBody());
-      ResourceResponse response;
-      resource_load_observer_->WillSendRequest(
-          request, response, resource->GetType(), resource->Options(),
-          render_blocking_behavior, resource);
+      recordreplay::OnNetworkPrepareRequest(request);
+      if (resource_load_observer_) {
+        ResourceResponse response;
+        resource_load_observer_->WillSendRequest(
+            request, response, resource->GetType(), resource->Options(),
+            render_blocking_behavior, resource);
+      }
     }
 
     using QuotaType = decltype(inflight_keepalive_bytes_);

@@ -21,6 +21,9 @@ void OnNewWindow1(v8::Isolate* isolate, LocalFrame* localFrame);
 // first checkpoint in the recording is created.
 void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context);
 
+// Do any remaining initialization after the first checkpoint is created.
+void SetupRecordReplayCommandsAfterCheckpoint();
+
 // Initialize everything that needs to be initialized with every root frame.
 void OnNewRootFrame(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context);
 

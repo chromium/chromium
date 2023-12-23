@@ -1398,6 +1398,12 @@ void RenderThreadImpl::RecordReplayBrowserEvent(
     return;
   }
 
+  // For now these events are always ignored unless a special env var is set,
+  // see discussion in https://linear.app/replay/issue/RUN-2961
+  if (!getenv("RECORD_REPLAY_REPORT_BROWSER_PROCESS_EVENTS")) {
+    return;
+  }
+
   std::string json;
   base::JSONWriter::Write(value, &json);
   V8RecordReplayBrowserEvent(name.c_str(), json.c_str());

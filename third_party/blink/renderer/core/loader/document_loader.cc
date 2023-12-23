@@ -153,6 +153,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_network.h"
+
 namespace blink {
 namespace {
 
@@ -1038,6 +1040,8 @@ void DocumentLoader::BodyDataReceivedImpl(BodyData& data) {
     probe::DidReceiveData(probe::ToCoreProbeSink(GetFrame()),
                           main_resource_identifier_, this, encoded_data.data(),
                           encoded_data.size());
+    recordreplay::OnNetworkReceiveData(main_resource_identifier_,
+                                       encoded_data.data(), (int)encoded_data.size());
   }
 
   TRACE_EVENT1("loading", "DocumentLoader::HandleData", "length",
@@ -1076,6 +1080,9 @@ void DocumentLoader::BodyLoadingFinished(
         probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
         completion_time, total_encoded_data_length, total_decoded_body_length,
         should_report_corb_blocking);
+    recordreplay::OnNetworkFinishLoading(main_resource_identifier_,
+                                         total_encoded_data_length,
+                                         total_decoded_body_length);
     if (response_.ShouldPopulateResourceTiming() ||
         is_error_page_for_failed_navigation_) {
       // The response is being copied here to pass the Encoded and Decoded
@@ -1108,6 +1115,7 @@ void DocumentLoader::BodyLoadingFinished(
   probe::DidFailLoading(probe::ToCoreProbeSink(GetFrame()),
                         main_resource_identifier_, this, resource_error,
                         frame_->GetDevToolsFrameToken());
+  recordreplay::OnNetworkFail(main_resource_identifier_, *error);
   GetFrame()->Console().DidFailLoading(this, main_resource_identifier_,
                                        resource_error);
   LoadFailed(resource_error);
@@ -1221,6 +1229,7 @@ void DocumentLoader::HandleRedirect(
   probe::WillSendNavigationRequest(
       probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
       url_after_redirect, http_method_, http_body_.get());
+  recordreplay::OnNetworkResourceRedirect(main_resource_identifier_, url_after_redirect, nullptr);
 
   navigation_timing_info_->AddRedirect(redirect_response, url_after_redirect);
 
@@ -1694,6 +1703,12 @@ void DocumentLoader::StartLoadingInternal() {
   // so we don't MarkFetchStart here.
   main_resource_identifier_ = CreateUniqueIdentifier();
 
+  if (recordreplay::IsRecordingOrReplaying("notify-network")) {
+    ResourceRequest request(url_);
+    request.SetInspectorId(main_resource_identifier_);
+    recordreplay::OnNetworkPrepareRequest(request);
+  }
+
   navigation_timing_info_ = ResourceTimingInfo::Create(
       fetch_initiator_type_names::kDocument, GetTiming().NavigationStart(),
       mojom::blink::RequestContextType::IFRAME,
@@ -1733,6 +1748,7 @@ void DocumentLoader::StartLoadingInternal() {
   probe::DidReceiveResourceResponse(probe::ToCoreProbeSink(GetFrame()),
                                     main_resource_identifier_, this, response_,
                                     nullptr /* resource */);
+  recordreplay::OnNetworkReceiveResponse(main_resource_identifier_, response_);
 
   HandleResponse();
 

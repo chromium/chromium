@@ -231,6 +231,7 @@ void LocalWindowProxy::Initialize() {
       gRecordReplayStateInitialized = true;
       SetupRecordReplayCommands(GetIsolate(), GetFrame(), context);
       recordreplay::NewCheckpoint();
+      SetupRecordReplayCommandsAfterCheckpoint();
     }
 
     if (GetFrame()->IsOutermostMainFrame()) {
