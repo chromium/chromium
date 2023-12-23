@@ -42,7 +42,7 @@
 <translation id="2599796128805996109">دوربین پشت</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> ثانیه</translation>
 <translation id="2761536921376153655">نوع اسکن</translation>
-<translation id="28682968802727151">پیش‌نمایش بازتاب</translation>
+<translation id="28682968802727151">پیش‌نمایش قرینه‌سازی</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> متصل شد.</translation>
 <translation id="3067436040345934772">حرکت دادن به راست</translation>
 <translation id="3081586908890909590">رفتن به حالت فیلم‌برداری</translation>
@@ -115,7 +115,7 @@
 اگر بازخوردتان درباره کیفیت تصویر یا ویدیو است، لطفاً نمونه‌ای از عکس یا ویدیو را ضمیمه کنید و مشکل را توضیح دهید. (برای مثال، عکس خیلی تیره است یا روی سوژه موردنظر فوکوس نشده است.)</translation>
 <translation id="6527303717912515753">اشتراک‌گذاری</translation>
 <translation id="6617916774429601017">نمایش همه وضوح‌ها</translation>
-<translation id="6631515515009660915">بازتاب خاموش</translation>
+<translation id="6631515515009660915">قرینه‌سازی خاموش</translation>
 <translation id="6652737148136672975">موقعیت گوشه را بااستفاده از کلیدهای جهت‌نما تغییر دهید</translation>
 <translation id="667999046851023355">سند</translation>
 <translation id="6681668084120808868">عکسبرداری</translation>
@@ -167,6 +167,6 @@
 <translation id="9045155556724273246">۱۰ ثانیه</translation>
 <translation id="906331135292332864">درحال پردازش تصویر…</translation>
 <translation id="9161584225258678723">زمان‌گریز</translation>
-<translation id="922762992951083513">بازتاب روشن</translation>
+<translation id="922762992951083513">قرینه‌سازی روشن</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 </translationbundle>
