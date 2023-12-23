@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping_builder.h"
+#include "third_party/blink/renderer/core/layout/inline/transformed_string.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -236,21 +237,20 @@ void InlineItemsBuilderTemplate<MappingBuilder>::BoxInfo::
 // Append a string as a text item.
 template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::AppendTextItem(
-    const StringView string,
+    const TransformedString& transformed,
     LayoutText* layout_object) {
   DCHECK(layout_object);
-  AppendTextItem(InlineItem::kText, string, layout_object);
+  AppendTextItem(InlineItem::kText, transformed, layout_object);
 }
 
 template <typename MappingBuilder>
 InlineItem& InlineItemsBuilderTemplate<MappingBuilder>::AppendTextItem(
     InlineItem::InlineItemType type,
-    const StringView string,
+    const TransformedString& transformed,
     LayoutText* layout_object) {
   DCHECK(layout_object);
   unsigned start_offset = text_.length();
-  text_.Append(string);
-  mapping_builder_.AppendIdentityMapping(string.length());
+  AppendTransformedString(transformed, *layout_object);
   InlineItem& item =
       AppendItem(items_, type, start_offset, text_.length(), layout_object);
   DCHECK(!item.IsEmptyItem());
@@ -519,17 +519,23 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
     return;
   }
 
-  AppendText(layout_text->GetText(), layout_text);
+  AppendText(TransformedString::CreateFrom(*layout_text), *layout_text);
 }
 
 template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
     const String& string,
     LayoutText* layout_object) {
-  DCHECK(layout_object);
+  AppendText(TransformedString(string), *layout_object);
+}
 
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
+    const TransformedString& transformed,
+    LayoutText& layout_object) {
+  StringView string = transformed.View();
   if (string.empty()) {
-    AppendEmptyTextItem(layout_object);
+    AppendEmptyTextItem(&layout_object);
     return;
   }
 
@@ -548,65 +554,80 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
   }
 
   typename MappingBuilder::SourceNodeScope scope(&mapping_builder_,
-                                                 layout_object);
+                                                 &layout_object);
 
-  const ComputedStyle& style = layout_object->StyleRef();
+  const ComputedStyle& style = layout_object.StyleRef();
   const bool should_not_preserve_newline =
-      (layout_object && layout_object->IsSVGInlineText()) ||
-      UNLIKELY(is_text_combine_);
+      layout_object.IsSVGInlineText() || UNLIKELY(is_text_combine_);
 
   RestoreTrailingCollapsibleSpaceIfRemoved();
 
-  if (text_chunk_offsets_ && AppendTextChunks(string, *layout_object))
+  if (text_chunk_offsets_ && AppendTextChunks(transformed, layout_object)) {
     return;
+  }
   if (style.ShouldPreserveWhiteSpaces()) {
-    AppendPreserveWhitespace(string, &style, layout_object);
+    AppendPreserveWhitespace(transformed, &style, &layout_object);
   } else if (style.ShouldPreserveBreaks() && !should_not_preserve_newline) {
-    AppendPreserveNewline(string, &style, layout_object);
+    AppendPreserveNewline(transformed, &style, &layout_object);
   } else {
-    AppendCollapseWhitespace(string, &style, layout_object);
+    AppendCollapseWhitespace(transformed, &style, &layout_object);
   }
 }
 
 template <typename MappingBuilder>
 bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextChunks(
-    const String& string,
+    const TransformedString& transformed,
     LayoutText& layout_text) {
   auto iter = text_chunk_offsets_->find(&layout_text);
   if (iter == text_chunk_offsets_->end())
     return false;
   const ComputedStyle& style = layout_text.StyleRef();
   const bool should_collapse_space = style.ShouldCollapseWhiteSpaces();
+  unsigned length = transformed.View().length();
   unsigned start = 0;
   for (unsigned offset : iter->value) {
-    DCHECK_LE(offset, string.length());
+    DCHECK_LE(offset, length);
     if (start < offset) {
       if (!should_collapse_space) {
-        AppendPreserveWhitespace(string.Substring(start, offset - start),
+        AppendPreserveWhitespace(transformed.Substring(start, offset - start),
                                  &style, &layout_text);
       } else {
-        AppendCollapseWhitespace(StringView(string, start, offset - start),
+        AppendCollapseWhitespace(transformed.Substring(start, offset - start),
                                  &style, &layout_text);
       }
     }
     ExitAndEnterSvgTextChunk(layout_text);
     start = offset;
   }
-  if (start >= string.length())
+  if (start >= length) {
     return true;
+  }
   if (!should_collapse_space) {
-    AppendPreserveWhitespace(string.Substring(start), &style, &layout_text);
+    AppendPreserveWhitespace(transformed.Substring(start), &style,
+                             &layout_text);
   } else {
-    AppendCollapseWhitespace(StringView(string, start), &style, &layout_text);
+    AppendCollapseWhitespace(transformed.Substring(start), &style,
+                             &layout_text);
   }
   return true;
 }
 
 template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::AppendTransformedString(
+    const TransformedString& transformed,
+    const LayoutText& layout_text) {
+  // TODO(layout-dev): Check the collapse/expansion information in
+  // `transformed`, and call appropriate mapping_builder_.Append*Mapping()
+  text_.Append(transformed.View());
+  mapping_builder_.AppendIdentityMapping(transformed.View().length());
+}
+
+template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
-    const StringView string,
+    const TransformedString& transformed,
     const ComputedStyle* style,
     LayoutText* layout_object) {
+  StringView string = transformed.View();
   DCHECK(!string.empty());
 
   // This algorithm segments the input string at the collapsible space, and
@@ -634,7 +655,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
     if (UNLIKELY(space_run_has_newline && string.length() == 1 &&
                  layout_object && layout_object->IsBR())) {
       if (UNLIKELY(is_text_combine_)) {
-        AppendTextItem(" ", layout_object);
+        AppendTextItem(TransformedString(" "), layout_object);
       } else {
         AppendForcedBreakCollapseWhitespace(layout_object);
       }
@@ -743,8 +764,9 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
         if (Character::IsCollapsibleSpace(c))
           break;
       }
-      text_.Append(string, start_of_non_space, i - start_of_non_space);
-      mapping_builder_.AppendIdentityMapping(i - start_of_non_space);
+      AppendTransformedString(
+          transformed.Substring(start_of_non_space, i - start_of_non_space),
+          *layout_object);
 
       if (i == string.length()) {
         end_collapse = InlineItem::kNotCollapsible;
@@ -804,7 +826,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
 template <typename MappingBuilder>
 bool InlineItemsBuilderTemplate<MappingBuilder>::
     ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
-        const String& string,
+        StringView string,
         const ComputedStyle& style,
         unsigned index) const {
   DCHECK_LE(index, string.length());
@@ -827,18 +849,19 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::
 template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::
     InsertBreakOpportunityAfterLeadingPreservedSpaces(
-        const String& string,
+        const TransformedString& transformed,
         const ComputedStyle& style,
         LayoutText* layout_object,
         unsigned* start) {
   DCHECK(start);
+  StringView string = transformed.View();
   if (UNLIKELY(ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
           string, style, *start))) {
     wtf_size_t end = *start;
     do {
       ++end;
     } while (end < string.length() && string[end] == kSpaceCharacter);
-    AppendTextItem(StringView(string, *start, end - *start), layout_object);
+    AppendTextItem(transformed.Substring(*start, end - *start), layout_object);
     AppendGeneratedBreakOpportunity(layout_object);
     *start = end;
   }
@@ -850,7 +873,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::
 // tabs) are in their own control items to make the line breaker not special.
 template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveWhitespace(
-    const String& string,
+    const TransformedString& transformed,
     const ComputedStyle* style,
     LayoutText* layout_object) {
   DCHECK(style);
@@ -861,15 +884,16 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveWhitespace(
   // opportunity after leading preserved spaces needs a special code in the line
   // breaker. Generate an opportunity to make it easy.
   unsigned start = 0;
-  InsertBreakOpportunityAfterLeadingPreservedSpaces(string, *style,
+  InsertBreakOpportunityAfterLeadingPreservedSpaces(transformed, *style,
                                                     layout_object, &start);
+  String string = transformed.View().ToString();
   for (; start < string.length();) {
     UChar c = string[start];
     if (IsControlItemCharacter(c)) {
       if (c == kNewlineCharacter) {
         if (UNLIKELY(is_text_combine_)) {
           start++;
-          AppendTextItem(" ", layout_object);
+          AppendTextItem(TransformedString(" "), layout_object);
           continue;
         }
         AppendForcedBreak(layout_object);
@@ -878,7 +902,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveWhitespace(
         // spaces are leading spaces and they need a special code in the line
         // breaker. Generate an opportunity to make it easy.
         InsertBreakOpportunityAfterLeadingPreservedSpaces(
-            string, *style, layout_object, &start);
+            transformed, *style, layout_object, &start);
         continue;
       }
       if (c == kTabulationCharacter) {
@@ -887,7 +911,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveWhitespace(
         if (end == kNotFound)
           end = string.length();
         InlineItem& item = AppendTextItem(
-            InlineItem::kControl, StringView(string, start, end - start),
+            InlineItem::kControl, transformed.Substring(start, end - start),
             layout_object);
         item.SetTextType(TextItemType::kFlowControl);
         start = end;
@@ -906,16 +930,17 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveWhitespace(
     wtf_size_t end = string.Find(IsControlItemCharacter, start + 1);
     if (end == kNotFound)
       end = string.length();
-    AppendTextItem(StringView(string, start, end - start), layout_object);
+    AppendTextItem(transformed.Substring(start, end - start), layout_object);
     start = end;
   }
 }
 
 template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveNewline(
-    const String& string,
+    const TransformedString& transformed,
     const ComputedStyle* style,
     LayoutText* layout_object) {
+  String string = transformed.View().ToString();
   for (unsigned start = 0; start < string.length();) {
     if (string[start] == kNewlineCharacter) {
       AppendForcedBreakCollapseWhitespace(layout_object);
@@ -927,7 +952,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveNewline(
     if (end == kNotFound)
       end = string.length();
     DCHECK_GE(end, start);
-    AppendCollapseWhitespace(StringView(string, start, end - start), style,
+    AppendCollapseWhitespace(transformed.Substring(start, end - start), style,
                              layout_object);
     start = end;
   }
