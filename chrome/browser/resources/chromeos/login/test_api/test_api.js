@@ -1023,6 +1023,11 @@ class GaiaInfoScreenTester extends ScreenElementApi {
     super('gaia-info');
     this.nextButton = new PolymerElementApi(this, '#nextButton');
   }
+
+  /** @override */
+  shouldSkip() {
+    return loadTimeData.getBoolean('testapi_shouldSkipGaiaInfoScreen');
+  }
 }
 
 class ConsumerUpdateScreenTester extends ScreenElementApi {

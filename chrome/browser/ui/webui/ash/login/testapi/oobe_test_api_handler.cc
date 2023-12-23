@@ -112,6 +112,9 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   bool skip_choobe = !features::IsOobeChoobeEnabled() || skip_touchpad_scroll ||
                      skip_display_size;
   dict->Set("testapi_shouldSkipChoobe", skip_choobe);
+
+  dict->Set("testapi_shouldSkipGaiaInfoScreen",
+            !features::IsOobeGaiaInfoScreenEnabled());
 }
 
 void OobeTestAPIHandler::LoginWithPin(const std::string& username,
