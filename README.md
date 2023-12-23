@@ -10,8 +10,8 @@ follow [the instructions on how to get the code](docs/get_the_code.md).
 
 Documentation in the source is rooted in [docs/README.md](docs/README.md).
 
-Learn how to [Get Around the Chromium Source Code Directory Structure
-](https://www.chromium.org/developers/how-tos/getting-around-the-chrome-source-code).
+Learn how to [Get Around the Chromium Source Code Directory
+Structure](https://www.chromium.org/developers/how-tos/getting-around-the-chrome-source-code).
 
 For historical reasons, there are some small top level directories. Now the
 guidance is that new top level directories are for product (e.g. Chrome,
