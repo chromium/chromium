@@ -1318,7 +1318,6 @@
 <translation id="361438452008624280">Пункт списку <ph name="LANGUAGE_ID" />: мова невідома або не підтримується.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб виконати перевірку безпеки в налаштуваннях Chrome</translation>
 <translation id="3615309852743236517">Манікюр і педикюр</translation>
-<translation id="3617072447978270288">Згенерувати повторно</translation>
 <translation id="3620239073311576716">Уніформа й робочий одяг</translation>
 <translation id="36224234498066874">Очистити історію…</translation>
 <translation id="362276910939193118">Показати всю історію</translation>
@@ -1341,7 +1340,6 @@
 <translation id="3650594806107685466">Для захисту введіть код CVC, указаний на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Піший туризм і автотуризм</translation>
 <translation id="3653033846669030038">Тематичні парки</translation>
-<translation id="3654980960391973513">Створити</translation>
 <translation id="3655241534245626312">Перейти на сторінку дозволів</translation>
 <translation id="3655670868607891010">Якщо ви бачите це часто, спробуйте <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Повсякденний одяг</translation>
@@ -3084,6 +3082,7 @@
 <translation id="7140087718106278457">Список способів оплати закрито.</translation>
 <translation id="714064300541049402">Горизонтальний зсув сторони 2 зображення</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">Повторити спробу</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Лавандовий</translation>
 <translation id="7156870133441232244">На сервері має бути встановлено протокол TLS 1.2 або новішої версії.</translation>
@@ -3287,6 +3286,7 @@
 <translation id="7521825010239864438">Розділ "<ph name="SECTION" />" приховано</translation>
 <translation id="752189128961566325">Ви можете використовувати її в усіх продуктах Google</translation>
 <translation id="7523408071729642236">Обробна промисловість</translation>
+<translation id="7525067979554623046">Створити</translation>
 <translation id="7525804896095537619">Потрібно вказати назву</translation>
 <translation id="7526934274050461096">Ваше з’єднання з цим сайтом не конфіденційне</translation>
 <translation id="7529884293139707752">Домашнє навчання</translation>

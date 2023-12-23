@@ -1317,7 +1317,6 @@
 <translation id="361438452008624280">सूची एंट्री "<ph name="LANGUAGE_ID" />": अज्ञात किंवा सपोर्ट नसलेली भाषा.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये सुरक्षितता तपासणी रन करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="3615309852743236517">मॅनिक्युअर आणि पेडीक्युअर</translation>
-<translation id="3617072447978270288">रीजनरेट करा</translation>
 <translation id="3620239073311576716">गणवेश आणि वर्कवेअर</translation>
 <translation id="36224234498066874">ब्राउझिंग डेटा साफ करा...</translation>
 <translation id="362276910939193118">पूर्ण इतिहास दर्शवा</translation>
@@ -1340,7 +1339,6 @@
 <translation id="3650594806107685466">तुमचे कार्ड सुरक्षित ठेवण्यात मदत करण्यासाठी, <ph name="SIDE_OF_CARD" /> वरील CVC एंटर करा</translation>
 <translation id="3650917416636556301">हायकिंग आणि कॅम्पिंग</translation>
 <translation id="3653033846669030038">थीम पार्क</translation>
-<translation id="3654980960391973513">जनरेट करा</translation>
 <translation id="3655241534245626312">परवानगी सेटिंग्जवर जा</translation>
 <translation id="3655670868607891010">तुम्ही हे वारंवार पहात असल्यास, हे वापरून पहा <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">साधा पोशाख</translation>
@@ -3084,6 +3082,7 @@
 <translation id="7140087718106278457">पेमेंट पद्धतींची सूची बंद आहे.</translation>
 <translation id="714064300541049402">साइड २ इमेज X शिफ्ट</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> आणखी}other{<ph name="PAYMENT_METHOD_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> आणखी}}</translation>
 <translation id="7153618581592392745">फिकट जांभळा</translation>
 <translation id="7156870133441232244">सर्व्हर TLS 1.2 किंवा त्यापुढील आवृत्तीवर अपग्रेड करणे आवश्यक आहे.</translation>
@@ -3287,6 +3286,7 @@
 <translation id="7521825010239864438">"<ph name="SECTION" />" विभाग लपवलेला आहे</translation>
 <translation id="752189128961566325">तुम्ही ते संपूर्ण Google उत्पादनांवर वापरू शकता</translation>
 <translation id="7523408071729642236">उत्पादन</translation>
+<translation id="7525067979554623046">तयार करा</translation>
 <translation id="7525804896095537619">नाव रिकामे असू शकत नाही</translation>
 <translation id="7526934274050461096">या साइटवर तुमचे कनेक्शन खाजगी नाही</translation>
 <translation id="7529884293139707752">घरी दिलेले शिक्षण</translation>

@@ -655,6 +655,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2233745931693710080">Dysk kompaktowy</translation>
 <translation id="2235344399760031203">Pliki cookie innych firm są blokowane</translation>
 <translation id="2239100178324503013">Wyślij teraz</translation>
+<translation id="2239114457614475014">Edytuj wprowadzone dane</translation>
 <translation id="2241693394036365668">Pobrano plik</translation>
 <translation id="2246264294482514010">10 x 12 cali</translation>
 <translation id="2246480341630108201">Twój rodzic nie wyraził jeszcze zgody</translation>
@@ -989,6 +990,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2959113999220720579">Pielęgnacja twarzy i ciała</translation>
 <translation id="2962073860865348475">12 x 18 cali</translation>
 <translation id="2968103128155246731">Vany i minivany</translation>
+<translation id="2971483124699139256">Opcja Lubię powoduje przesłanie opinii z informacją, że podoba Ci się wygenerowany tekst.</translation>
 <translation id="2972581237482394796">&amp;Ponów</translation>
 <translation id="2977665033722899841">Obecnie wybrany wiersz to <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1318,7 +1320,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="361438452008624280">Pozycja listy „<ph name="LANGUAGE_ID" />”: nieznany lub nieobsługiwany język.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby uruchomić kontrolę zabezpieczeń w ustawieniach Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="3615309852743236517">Manicure i pedicure</translation>
-<translation id="3617072447978270288">Wygeneruj ponownie</translation>
 <translation id="3620239073311576716">Uniformy i odzież robocza</translation>
 <translation id="36224234498066874">Wyczyść dane przeglądania...</translation>
 <translation id="362276910939193118">Wyświetl całą historię</translation>
@@ -1341,7 +1342,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3650594806107685466">Ze względów bezpieczeństwa wpisz kod CVC znajdujący się <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Wędrówki i campingi</translation>
 <translation id="3653033846669030038">Wesołe miasteczka</translation>
-<translation id="3654980960391973513">Wygeneruj</translation>
 <translation id="3655241534245626312">Otwórz ustawienia uprawnień</translation>
 <translation id="3655670868607891010">Jeśli często widzisz ten komunikat, przeczytaj <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Odzież codzienna</translation>
@@ -1575,6 +1575,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4132448310531350254">Lista „<ph name="POLICY_IDS_LIST" />” aplikacji odwołuje się do zduplikowanych modułów obsługi rozszerzenia pliku „<ph name="FILE_EXTENSION" />”.</translation>
 <translation id="4134123981501319574">Utwórz dokument</translation>
 <translation id="413544239732274901">Więcej informacji</translation>
+<translation id="4139859738677203214">Opcja Nie lubię otwiera formularz, za pomocą którego możesz przesłać szczegółową opinię o tym, dlaczego wygenerowany tekst Ci się nie podoba.</translation>
 <translation id="4140905530744469899">Identyfikator profilu:</translation>
 <translation id="4142935452406587478">Taca 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3084,6 +3085,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7140087718106278457">Lista form płatności jest zamknięta.</translation>
 <translation id="714064300541049402">Strona 2 – przesunięcie obrazu wzdłuż osi X</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lawendowy</translation>
 <translation id="7156870133441232244">Na serwerze należy przejść na TLS w wersji 1.2 lub nowszej.</translation>
@@ -3287,6 +3289,7 @@ Dodatkowe informacje:
 <translation id="7521825010239864438">Sekcja „<ph name="SECTION" />” została ukryta</translation>
 <translation id="752189128961566325">Możesz go używać w różnych usługach Google</translation>
 <translation id="7523408071729642236">Produkcja</translation>
+<translation id="7525067979554623046">Utwórz</translation>
 <translation id="7525804896095537619">Nazwa nie może być pusta</translation>
 <translation id="7526934274050461096">Twoje połączenie z tą stroną nie jest prywatne</translation>
 <translation id="7529884293139707752">Edukacja domowa</translation>

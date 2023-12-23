@@ -1315,7 +1315,6 @@
 <translation id="361438452008624280">Siyahı girişi "<ph name="LANGUAGE_ID" />": Naməlum və ya dəstəklənməyən dil.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome ayarlarında Təhlükəsizlik Yoxlanışını icra edin</translation>
 <translation id="3615309852743236517">Manikür və pedikür</translation>
-<translation id="3617072447978270288">Yenidən yaradın</translation>
 <translation id="3620239073311576716">Uniforma və iş geyimləri</translation>
 <translation id="36224234498066874">Axtarış Datasını Silin...</translation>
 <translation id="362276910939193118">Tam tarixçəni göstərin</translation>
@@ -1337,7 +1336,6 @@
 <translation id="3650594806107685466">Kartınızın təhlükəsizliyini təmin etmək üçün <ph name="SIDE_OF_CARD" /> tərəfdəki CVC-ni daxil edin</translation>
 <translation id="3650917416636556301">Gəzinti və kempinq</translation>
 <translation id="3653033846669030038">Tematik parklar</translation>
-<translation id="3654980960391973513">Yaradın</translation>
 <translation id="3655241534245626312">İcazə ayarlarına keçin</translation>
 <translation id="3655670868607891010">Əgər bunu tez-tez görürsünüzsə, <ph name="HELP_LINK" /> linkini sınayın.</translation>
 <translation id="365641980390710834">Gündəlik geyim</translation>
@@ -3080,6 +3078,7 @@
 <translation id="7140087718106278457">Ödəniş metodlarının siyahısı bağlanıb.</translation>
 <translation id="714064300541049402">Şəklin 2-ci tərəfinin X oxu üzrə yerdəyişməsi</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">Yenidən cəhd edin</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Yasəmən</translation>
 <translation id="7156870133441232244">Server TLS 1.2 və ya daha sonrakı versiyaya güncəlləməlidir.</translation>
@@ -3283,6 +3282,7 @@
 <translation id="7521825010239864438">"<ph name="SECTION" />" bölməsi gizlədilib</translation>
 <translation id="752189128961566325">Onu Google məhsullarında istifadə edə bilərsiniz</translation>
 <translation id="7523408071729642236">İstehsalat</translation>
+<translation id="7525067979554623046">Yaradın</translation>
 <translation id="7525804896095537619">Ad boş ola bilməz</translation>
 <translation id="7526934274050461096">Bu saytla olan bağlantınız şəxsi deyil</translation>
 <translation id="7529884293139707752">Evdə təhsil</translation>

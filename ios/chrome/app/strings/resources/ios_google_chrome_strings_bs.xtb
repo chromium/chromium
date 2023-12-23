@@ -20,7 +20,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea n
 <translation id="1449241544691504574">Dodavanje oznaka u Chrome</translation>
 <translation id="1462727070346936664">Prijavite se da iskoristite prednosti Chromea.</translation>
 <translation id="1491435845014430217">Uključite "Zaključaj anonimne kartice prilikom zatvaranja Chromea".</translation>
-<translation id="1493827051843127077">Postavite Chrome kao zadani preglednik da sinhronizirate kartice, lozinke i informacije o plaćanju na svim uređajima</translation>
+<translation id="1493827051843127077">Postavite Chrome kao zadani preglednik da sinhronizirate kartice, lozinke i podatke o plaćanju na svim uređajima</translation>
 <translation id="1504372625950710826">Chrome nije mogao provjeriti ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="1516692594929310090">Otvaranje mreže kartica u Chromeu.</translation>
 <translation id="1526327845902180576">Kada je uključeno:
@@ -88,6 +88,8 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3146109040683991651">Postavite Chrome kao zadani preglednik</translation>
 <translation id="3167189358072330585">Vaš račun ne funkcionira na Google Chromeu. Kontaktirajte svog administratora domene ili za prijavu koristite obični Google račun.</translation>
 <translation id="3173834708294760622">Stranica Google Chromea</translation>
+<translation id="3209155060213569278">Možete <ph name="BEGIN_LINK" />upravljati time koji će se podaci iz Chromea spremati<ph name="END_LINK" /> u vaš Google račun.
+Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u Chromeu potražite u <ph name="BEGIN_LINK" />Googleovim uslugama<ph name="END_LINK" />.</translation>
 <translation id="322254490661677575">Da koristite i sačuvate podatke Chromea na Google računu, unesite pristupni izraz.</translation>
 <translation id="3282568296779691940">Prijava na Chrome</translation>
 <translation id="3340938510625667914">Radnje u Chromeu</translation>
@@ -161,6 +163,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="5527026824954593399">Dodirnite "Pregledajte putem Google Mapa u Chromeu".</translation>
 <translation id="5552137475244467770">Chrome povremeno provjerava nalaze li se vaše lozinke na listama koje su objavljene na mreži. Prilikom toga, vaše lozinke i korisnička imena su šifrirana i niko, uključujući Google, ih ne može pročitati.</translation>
 <translation id="5554520618550346933">Kada koristite lozinku, Chrome vas upozorava ako je objavljena online. Prilikom toga, vaše lozinke i korisnička imena su šifrirani i niko, uključujući Google, ih ne može pročitati.</translation>
+<translation id="5601180634394228718">Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u Chromeu potražite u <ph name="BEGIN_LINK" />Googleovim uslugama<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Otvorite Postavke &gt; Privatnost &gt; Kamera &gt; Google Chrome i uključite kameru.</translation>
 <translation id="5642200033778930880">Google Chrome ne može koristiti vašu kameru u podijeljenom načinu prikaza</translation>
 <translation id="5661521615548540542">Google upravitelj lozinki nije uspio provjeriti sve lozinke. Pokušajte ponovo kasnije.</translation>

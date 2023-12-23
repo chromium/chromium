@@ -1313,7 +1313,6 @@
 <translation id="361438452008624280">లిస్ట్‌ నమోదు "<ph name="LANGUAGE_ID" />": తెలియని లేదా మద్దతు లేని భాష.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో భద్రతా తనిఖీని రన్ చేయడానికి 'Tab'ను నొక్కి ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="3615309852743236517">మ్యానిక్యూర్‌లు &amp; పెడిక్యూర్‌లు</translation>
-<translation id="3617072447978270288">రీ-జెనరేట్ చేయండి</translation>
 <translation id="3620239073311576716">యూనిఫామ్‌లు &amp; పనికి వెళ్లేటపుడు వేసుకునే దుస్తులు</translation>
 <translation id="36224234498066874">బ్రౌజింగ్ డేటాను క్లియర్ చేయండి...</translation>
 <translation id="362276910939193118">పూర్తి హిస్టరీని చూపించు</translation>
@@ -1336,7 +1335,6 @@
 <translation id="3650594806107685466">మీ కార్డ్‌ను సురక్షితంగా ఉంచడంలో సహాయపడటానికి, <ph name="SIDE_OF_CARD" /> ఉన్న CVCని ఎంటర్ చేయండి</translation>
 <translation id="3650917416636556301">హైకింగ్ &amp; క్యాంపింగ్</translation>
 <translation id="3653033846669030038">థీమ్ పార్క్‌లు</translation>
-<translation id="3654980960391973513">జెనరేట్ చేయండి</translation>
 <translation id="3655241534245626312">అనుమతి సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="3655670868607891010">మీరు దీన్ని తరచుగా చూస్తుంటే, ఈ <ph name="HELP_LINK" />ని ప్రయత్నించండి.</translation>
 <translation id="365641980390710834">సాధారణ దుస్తులు</translation>
@@ -3079,6 +3077,7 @@
 <translation id="7140087718106278457">పేమెంట్ ఆప్షన్‌ల లిస్ట్ మూసివేయబడింది.</translation>
 <translation id="714064300541049402">2వ వైపు ప్రింట్‌లో చిత్రాన్ని X అక్షంలో జరపు</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">మళ్లీ ట్రై చేయండి</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">లావెండర్ రంగు</translation>
 <translation id="7156870133441232244">సర్వర్‌ను TLS 1.2 లేదా ఆపై వెర్షన్‌లకు అప్‌గ్రేడ్ చేయాలి.</translation>
@@ -3282,6 +3281,7 @@
 <translation id="7521825010239864438">"<ph name="SECTION" />" విభాగం దాచబడింది</translation>
 <translation id="752189128961566325">దీనిని Google ప్రోడక్ట్‌ల అంతటా మీరు ఉపయోగించవచ్చు</translation>
 <translation id="7523408071729642236">తయారీ</translation>
+<translation id="7525067979554623046">క్రియేట్ చేయండి</translation>
 <translation id="7525804896095537619">పేరు ఖాళీగా ఉండకూడదు</translation>
 <translation id="7526934274050461096">ఈ సైట్‌తో మీకున్న కనెక్షన్ ప్రైవేట్‌గా లేదు</translation>
 <translation id="7529884293139707752">ఇంటి వద్దనే చదువు నేర్చుకోవడం</translation>

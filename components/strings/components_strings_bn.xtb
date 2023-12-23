@@ -1319,7 +1319,6 @@
 <translation id="361438452008624280">তালিকার এন্ট্রি "<ph name="LANGUAGE_ID" />": অজানা বা কাজ করে না এমন ভাষা।</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে 'নিরাপত্তা সংক্রান্ত পরীক্ষা' চালাতে প্রথমে Tab আর তারপরে Enter কী প্রেস করুন</translation>
 <translation id="3615309852743236517">মেনিকিওর ও পেডিকিওর</translation>
-<translation id="3617072447978270288">আবার তৈরি করুন</translation>
 <translation id="3620239073311576716">ইউনিফর্ম ও কাজের পোশাক</translation>
 <translation id="36224234498066874">ব্রাউজ করা ডেটা সাফ করুন...</translation>
 <translation id="362276910939193118">সম্পূর্ণ ইতিহাস দেখুন</translation>
@@ -1342,7 +1341,6 @@
 <translation id="3650594806107685466">আপনার কার্ড সুরক্ষিত রাখতে সাহায্য করার জন্য, <ph name="SIDE_OF_CARD" />-এ CVC লিখুন</translation>
 <translation id="3650917416636556301">হাইকিং ও ক্যাম্পিং</translation>
 <translation id="3653033846669030038">থিম পার্ক</translation>
-<translation id="3654980960391973513">জেনারেট করুন</translation>
 <translation id="3655241534245626312">অনুমতি সম্পর্কিত সেটিংসে যান</translation>
 <translation id="3655670868607891010">আপনি যদি এটি প্রায়শই দেখতে পান, তাহলে <ph name="HELP_LINK" /> চেষ্টা করে দেখুন৷</translation>
 <translation id="365641980390710834">সাধারণ পোশাক</translation>
@@ -3084,6 +3082,7 @@
 <translation id="7140087718106278457">পেমেন্ট পদ্ধতির তালিকা বন্ধ আছে।</translation>
 <translation id="714064300541049402">সাইড 2 ছবি X শিফ্ট</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">আবার চেষ্টা করুন</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}one{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}other{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}}</translation>
 <translation id="7153618581592392745">ল্যাভেণ্ডার</translation>
 <translation id="7156870133441232244">সার্ভারটিকে TLS 1.2 বা এর পরবর্তী যেকোনও ভার্সনে আপগ্রেড করতে হবে।</translation>
@@ -3287,6 +3286,7 @@
 <translation id="7521825010239864438">"<ph name="SECTION" />" বিভাগটি লুকানো আছে</translation>
 <translation id="752189128961566325">আপনি বিভিন্ন Google প্রোডাক্ট জুড়ে এটি ব্যবহার করতে পারবেন</translation>
 <translation id="7523408071729642236">ম্যানুফ্যাকচারিং</translation>
+<translation id="7525067979554623046">তৈরি করুন</translation>
 <translation id="7525804896095537619">নাম খালি থাকলে চলবে না</translation>
 <translation id="7526934274050461096">এই সাইটে আপনার সংযোগ ব্যক্তিগত নয়</translation>
 <translation id="7529884293139707752">হোমস্কুলিং</translation>

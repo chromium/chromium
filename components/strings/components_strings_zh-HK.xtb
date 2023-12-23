@@ -1317,7 +1317,6 @@
 <translation id="361438452008624280">清單項目「<ph name="LANGUAGE_ID" />」：不明或不支援的語言。</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度執行安全檢查</translation>
 <translation id="3615309852743236517">修甲服務</translation>
-<translation id="3617072447978270288">重新生成</translation>
 <translation id="3620239073311576716">制服及工作服</translation>
 <translation id="36224234498066874">清除瀏覽資料…</translation>
 <translation id="362276910939193118">顯示完整記錄</translation>
@@ -1340,7 +1339,6 @@
 <translation id="3650594806107685466">為保護信用卡安全，請輸入<ph name="SIDE_OF_CARD" />的 CVC</translation>
 <translation id="3650917416636556301">遠足和露營</translation>
 <translation id="3653033846669030038">主題公園</translation>
-<translation id="3654980960391973513">生成</translation>
 <translation id="3655241534245626312">前往權限設定</translation>
 <translation id="3655670868607891010">如果您經常看到這個頁面，請嘗試這些 <ph name="HELP_LINK" />。</translation>
 <translation id="365641980390710834">休閒服裝</translation>
@@ -3083,6 +3081,7 @@
 <translation id="7140087718106278457">付款方法清單閂咗。</translation>
 <translation id="714064300541049402">側邊 2 圖片 X 軸移動</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">重試</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方法}other{<ph name="PAYMENT_METHOD_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方法}}</translation>
 <translation id="7153618581592392745">淡紫色</translation>
 <translation id="7156870133441232244">伺服器應升級至 TLS 1.2 或以上版本。</translation>
@@ -3286,6 +3285,7 @@
 <translation id="7521825010239864438">隱藏咗「<ph name="SECTION" />」部分</translation>
 <translation id="752189128961566325">您可在不同的 Google 產品中使用地址</translation>
 <translation id="7523408071729642236">製造業</translation>
+<translation id="7525067979554623046">建立</translation>
 <translation id="7525804896095537619">名稱不可留空</translation>
 <translation id="7526934274050461096">您並未與這個網站建立私人連線。</translation>
 <translation id="7529884293139707752">在家自學</translation>

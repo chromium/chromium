@@ -1318,7 +1318,6 @@
 <translation id="361438452008624280">Καταχώριση λίστας "<ph name="LANGUAGE_ID" />": Άγνωστη ή μη υποστηριζόμενη γλώσσα.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για εκτέλεση του ελέγχου ασφαλείας στις ρυθμίσεις του Chrome</translation>
 <translation id="3615309852743236517">Μανικιούρ και πεντικιούρ</translation>
-<translation id="3617072447978270288">Επαναδημιουργία</translation>
 <translation id="3620239073311576716">Φόρμες και στολές εργασίας</translation>
 <translation id="36224234498066874">Διαγραφή δεδομένων περιήγησης…</translation>
 <translation id="362276910939193118">Εμφάνιση πλήρους ιστορικού</translation>
@@ -1341,7 +1340,6 @@
 <translation id="3650594806107685466">Για να διατηρήσετε ασφαλή την κάρτα σας, εισαγάγετε το CVC που εμφανίζεται στην <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Περπάτημα και κατασκήνωση</translation>
 <translation id="3653033846669030038">Θεματικά πάρκα</translation>
-<translation id="3654980960391973513">Δημιουργία</translation>
 <translation id="3655241534245626312">Μετάβαση στις ρυθμίσεις άδειας</translation>
 <translation id="3655670868607891010">Αν αυτό το μήνυμα εμφανίζεται συχνά, μπορείτε να βρείτε βοήθεια εδώ <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Καθημερινή ένδυση</translation>
@@ -3085,6 +3083,7 @@
 <translation id="7140087718106278457">Η λίστα τρόπων πληρωμής είναι κλειστή.</translation>
 <translation id="714064300541049402">Πλευρά 2 μετατόπιση εικόνας στον άξονα X</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">Επανάληψη</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}other{<ph name="PAYMENT_METHOD_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}}</translation>
 <translation id="7153618581592392745">Λιλά</translation>
 <translation id="7156870133441232244">Ο διακομιστής θα πρέπει να αναβαθμιστεί σε έκδοση TLS 1.2 ή μεταγενέστερη.</translation>
@@ -3288,6 +3287,7 @@
 <translation id="7521825010239864438">Η ενότητα <ph name="SECTION" /> δεν εμφανίζεται</translation>
 <translation id="752189128961566325">Μπορείτε να τη χρησιμοποιήσετε σε όλα τα προϊόντα Google</translation>
 <translation id="7523408071729642236">Κατασκευές</translation>
+<translation id="7525067979554623046">Δημιουργία</translation>
 <translation id="7525804896095537619">Το όνομα δεν μπορεί να είναι κενό</translation>
 <translation id="7526934274050461096">Η σύνδεσή σας σε αυτόν τον ιστότοπο δεν είναι ιδιωτική</translation>
 <translation id="7529884293139707752">Σχολική εκπαίδευση στο σπίτι</translation>

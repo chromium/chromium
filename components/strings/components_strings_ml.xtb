@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">പേജ് സന്ദർശിച്ചു</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു സൈറ്റിൽ നിന്ന് (നിങ്ങൾ Google Account-ൽ സൈൻ ഇൻ ചെയ്ത നിലയിൽ തുടരും)}other{# സൈറ്റുകളിൽ നിന്ന് (നിങ്ങൾ Google Account-ൽ സൈൻ ഇൻ ചെയ്ത നിലയിൽ തുടരും)}}</translation>
 <translation id="1165852471352757509">ടിവി ഡോക്യുമെന്ററിയും നോൺഫിക്‌ഷനും</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" /> ഡൗൺലോഡ് ചെയ്യാനായില്ല</translation>
 <translation id="1174644974616730562">Envelope Chinese #1</translation>
 <translation id="1174723505405632867"><ph name="TOP_LEVEL_URL" /> എന്നതിൽ കുക്കികളും സൈറ്റ് ഡാറ്റയും ഉപയോഗിക്കാൻ <ph name="EMBEDDED_URL" /> എന്നതിനെ അനുവദിക്കണോ?
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">PDF പ്രൊഡ്യൂസർ:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode നയം സജ്ജീകരിക്കാത്തതിനാൽ നിങ്ങൾ വ്യക്തമാക്കിയ ടെംപ്ലേറ്റുകൾ ബാധകമാക്കാനായേക്കില്ല.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178"><ph name="LANGUAGE" /> ഭാഷാ പായ്ക്ക് ഡൗൺലോഡ് ചെയ്യുന്നു..<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">പുരുഷൻമാർക്കുള്ള വസ്‌ത്രങ്ങൾ</translation>
 <translation id="2137891579555018930">അനുമതിക്കായി കാത്തിരിക്കുന്നു...</translation>
 <translation id="213826338245044447">മൊബൈൽ ബുക്ക്‌മാർക്കുകൾ</translation>
@@ -1317,7 +1319,6 @@
 <translation id="361438452008624280">ലിസ്‌റ്റ് എൻട്രി "<ph name="LANGUAGE_ID" />": അജ്ഞാതമോ പിന്തുണയ്ക്കാത്തതോ ആയ ഭാഷ.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ സുരക്ഷാ പരിശോധന റൺ ചെയ്യാൻ Tab അമർത്തിയ ശേഷം Enter അമർത്തുക</translation>
 <translation id="3615309852743236517">മാനിക്യൂറുകളും പെഡിക്യൂറുകളും</translation>
-<translation id="3617072447978270288">വീണ്ടും സൃഷ്‌ടിക്കുക</translation>
 <translation id="3620239073311576716">യൂണിഫോമുകളും ജോലിസ്ഥലത്തെ വസ്‌ത്രവും</translation>
 <translation id="36224234498066874">ബ്രൌസിംഗ് ഡാറ്റ മായ്‌ക്കുക...</translation>
 <translation id="362276910939193118">മുഴുവന്‍ ചരിത്രവും കാണിക്കുക</translation>
@@ -1340,7 +1341,6 @@
 <translation id="3650594806107685466">നിങ്ങളുടെ കാർഡ് സുരക്ഷിതമായി സൂക്ഷിക്കാൻ സഹായിക്കുന്നതിന്, <ph name="SIDE_OF_CARD" /> CVC നൽകുക</translation>
 <translation id="3650917416636556301">ഹൈക്കിംഗും ക്യാമ്പിംഗും</translation>
 <translation id="3653033846669030038">തീം പാർക്കുകൾ</translation>
-<translation id="3654980960391973513">സൃഷ്‌ടിക്കുക</translation>
 <translation id="3655241534245626312">അനുമതി ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="3655670868607891010">നിങ്ങൾ ഇത് പതിവായി കാണുന്നുണ്ടെങ്കിൽ, ഈ <ph name="HELP_LINK" /> പരീക്ഷിക്കൂ.</translation>
 <translation id="365641980390710834">കാഷ്വൽ വസ്‌ത്രം</translation>
@@ -3083,6 +3083,7 @@
 <translation id="7140087718106278457">പേയ്‌മെന്റ് രീതികളുടെ ലിസ്‌റ്റ് അടച്ചു.</translation>
 <translation id="714064300541049402">സൈഡ് 2 ചിത്രം X ഷിഫ്റ്റ്</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> എണ്ണവും}other{<ph name="PAYMENT_METHOD_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> എണ്ണവും}}</translation>
 <translation id="7153618581592392745">ലാവെൻഡർ</translation>
 <translation id="7156870133441232244">സെർവർ TLS 1.2 അല്ലെങ്കിൽ അതിന് ശേഷമുള്ള പതിപ്പിലേക്ക് അപ്‌ഗ്രേഡ് ചെയ്യേണ്ടതുണ്ട്.</translation>
@@ -3284,6 +3285,7 @@
 <translation id="7521825010239864438">"<ph name="SECTION" />" വിഭാഗം മറച്ചിരിക്കുന്നു</translation>
 <translation id="752189128961566325">Google ഉൽപ്പന്നങ്ങളിലുടനീളം നിങ്ങൾക്കിത് ഉപയോഗിക്കാം</translation>
 <translation id="7523408071729642236">ഉത്പാദനം</translation>
+<translation id="7525067979554623046">സൃഷ്‌ടിക്കുക</translation>
 <translation id="7525804896095537619">പേര് ശൂന്യമായിടാനാകില്ല</translation>
 <translation id="7526934274050461096">ഈ സൈറ്റിലേക്കുള്ള നിങ്ങളുടെ കണക്ഷൻ സ്വകാര്യമല്ല</translation>
 <translation id="7529884293139707752">ഹോംസ്‌കൂളിംഗ്</translation>
@@ -3983,6 +3985,7 @@
 <translation id="8877780815363510165">മത്സ്യബന്ധനം</translation>
 <translation id="8884537526797090108">രഹസ്യാത്മക ഉള്ളടക്കം റെക്കോർഡ് ചെയ്യാനാകില്ല</translation>
 <translation id="8888187300091017436">മെത്തകൾ</translation>
+<translation id="8890048757975398817"><ph name="READERNAME" /> എന്നത് നിയന്ത്രിച്ച് അതിന് ആക്സസുള്ള സ്മാർട്ട് കാർഡിലേക്ക് ആക്സസ് നേടുക.</translation>
 <translation id="8891727572606052622">അസാധുവായ പ്രോക്സി മോഡ്</translation>
 <translation id="8894794286471754040">നീളമുള്ള അരിക് ആദ്യം</translation>
 <translation id="8897428486789851669">നീന്തൽ</translation>

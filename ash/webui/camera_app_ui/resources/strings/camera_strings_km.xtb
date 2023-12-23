@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">រំកិល​ទៅស្ដាំ</translation>
 <translation id="3081586908890909590">ប្ដូរទៅ​ថត​វីដេអូ</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">ចូលរួម "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">ម៉ៃក្រូហ្វូន</translation>
 <translation id="3240426699337459095">បានចម្លងតំណ</translation>
 <translation id="3354465018370944241">ការកំណត់​រូបថត</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">សមាមាត្រ​រូបថត</translation>
 <translation id="5057360777601936059">កាមេរ៉ារបស់អ្នកមិន​អាច​ប្រើបានទេនៅពេលនេះ។
         សូមពិនិត្យមើល​ថាតើ​កាមេរ៉ា​ត្រូវបាន​ភ្ជាប់​ត្រឹមត្រូវ​ឬអត់។</translation>
+<translation id="5157591164390831335">បាន​រកឃើញ URL។</translation>
 <translation id="5163387177077603948">កំពុងផ្លាស់ទី​ក្នុងទិសដៅ​ខាងស្ដាំ</translation>
 <translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">ជ្រុងខាងលើផ្នែកខាងឆ្វេងនៃឯកសារ</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">សូមអរគុណសម្រាប់ការផ្ដល់មតិកែលម្អចំពោះកម្មវិធីកាមេរ៉ា។
 
 ប្រសិនបើមតិកែលម្អរបស់អ្នកពាក់ព័ន្ធនឹងគុណភាពរូបភាព ឬវីដេអូ សូមភ្ជាប់ជាមួយសំណាករូបថត ឬវីដេអូ និងរៀបរាប់ថាមានបញ្ហាអ្វី។ (ឧទាហរណ៍ រូបថតងងឹតជ្រុល ឬមានលក្ខណៈព្រាល។)</translation>
+<translation id="6519884562954018934">ចូលរួម <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">ចែករំលែក</translation>
 <translation id="6617916774429601017">បង្ហាញកម្រិតគុណភាពទាំងអស់</translation>
 <translation id="6631515515009660915">បិទ​កញ្ចក់</translation>
@@ -158,6 +161,7 @@
 <translation id="8711011893539266636">ប៊ូតុងបិទ/បើកសំឡេងមីក្រូហ្វូន។ ការបិទសំឡេង​ត្រូវបានបើក</translation>
 <translation id="8730621377337864115">រួចរាល់</translation>
 <translation id="8732462232047530626">មើលទិន្នន័យ​មេតាសាកល្បង</translation>
+<translation id="874854738381978209">បានរកឃើញ​បណ្ដាញ Wi-Fi។</translation>
 <translation id="8815966864175525708">ប្ដូរទៅ​ថតរូប​បញ្ឈរ</translation>
 <translation id="8828441885228359828">បន្ត​ការថត</translation>
 <translation id="8870695351537079478">មិន​អាច​ចាប់ផ្ដើម​ថត​បាន​ទេ</translation>

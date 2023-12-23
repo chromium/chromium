@@ -263,7 +263,7 @@
 <translation id="1197185198920566650">系统会将它保存到 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="11978075283960463">存储在应用中的数据量：<ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">停用</translation>
-<translation id="1198066799963193307">弱视语音工具</translation>
+<translation id="1198066799963193307">低视力语音工具</translation>
 <translation id="119944043368869598">全部清除</translation>
 <translation id="1199814941632954229">正在为这些证书资料配置证书</translation>
 <translation id="120069043972472860">无法观看</translation>
@@ -1110,7 +1110,7 @@
 <translation id="184183613002882946">不，仅使用 1 个开关</translation>
 <translation id="184273675144259287">以先前的备份替换您的 Linux 应用和文件</translation>
 <translation id="1842766183094193446">确定要启用演示模式吗？</translation>
-<translation id="1845060436536902492">ChromeOS Flex 中的屏幕阅读器 (ChromeVox) 主要供盲人或弱视用户使用，以便这些用户通过语音合成器或盲文显示屏获知屏幕上显示的文字。按空格键即可开启 ChromeVox。启用 ChromeVox 后，系统将带您快速了解相关功能。</translation>
+<translation id="1845060436536902492">ChromeOS Flex 中的屏幕阅读器 (ChromeVox) 主要供盲人或低视力用户使用，以便这些用户通过语音合成器或盲文显示屏获知屏幕上显示的文字。按空格键即可开启 ChromeVox。启用 ChromeVox 后，系统将带您快速了解相关功能。</translation>
 <translation id="1845727111305721124">允许播放声音</translation>
 <translation id="1846308012215045257">按住 Ctrl 键的同时点击即可运行 <ph name="PLUGIN_NAME" /></translation>
 <translation id="1848219224579402567">在盖被合上之后退出</translation>
@@ -3094,7 +3094,7 @@
 <translation id="3388788256054548012">这个文件已加密。请让它的所有者进行解密。</translation>
 <translation id="3390013585654699824">应用详细信息</translation>
 <translation id="3390530051434634135">备注：<ph name="NOTE" /></translation>
-<translation id="3391721320619127327">ChromeOS Flex 中的屏幕阅读器 (ChromeVox) 主要供盲人或弱视用户使用，以便这些用户通过语音合成器或盲文显示屏获知屏幕上显示的文字。同时按住两个音量键 5 秒钟即可开启 ChromeVox。启用 ChromeVox 后，系统将带您快速了解相关功能。</translation>
+<translation id="3391721320619127327">ChromeOS Flex 中的屏幕阅读器 (ChromeVox) 主要供盲人或低视力用户使用，以便这些用户通过语音合成器或盲文显示屏获知屏幕上显示的文字。同时按住两个音量键 5 秒钟即可开启 ChromeVox。启用 ChromeVox 后，系统将带您快速了解相关功能。</translation>
 <translation id="3393554941209044235">Chrome 文档分析</translation>
 <translation id="3393582007140394275">无法投放屏幕。</translation>
 <translation id="3394850431319394743">可以使用标识符来播放受保护内容</translation>
@@ -5417,7 +5417,7 @@
 <translation id="5233231016133573565">进程 ID</translation>
 <translation id="5233638681132016545">打开新的标签页</translation>
 <translation id="5233736638227740678">粘贴(&amp;P)</translation>
-<translation id="5234523649284990414">ChromeOS 中的屏幕阅读器 (ChromeVox) 主要供盲人或弱视用户使用，以便这些用户通过语音合成器或盲文显示屏获知屏幕上显示的文字。按空格键即可开启 ChromeVox。启用 ChromeVox 后，系统将带您快速了解相关功能。</translation>
+<translation id="5234523649284990414">ChromeOS 中的屏幕阅读器 (ChromeVox) 主要供盲人或低视力用户使用，以便这些用户通过语音合成器或盲文显示屏获知屏幕上显示的文字。按空格键即可开启 ChromeVox。启用 ChromeVox 后，系统将带您快速了解相关功能。</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="5235050375939235066">要卸载该应用吗？</translation>
 <translation id="523505283826916779">无障碍设置</translation>
@@ -8206,7 +8206,7 @@
 <translation id="747459581954555080">全部恢复</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{必须立即退还此设备}other{请在 {NUM_DAYS} 天内退还 <ph name="DEVICE_TYPE" />}}</translation>
 <translation id="7475671414023905704">Netscape 忘了密码网址</translation>
-<translation id="7475742997309661417">ChromeOS 中的屏幕阅读器 (ChromeVox) 主要供盲人或弱视用户使用，以便这些用户通过语音合成器或盲文显示屏获知屏幕上显示的文字。同时按住两个音量键 5 秒钟即可开启 ChromeVox。启用 ChromeVox 后，系统将带您快速了解相关功能。</translation>
+<translation id="7475742997309661417">ChromeOS 中的屏幕阅读器 (ChromeVox) 主要供盲人或低视力用户使用，以便这些用户通过语音合成器或盲文显示屏获知屏幕上显示的文字。同时按住两个音量键 5 秒钟即可开启 ChromeVox。启用 ChromeVox 后，系统将带您快速了解相关功能。</translation>
 <translation id="7476454130948140105">电量太低 (<ph name="BATTERY_PERCENT" />%)，无法更新</translation>
 <translation id="7476989672001283112">已自动禁用“<ph name="PERMISSION" />”权限和另外 <ph name="COUNT" /> 项权限</translation>
 <translation id="7477460499687558352">选择要下载的 eSIM 卡配置文件</translation>
@@ -8482,7 +8482,7 @@
 <translation id="7681095912841365527">该网站可能会使用蓝牙</translation>
 <translation id="7681597159868843240">网站通常会使用您设备的移动传感器以实现某些功能（例如虚拟现实或健身跟踪）</translation>
 <translation id="7683373461016844951">要想继续，请点击“确定”，然后点击“添加用户”为您位于 <ph name="DOMAIN" /> 中的电子邮件地址创建一份新个人资料。</translation>
-<translation id="7683834360226457448">弱视显示工具</translation>
+<translation id="7683834360226457448">低视力显示工具</translation>
 <translation id="7684212569183643648">安装者：您的管理员</translation>
 <translation id="7684559058815332124">访问强制门户登录页面</translation>
 <translation id="7684718995427157417">要创建和测试您的应用，请启用 Android 调试桥 (ADB)。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且您会需要将设备恢复出厂设置才能停用 ADB。</translation>

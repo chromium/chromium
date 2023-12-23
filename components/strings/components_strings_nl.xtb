@@ -1314,7 +1314,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="361438452008624280">Lijstitem '<ph name="LANGUAGE_ID" />': Onbekende of niet-ondersteunde taal.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om een veiligheidscheck uit te voeren in de Chrome-instellingen</translation>
 <translation id="3615309852743236517">Manicure en pedicure</translation>
-<translation id="3617072447978270288">Opnieuw genereren</translation>
 <translation id="3620239073311576716">Uniformen en werkkleding</translation>
 <translation id="36224234498066874">Browsegegevens wissen</translation>
 <translation id="362276910939193118">Volledige geschiedenis bekijken</translation>
@@ -1336,7 +1335,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3650594806107685466">Geef de CVC op de <ph name="SIDE_OF_CARD" /> op om je kaart te beveiligen</translation>
 <translation id="3650917416636556301">Wandelen en kamperen</translation>
 <translation id="3653033846669030038">Attractieparken</translation>
-<translation id="3654980960391973513">Genereren</translation>
 <translation id="3655241534245626312">Naar de instellingen voor rechten</translation>
 <translation id="3655670868607891010">Als je deze melding vaker ziet, probeer je deze <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Vrijetijdskleding</translation>
@@ -3078,6 +3076,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7140087718106278457">Lijst met betaalmethoden is gesloten.</translation>
 <translation id="714064300541049402">Beeldverschuiving X van zijde 2</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">Opnieuw proberen</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lavendel</translation>
 <translation id="7156870133441232244">De server moet worden geüpgraded naar TLS 1.2 of hoger.</translation>
@@ -3281,6 +3280,7 @@ Aanvullende informatie:
 <translation id="7521825010239864438">Het gedeelte '<ph name="SECTION" />' is verborgen</translation>
 <translation id="752189128961566325">Je kunt het gebruiken in meerdere Google-producten</translation>
 <translation id="7523408071729642236">Productie</translation>
+<translation id="7525067979554623046">Maken</translation>
 <translation id="7525804896095537619">De naam mag niet leeg zijn</translation>
 <translation id="7526934274050461096">Je verbinding met deze site is niet privé</translation>
 <translation id="7529884293139707752">Thuisonderwijs</translation>

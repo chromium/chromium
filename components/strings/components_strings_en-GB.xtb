@@ -1318,7 +1318,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="361438452008624280">List entry '<ph name="LANGUAGE_ID" />': unknown or unsupported language.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to run a safety check in Chrome settings</translation>
 <translation id="3615309852743236517">Manicures and Pedicures</translation>
-<translation id="3617072447978270288">Regenerate</translation>
 <translation id="3620239073311576716">Uniforms and Workwear</translation>
 <translation id="36224234498066874">Clear Browsing Data...</translation>
 <translation id="362276910939193118">Show full history</translation>
@@ -1341,7 +1340,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3650594806107685466">To help keep your card secure, enter the CVC on the <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Hiking and Camping</translation>
 <translation id="3653033846669030038">Theme parks</translation>
-<translation id="3654980960391973513">Generate</translation>
 <translation id="3655241534245626312">Go to permission settings</translation>
 <translation id="3655670868607891010">If you're seeing this frequently, try these <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Casual Apparel</translation>
@@ -3084,6 +3082,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7140087718106278457">List of payment methods is closed.</translation>
 <translation id="714064300541049402">Side 2 image X shift</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">Retry</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}other{<ph name="PAYMENT_METHOD_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}}</translation>
 <translation id="7153618581592392745">Lavender</translation>
 <translation id="7156870133441232244">The server should upgrade to TLS 1.2 or later.</translation>
@@ -3287,6 +3286,7 @@ Additional details:
 <translation id="7521825010239864438">'<ph name="SECTION" />' section hidden</translation>
 <translation id="752189128961566325">You can use it across Google products</translation>
 <translation id="7523408071729642236">Manufacturing</translation>
+<translation id="7525067979554623046">Create</translation>
 <translation id="7525804896095537619">Name can't be empty</translation>
 <translation id="7526934274050461096">Your connection to this site is not private</translation>
 <translation id="7529884293139707752">Homeschooling</translation>

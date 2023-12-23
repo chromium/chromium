@@ -1317,7 +1317,6 @@
 <translation id="361438452008624280">"<ph name="LANGUAGE_ID" />" тізім жазбасы: тіл белгісіз немесе оған қолдау көрсетілмейді.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінен қауіпсіздік тексерісін іске қосу үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="3615309852743236517">Маникюр және педикюр</translation>
-<translation id="3617072447978270288">Қайта жасау</translation>
 <translation id="3620239073311576716">Форма және жұмыс киімі</translation>
 <translation id="36224234498066874">Шолу деректерін өшіру…</translation>
 <translation id="362276910939193118">Тарихты толық көрсету</translation>
@@ -1340,7 +1339,6 @@
 <translation id="3650594806107685466">Картаңыздың қауіпсіздігін сақтауға көмектесу үшін <ph name="SIDE_OF_CARD" /> жағындағы CVC кодын енгізіңіз</translation>
 <translation id="3650917416636556301">Жаяу жүру және табиғатта демалу</translation>
 <translation id="3653033846669030038">Аттракцион парктері</translation>
-<translation id="3654980960391973513">Жасау</translation>
 <translation id="3655241534245626312">Рұқсат параметрлеріне өту</translation>
 <translation id="3655670868607891010">Бұны жиі көрсеңіз, <ph name="HELP_LINK" /> сілтемесін пайдаланып көріңіз.</translation>
 <translation id="365641980390710834">Күнделікті киім</translation>
@@ -3083,6 +3081,7 @@
 <translation id="7140087718106278457">Төлеу әдістерінің тізімі жабық.</translation>
 <translation id="714064300541049402">Кескіннің Х осі бойынша 2-жағында ығысуы</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">Қайталау</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Ақшыл көк</translation>
 <translation id="7156870133441232244">Серверде TLS 1.2 протоколы немесе одан кейінгі нұсқасы орнатылуы тиіс.</translation>
@@ -3286,6 +3285,7 @@
 <translation id="7521825010239864438">"<ph name="SECTION" />" бөлімі жасырылды.</translation>
 <translation id="752189128961566325">Оны Google өнімдерінде пайдалана аласыз</translation>
 <translation id="7523408071729642236">Өндіріс</translation>
+<translation id="7525067979554623046">Жасау</translation>
 <translation id="7525804896095537619">Атауы бос болмауы керек</translation>
 <translation id="7526934274050461096">Бұл сайтқа жеке режимде кірмедіңіз</translation>
 <translation id="7529884293139707752">Үйде оқыту</translation>

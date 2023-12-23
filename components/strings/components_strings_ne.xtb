@@ -1315,7 +1315,6 @@
 <translation id="361438452008624280">प्रविष्टिको सूची "<ph name="LANGUAGE_ID" />": अज्ञात वा असमर्थित भाषा।</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं Chrome का सेटिङमा गई सुरक्षितपनाको जाँच गर्न चाहनुहुन्छ भने Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="3615309852743236517">म्यानिक्योर तथा पेडिक्योर</translation>
-<translation id="3617072447978270288">फेरि सिर्जना गर्नुहोस्</translation>
 <translation id="3620239073311576716">युनिफर्म र काम गर्दा लगाउने पोशाक</translation>
 <translation id="36224234498066874">ब्राउजिङको डेटा मेटाउनुहोस्...</translation>
 <translation id="362276910939193118">पूर्ण इतिहास देखाउनुहोस्</translation>
@@ -1338,7 +1337,6 @@
 <translation id="3650594806107685466">आफ्नो कार्ड सुरक्षित राख्न <ph name="SIDE_OF_CARD" /> रहेको CVC हाल्नुहोस्</translation>
 <translation id="3650917416636556301">हाइकिङ तथा क्याम्पिङ</translation>
 <translation id="3653033846669030038">थिम पार्कहरू</translation>
-<translation id="3654980960391973513">सिर्जना गर्नुहोस्</translation>
 <translation id="3655241534245626312">अनुमतिसम्बन्धी सेटिङमा जानुहोस्</translation>
 <translation id="3655670868607891010">यदि तपाईं यो बारम्बार रूपमा देखिरहनुभएको छ भने, यिनीहरू गर्ने प्रयास गर्नुहोस् <ph name="HELP_LINK" />।</translation>
 <translation id="365641980390710834">क्याजुअल लुगा</translation>
@@ -3082,6 +3080,7 @@
 <translation id="7140087718106278457">भुक्तानी विधिहरूको सूची बन्द गरिएको छ।</translation>
 <translation id="714064300541049402">सतह २ मा रहेको छविको X सिफ्ट</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">हल्का बैजनी</translation>
 <translation id="7156870133441232244">सर्भरको स्तरोन्नति गरेर TLS १.२ वा त्यसपछिको संस्करण पार्नु पर्छ।</translation>
@@ -3285,6 +3284,7 @@
 <translation id="7521825010239864438">"<ph name="SECTION" />" नामक खण्ड लुकाइएको छ</translation>
 <translation id="752189128961566325">तपाईं सेभ गरिएको ठेगाना Google का विभिन्न उत्पादनमा प्रयोग गर्न सक्नुहुन्छ</translation>
 <translation id="7523408071729642236">उत्पादन</translation>
+<translation id="7525067979554623046">सिर्जना गर्नुहोस्</translation>
 <translation id="7525804896095537619">नाम खाली छाड्न मिल्दैन</translation>
 <translation id="7526934274050461096">यो साइटमा तपाईंको जडान निजी होइन</translation>
 <translation id="7529884293139707752">होमस्कुलिङ</translation>

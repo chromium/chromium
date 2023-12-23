@@ -130,6 +130,7 @@
 <translation id="1622717322707146952">Selecciona Engadir a Google Calendar ou Engadir a Apple Calendar.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> contrasinais reutilizados</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
+<translation id="1641316430523156212">Seguir</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="165008673352427892">Nova función</translation>
 <translation id="1650222530560417226">Toca o botón Iniciar o rexistro; obterás rexistros e erros futuros da consola de JavaScript procedentes de todas as pestanas. Os rexistros compilaranse (e almacenaranse só na memoria) ata que se peche a páxina ou se toque o botón Deter rexistro.</translation>
@@ -216,6 +217,7 @@
 <translation id="2139502497535990641">Queres activar as alertas de prezos?</translation>
 <translation id="2139867232736819575">Buscar texto que copiaches</translation>
 <translation id="214201757571129614">Iniciar sesión…</translation>
+<translation id="2145004670974387485">Selecciona a conta que queres usar para gardar <ph name="FILENAME" /></translation>
 <translation id="2148716181193084225">Hoxe</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2175927920773552910">Código QR</translation>
@@ -478,6 +480,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3519193562722059437">Abre unha pestana para examinar a web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Abrir a pestana}other{Abrir {count} pestanas}}</translation>
 <translation id="3523789730715594198">Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
+<translation id="3526783603136816353">Selecciona a conta que queres usar para gardar <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="3527085408025491307">Cartafol</translation>
 <translation id="3529024052484145543">Contido non-seguro</translation>
 <translation id="3530206579861815432">Atopa con rapidez pestanas abertas e pechadas recentemente nos teus dispositivos sincronizados.</translation>
@@ -515,6 +518,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3738428049780661523">Data de creación: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ocultar Descargas</translation>
 <translation id="3745190878148784130">Ocultar Aplicar zoom ao texto</translation>
+<translation id="375773422023477320">Marcadores</translation>
 <translation id="3762232513783804601">Deseñado para iPad</translation>
 <translation id="3768725474733206671">Reabrir última pestana pechada</translation>
 <translation id="3771033907050503522">Pestanas de incógnito</translation>
@@ -553,6 +557,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3929457972718048006">Enderezos</translation>
 <translation id="3955822496205734389">Tes contrasinais pouco seguros.</translation>
 <translation id="3959736869653157332">Menú → Nova pestana do modo de incógnito</translation>
+<translation id="3962326069546168954">Gardar</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3968505803272650567">Xestionar intereses</translation>
 <translation id="3989635538409502728">Pechar sesión</translation>
@@ -1104,6 +1109,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6790502149545262384">Dentro de pouco verás as historias de <ph name="CHANNEL_NAME" /> cando abras unha pestana nova.</translation>
 <translation id="6797885426782475225">Busca por voz</translation>
 <translation id="6800349425672670802">Podes acceder todas as pestanas abertas desde o selector de pestanas.</translation>
+<translation id="6805179248725678418">Gardar en Google Drive</translation>
 <translation id="6807889908376551050">Mostrar todas...</translation>
 <translation id="681368974849482173">Creouse o elemento</translation>
 <translation id="6822587385560699678">Cando a opción estea activada, os contrasinais gardaranse en <ph name="ACCOUNT" />. Se está desactivada, gardaranse só neste dispositivo.</translation>
@@ -1286,6 +1292,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7856733331829174190">Non se puido descargar o ficheiro</translation>
 <translation id="7859704718976024901">Historial de navegación</translation>
 <translation id="7866501058614003444">Quitouse o seguimento deste paquete.</translation>
+<translation id="7866872729285243843">Para desfrutar da lista de lectura en todos os teus dispositivos, activa Lista de lectura na configuración.</translation>
 <translation id="7866993391592926595">Se ocultas esta tarxeta, desactivarase o seguimento automático de paquetes e quitaranse os teus datos</translation>
 <translation id="7870750252270996949">Imaxe de Lens copiada</translation>
 <translation id="7879275349003161544">Mostrar descargas</translation>

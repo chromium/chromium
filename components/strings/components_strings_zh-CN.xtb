@@ -1315,7 +1315,6 @@
 <translation id="361438452008624280">列表条目“<ph name="LANGUAGE_ID" />”：语言未知或不受支持。</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可从 Chrome 设置中运行安全检查</translation>
 <translation id="3615309852743236517">美甲与足部护理</translation>
-<translation id="3617072447978270288">重新生成</translation>
 <translation id="3620239073311576716">制服与工作服</translation>
 <translation id="36224234498066874">清除浏览数据...</translation>
 <translation id="362276910939193118">显示全部历史记录</translation>
@@ -1337,7 +1336,6 @@
 <translation id="3650594806107685466">为保障银行卡安全，请输入<ph name="SIDE_OF_CARD" />的 CVC</translation>
 <translation id="3650917416636556301">远足与露营</translation>
 <translation id="3653033846669030038">主题公园</translation>
-<translation id="3654980960391973513">生成</translation>
 <translation id="3655241534245626312">转到权限设置</translation>
 <translation id="3655670868607891010">如果您频繁遇到此问题，请尝试这些<ph name="HELP_LINK" />。</translation>
 <translation id="365641980390710834">休闲服装</translation>
@@ -3079,6 +3077,7 @@
 <translation id="7140087718106278457">付款方式列表已关闭。</translation>
 <translation id="714064300541049402">侧边 2，图片沿 X 轴位移</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">重试</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}}</translation>
 <translation id="7153618581592392745">薰衣草色</translation>
 <translation id="7156870133441232244">服务器应该升级到 TLS 1.2 或更高版本。</translation>
@@ -3282,6 +3281,7 @@
 <translation id="7521825010239864438">已隐藏“<ph name="SECTION" />”部分</translation>
 <translation id="752189128961566325">您可以在各种 Google 产品中使用该地址</translation>
 <translation id="7523408071729642236">制造</translation>
+<translation id="7525067979554623046">创建</translation>
 <translation id="7525804896095537619">名称不得为空</translation>
 <translation id="7526934274050461096">您与此网站的连接不是私密连接</translation>
 <translation id="7529884293139707752">在家教育</translation>

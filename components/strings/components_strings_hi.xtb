@@ -517,6 +517,7 @@
 <translation id="1975457531113383421">इनपुट ट्रे</translation>
 <translation id="1975584088563498795">मेलबॉक्स 10</translation>
 <translation id="1978555033938440688">फ़र्मवेयर वर्शन</translation>
+<translation id="1979156660928743046">मीडिया की जानकारी</translation>
 <translation id="1988881251331415125">अगर स्पेलिंग सही है, तो <ph name="BEGIN_LINK" />कनेक्टिविटी डायग्नोस्टिक्स टूल चलाकर देखें<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">क्लाइंबिंग और माउंटेनियरिंग</translation>
 <translation id="1991830984769263878">वाहन बीमा</translation>
@@ -1317,7 +1318,6 @@
 <translation id="361438452008624280">सूची एंट्री "<ph name="LANGUAGE_ID" />": अनजान या काम नहीं करने वाली भाषा.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में, सुरक्षा जांच करने के लिए पहले Tab और फिर Enter दबाएं</translation>
 <translation id="3615309852743236517">मैनिक्योर और पेडिक्योर</translation>
-<translation id="3617072447978270288">फिर से जनरेट करें</translation>
 <translation id="3620239073311576716">काम पर जाने के लिए पहने जाने वाले कपड़े और यूनिफ़ॉर्म</translation>
 <translation id="36224234498066874">ब्राउज़िंग डेटा मिटाएं...</translation>
 <translation id="362276910939193118">पूरा इतिहास दिखाएं</translation>
@@ -1340,7 +1340,6 @@
 <translation id="3650594806107685466">अपने कार्ड को सुरक्षित रखने के लिए, <ph name="SIDE_OF_CARD" /> मौजूद सीवीसी डालें</translation>
 <translation id="3650917416636556301">हाइकिंग और कैंपिंग</translation>
 <translation id="3653033846669030038">थीम पार्क</translation>
-<translation id="3654980960391973513">जनरेट करें</translation>
 <translation id="3655241534245626312">अनुमति की सेटिंग पर जाएं</translation>
 <translation id="3655670868607891010">अगर आपको यह बार-बार दिखाई दे रहा हो, तो इन <ph name="HELP_LINK" /> को आज़माएं.</translation>
 <translation id="365641980390710834">कैज़ुअल कपड़े</translation>
@@ -1525,6 +1524,7 @@
 <translation id="4050599136622776556">Chromium पेमेंट के तरीकों में बदलाव करने की कोशिश कर रहा है.</translation>
 <translation id="405399507749852140">किसी भी साइट पर कीमत में कमी होने पर सूचना पाएं</translation>
 <translation id="4056223980640387499">Sepia</translation>
+<translation id="4059523390906550209">संवेदनशील जानकारी की सुरक्षा के बारे में ज़्यादा जानें</translation>
 <translation id="4063063121357725926">Google को अपने कार्ट का ऐक्सेस दें, ताकि वह आपके कार्ट पर छूट का पता लगा सके</translation>
 <translation id="406358100705415968">काम के दौरान बचाव से जुड़े सुरक्षा उपकरण</translation>
 <translation id="4063924980214801036">कार्ड की पुष्टि जल्दी करने के लिए, डिवाइस को अनलॉक करने की सुविधा का इस्तेमाल करें</translation>
@@ -1683,6 +1683,7 @@
 <translation id="4312613361423056926">बी2</translation>
 <translation id="4312866146174492540">ब्लॉक करें (डिफ़ॉल्ट)</translation>
 <translation id="4314815835985389558">सिंक प्रबंधित करें</translation>
+<translation id="4316057107946726368">कृपया ज़्यादा से ज़्यादा <ph name="MAX_CHAR_COUNT" /> वर्णों में वजह बताने वाला मैसेज डालें. <ph name="MAX_CHAR_COUNT" /> वर्णों में से <ph name="ACTUAL_CHAR_COUNT" /> का इस्तेमाल कर लिया गया है.</translation>
 <translation id="4318213823155573975">सिर पर पहनने की चीज़ें</translation>
 <translation id="4318312030194671742">पेंट की झलक दिखाने वाली सेवा</translation>
 <translation id="4318566738941496689">आपके डिवाइस का नाम और नेटवर्क का पता</translation>
@@ -2671,6 +2672,7 @@
 <translation id="6355392890578844978">यह ब्राउज़र, कोई कंपनी या दूसरा संगठन मैनेज नहीं करता. इस डिवाइस की गतिविधि को Chromium के बाहर मैनेज किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">पेमेंट के तरीकों में बदलाव करें</translation>
 <translation id="6358450015545214790">इनका क्‍या अर्थ है?</translation>
+<translation id="6360213755783740931">मैलवेयर से सुरक्षा के बारे में ज़्यादा जानें</translation>
 <translation id="6361757823711327522">बी7</translation>
 <translation id="6363786367719063276">लॉग देखें</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />प्रॉक्सी, फ़ायरवॉल, और सुरक्षित डीएनएस कॉन्फ़िगरेशन की जांच करें<ph name="END_LINK" /></translation>
@@ -2728,6 +2730,7 @@
 <translation id="6443406338865242315">आपने कौनसे एक्सटेंशन और प्लग इन इंस्टॉल किए हैं</translation>
 <translation id="6446608382365791566">और जानकारी जोड़ें</translation>
 <translation id="6447842834002726250">कुकी</translation>
+<translation id="6448371595882710519">डेटा कंट्रोल के बारे में ज़्यादा जानें</translation>
 <translation id="6450077999570164268">क्वॉर्टो</translation>
 <translation id="6450212216969386944">चोउ 40 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="6451458296329894277">फ़ार्म फिर से जमा करने की पुष्टि करें</translation>
@@ -3079,6 +3082,7 @@
 <translation id="7140087718106278457">पेमेंट के तरीके दिखाने वाली सूची बंद है.</translation>
 <translation id="714064300541049402">साइड 2 इमेज X शिफ़्ट</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">फिर से प्रयास करें</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}one{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}other{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}}</translation>
 <translation id="7153618581592392745">हल्का बैंगनी</translation>
 <translation id="7156870133441232244">इस सर्वर को TLS 1.2 या इसके बाद वाले वर्शन पर अपग्रेड करना होगा.</translation>
@@ -3282,6 +3286,7 @@
 <translation id="7521825010239864438">"<ph name="SECTION" />" सेक्शन छिपाया गया</translation>
 <translation id="752189128961566325">इसका इस्तेमाल, Google के सभी प्रॉडक्ट में किया जा सकता है</translation>
 <translation id="7523408071729642236">मैन्युफ़ैक्चरिंग</translation>
+<translation id="7525067979554623046">बनाएं</translation>
 <translation id="7525804896095537619">नाम वाला फ़ील्ड खाली नहीं छोड़ा जा सकता</translation>
 <translation id="7526934274050461096">इस साइट से आपका कनेक्‍शन निजी नहीं है</translation>
 <translation id="7529884293139707752">घर पर शिक्षा</translation>

@@ -1318,7 +1318,6 @@
 <translation id="361438452008624280">Élément de liste « <ph name="LANGUAGE_ID" /> » : langue inconnue ou non prise en charge.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour effectuer une vérification de sécurité dans les paramètres de Chrome</translation>
 <translation id="3615309852743236517">Manucures et pédicures</translation>
-<translation id="3617072447978270288">Régénérer</translation>
 <translation id="3620239073311576716">Uniformes et vêtements de travail</translation>
 <translation id="36224234498066874">Effacer données navigation…</translation>
 <translation id="362276910939193118">Afficher l'historique complet</translation>
@@ -1341,7 +1340,6 @@
 <translation id="3650594806107685466">Pour assurer la sécurité de votre carte, entrer le code CVC figurant sur le <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Randonnée et camping</translation>
 <translation id="3653033846669030038">Parcs thématiques</translation>
-<translation id="3654980960391973513">Générer</translation>
 <translation id="3655241534245626312">Accéder aux paramètres de l'autorisation</translation>
 <translation id="3655670868607891010">Si ce message s'affiche souvent, essayez ces <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Vêtements confortables</translation>
@@ -3084,6 +3082,7 @@
 <translation id="7140087718106278457">La liste des modes de paiement est fermée.</translation>
 <translation id="714064300541049402">Décalage X de l'image côté 2</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">Réessayer</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre mode de paiement}one{<ph name="PAYMENT_METHOD_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre mode de paiement}other{<ph name="PAYMENT_METHOD_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autres modes de paiement}}</translation>
 <translation id="7153618581592392745">Lavande</translation>
 <translation id="7156870133441232244">Le serveur devrait effectuer la mise à niveau vers TLS 1.2 ou une version ultérieure.</translation>
@@ -3287,6 +3286,7 @@ Détails supplémentaires :
 <translation id="7521825010239864438">Section « <ph name="SECTION" /> » masquée</translation>
 <translation id="752189128961566325">Vous pouvez l'utiliser dans tous les produits Google</translation>
 <translation id="7523408071729642236">Fabrication</translation>
+<translation id="7525067979554623046">Créer</translation>
 <translation id="7525804896095537619">Le champ du nom ne peut pas être vide</translation>
 <translation id="7526934274050461096">Votre connexion à ce site n'est pas privée</translation>
 <translation id="7529884293139707752">Enseignement à domicile</translation>

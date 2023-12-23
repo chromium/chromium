@@ -1317,7 +1317,6 @@
 <translation id="361438452008624280">የዝርዝር ግቤት «<ph name="LANGUAGE_ID" />»፦ ያልታወቀ ወይም የማይደገፍ ቋንቋ።</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በChrome ቅንብሮች ውስጥ የደህንነት ፍተሻን ለማሄድ ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="3615309852743236517">የወንድ ጥፍር ሥራ እና የሴት ጥፍር ሥራ</translation>
-<translation id="3617072447978270288">ዓድስ</translation>
 <translation id="3620239073311576716">ዩኒፎርም እና የስራ ልብስ</translation>
 <translation id="36224234498066874">የአሰሳ ውሂብ አስወግድ…</translation>
 <translation id="362276910939193118">ሙሉ ታሪክ አሳይ</translation>
@@ -1340,7 +1339,6 @@
 <translation id="3650594806107685466">የእርስዎን ካርድ ደህንነት ለማስጠበቅ እንዲያግዝ፣ በ<ph name="SIDE_OF_CARD" /> ላይ የካርድ ማረጋገጫ ኮዱን ያስገቡ</translation>
 <translation id="3650917416636556301">የእግር ጉዞ እና ካምፕ ማድረግ</translation>
 <translation id="3653033846669030038">የመዝናኛ ፓርኮች</translation>
-<translation id="3654980960391973513">አመንጭ</translation>
 <translation id="3655241534245626312">ወደ የፈቃድ ቅንብሮች ሂድ</translation>
 <translation id="3655670868607891010">ይህንን በተደጋጋሚነት የሚያዩ ከሆኑ <ph name="HELP_LINK" />ን ይሞክሩ።</translation>
 <translation id="365641980390710834">የአዘቦት ቀን አልባሳት</translation>
@@ -3083,6 +3081,7 @@
 <translation id="7140087718106278457">የመክፈያ ዘዴዎች ዝርዝር ተዘግቷል።</translation>
 <translation id="714064300541049402">ጎን 2 ምስል X ሽግሽግ</translation>
 <translation id="7143682719845053166">ፒአርሲ 32ኬ</translation>
+<translation id="7144878232160441200">እንደገና ሞክር</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}one{<ph name="PAYMENT_METHOD_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}other{<ph name="PAYMENT_METHOD_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}}</translation>
 <translation id="7153618581592392745">ፈዘዝ ያለ ወይን ጠጅ</translation>
 <translation id="7156870133441232244">አገልጋዩ ወደ TLS 1.2 ወይም ከዚያ በኋላ ማላቅ አለበት።</translation>
@@ -3286,6 +3285,7 @@
 <translation id="7521825010239864438">የ«<ph name="SECTION" />» ክፍል ተደብቋል</translation>
 <translation id="752189128961566325">በሁሉም የGoogle ምርቶች ላይ ሊጠቀሙበት ይችላሉ</translation>
 <translation id="7523408071729642236">ማምረት</translation>
+<translation id="7525067979554623046">ፍጠር</translation>
 <translation id="7525804896095537619">ስም ባዶ መሆን አይችልም</translation>
 <translation id="7526934274050461096">ከዚሃ ጣቢያ ጋር ያለዎት ግንኙነት የግል አይደለም</translation>
 <translation id="7529884293139707752">በቤት ውስጥ ማስተማር</translation>

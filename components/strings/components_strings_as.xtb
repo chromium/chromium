@@ -1315,7 +1315,6 @@
 <translation id="361438452008624280">তালিকাত থকা "<ph name="LANGUAGE_ID" />": অজ্ঞাত বা অসমৰ্থিত ভাষা।</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeৰ ছেটিঙত সুৰক্ষা পৰীক্ষা চলাবলৈ টেবত আৰু তাৰ পাছত এণ্টাৰত টিপক</translation>
 <translation id="3615309852743236517">মেনিকিউৰ আৰু পেডিকিউৰ</translation>
-<translation id="3617072447978270288">পুনৰ সৃষ্টি কৰক</translation>
 <translation id="3620239073311576716">ইউনিফৰ্ম আৰু কৰ্মস্থানৰ পোছাক</translation>
 <translation id="36224234498066874">ব্ৰাউজিং ডেটা মচক...</translation>
 <translation id="362276910939193118">সম্পূৰ্ণ ইতিহাস দেখুৱাওক</translation>
@@ -1338,7 +1337,6 @@
 <translation id="3650594806107685466">আপোনাৰ কাৰ্ড সুৰক্ষিত ৰখাত সহায় কৰিবলৈ, <ph name="SIDE_OF_CARD" />ত CVC দিয়ক</translation>
 <translation id="3650917416636556301">হাইকিং আৰু কেম্পিং</translation>
 <translation id="3653033846669030038">থীম পাৰ্ক</translation>
-<translation id="3654980960391973513">সৃষ্টি কৰক</translation>
 <translation id="3655241534245626312">অনুমতিৰ ছেটিঙলৈ যাওক</translation>
 <translation id="3655670868607891010">আপুনি যদি এইটো সঘনাই দেখি আছে, <ph name="HELP_LINK" />লৈ যাওক।</translation>
 <translation id="365641980390710834">অনানুষ্ঠানিক পোছাক</translation>
@@ -3079,6 +3077,7 @@
 <translation id="7140087718106278457">পৰিশোধ পদ্ধতিৰ সূচীখন বন্ধ কৰা হৈছে।</translation>
 <translation id="714064300541049402">কাষৰ ২ প্ৰতিচ্ছবি X শ্বিফ্ট</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">পুনৰ চেষ্টা কৰক</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা অধিক}one{<ph name="PAYMENT_METHOD_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা অধিক}other{<ph name="PAYMENT_METHOD_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা অধিক}}</translation>
 <translation id="7153618581592392745">লেভেণ্ডাৰ</translation>
 <translation id="7156870133441232244">ছার্ভাৰটো TLS 1.2 অথবা তাতকৈ পাছৰ সংস্কৰণলৈ আপগ্ৰে’ড হ’ব লাগে।</translation>
@@ -3282,6 +3281,7 @@
 <translation id="7521825010239864438">"<ph name="SECTION" />" শাখাটো লুকুওৱা হৈছে</translation>
 <translation id="752189128961566325">আপুনি এইটো সমগ্ৰ Google প্ৰ’ডাক্টত ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="7523408071729642236">নিৰ্মাণ কৰা</translation>
+<translation id="7525067979554623046">সৃষ্টি কৰক</translation>
 <translation id="7525804896095537619">নামটো খালী হৈ থাকিব নোৱাৰে</translation>
 <translation id="7526934274050461096">এই ছাইটলৈ থকা আপোনাৰ সংযোগটো ব্যক্তিগত নহয়</translation>
 <translation id="7529884293139707752">হ’মস্কুলিং</translation>

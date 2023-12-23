@@ -1314,7 +1314,6 @@
 <translation id="361438452008624280">பட்டியல் உள்ளீடு '<ph name="LANGUAGE_ID" />': தெரியாத அல்லது ஆதரிக்கப்படாத மொழி.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome அமைப்புகளில் பாதுகாப்புச் சரிபார்ப்பை இயக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="3615309852743236517">மெனிக்கியூர் &amp; பெடிக்கியூர்</translation>
-<translation id="3617072447978270288">மீண்டும் உருவாக்கும்</translation>
 <translation id="3620239073311576716">சீருடை &amp; பணிக்கான ஆடைகள்</translation>
 <translation id="36224234498066874">உலாவிய தரவை அழி...</translation>
 <translation id="362276910939193118">முழு வரலாற்றையும் காண்பி</translation>
@@ -1337,7 +1336,6 @@
 <translation id="3650594806107685466">உங்கள் கார்டைப் பாதுகாப்பாக வைத்திருக்க உதவ, <ph name="SIDE_OF_CARD" /> உள்ள CVCயை டைப் செய்யுங்கள்</translation>
 <translation id="3650917416636556301">மலையேறுதல் &amp; முகாமிடுதல்</translation>
 <translation id="3653033846669030038">தீம் பார்க்குகள்</translation>
-<translation id="3654980960391973513">உருவாக்கு</translation>
 <translation id="3655241534245626312">அனுமதி அமைப்புகளுக்குச் செல்லும்</translation>
 <translation id="3655670868607891010">இதை அடிக்கடி காண்கிறீர்கள் எனில், <ph name="HELP_LINK" /> ஐ முயற்சிக்கவும்.</translation>
 <translation id="365641980390710834">கேஷுவல் ஆடைகள்</translation>
@@ -3079,6 +3077,7 @@
 <translation id="7140087718106278457">பேமெண்ட் முறைகளின் பட்டியல் மூடப்பட்டுள்ளது.</translation>
 <translation id="714064300541049402">சைடு 2 இமேஜ் X ஷிஃப்ட்</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">மீண்டும் முயற்சி செய்க</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">லாவெண்டர் நிறம்</translation>
 <translation id="7156870133441232244">சேவையகத்தை TLS 1.2 அல்லது அதற்குப் பிந்தைய பதிப்பிற்கு மேம்படுத்த வேண்டும்.</translation>
@@ -3282,6 +3281,7 @@
 <translation id="7521825010239864438">"<ph name="SECTION" />" பிரிவு மறைக்கப்பட்டுள்ளது</translation>
 <translation id="752189128961566325">Google தயாரிப்புகள் முழுவதிலும் இதை நீங்கள் பயன்படுத்தலாம்</translation>
 <translation id="7523408071729642236">உற்பத்தி</translation>
+<translation id="7525067979554623046">உருவாக்கு</translation>
 <translation id="7525804896095537619">பெயர் காலியாக இருக்கக்கூடாது</translation>
 <translation id="7526934274050461096">இந்தத் தளத்திற்கான உங்கள் இணைப்பு தனிப்பட்டதல்ல</translation>
 <translation id="7529884293139707752">வீட்டுக்கல்வி</translation>

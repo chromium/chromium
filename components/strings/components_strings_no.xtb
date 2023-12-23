@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">En nettside besøkes</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Ingen}=1{Fra 1 nettsted (du forblir logget på Google-kontoen din)}other{Fra # nettsteder (du forblir pålogget Google-kontoen din)}}</translation>
 <translation id="1165852471352757509">TV-dokumentarer</translation>
+<translation id="1167877250265821930">Kunne ikke laste ned <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Kinesisk konvolutt nr. 1</translation>
 <translation id="1174723505405632867">Vil du gi <ph name="EMBEDDED_URL" /> tillatelse til å bruke informasjonskapsler og nettstedsdata på <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2126374524350484896">PDF-produsent:</translation>
 <translation id="2130448033692577677">Malene du har angitt, kan ikke tas i bruk fordi DnsOverHttpsMode-regelen ikke er angitt.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Laster ned språkpakke for <ph name="LANGUAGE" /> … <ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Herreklær</translation>
 <translation id="2137891579555018930">Venter på tillatelse …</translation>
 <translation id="213826338245044447">Bokmerker for mobil</translation>
@@ -1318,7 +1320,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="361438452008624280">Listeoppføringen «<ph name="LANGUAGE_ID" />»: Språket er ukjent eller støttes ikke.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å kjøre en sikkerhetssjekk i Chrome-innstillingene</translation>
 <translation id="3615309852743236517">Manikyr og pedikyr</translation>
-<translation id="3617072447978270288">Regenerer</translation>
 <translation id="3620239073311576716">Uniformer og arbeidstøy</translation>
 <translation id="36224234498066874">Slett alle nettlesingsdata</translation>
 <translation id="362276910939193118">Vis fullstendig logg</translation>
@@ -1341,7 +1342,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3650594806107685466">For å beskytte kortet ditt skriver du inn verifiseringskoden på <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Fotturer og camping</translation>
 <translation id="3653033846669030038">Fonøyelsesparker</translation>
-<translation id="3654980960391973513">Generer</translation>
 <translation id="3655241534245626312">Gå til tillatelsesinnstillingene</translation>
 <translation id="3655670868607891010">Hvis du ser denne meldingen ofte, kan du prøve disse <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Hverdagsklær</translation>
@@ -3084,6 +3084,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7140087718106278457">Listen over betalingsmåter er lukket.</translation>
 <translation id="714064300541049402">X-forskyvning av bilde på side 2</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">Prøv på nytt</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> til}other{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> til}}</translation>
 <translation id="7153618581592392745">Lavendel</translation>
 <translation id="7156870133441232244">Tjeneren bør oppgraderes til TLS 1.2 eller nyere.</translation>
@@ -3286,6 +3287,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7521825010239864438">Delen «<ph name="SECTION" />» er skjult</translation>
 <translation id="752189128961566325">Du kan bruke den i alle Google-produkter</translation>
 <translation id="7523408071729642236">Produksjon</translation>
+<translation id="7525067979554623046">Opprett</translation>
 <translation id="7525804896095537619">Navnet kan ikke være tomt</translation>
 <translation id="7526934274050461096">Tilkoblingen til dette nettstedet er ikke privat</translation>
 <translation id="7529884293139707752">Hjemmeundervisning</translation>
@@ -3985,6 +3987,7 @@ Mer informasjon:
 <translation id="8877780815363510165">Fiske</translation>
 <translation id="8884537526797090108">Kan ikke ta opp konfidensielt innhold</translation>
 <translation id="8888187300091017436">Madrasser</translation>
+<translation id="8890048757975398817">styre <ph name="READERNAME" /> og få tilgang til det tilknyttede smartkortet</translation>
 <translation id="8891727572606052622">Ugyldig modus for proxy-tjener.</translation>
 <translation id="8894794286471754040">Langsiden først</translation>
 <translation id="8897428486789851669">Svømming</translation>

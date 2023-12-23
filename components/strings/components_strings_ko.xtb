@@ -1318,7 +1318,6 @@
 <translation id="361438452008624280">목록 항목 ‘<ph name="LANGUAGE_ID" />’: 알 수 없거나 지원되지 않는 언어입니다.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 안전 확인을 실행하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="3615309852743236517">매니큐어 및 페디큐어</translation>
-<translation id="3617072447978270288">새로운 대답 생성</translation>
 <translation id="3620239073311576716">유니폼 및 작업복</translation>
 <translation id="36224234498066874">인터넷 사용 기록 삭제...</translation>
 <translation id="362276910939193118">방문 기록 전체 보기</translation>
@@ -1341,7 +1340,6 @@
 <translation id="3650594806107685466">카드의 안전성을 유지하려면 <ph name="SIDE_OF_CARD" />의 CVC를 입력하세요.</translation>
 <translation id="3650917416636556301">하이킹 및 캠핑</translation>
 <translation id="3653033846669030038">테마파크</translation>
-<translation id="3654980960391973513">생성</translation>
 <translation id="3655241534245626312">권한 설정으로 이동</translation>
 <translation id="3655670868607891010">이 메시지가 자주 표시된다면 다음을 시도해 보세요. <ph name="HELP_LINK" /></translation>
 <translation id="365641980390710834">일상복</translation>
@@ -3084,6 +3082,7 @@
 <translation id="7140087718106278457">결제 수단 목록이 닫혔습니다.</translation>
 <translation id="714064300541049402">두 번째 면 이미지 X 시프트</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">다시 시도</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}other{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}}</translation>
 <translation id="7153618581592392745">라벤더색</translation>
 <translation id="7156870133441232244">서버를 TLS 1.2 이상으로 업그레이드해야 합니다.</translation>
@@ -3286,6 +3285,7 @@
 <translation id="7521825010239864438">‘<ph name="SECTION" />’ 섹션 숨겨짐</translation>
 <translation id="752189128961566325">Google 제품 전반에서 사용할 수 있습니다.</translation>
 <translation id="7523408071729642236">제조업</translation>
+<translation id="7525067979554623046">만들기</translation>
 <translation id="7525804896095537619">이름은 비워둘 수 없습니다.</translation>
 <translation id="7526934274050461096">이 사이트로의 연결은 비공개가 아닙니다.</translation>
 <translation id="7529884293139707752">홈스쿨링</translation>

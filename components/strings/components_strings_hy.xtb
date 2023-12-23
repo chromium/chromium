@@ -1324,7 +1324,6 @@
 <translation id="361438452008624280">«<ph name="LANGUAGE_ID" />» ցանկի տարր․ լեզուն չի աջակցվում կամ հայտնի չէ։</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի կարգավորումներում անվտանգության ստուգում անցնելու համար սեղմեք «Tab», ապա՝ «Enter»։</translation>
 <translation id="3615309852743236517">Մատնահարդարում և ոտնահարդարում</translation>
-<translation id="3617072447978270288">Նորից գեներացնել</translation>
 <translation id="3620239073311576716">Համազգեստ և աշխատանքային հագուստ</translation>
 <translation id="36224234498066874">Ջնջել այցելությունների պատմությունը...</translation>
 <translation id="362276910939193118">Ցույց տալ ամբողջ պատմությունը</translation>
@@ -1347,7 +1346,6 @@
 <translation id="3650594806107685466">Ձեր քարտն ապահով պահելու գամար մուտքագրեք <ph name="SIDE_OF_CARD" /> գտնվող CVC կոդը</translation>
 <translation id="3650917416636556301">Արշավներ և վրանային ճամբարներ</translation>
 <translation id="3653033846669030038">Թեմատիկ այգիներ</translation>
-<translation id="3654980960391973513">Գեներացնել</translation>
 <translation id="3655241534245626312">Բացել թույլտվության կարգավորումները</translation>
 <translation id="3655670868607891010">Եթե հաճախակի եք տեսնում այս հաղորդագրությունը, փորձեք հետևյալ <ph name="HELP_LINK" />-ը:</translation>
 <translation id="365641980390710834">Ամենօրյա հագուստ</translation>
@@ -3095,6 +3093,7 @@
 <translation id="7140087718106278457">Վճարման եղանակների ցանկը փակված է։</translation>
 <translation id="714064300541049402">Պատկերների տեղաշարժ հակառակ կողմից՝ X առանցքով</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">Նորից փորձել</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> տարբերակ}one{<ph name="PAYMENT_METHOD_PREVIEW" /> ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> տարբերակ}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> տարբերակ}}</translation>
 <translation id="7153618581592392745">Նարդոս</translation>
 <translation id="7156870133441232244">Սերվերը պետք է թարմացվի TLS 1.2 կամ ավելի բարձր տարբերակով։</translation>
@@ -3298,6 +3297,7 @@
 <translation id="7521825010239864438">«<ph name="SECTION" />» բաժինը թաքցվեց</translation>
 <translation id="752189128961566325">Այն կարող եք օգտագործել Google-ի արտադրանքներում</translation>
 <translation id="7523408071729642236">Արդյունաբերություն</translation>
+<translation id="7525067979554623046">Ստեղծել</translation>
 <translation id="7525804896095537619">Անվանման դաշտը չի կարող դատարկ լինել</translation>
 <translation id="7526934274050461096">Կայքին կապակցումը պաշտպանված չէ</translation>
 <translation id="7529884293139707752">Կրթություն տանը</translation>

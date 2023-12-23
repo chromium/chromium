@@ -1317,7 +1317,6 @@
 <translation id="361438452008624280">Элемент спіса "<ph name="LANGUAGE_ID" />": мова невядомая або не падтрымліваецца.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб выканаць праверку бяспекі ў наладах Chrome, націсніце Tab, затым Enter</translation>
 <translation id="3615309852743236517">Манікюр і педыкюр</translation>
-<translation id="3617072447978270288">Згенерыраваць нанава</translation>
 <translation id="3620239073311576716">Уніформа і рабочае адзенне</translation>
 <translation id="36224234498066874">Выдаліць гісторыю...</translation>
 <translation id="362276910939193118">Паказаць усю гісторыю</translation>
@@ -1340,7 +1339,6 @@
 <translation id="3650594806107685466">У мэтах бяспекі ўвядзіце код CVC, які знаходзіцца на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Пешы турызм і кемпінг</translation>
 <translation id="3653033846669030038">Паркі атракцыёнаў</translation>
-<translation id="3654980960391973513">Згенерыраваць</translation>
 <translation id="3655241534245626312">Перайсці ў налады дазволаў</translation>
 <translation id="3655670868607891010">Калі вы часта бачыце гэта паведамленне, паспрабуйце наступнае: <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Паўсядзённае адзенне</translation>
@@ -3083,6 +3081,7 @@
 <translation id="7140087718106278457">Спіс спосабаў аплаты закрыты.</translation>
 <translation id="714064300541049402">Зрух відарыса па восі X, бок 2</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">Паўтарыць</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Бледна-ліловы</translation>
 <translation id="7156870133441232244">Сервер патрабуе абнаўлення пратакола TLS да версіі 1.2 або навейшай.</translation>
@@ -3287,6 +3286,7 @@
 <translation id="7521825010239864438">Раздзел "<ph name="SECTION" />" схаваны</translation>
 <translation id="752189128961566325">Вы можаце выкарыстоўваць яго ў прадуктах Google.</translation>
 <translation id="7523408071729642236">Вытворчасць</translation>
+<translation id="7525067979554623046">Стварыць</translation>
 <translation id="7525804896095537619">Укажыце назву</translation>
 <translation id="7526934274050461096">Ваша падключэнне да гэтага сайта не прыватнае.</translation>
 <translation id="7529884293139707752">Дамашняе навучанне</translation>

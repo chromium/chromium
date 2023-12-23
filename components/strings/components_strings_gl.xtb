@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Visítase unha páxina</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Ningún}=1{De 1 sitio (seguirás tendo a sesión iniciada na túa Conta de Google)}other{De # sitios (seguirás tendo a sesión iniciada na túa Conta de Google)}}</translation>
 <translation id="1165852471352757509">Documentais e programas de telerrealidade</translation>
+<translation id="1167877250265821930">Non se puido descargar: <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Sobre chinés n.º 1</translation>
 <translation id="1174723505405632867">Queres permitir que <ph name="EMBEDDED_URL" /> utilice as cookies e os datos dos sitios en <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2126374524350484896">Produtor do PDF:</translation>
 <translation id="2130448033692577677">Os modelos que especificaches poden non aplicarse debido a que non se definiu a política DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Descargando paquete de idioma de <ph name="LANGUAGE" />…<ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Roupa de home</translation>
 <translation id="2137891579555018930">Agardando polo permiso…</translation>
 <translation id="213826338245044447">Marcadores para móbiles</translation>
@@ -1318,7 +1320,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="361438452008624280">Entrada da lista "<ph name="LANGUAGE_ID" />": idioma descoñecido ou non compatible.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Se queres executar unha Comprobación de seguranza na configuración de Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="3615309852743236517">Manicuras e pedicuras</translation>
-<translation id="3617072447978270288">Volver xerar</translation>
 <translation id="3620239073311576716">Uniformes e roupa de traballo</translation>
 <translation id="36224234498066874">Borrar datos de navegación...</translation>
 <translation id="362276910939193118">Mostrar historial completo</translation>
@@ -1341,7 +1342,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3650594806107685466">Para protexer a túa tarxeta, introduce o CVC do <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Excursionismo e acampada</translation>
 <translation id="3653033846669030038">Parques temáticos</translation>
-<translation id="3654980960391973513">Xerar</translation>
 <translation id="3655241534245626312">Ir á configuración de permisos</translation>
 <translation id="3655670868607891010">Se esta mensaxe aparece con frecuencia, proba a solucionalo con estas <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Roupa informal</translation>
@@ -3084,6 +3084,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7140087718106278457">A lista de métodos de pago está pechada.</translation>
 <translation id="714064300541049402">Desprazamento do lado 2 da imaxe no eixe X</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">Volver tentar</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> máis}other{<ph name="PAYMENT_METHOD_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> máis}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">O servidor debería actualizarse a TLS 1.2 ou a unha versión posterior.</translation>
@@ -3287,6 +3288,7 @@ Detalles adicionais:
 <translation id="7521825010239864438">Ocultouse a sección <ph name="SECTION" /></translation>
 <translation id="752189128961566325">Poderás usalo nos produtos de Google</translation>
 <translation id="7523408071729642236">Fabricación</translation>
+<translation id="7525067979554623046">Crear</translation>
 <translation id="7525804896095537619">O nome non pode estar baleiro</translation>
 <translation id="7526934274050461096">A túa conexión a este sitio non é privada</translation>
 <translation id="7529884293139707752">Educación na casa</translation>
@@ -3986,6 +3988,7 @@ Detalles adicionais:
 <translation id="8877780815363510165">Pesca</translation>
 <translation id="8884537526797090108">Non se pode gravar contido confidencial</translation>
 <translation id="8888187300091017436">Colchóns</translation>
+<translation id="8890048757975398817">Controlar <ph name="READERNAME" /> e obter acceso á tarxeta intelixente á que pode acceder.</translation>
 <translation id="8891727572606052622">Modo de proxy non válido.</translation>
 <translation id="8894794286471754040">Co bordo longo primeiro</translation>
 <translation id="8897428486789851669">Natación</translation>

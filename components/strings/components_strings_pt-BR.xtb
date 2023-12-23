@@ -1318,7 +1318,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="361438452008624280">Entrada "<ph name="LANGUAGE_ID" />": idioma desconhecido ou não compatível.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para executar a confirmação de segurança nas configurações do Chrome</translation>
 <translation id="3615309852743236517">Manicure e pedicure</translation>
-<translation id="3617072447978270288">Gerar novamente</translation>
 <translation id="3620239073311576716">Uniformes e roupas de trabalho</translation>
 <translation id="36224234498066874">Remover dados de navegação...</translation>
 <translation id="362276910939193118">Mostrar histórico completo</translation>
@@ -1341,7 +1340,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3650594806107685466">Por questões de segurança, insira o CVC que fica na <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Caminhadas e acampamento</translation>
 <translation id="3653033846669030038">Parques temáticos</translation>
-<translation id="3654980960391973513">Gerar</translation>
 <translation id="3655241534245626312">Acessar configurações de permissão</translation>
 <translation id="3655670868607891010">Caso veja esta página com frequência, tente <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Roupas casuais</translation>
@@ -3084,6 +3082,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7140087718106278457">A lista de formas de pagamento está fechada.</translation>
 <translation id="714064300541049402">Mudança X no lado 2 da imagem</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
+<translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">É necessário fazer o upgrade do servidor para o TLS 1.2 ou mais recente.</translation>
@@ -3287,6 +3286,7 @@ Mais detalhes:
 <translation id="7521825010239864438">Seção "<ph name="SECTION" />" oculta</translation>
 <translation id="752189128961566325">Ele pode ser usado em todos os produtos do Google</translation>
 <translation id="7523408071729642236">Indústria</translation>
+<translation id="7525067979554623046">Criar</translation>
 <translation id="7525804896095537619">O nome não pode ficar em branco</translation>
 <translation id="7526934274050461096">Sua conexão a este site não é particular</translation>
 <translation id="7529884293139707752">Educação domiciliar</translation>
