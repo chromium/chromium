@@ -346695,7 +346695,7 @@
      []
     ],
     "state-css-selector.tentative-expected.txt": [
-     "4d32d2a7599df261e45a80a3d016f4382f399784",
+     "709774f0268723a048c8bb345731ce841449014e",
      []
     ]
    },
@@ -476210,7 +476210,7 @@
      ]
     ],
     "state-css-selector-shadow-dom.tentative.html": [
-     "842bd842fa817ad486ff4e5284312884ce7f898b",
+     "62bc9cf9484ddb856f6ca64466338c41226f832b",
      [
       null,
       {
@@ -476219,7 +476219,7 @@
      ]
     ],
     "state-css-selector.tentative.html": [
-     "a13cf4135086da0ef8d8b73addbdadeaacd7b36a",
+     "dd08442e5eb462582d625c98859173b81d78b421",
      [
       null,
       {
