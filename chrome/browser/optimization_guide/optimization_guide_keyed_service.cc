@@ -624,6 +624,16 @@ bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyEnabledForUser(
       ->ShouldFeatureBeCurrentlyEnabledForUser(feature);
 }
 
+bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyAllowedForLogging(
+    optimization_guide::proto::ModelExecutionFeature feature) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!model_execution_features_controller_) {
+    return false;
+  }
+  return model_execution_features_controller_
+      ->ShouldFeatureBeCurrentlyAllowedForLogging(feature);
+}
+
 void OptimizationGuideKeyedService::AddModelExecutionSettingsEnabledObserver(
     optimization_guide::SettingsEnabledObserver* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

@@ -134,6 +134,11 @@ class OptimizationGuideKeyedService
   virtual bool ShouldFeatureBeCurrentlyEnabledForUser(
       optimization_guide::proto::ModelExecutionFeature feature) const;
 
+  // Returns whether the `feature` should be currently allowed for logging model
+  // quality logs.
+  virtual bool ShouldFeatureBeCurrentlyAllowedForLogging(
+      optimization_guide::proto::ModelExecutionFeature feature) const;
+
   // Adds `observer` which can observe the change in feature settings.
   void AddModelExecutionSettingsEnabledObserver(
       optimization_guide::SettingsEnabledObserver* observer);

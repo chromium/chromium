@@ -56,6 +56,7 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
     task_environment_.RunUntilIdle();
     base::RunLoop().RunUntilIdle();
   }
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -65,6 +66,7 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<ModelExecutionFeaturesController>
       model_execution_features_controller_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(ModelExecutionFeaturesControllerTest, OneFeatureSettingVisible) {
@@ -80,6 +82,17 @@ TEST_F(ModelExecutionFeaturesControllerTest, OneFeatureSettingVisible) {
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
   EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  histogram_tester()->ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup.Compose", false,
+      1);
+  histogram_tester()->ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup."
+      "TabOrganization",
+      false, 1);
+  histogram_tester()->ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup."
+      "WallpaperSearch",
+      false, 1);
 }
 
 TEST_F(ModelExecutionFeaturesControllerTest,
