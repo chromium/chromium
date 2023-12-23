@@ -79,6 +79,14 @@ void RecordSessionUsedRemoteExecutionHistogram(
       is_remote);
 }
 
+void RecordModelExecutionResultHistogram(proto::ModelExecutionFeature feature,
+                                         bool result) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"OptimizationGuide.ModelExecution.Result.",
+                    GetStringNameForModelExecutionFeature(feature)}),
+      result);
+}
+
 }  // namespace
 
 using ModelExecutionError =
@@ -137,6 +145,7 @@ void ModelExecutionManager::ExecuteModel(
 
   if (active_model_execution_fetchers_.find(feature) !=
       active_model_execution_fetchers_.end()) {
+    RecordModelExecutionResultHistogram(feature, false);
     std::move(callback).Run(
         base::unexpected(
             OptimizationGuideModelExecutionError::FromModelExecutionError(
@@ -227,6 +236,7 @@ void ModelExecutionManager::OnModelExecuteResponse(
                                                    optimization_guide_logger_);
   if (!execute_response.has_value()) {
     scoped_logger.set_message("Error: No Response");
+    RecordModelExecutionResultHistogram(feature, false);
     std::move(callback).Run(base::unexpected(execute_response.error()),
                             nullptr);
     return;
@@ -246,21 +256,24 @@ void ModelExecutionManager::OnModelExecuteResponse(
   if (execute_response->has_error_response()) {
     scoped_logger.set_message("Error: No Response Metadata");
     // For unallowed error states, don't log request data.
-    if (!OptimizationGuideModelExecutionError::FromModelExecutionServerError(
-             execute_response->error_response())
-             .ShouldLogModelQuality()) {
+    auto error =
+        OptimizationGuideModelExecutionError::FromModelExecutionServerError(
+            execute_response->error_response());
+    if (!error.ShouldLogModelQuality()) {
       log_entry = nullptr;
     }
-    std::move(callback).Run(
-        base::unexpected(
-            OptimizationGuideModelExecutionError::FromModelExecutionServerError(
-                execute_response->error_response())),
-        std::move(log_entry));
+    RecordModelExecutionResultHistogram(feature, false);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"OptimizationGuide.ModelExecution.ServerError.",
+                      GetStringNameForModelExecutionFeature(feature)}),
+        error.error());
+    std::move(callback).Run(base::unexpected(error), std::move(log_entry));
     return;
   }
 
   if (!execute_response->has_response_metadata()) {
     scoped_logger.set_message("Error: No Response Metadata");
+    RecordModelExecutionResultHistogram(feature, false);
     // Log the request in case response is not present by passing the
     // `log_entry`.
     std::move(callback).Run(
@@ -315,6 +328,7 @@ void ModelExecutionManager::OnModelExecuteResponse(
   SetExecutionResponse(feature, *(log_entry.get()->log_ai_data_request()),
                        execute_response->response_metadata());
 
+  RecordModelExecutionResultHistogram(feature, true);
   std::move(callback).Run(base::ok(execute_response->response_metadata()),
                           std::move(log_entry));
 }

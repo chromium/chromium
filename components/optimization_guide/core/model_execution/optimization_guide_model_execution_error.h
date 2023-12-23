@@ -12,29 +12,31 @@ namespace optimization_guide {
 // Contains the error details of model execution.
 class OptimizationGuideModelExecutionError {
  public:
+  // Recorded in histograms. Should be in sync with
+  // OptimizationGuideModelExecutionError in enums.xml.
   enum class ModelExecutionError {
-    kUnknown,
+    kUnknown = 0,
     // The request was invalid.
-    kInvalidRequest,
+    kInvalidRequest = 1,
     // The request was throttled.
-    kRequestThrottled,
+    kRequestThrottled = 2,
     // User permission errors such as not signed-in or not allowed to execute
     // model.
-    kPermissionDenied,
+    kPermissionDenied = 3,
     // Other generic failures.
-    kGenericFailure,
+    kGenericFailure = 4,
     // Retryable error occurred in server.
-    kRetryableError,
+    kRetryableError = 5,
     // Non-retryable error occurred in server.
-    kNonRetryableError,
+    kNonRetryableError = 6,
     // Unsupported language.
-    kUnsupportedLanguage,
+    kUnsupportedLanguage = 7,
     // Request was filtered.
-    kFiltered,
+    kFiltered = 8,
     // Response was disabled.
-    kDisabled,
+    kDisabled = 9,
     // The request was cancelled.
-    kCancelled,
+    kCancelled = 10,
 
     // Insert new values before this line.
     kMaxValue = kCancelled
