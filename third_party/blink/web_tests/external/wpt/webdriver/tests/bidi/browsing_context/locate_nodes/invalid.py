@@ -49,7 +49,6 @@ async def test_params_locator_type_invalid_value(bidi_session, inline, top_conte
 @pytest.mark.parametrize("type,value", [
     ("css", "a*b"),
     ("xpath", ""),
-    ("xpath", "invalid-xpath"),
     ("innerText", "")
 ])
 async def test_params_locator_value_invalid_value(bidi_session, inline, top_context, type, value):
@@ -58,6 +57,15 @@ async def test_params_locator_value_invalid_value(bidi_session, inline, top_cont
     with pytest.raises(error.InvalidSelectorException):
         await bidi_session.browsing_context.locate_nodes(
             context=top_context["context"], locator={ "type": type, "value": value }
+        )
+
+
+async def test_params_locator_xpath_unknown_error(bidi_session, inline, top_context):
+    await navigate_to_page(bidi_session, inline, top_context)
+
+    with pytest.raises(error.UnknownErrorException):
+        await bidi_session.browsing_context.locate_nodes(
+            context=top_context["context"], locator={"type": "xpath", "value": "/foo:bar"}
         )
 
 

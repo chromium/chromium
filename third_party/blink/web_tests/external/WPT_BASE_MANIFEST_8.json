@@ -346673,6 +346673,10 @@
       "README.md": [
        "b11784bd07e689b16b316cefb7a9cb03ba8fc56c",
        []
+      ],
+      "state-pseudo-class-expected.txt": [
+       "bd09854b09badc9d711caec10a7eecfc7bc6f294",
+       []
       ]
      }
     }
@@ -346684,6 +346688,10 @@
     ],
     "custom-state-set-strong-ref.tentative-expected.txt": [
      "2780a11acd9198308f00246c2e5d5ade2325a0d3",
+     []
+    ],
+    "state-css-selector-shadow-dom.tentative-expected.txt": [
+     "86346c4dff39df756b51087b4d81809eaf5abb9a",
      []
     ],
     "state-css-selector.tentative-expected.txt": [
@@ -476078,14 +476086,14 @@
     "state": {
      "tentative": {
       "ElementInternals-states.html": [
-       "96dcb841eec28ed001dba1ff8994ba3b209e28a3",
+       "016a2bcc438d573444d5af24aaadbebc4ee43526",
        [
         null,
         {}
        ]
       ],
       "state-pseudo-class.html": [
-       "3e3806a042d8364a6cf9fbf7c26e0afc3945ea75",
+       "5ef526eb12c727128a9f5cf7f7ecc1dd4798cc40",
        [
         null,
         {}
@@ -476198,6 +476206,15 @@
          "/resources/idlharness.js"
         ]
        ]
+      }
+     ]
+    ],
+    "state-css-selector-shadow-dom.tentative.html": [
+     "842bd842fa817ad486ff4e5284312884ce7f898b",
+     [
+      null,
+      {
+       "timeout": "long"
       }
      ]
     ],
@@ -702251,7 +702268,7 @@
          ]
         ],
         "invalid.py": [
-         "b9a4d848caeaefe13644f01221e5cc7e26d3b3e8",
+         "ff00de91ed00a33a27904bfd2622bfa3a3484d68",
          [
           null,
           {}
