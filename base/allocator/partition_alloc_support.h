@@ -46,6 +46,7 @@ class BASE_EXPORT PartitionAllocSupport {
   struct BrpConfiguration {
     bool enable_brp = false;
     bool process_affected_by_brp_flag = false;
+    size_t ref_count_size = 0;
   };
 
   // Reconfigure* functions re-configure PartitionAlloc. It is impossible to

@@ -171,6 +171,8 @@ struct PartitionOptions {
   EnableToggle backup_ref_ptr = kDisabled;
   AllowToggle use_configurable_pool = kDisallowed;
 
+  size_t ref_count_size = 0;
+
   EnableToggle scheduler_loop_quarantine = kDisabled;
   size_t scheduler_loop_quarantine_capacity_count = 0;
   size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
@@ -399,7 +401,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
   void EnableMac11MallocSizeHackIfNeeded(size_t ref_count_size);
-  void EnableMac11MallocSizeHackForTesting();
+  void EnableMac11MallocSizeHackForTesting(size_t ref_count_size);
   void InitMac11MallocSizeHackUsableSize(size_t ref_count_size);
 #endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 

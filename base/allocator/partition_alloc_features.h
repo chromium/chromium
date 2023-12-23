@@ -104,6 +104,22 @@ enum class BackupRefPtrMode {
   kEnabled,
 };
 
+// Decides the amount of memory uses for BRP ref-count. The actual ref-count may
+// be smaller, in which case extra padding is added.
+enum class BackupRefPtrRefCountSize {
+  // Whatever sizeof(PartitionRefCount) happens to be, which is influence by
+  // buildflags.
+  // The remaining options require sizeof(PartitionRefCount) not to exceed the
+  // desired size, which will be asserted.
+  kNatural,
+  // 4 bytes.
+  k4B,
+  // 8 bytes
+  k8B,
+  // 16 bytes.
+  k16B,
+};
+
 enum class MemtagMode {
   // memtagMode will be SYNC.
   kSync,
@@ -130,6 +146,8 @@ extern const BASE_EXPORT base::FeatureParam<BackupRefPtrEnabledProcesses>
     kBackupRefPtrEnabledProcessesParam;
 extern const BASE_EXPORT base::FeatureParam<BackupRefPtrMode>
     kBackupRefPtrModeParam;
+extern const BASE_EXPORT base::FeatureParam<BackupRefPtrRefCountSize>
+    kBackupRefPtrRefCountSizeParam;
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryTagging);
 extern const BASE_EXPORT base::FeatureParam<MemtagMode> kMemtagModeParam;
 extern const BASE_EXPORT base::FeatureParam<MemoryTaggingEnabledProcesses>

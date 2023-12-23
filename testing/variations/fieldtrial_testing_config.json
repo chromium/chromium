@@ -12832,7 +12832,8 @@
                     "name": "Enabled",
                     "params": {
                         "brp-mode": "enabled",
-                        "enabled-processes": "all-processes"
+                        "enabled-processes": "all-processes",
+                        "ref-count-size": "16B"
                     },
                     "enable_features": [
                         "PartitionAllocBackupRefPtr"

@@ -163,10 +163,10 @@ static_assert(sizeof(void*) != 8, "");
 static_assert(sizeof(void*) == 8);
 #endif
 
-// If memory tagging is enabled with BRP in "previous slot" mode, the MTE tag
-// and BRP ref count will cause a race (crbug.com/1445816). To prevent this, the
-// ref_count_size is increased to the MTE granule size and is excluded from MTE
-// tagging.
+// If memory tagging is enabled with BRP previous slot, the MTE tag and BRP ref
+// count will cause a race (crbug.com/1445816). To prevent this, the
+// ref_count_size is increased to the MTE granule size and the ref count is not
+// tagged.
 #if BUILDFLAG(HAS_MEMORY_TAGGING) &&            \
     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
     BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)

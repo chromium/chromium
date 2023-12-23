@@ -489,6 +489,7 @@ void ConfigurePartitions(
     EnableBrp enable_brp,
     EnableMemoryTagging enable_memory_tagging,
     partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode,
+    size_t ref_count_size,
     BucketDistribution distribution,
     SchedulerLoopQuarantine scheduler_loop_quarantine,
     size_t scheduler_loop_quarantine_capacity_in_bytes,
@@ -517,6 +518,7 @@ void ConfigurePartitions(
         opts.backup_ref_ptr =
             enable_brp ? partition_alloc::PartitionOptions::kEnabled
                        : partition_alloc::PartitionOptions::kDisabled;
+        opts.ref_count_size = ref_count_size;
         opts.zapping_by_free_flags =
             zapping_by_free_flags
                 ? partition_alloc::PartitionOptions::kEnabled

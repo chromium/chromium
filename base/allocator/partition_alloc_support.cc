@@ -855,6 +855,7 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
 
   bool enable_brp = false;
   bool process_affected_by_brp_flag = false;
+  size_t ref_count_size = 0;
 
 #if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&  \
      BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) || \
@@ -900,6 +901,23 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         enable_brp = true;
         break;
     }
+
+    if (enable_brp) {
+      switch (base::features::kBackupRefPtrRefCountSizeParam.Get()) {
+        case base::features::BackupRefPtrRefCountSize::kNatural:
+          ref_count_size = 0;
+          break;
+        case base::features::BackupRefPtrRefCountSize::k4B:
+          ref_count_size = 4;
+          break;
+        case base::features::BackupRefPtrRefCountSize::k8B:
+          ref_count_size = 8;
+          break;
+        case base::features::BackupRefPtrRefCountSize::k16B:
+          ref_count_size = 16;
+          break;
+      }
+    }
   }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -907,6 +925,7 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   return {
       enable_brp,
       process_affected_by_brp_flag,
+      ref_count_size,
   };
 }
 
@@ -1119,7 +1138,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   allocator_shim::ConfigurePartitions(
       allocator_shim::EnableBrp(brp_config.enable_brp),
       allocator_shim::EnableMemoryTagging(enable_memory_tagging),
-      memory_tagging_reporting_mode, bucket_distribution,
+      memory_tagging_reporting_mode, brp_config.ref_count_size,
+      bucket_distribution,
       allocator_shim::SchedulerLoopQuarantine(scheduler_loop_quarantine),
       scheduler_loop_quarantine_capacity_in_bytes,
       scheduler_loop_quarantine_capacity_count,

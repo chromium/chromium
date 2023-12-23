@@ -155,6 +155,18 @@ const base::FeatureParam<BackupRefPtrEnabledProcesses>
         BackupRefPtrEnabledProcesses::kNonRenderer,
         &kBackupRefPtrEnabledProcessesOptions};
 
+constexpr FeatureParam<BackupRefPtrRefCountSize>::Option
+    kBackupRefPtrRefCountSizeOptions[] = {
+        {BackupRefPtrRefCountSize::kNatural, "natural"},
+        {BackupRefPtrRefCountSize::k4B, "4B"},
+        {BackupRefPtrRefCountSize::k8B, "8B"},
+        {BackupRefPtrRefCountSize::k16B, "16B"}};
+
+const base::FeatureParam<BackupRefPtrRefCountSize>
+    kBackupRefPtrRefCountSizeParam{
+        &kPartitionAllocBackupRefPtr, "ref-count-size",
+        BackupRefPtrRefCountSize::kNatural, &kBackupRefPtrRefCountSizeOptions};
+
 // Map *-with-memory-reclaimer modes onto their counterpars without the suffix.
 // They are the same, as memory reclaimer is now controlled independently.
 //
