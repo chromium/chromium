@@ -95,6 +95,7 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
+#include "chrome/browser/metrics/key_credential_manager_support_reporter_win.h"
 #include "chrome/browser/shell_integration_win.h"
 #include "chrome/installer/util/taskbar_util.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -831,6 +832,7 @@ void RecordStartupMetrics() {
                             IsParallelDllLoadingEnabled());
   RecordAppCompatMetrics();
   crypto::MaybeMeasureTpmOperations();
+  key_credential_manager_support::ReportKeyCredentialManagerSupport();
 #endif  // BUILDFLAG(IS_WIN)
 
   // Record whether Chrome is the default browser or not.
