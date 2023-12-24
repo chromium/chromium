@@ -239,6 +239,9 @@ class InProcessBrowserTest : public content::BrowserTestBase {
       const std::string& bug_number_and_reason);
 #endif
 
+  // Returns true if crosapi is enabled for the test.
+  static bool IsCrosapiEnabled();
+
  protected:
   // Closes the given browser and waits for it to release all its resources.
   void CloseBrowserSynchronously(Browser* browser);
@@ -417,9 +420,6 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // depend on crosapi. So it is safe to call when crosapi is disabled and
   // as early as in test SetUp().
   static base::Version GetAshChromeVersion();
-
-  // Returns true if crosapi is enabled for the test.
-  bool IsCrosapiEnabled();
 
   // The following are the helper functions to manage Ash browser based windows
   // from Lacros browser tests. When running with Ash, Lacros browser tests can
