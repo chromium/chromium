@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -13,6 +14,7 @@
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
@@ -43,6 +45,14 @@ using QueueTraits = MainThreadTaskQueue::QueueTraits;
 using perfetto::protos::pbzero::RendererMainThreadTaskExecution;
 
 namespace {
+
+// When enabled, the main thread's type is reduced from `kCompositing` to
+// `kDefault` when WebRTC is in use within the renderer. This is a simple
+// workaround meant to be merged to higher channels while we're working on a
+// more refined solution. See crbug.com/1513904.
+BASE_FEATURE(kRendererMainIsDefaultThreadTypeForWebRTC,
+             "RendererMainIsNormalThreadTypeForWebRTC",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char* VisibilityStateToString(bool is_visible) {
   if (is_visible) {
@@ -683,6 +693,13 @@ void FrameSchedulerImpl::OnStartedUsingNonStickyFeature(
   }
   if (policy.disable_align_wake_ups) {
     DisableAlignWakeUpsForProcess();
+  }
+
+  if (feature == SchedulingPolicy::Feature::kWebRTC &&
+      base::FeatureList::IsEnabled(kRendererMainIsDefaultThreadTypeForWebRTC) &&
+      base::PlatformThread::GetCurrentThreadType() ==
+          base::ThreadType::kCompositing) {
+    base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
   }
 }
 
