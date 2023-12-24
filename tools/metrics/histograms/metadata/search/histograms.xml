@@ -125,8 +125,8 @@ chromium-metrics-reviews@google.com.
   <owner>droger@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
-    Records the outcome of the search engine reprompt check at startup, based on
-    remote experiment parameters. Reported for {Category}.
+    Records the outcome of the search engine reprompt check, when the profile is
+    opened, based on remote experiment parameters. Reported for {Category}.
   </summary>
   <token key="Category">
     <variant name="" summary="all keys"/>

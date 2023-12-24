@@ -44194,7 +44194,7 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Reprompt"/>
   <int value="1" label="No reprompt: invalid dictionary"/>
   <int value="2" label="No reprompt: no dictionary key"/>
-  <int value="3" label="No reprompt: invalid value"/>
+  <int value="3" label="No reprompt: invalid version"/>
   <int value="4" label="No reprompt: Chrome too old"/>
   <int value="5" label="No reprompt: recent choice"/>
 </enum>
