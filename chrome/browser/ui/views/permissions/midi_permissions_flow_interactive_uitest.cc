@@ -24,6 +24,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/view_utils.h"
@@ -170,15 +171,22 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
 // TODO(b/315345075): Add a test for the behavior of the MIDI toggle in page
 // info.
 
-// Display in-use indicator of MIDI when blocked.
+// Display blockage indicator of MIDI when blocked.
 IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                        BlockedMidiPermissionIndicator) {
   RunTestSequenceInContext(
       context(), NavigateAndRequestMidi(),
       PressButton(PermissionPromptBubbleBaseView::kBlockButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      WaitForShow(ContentSettingImageView::kMidiActivityIndicatorElementId));
-  // TODO(b/315345075): Add a check to ensure the off MIDI icon is displayed.
+      AfterShow(ContentSettingImageView::kMidiActivityIndicatorElementId,
+                base::BindLambdaForTesting([](ui::TrackedElement* element) {
+                  EXPECT_EQ(AsView<ContentSettingImageView>(element)
+                                ->get_icon_for_testing(),
+                            &GetIconId(permissions::RequestType::kMidi));
+                  EXPECT_EQ(AsView<ContentSettingImageView>(element)
+                                ->get_icon_badge_for_testing(),
+                            &vector_icons::kBlockedBadgeIcon);
+                })));
   // TODO(b/315345075): Add a check for the strings displayed in the bubble.
   // TODO(b/315345075): Add a check to ensure only one MIDI icon is displayed.
 }
@@ -190,8 +198,15 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
       context(), NavigateAndRequestMidi(),
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      WaitForShow(ContentSettingImageView::kMidiActivityIndicatorElementId));
-  // TODO(b/315345075): Add a check to ensure the on MIDI icon is displayed.
+      AfterShow(ContentSettingImageView::kMidiActivityIndicatorElementId,
+                base::BindLambdaForTesting([](ui::TrackedElement* element) {
+                  EXPECT_EQ(AsView<ContentSettingImageView>(element)
+                                ->get_icon_for_testing(),
+                            &GetIconId(permissions::RequestType::kMidi));
+                  EXPECT_EQ(AsView<ContentSettingImageView>(element)
+                                ->get_icon_badge_for_testing(),
+                            &gfx::kNoneIcon);
+                })));
   // TODO(b/315345075): Add a check for the strings displayed in the bubble.
   // TODO(b/315345075): Add a check to ensure only one MIDI icon is displayed.
 }
