@@ -188,19 +188,6 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   bool IsSoftHyphenEnabled() const { return !disable_soft_hyphen_; }
   void EnableSoftHyphen(bool value) { disable_soft_hyphen_ = !value; }
 
-  inline bool IsBreakable(int pos,
-                          int& next_breakable,
-                          LineBreakType line_break_type) const {
-    if (pos > next_breakable) {
-      next_breakable = NextBreakablePosition(pos, line_break_type);
-    }
-    return pos == next_breakable;
-  }
-
-  inline bool IsBreakable(int pos, int& next_breakable) const {
-    return IsBreakable(pos, next_breakable, break_type_);
-  }
-
   inline bool IsBreakable(int pos) const {
     // No need to scan the entire string for the next breakable position when
     // all we need to determine is whether the current position is breakable.
@@ -208,7 +195,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
     // TODO(layout-dev): We should probably try to break out an actual
     // IsBreakable method from NextBreakablePosition and get rid of this hack.
     int len = std::min(pos + 1, static_cast<int>(string_.length()));
-    int next_breakable = NextBreakablePosition(pos, break_type_, len);
+    int next_breakable = NextBreakablePosition(pos, len);
     return pos == next_breakable;
   }
 
@@ -285,8 +272,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   template <LineBreakType>
   int NextBreakablePosition(int pos, int len) const;
   int NextBreakablePositionBreakCharacter(int pos) const;
-  int NextBreakablePosition(int pos, LineBreakType, int len) const;
-  int NextBreakablePosition(int pos, LineBreakType) const;
+  int NextBreakablePosition(int pos, int len) const;
 
   String string_;
   const LayoutLocale* locale_ = nullptr;

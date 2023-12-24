@@ -479,9 +479,8 @@ int LazyLineBreakIterator::NextBreakablePositionBreakCharacter(int pos) const {
 }
 
 int LazyLineBreakIterator::NextBreakablePosition(int pos,
-                                                 LineBreakType line_break_type,
                                                  int len) const {
-  switch (line_break_type) {
+  switch (break_type_) {
     case LineBreakType::kNormal:
     case LineBreakType::kPhrase:
       return NextBreakablePosition<LineBreakType::kNormal>(pos, len);
@@ -493,19 +492,12 @@ int LazyLineBreakIterator::NextBreakablePosition(int pos,
       return NextBreakablePositionBreakCharacter(pos);
   }
   NOTREACHED();
-  return NextBreakablePosition(pos, LineBreakType::kNormal);
-}
-
-int LazyLineBreakIterator::NextBreakablePosition(
-    int pos,
-    LineBreakType line_break_type) const {
-  return NextBreakablePosition(pos, line_break_type,
-                               static_cast<int>(string_.length()));
+  return NextBreakablePosition<LineBreakType::kNormal>(pos, len);
 }
 
 unsigned LazyLineBreakIterator::NextBreakOpportunity(unsigned offset) const {
   DCHECK_LE(offset, string_.length());
-  int next_break = NextBreakablePosition(offset, break_type_);
+  int next_break = NextBreakablePosition(offset, string_.length());
   DCHECK_GE(next_break, 0);
   return next_break;
 }
@@ -514,7 +506,7 @@ unsigned LazyLineBreakIterator::NextBreakOpportunity(unsigned offset,
                                                      unsigned len) const {
   DCHECK_LE(offset, string_.length());
   DCHECK_LE(len, string_.length());
-  int next_break = NextBreakablePosition(offset, break_type_, len);
+  int next_break = NextBreakablePosition(offset, len);
   DCHECK_GE(next_break, 0);
   return next_break;
 }
@@ -525,7 +517,7 @@ unsigned LazyLineBreakIterator::PreviousBreakOpportunity(unsigned offset,
   // +2 to ensure at least one code point is included.
   unsigned end = std::min(pos + 2, string_.length());
   while (pos > min) {
-    int next_break = NextBreakablePosition(pos, break_type_, end);
+    int next_break = NextBreakablePosition(pos, end);
     DCHECK_GE(next_break, 0);
     if (static_cast<unsigned>(next_break) == pos)
       return next_break;
