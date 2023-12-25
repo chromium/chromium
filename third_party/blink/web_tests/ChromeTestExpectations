@@ -626,21 +626,6 @@ crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-023.html [ Failure 
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-024.html [ Failure ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/element_send_keys/send_keys.py [ Failure ]
 
-# Those tests are (rarely) flaky due to crbug.com/1506833
-crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?1-1 [ Failure Pass ]
-crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?2-2 [ Failure Pass ]
-crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?3-3 [ Failure Pass ]
-crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?4-4 [ Failure Pass ]
-crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?5-5 [ Failure Pass ]
-crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?6-6 [ Failure Pass ]
-crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?7-7 [ Failure Pass ]
-crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?8-8 [ Failure Pass ]
-crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?9-9 [ Failure Pass ]
-crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?10-10 [ Failure Pass ]
-crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?11-11 [ Failure Pass ]
-crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?12-12 [ Failure Pass ]
-crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?13-last [ Failure Pass ]
-
 # Those tests consistently fail on linux-wpt-chromium-rel (142-145)
 crbug.com/1499775 external/wpt/css/css-backgrounds/color-mix-currentcolor-background-repaint.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-backgrounds/color-mix-currentcolor-outline-repaint.html [ Failure ]

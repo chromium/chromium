@@ -124,7 +124,13 @@ Status ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
         std::unique_ptr<DevToolsClient> client;
         Status status = target_utils::AttachToPageTarget(
             *devtools_websocket_client_, view.id, nullptr, client);
-        if (status.IsError()) {
+        // This web view may have closed itself between when it was returned by
+        // `Target.getTargets` and when `chromedriver` attempted to attach to
+        // it. In that case, ignore this web view. See crbug.com/1506833 for an
+        // example of this race.
+        if (status.code() == kNoSuchWindow) {
+          continue;
+        } else if (status.IsError()) {
           return status;
         }
 
