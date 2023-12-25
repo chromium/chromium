@@ -20,7 +20,7 @@
 
 namespace media {
 
-FlacAudioHandler::FlacAudioHandler(base::StringPiece data)
+FlacAudioHandler::FlacAudioHandler(std::string_view data)
     : flac_data_(data), decoder_(FLAC__stream_decoder_new()) {}
 
 FlacAudioHandler::~FlacAudioHandler() = default;

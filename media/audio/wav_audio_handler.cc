@@ -78,7 +78,7 @@ bool ParamsAreValid(const WavAudioParameters& params) {
 
 // Reads an integer from |data| with |offset|.
 template <typename T>
-T ReadInt(const base::StringPiece& data, size_t offset) {
+T ReadInt(std::string_view data, size_t offset) {
   CHECK_LE(offset + sizeof(T), data.size());
   T result;
   memcpy(&result, data.data() + offset, sizeof(T));
@@ -89,7 +89,7 @@ T ReadInt(const base::StringPiece& data, size_t offset) {
 }
 
 // Parse a "fmt " chunk from wav data into its parameters.
-bool ParseFmtChunk(const base::StringPiece data, WavAudioParameters* params) {
+bool ParseFmtChunk(const std::string_view data, WavAudioParameters* params) {
   DCHECK(params);
 
   // If the chunk is too small, return false.
@@ -123,8 +123,8 @@ bool ParseFmtChunk(const base::StringPiece data, WavAudioParameters* params) {
   return true;
 }
 
-bool ParseWavData(const base::StringPiece wav_data,
-                  base::StringPiece* audio_data_out,
+bool ParseWavData(const std::string_view wav_data,
+                  std::string_view* audio_data_out,
                   WavAudioParameters* params_out) {
   DCHECK(audio_data_out);
   DCHECK(params_out);
@@ -133,7 +133,7 @@ bool ParseWavData(const base::StringPiece wav_data,
   auto reader = base::BigEndianReader::FromStringPiece(wav_data);
 
   // Read the chunk ID and compare to "RIFF".
-  base::StringPiece chunk_id;
+  std::string_view chunk_id;
   if (!reader.ReadPiece(&chunk_id, 4) || chunk_id != kChunkId) {
     DLOG(ERROR) << "missing or incorrect chunk ID in wav header";
     return false;
@@ -144,7 +144,7 @@ bool ParseWavData(const base::StringPiece wav_data,
     return false;
   }
   // Read format and compare to "WAVE".
-  base::StringPiece format;
+  std::string_view format;
   if (!reader.ReadPiece(&format, 4) || format != kFormat) {
     DLOG(ERROR) << "missing or incorrect format ID in wav header";
     return false;
@@ -156,14 +156,14 @@ bool ParseWavData(const base::StringPiece wav_data,
   while (reader.remaining() >= kChunkHeaderSize) {
     // We should be at the beginning of a subsection. The next 8 bytes are the
     // header and should look like: "|f|m|t| |1|2|3|4|" or "|d|a|t|a|1|2|3|4|".
-    base::StringPiece chunk_fmt;
+    std::string_view chunk_fmt;
     uint32_t chunk_length;
     if (!reader.ReadPiece(&chunk_fmt, 4) || !reader.ReadU32(&chunk_length))
       break;
     chunk_length = base::ByteSwap(chunk_length);
     // Read |chunk_length| bytes of payload. If that is impossible, try to read
     // all remaining bytes as the payload.
-    base::StringPiece chunk_payload;
+    std::string_view chunk_payload;
     if (!reader.ReadPiece(&chunk_payload, chunk_length) &&
         !reader.ReadPiece(&chunk_payload, reader.remaining())) {
       break;
@@ -201,7 +201,7 @@ bool ParseWavData(const base::StringPiece wav_data,
 
 }  // namespace
 
-WavAudioHandler::WavAudioHandler(base::StringPiece audio_data,
+WavAudioHandler::WavAudioHandler(std::string_view audio_data,
                                  uint16_t num_channels,
                                  uint32_t sample_rate,
                                  uint16_t bits_per_sample,
@@ -220,9 +220,9 @@ WavAudioHandler::~WavAudioHandler() = default;
 
 // static
 std::unique_ptr<WavAudioHandler> WavAudioHandler::Create(
-    const base::StringPiece wav_data) {
+    std::string_view wav_data) {
   WavAudioParameters params;
-  base::StringPiece audio_data;
+  std::string_view audio_data;
 
   // Attempt to parse the WAV data.
   if (!ParseWavData(wav_data, &audio_data, &params))
