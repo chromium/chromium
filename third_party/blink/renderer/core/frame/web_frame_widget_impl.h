@@ -892,8 +892,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   void ForEachRemoteFrameControlledByWidget(
       base::FunctionRef<void(RemoteFrame*)> callback);
 
-  void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
-
   void SendOverscrollEventFromImplSide(const gfx::Vector2dF& overscroll_delta,
                                        cc::ElementId scroll_latched_element_id);
   void SendEndOfScrollEvents(bool affects_outer_viewport,

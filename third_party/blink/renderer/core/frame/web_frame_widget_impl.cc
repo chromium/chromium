@@ -4830,11 +4830,7 @@ void WebFrameWidgetImpl::SetWindowRect(const gfx::Rect& requested_rect,
 void WebFrameWidgetImpl::SetWindowRectSynchronouslyForTesting(
     const gfx::Rect& new_window_rect) {
   DCHECK(ForMainFrame());
-  SetWindowRectSynchronously(new_window_rect);
-}
 
-void WebFrameWidgetImpl::SetWindowRectSynchronously(
-    const gfx::Rect& new_window_rect) {
   // This method is only call in tests, and it applies the |new_window_rect| to
   // all three of:
   // a) widget size (in |size_|)
