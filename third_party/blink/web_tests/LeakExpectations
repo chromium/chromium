@@ -57,6 +57,8 @@ crbug.com/1499775 external/wpt/pointerevents/pointerevent_attributes_hoverable_p
 crbug.com/1499775 external/wpt/pointerevents/pointerevent_attributes_hoverable_rightbutton.html?mouse [ Failure Pass ]
 crbug.com/1499775 external/wpt/pointerevents/pointerevent_attributes_hoverable_rightbutton.html?pen [ Failure Pass ]
 
+# Sheriff 2023-12-25
+crbug.com/1514134 external/wpt/pointerevents/pointerevent_attributes_hoverable_pointers.html?pen [ Failure Pass ]
 
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
