@@ -878,18 +878,15 @@ void PartitionRoot::DestructForTesting() {
 void PartitionRoot::InitMac11MallocSizeHackUsableSize(size_t ref_count_size) {
   settings.mac11_malloc_size_hack_enabled_ = true;
 
-  // 0 means reserve just enough extras to fit PartitionRefCount.
-  if (!ref_count_size) {
-    ref_count_size = sizeof(internal::PartitionRefCount);
-  }
+  ref_count_size = sizeof(internal::PartitionRefCount);
   // Request of 32B will fall into a 48B bucket in the presence of BRP
   // ref-count, yielding |48 - ref_count_size| of actual usable space.
   settings.mac11_malloc_size_hack_usable_size_ = 48 - ref_count_size;
 }
 
-void PartitionRoot::EnableMac11MallocSizeHackForTesting(size_t ref_count_size) {
+void PartitionRoot::EnableMac11MallocSizeHackForTesting() {
   settings.mac11_malloc_size_hack_enabled_ = true;
-  InitMac11MallocSizeHackUsableSize(ref_count_size);
+  InitMac11MallocSizeHackUsableSize(sizeof(internal::PartitionRefCount));
 }
 
 void PartitionRoot::EnableMac11MallocSizeHackIfNeeded(size_t ref_count_size) {
@@ -978,7 +975,8 @@ void PartitionRoot::Init(PartitionOptions opts) {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     settings.brp_enabled_ = opts.backup_ref_ptr == PartitionOptions::kEnabled;
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
-    EnableMac11MallocSizeHackIfNeeded(opts.ref_count_size);
+    // TODO(bartekn): Use settings.ref_count_size, once calculated below.
+    EnableMac11MallocSizeHackIfNeeded(sizeof(internal::PartitionRefCount));
 #endif
 #else   // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     PA_CHECK(opts.backup_ref_ptr == PartitionOptions::kDisabled);
@@ -1038,13 +1036,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
     }
 
     if (brp_enabled()) {
-      // TODO(tasak): In the PUT_REF_COUNT_IN_PREVIOUS_SLOT case, ref-count is
-      // stored out-of-line for single-slot slot spans, so no need to
-      // add/subtract its size in this case.
-      size_t ref_count_size = opts.ref_count_size;
-      if (!ref_count_size) {
-        ref_count_size = internal::kPartitionRefCountSizeAdjustment;
-      }
+      size_t ref_count_size = internal::kPartitionRefCountSizeAdjustment;
       ref_count_size = internal::AlignUpRefCountSizeForMac(ref_count_size);
 #if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
       if (IsMemoryTaggingEnabled()) {
