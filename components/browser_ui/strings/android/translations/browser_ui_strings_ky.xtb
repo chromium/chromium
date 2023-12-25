@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">Ушуну менен <ph name="ORIGIN" /> жана анын колдонмосу Башкы экраныңызда сактаган маалымат менен cookie файлдар өчүрүлөт.</translation>
 <translation id="5100237604440890931">Жыйналган – жайып көрсөтүү үчүн чыкылдатыңыз.</translation>
 <translation id="5123685120097942451">Жашыруун өтмөк</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Ачык өтмөктөрүңүздө баа төмөндөйт}other{Ачык өтмөктөрүңүздө баа төмөндөйт}}</translation>
 <translation id="5186036860380548585">Параметр экрандын жогору жагында берилген</translation>
 <translation id="5197729504361054390">Сиз тандаган байланыштар <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> менен бөлүшүлөт.</translation>
 <translation id="5216942107514965959">Бүгүн акыркы жолу кирген</translation>

@@ -1055,7 +1055,7 @@
 <translation id="1805888043020974594">プリント サーバー</translation>
 <translation id="1805967612549112634">PIN の確認</translation>
 <translation id="1806335016774576568">別の開いているアプリに切り替える</translation>
-<translation id="1807246157184219062">明</translation>
+<translation id="1807246157184219062">軽い</translation>
 <translation id="1809201888580326312">このサイトやアプリのパスワードは保存しないよう設定しています</translation>
 <translation id="1809483812148634490">Google Play からダウンロードしたアプリは、この Chromebook から削除されます。
     <ph name="LINE_BREAKS1" />
@@ -2709,6 +2709,7 @@
 <translation id="3043581297103810752"><ph name="ORIGIN" /> より</translation>
 <translation id="3045447014237878114">このサイトで複数のファイルが自動的にダウンロードされました</translation>
 <translation id="3046178388369461825">Linux ディスクの空き容量が非常に少なくなっています</translation>
+<translation id="304644035656848980">マイクのプレビュー</translation>
 <translation id="3046910703532196514">ウェブページ、完全</translation>
 <translation id="304747341537320566">読み上げエンジン</translation>
 <translation id="3048336643003835855">ベンダー <ph name="VENDOR_ID" /> の HID デバイス</translation>
@@ -7373,7 +7374,7 @@
 <translation id="6810613314571580006">保存されている認証情報を使用してウェブサイトに自動的にログインします。この機能が無効になっている場合は、ウェブサイトにログインするときに毎回確認を求められます。</translation>
 <translation id="6810768462515084623">パスワードの有効期限が切れているようです。別のデバイスで新しいパスワードを設定して、もう一度お試しください。</translation>
 <translation id="6811034713472274749">ページを表示できます</translation>
-<translation id="6811151703183939603">重め</translation>
+<translation id="6811151703183939603">重い</translation>
 <translation id="6811332638216701903">DHCP ホスト名</translation>
 <translation id="6811792477922751991">ランチャーキーを使用してファンクション キーの動作を変更する</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> を root で実行することはできません。</translation>

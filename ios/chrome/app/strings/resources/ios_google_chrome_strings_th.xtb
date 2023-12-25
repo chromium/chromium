@@ -88,6 +88,8 @@
 <translation id="3146109040683991651">ตั้งค่า Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="3167189358072330585">บัญชีของคุณใช้งานไม่ได้บน Google Chrome โปรดติดต่อผู้ดูแลระบบโดเมนหรือใช้บัญชี Google ปกติเพื่อลงชื่อเข้าใช้</translation>
 <translation id="3173834708294760622">หน้า Google Chrome</translation>
+<translation id="3209155060213569278">คุณ<ph name="BEGIN_LINK" />จัดการข้อมูล Chrome ที่บันทึกไว้<ph name="END_LINK" />ได้ในบัญชี Google
+หากต้องการการตั้งค่าเพิ่มเติมที่ใช้ข้อมูลเพื่อปรับปรุงประสบการณ์การใช้งาน Chrome ให้ไปที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
 <translation id="322254490661677575">โปรดป้อนรหัสผ่านเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี Google</translation>
 <translation id="3282568296779691940">ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="3340938510625667914">การดำเนินการใน Chrome</translation>
@@ -161,6 +163,7 @@
 <translation id="5527026824954593399">แตะ "ดูด้วย Google Maps ใน Chrome"</translation>
 <translation id="5552137475244467770">Chrome ตรวจสอบรหัสผ่านของคุณเป็นระยะโดยเทียบกับรายการที่มีการเผยแพร่ออนไลน์ เราเข้ารหัสชื่อผู้ใช้และรหัสผ่านเมื่อทำการตรวจสอบเพื่อไม่ให้ผู้ใดอ่านข้อมูลดังกล่าวได้ รวมถึง Google</translation>
 <translation id="5554520618550346933">เมื่อใช้รหัสผ่าน Chrome จะเตือนคุณหากมีการเผยแพร่รหัสผ่านออนไลน์ เราเข้ารหัสชื่อผู้ใช้และรหัสผ่านเมื่อทำการตรวจสอบเพื่อไม่ให้ผู้ใดอ่านข้อมูลดังกล่าวได้ รวมถึง Google</translation>
+<translation id="5601180634394228718">หากต้องการการตั้งค่าเพิ่มเติมที่ใช้ข้อมูลเพื่อปรับปรุงประสบการณ์การใช้งาน Chrome ให้ไปที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
 <translation id="5639704535586432836">เปิดการตั้งค่า &gt; ความเป็นส่วนตัว &gt; กล้อง &gt; Google Chrome เพื่อเปิดกล้องถ่ายรูป</translation>
 <translation id="5642200033778930880">Google Chrome ไม่สามารถใช้กล้องถ่ายรูปในโหมด Split View</translation>
 <translation id="5661521615548540542">เครื่องมือจัดการรหัสผ่านบน Google ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในภายหลัง</translation>

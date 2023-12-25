@@ -656,6 +656,7 @@
 <translation id="2233745931693710080">စီဒီခွေ</translation>
 <translation id="2235344399760031203">ပြင်ပအဖွဲ့အစည်း၏ ကွတ်ကီးများကို ပိတ်ထားသည်</translation>
 <translation id="2239100178324503013">ယခုပို့ရန်</translation>
+<translation id="2239114457614475014">ထည့်သွင်းမှု တည်းဖြတ်ရန်</translation>
 <translation id="2241693394036365668">ဖိုင်ကို ဒေါင်းလုဒ်လုပ်လိုက်သည်</translation>
 <translation id="2246264294482514010">၁၀ x ၁၂ လက်မ</translation>
 <translation id="2246480341630108201">သင့်မိဘက ခွင့်မပြုသေးပါ</translation>
@@ -994,6 +995,7 @@
 <translation id="2959113999220720579">မျက်နှာနှင့် ကိုယ်ခန္ဓာ ထိန်းသိမ်းခြင်း</translation>
 <translation id="2962073860865348475">၁၂ x ၁၈ လက်မ</translation>
 <translation id="2968103128155246731">ဗင်ကားနှင့် ဗင်ကားသေးများ</translation>
+<translation id="2971483124699139256">‘လက်မထောင်’ ပေးပို့ပြီး ထုတ်ထားသောစာသားကို သင်နှစ်သက်ကြောင်း တုံ့ပြန်နိုင်သည်။</translation>
 <translation id="2972581237482394796">&amp;ပြန်လုပ်ရန်</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> ကို လက်ရှိရွေးထားသည်။ <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">အော်ပရာ</translation>
@@ -1573,6 +1575,7 @@
 <translation id="4132448310531350254">“<ph name="POLICY_IDS_LIST" />” အက်ပ်များမှ ညွှန်းထားသော file_extension “<ph name="FILE_EXTENSION" />” အတွက် စီမံသူများ ထပ်နေသည်။</translation>
 <translation id="4134123981501319574">Doc ပြုလုပ်ရန်</translation>
 <translation id="413544239732274901">ပိုမိုလေ့လာရန်</translation>
+<translation id="4139859738677203214">‘လက်မအောက်စိုက်’ ပါက ထုတ်ထားသောစာသားကို ဘာကြောင့် သင်မနှစ်သက်ကြောင်း အသေးစိတ်တုံ့ပြန်မှု ပေးပို့ရန် ဖောင်ပွင့်လာသည်။</translation>
 <translation id="4140905530744469899">ပရိုဖိုင် ID-</translation>
 <translation id="4142935452406587478">ဗန်း ၁၀</translation>
 <translation id="4148925816941278100">American Express</translation>

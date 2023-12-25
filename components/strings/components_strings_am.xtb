@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">ገፅ ተጎብኝቷል</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{ምንም}=1{ከ1 ጣቢያ (ወደ Google መለያዎ እንደገቡ ይቆያሉ)}one{ከ # ጣቢያዎች (ወደ Google መለያዎ እንደገቡ ይቆያሉ)}other{ከ # ጣቢያዎች (ወደ Google መለያዎ እንደገቡ ይቆያሉ)}}</translation>
 <translation id="1165852471352757509">የቲቪ ዘጋቢ ፊልም እና ልብ ወለድ ያልሆኑ</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" /> ማውረድ አልተሳካም</translation>
 <translation id="1174644974616730562">#1 የቻይና ፖስታ</translation>
 <translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> ኩኪዎችን እና የጣቢያ ውሂብን በ<ph name="TOP_LEVEL_URL" /> ላይ መጠቀም እንዲችል መፍቀድ ይፈልጋሉ?
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">የPDF አዘጋጅ፦</translation>
 <translation id="2130448033692577677">የDnsOverHttpsMode መመሪያው ባለመዋቀሩ ምክንያት እርስዎ የገለጿቸው ቅንብር ደንቦች ላይተገበሩ ይችላሉ።</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">የ<ph name="LANGUAGE" /> የቋንቋ ጥቅልን በማውረድ ላይ...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">የወንዶች ልብስ</translation>
 <translation id="2137891579555018930">ፈቃድን በመጠበቅ ላይ...</translation>
 <translation id="213826338245044447">የተንቀሳቃሽ ስልክ ዕልባቶች</translation>
@@ -3986,6 +3988,7 @@
 <translation id="8877780815363510165">አሳ ማጥመድ</translation>
 <translation id="8884537526797090108">ሚስጥራዊ ይዘት መቅረጽ አልተቻለም</translation>
 <translation id="8888187300091017436">ፍራሾች</translation>
+<translation id="8890048757975398817"><ph name="READERNAME" />ን ይቆጣጠሩ እና ሊደረስበት የሚችል ዘመናዊ ካርድ መዳረሻ ያግኙ።</translation>
 <translation id="8891727572606052622">ልክ ያልሆነ የተኪ ሁነታ።</translation>
 <translation id="8894794286471754040">ረጅም ጠርዝ መጀመሪያ</translation>
 <translation id="8897428486789851669">ዋና</translation>

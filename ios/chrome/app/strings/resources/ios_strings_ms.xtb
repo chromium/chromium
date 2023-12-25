@@ -130,6 +130,7 @@
 <translation id="1622717322707146952">Pilih “Tambahkan pada Google Calendar“ atau “Tambahkan pada Apple Calendar“.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> Kata Laluan yang Digunakan Semula</translation>
 <translation id="1641113438599504367">Penyemakan Imbas Selamat</translation>
+<translation id="1641316430523156212">Ikut</translation>
 <translation id="1644574205037202324">Sejarah</translation>
 <translation id="165008673352427892">Ciri baharu</translation>
 <translation id="1650222530560417226">Ketik butang "Hentikan Pengelogan" untuk mengumpulkan log konsol JavaScript yang akan datang dan ralat daripada semua tab. Log akan dikumpulkan (dan disimpan dalam memori sahaja) hingga halaman ini ditutup atau "Hentikan Pengelogan" diketik.</translation>
@@ -216,6 +217,7 @@
 <translation id="2139502497535990641">Hidupkan Makluman Harga?</translation>
 <translation id="2139867232736819575">Cari Teks yang Anda Salin</translation>
 <translation id="214201757571129614">Log Masuk…</translation>
+<translation id="2145004670974387485">Pilih akaun yang mahu digunakan untuk menyimpan <ph name="FILENAME" /></translation>
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="2149973817440762519">Edit Penanda Halaman</translation>
 <translation id="2175927920773552910">Kod QR</translation>
@@ -478,6 +480,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3519193562722059437">Buka tab untuk menyemak imbas web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Buka tab}other{Buka {count} tab}}</translation>
 <translation id="3523789730715594198">Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
+<translation id="3526783603136816353">Pilih akaun yang mahu digunakan untuk menyimpan <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3529024052484145543">Tidak selamat</translation>
 <translation id="3530206579861815432">Cari tab terbuka dan baru ditutup dengan pantas di seluruh peranti anda yang disegerakkan.</translation>
@@ -515,6 +518,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3738428049780661523">Dibuat <ph name="DATE" /></translation>
 <translation id="374357899112510277">Sembunyikan Muat Turun</translation>
 <translation id="3745190878148784130">Sembunyikan Zum Teks</translation>
+<translation id="375773422023477320">Penanda halaman</translation>
 <translation id="3762232513783804601">Dibina untuk iPad Anda</translation>
 <translation id="3768725474733206671">Buka Semula Tab Terakhir Ditutup</translation>
 <translation id="3771033907050503522">Tab Inkognito</translation>
@@ -553,6 +557,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3929457972718048006">Alamat</translation>
 <translation id="3955822496205734389">Anda mempunyai kata laluan lemah.</translation>
 <translation id="3959736869653157332">Menu → Tab Inkognito Baharu</translation>
+<translation id="3962326069546168954">Simpan</translation>
 <translation id="3967822245660637423">Muat turun selesai</translation>
 <translation id="3968505803272650567">Urus Minat</translation>
 <translation id="3989635538409502728">Log Keluar</translation>
@@ -1104,6 +1109,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6790502149545262384">Tidak lama lagi, anda akan melihat cerita daripada <ph name="CHANNEL_NAME" /> apabila anda membuka tab baharu.</translation>
 <translation id="6797885426782475225">Carian Suara</translation>
 <translation id="6800349425672670802">Anda boleh mengakses semua tab terbuka anda daripada Penukar Tab.</translation>
+<translation id="6805179248725678418">Simpan dalam Google Drive</translation>
 <translation id="6807889908376551050">Paparkan Semua...</translation>
 <translation id="681368974849482173">Item dibuat</translation>
 <translation id="6822587385560699678">Apabila dihidupkan, kata laluan disimpan dalam <ph name="ACCOUNT" />. Apabila dimatikan, kata laluan disimpan pada peranti ini sahaja.</translation>
@@ -1286,6 +1292,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7856733331829174190">Tidak Dapat Memuat Turun</translation>
 <translation id="7859704718976024901">Sejarah Penyemakan Imbas</translation>
 <translation id="7866501058614003444">Pakej ini telah berjaya dinyahjejak.</translation>
+<translation id="7866872729285243843">Untuk mendapatkan senarai bacaan pada semua peranti anda, hidupkan “Senarai Bacaan” dalam tetapan.</translation>
 <translation id="7866993391592926595">Menyembunyikan Kad Ini Akan Mematikan Penjejakan Bungkusan dan Mengalih Keluar Semua Data Anda</translation>
 <translation id="7870750252270996949">Imej Disalin Lensa</translation>
 <translation id="7879275349003161544">Tunjukkan Muat Turun</translation>

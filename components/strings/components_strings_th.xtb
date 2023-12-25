@@ -655,6 +655,7 @@
 <translation id="2233745931693710080">แผ่นซีดี</translation>
 <translation id="2235344399760031203">บล็อกคุกกี้ของบุคคลที่สามอยู่</translation>
 <translation id="2239100178324503013">ส่งเลย</translation>
+<translation id="2239114457614475014">แก้ไขอินพุต</translation>
 <translation id="2241693394036365668">มีการดาวน์โหลดไฟล์</translation>
 <translation id="2246264294482514010">10 x 12 นิ้ว</translation>
 <translation id="2246480341630108201">ผู้ปกครองยังไม่อนุญาตให้เข้าชม</translation>
@@ -989,6 +990,7 @@
 <translation id="2959113999220720579">การดูแลใบหน้าและร่างกาย</translation>
 <translation id="2962073860865348475">12 x 18 นิ้ว</translation>
 <translation id="2968103128155246731">รถตู้และรถมินิแวน</translation>
+<translation id="2971483124699139256">ปุ่ม "ชอบ" จะส่งความคิดเห็นว่าคุณชอบข้อความที่สร้างขึ้น</translation>
 <translation id="2972581237482394796">&amp;ทำซ้ำ</translation>
 <translation id="2977665033722899841">เลือก <ph name="ROW_NAME" /> อยู่ตอนนี้ <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">อุปรากร</translation>
@@ -1572,6 +1574,7 @@
 <translation id="4132448310531350254">ตัวแฮนเดิลซ้ำกันสําหรับ file_extension "<ph name="FILE_EXTENSION" />" ที่อ้างอิงโดยแอป "<ph name="POLICY_IDS_LIST" />"</translation>
 <translation id="4134123981501319574">สร้างเอกสาร</translation>
 <translation id="413544239732274901">ดูข้อมูลเพิ่มเติม</translation>
+<translation id="4139859738677203214">ปุ่ม "ไม่ชอบ" จะเปิดแบบฟอร์มสำหรับส่งความคิดเห็นโดยละเอียดเกี่ยวกับสาเหตุที่คุณไม่ชอบข้อความที่สร้างขึ้น</translation>
 <translation id="4140905530744469899">Profile ID:</translation>
 <translation id="4142935452406587478">ถาด 10</translation>
 <translation id="4148925816941278100">American Express</translation>

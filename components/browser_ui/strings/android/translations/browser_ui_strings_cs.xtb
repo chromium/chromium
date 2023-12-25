@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">Tímto vymažete veškerá data a soubory cookie, které uložil web <ph name="ORIGIN" /> nebo jeho aplikace na ploše.</translation>
 <translation id="5100237604440890931">Sbaleno – kliknutím rozbalíte</translation>
 <translation id="5123685120097942451">Anonymní karta</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Pokles ceny na vašich otevřených kartách}few{Poklesy cen na vašich otevřených kartách}many{Poklesy cen na vašich otevřených kartách}other{Poklesy cen na vašich otevřených kartách}}</translation>
 <translation id="5186036860380548585">Možnost je k dispozici u horního okraje obrazovky</translation>
 <translation id="5197729504361054390">Vybrané kontakty budou sdíleny s webem <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Naposledy navštíveno dnes</translation>

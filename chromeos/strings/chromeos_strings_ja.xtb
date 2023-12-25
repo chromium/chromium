@@ -129,7 +129,7 @@
 <translation id="1788485524395674731">このアプリは管理者によって管理されています</translation>
 <translation id="1792647875738159689">スキャンをキャンセルしています</translation>
 <translation id="1801418420130173017">ダークモードを無効にする</translation>
-<translation id="1807246157184219062">明</translation>
+<translation id="1807246157184219062">軽い</translation>
 <translation id="1827738518074806965">アート ギャラリー</translation>
 <translation id="1836553715834333258">システムカラー</translation>
 <translation id="1838374766361614909">検索をクリア</translation>
@@ -405,6 +405,7 @@
 <translation id="4060260348856573701">新しい APN</translation>
 <translation id="4093865285251893588">プロフィール画像</translation>
 <translation id="409427325554347132">テストの詳細を保存</translation>
+<translation id="409469431304488632">試験運用版</translation>
 <translation id="4095829376260267438">WPA2 / WPA3</translation>
 <translation id="4110686435123617899">アルバム「<ph name="TITLE" />」の <ph name="DESC" />を選択</translation>
 <translation id="4111761024568264522">USB タッチパッド</translation>
@@ -976,6 +977,7 @@
 <translation id="8318753676953949627">0 件の画像</translation>
 <translation id="8329018942023753850">電卓アプリ</translation>
 <translation id="8336739000755212683">デバイスのアカウント画像を変更</translation>
+<translation id="8339024191194156249">自動起動の詳細</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> または <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>
 <translation id="8349826889576450703">ランチャー</translation>

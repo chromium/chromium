@@ -202,6 +202,7 @@
 <translation id="4148957013307229264">በመጫን ላይ...</translation>
 <translation id="4149882025268051530">ጫኝው መዝገብ ለመበተን አልቻለም። እባክዎ Google Chromeን እንደገና ያውርዱ።</translation>
 <translation id="4153934450158521343">Chrome በቅርቡ ይዘጋል እና ውሂብ ይሰርዛል</translation>
+<translation id="4173512894976930765">ጣቢያዎች እንደተጠበቀው መስራታቸው አይቀርም። ሁሉንም የChromium መስኮቶች ሲዘጉ ከአብዛኞቹ ጣቢያዎች ይወጣሉ፣ ከGoogle መለያዎ በስተቀር በChromium ውስጥ ገብተው ከሆነ።</translation>
 <translation id="4175922240926474352">ጣቢያው ደህንነቱ የተጠበቀ ግንኙነት እየተጠቀመ ስላልሆነ እና ፋይሉ ተነካክቶ ሊሆን ስለሚችል Chrome ይህን ውርድ አግዷል</translation>
 <translation id="4191857738314598978">{0,plural, =1{በአንድ ቀን ውስጥ Chromeን ዳግም አስጀምር}one{በ# ቀኖች ውስጥ Chromeን ዳግም አስጀምር}other{በ# ቀኖች ውስጥ Chromeን ዳግም አስጀምር}}</translation>
 <translation id="4205939740494406371">Chrome የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም። ከ24 ሰዓቶች በኋላ እንደገና ይሞክሩ ወይም <ph name="BEGIN_LINK" />በGoogle መለያዎ ውስጥ የይለፍ ቃላትን ይፈትሹ<ph name="END_LINK" />።</translation>

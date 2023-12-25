@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Návštěva stránky</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Žádné}=1{Z 1 webu (zůstanete přihlášeni ke svému účtu Google)}few{Ze # webů (zůstanete přihlášeni ke svému účtu Google)}many{Z # webu (zůstanete přihlášeni ke svému účtu Google)}other{Z # webů (zůstanete přihlášeni ke svému účtu Google)}}</translation>
 <translation id="1165852471352757509">Televizní dokumentární filmy a vzdělávací pořady</translation>
+<translation id="1167877250265821930">Stažení jazyka <ph name="LANGUAGE" /> se nezdařilo</translation>
 <translation id="1174644974616730562">Obálka čínská č. 1</translation>
 <translation id="1174723505405632867">Chcete webu <ph name="EMBEDDED_URL" /> povolit používat soubory cookie a data webů v doméně <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2126374524350484896">Původ souboru PDF:</translation>
 <translation id="2130448033692577677">Zadané šablony nelze použít, protože není nastavená zásada DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Stahování jazykového balíčku pro jazyk <ph name="LANGUAGE" />… <ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Pánské oděvy</translation>
 <translation id="2137891579555018930">Čeká se na oprávnění…</translation>
 <translation id="213826338245044447">Mobilní záložky</translation>
@@ -3984,6 +3986,7 @@ Další podrobnosti:
 <translation id="8877780815363510165">Rybaření</translation>
 <translation id="8884537526797090108">Důvěrný obsah zaznamenat nelze</translation>
 <translation id="8888187300091017436">Matrace</translation>
+<translation id="8890048757975398817">Ovládat čtečku <ph name="READERNAME" /> a získat přístup k čipové kartě, která je prostřednictvím ní přístupná.</translation>
 <translation id="8891727572606052622">Neplatný režim proxy serveru.</translation>
 <translation id="8894794286471754040">Dlouhou stranou napřed</translation>
 <translation id="8897428486789851669">Plavání</translation>

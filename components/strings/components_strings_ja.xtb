@@ -438,7 +438,7 @@
 <translation id="1803020234906945288">健康的な食事</translation>
 <translation id="1803351196216024260">マイクの使用を要求できる</translation>
 <translation id="1806174020048213474">このアプリは Wi-Fi 認証情報のインストール権限をリクエストしています。セットアップが完了すると、<ph name="DEVICE_TYPE" /> は登録されている Wi-Fi ネットワークに自動的に接続します。これらの認証情報を削除するには、アプリをアンインストールします。</translation>
-<translation id="1807246157184219062">明</translation>
+<translation id="1807246157184219062">軽い</translation>
 <translation id="1807528111851433570">開始シート</translation>
 <translation id="180757923930449935">（64 ビット エミュレーション）</translation>
 <translation id="180991881384371158">CVC コードはカードの裏面に記載されています。署名ボックスの右上にある末尾 3 桁のコードです。</translation>
@@ -655,6 +655,7 @@
 <translation id="2233745931693710080">コンパクト ディスク</translation>
 <translation id="2235344399760031203">サードパーティの Cookie がブロックされています</translation>
 <translation id="2239100178324503013">送信</translation>
+<translation id="2239114457614475014">入力を編集</translation>
 <translation id="2241693394036365668">ファイルがダウンロードされた</translation>
 <translation id="2246264294482514010">10x12 インチ</translation>
 <translation id="2246480341630108201">まだ保護者から許可されていません</translation>
@@ -989,6 +990,7 @@
 <translation id="2959113999220720579">フェイス、ボディケア</translation>
 <translation id="2962073860865348475">12x18 インチ</translation>
 <translation id="2968103128155246731">バン、ミニバン</translation>
+<translation id="2971483124699139256">高く評価すると、生成されたテキストが気に入ったというフィードバックが送信されます。</translation>
 <translation id="2972581237482394796">やり直し(&amp;R)</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />が現在選択されています。<ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">オペラ</translation>
@@ -1573,6 +1575,7 @@
 <translation id="4132448310531350254">アプリ「<ph name="POLICY_IDS_LIST" />」で参照されている file_extension「<ph name="FILE_EXTENSION" />」のハンドラが重複しています。</translation>
 <translation id="4134123981501319574">ドキュメントを作成</translation>
 <translation id="413544239732274901">詳細</translation>
+<translation id="4139859738677203214">低く評価すると、生成されたテキストが気に入らなかった理由について詳細なフィードバックを送信するためのフォームが開きます。</translation>
 <translation id="4140905530744469899">プロファイル ID:</translation>
 <translation id="4142935452406587478">トレイ 10</translation>
 <translation id="4148925816941278100">American Express</translation>

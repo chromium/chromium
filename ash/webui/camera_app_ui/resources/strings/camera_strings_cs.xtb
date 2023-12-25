@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Posunout doprava</translation>
 <translation id="3081586908890909590">Přepnout na záznam videa</translation>
 <translation id="313467653172006084">30 snímků/s</translation>
+<translation id="3158534262962737808">Připojit se k síti <ph name="WIFINAME" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Odkaz byl zkopírován</translation>
 <translation id="3354465018370944241">Nastavení fotografií</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">Poměr stran fotografie</translation>
 <translation id="5057360777601936059">Fotoaparát momentálně není dostupný.
         Zkontrolujte, zda je fotoaparát správně připojen.</translation>
+<translation id="5157591164390831335">Byla zjištěna adresa URL.</translation>
 <translation id="5163387177077603948">Pohyb doprava</translation>
 <translation id="5235304959032763950">16 : 9</translation>
 <translation id="5266635337630551423">Levý horní roh dokumentu</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Děkujeme vám za zpětnou vazbu k aplikaci Fotoaparát.
 
 Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou fotku nebo video a popište, kde je problém. (Například fotka je příliš tmavá nebo objekt není zaostřen.)</translation>
+<translation id="6519884562954018934">Připojit se k síti <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Sdílet</translation>
 <translation id="6617916774429601017">Zobrazit všechna rozlišení</translation>
 <translation id="6631515515009660915">Vypnout zrcadlení</translation>
@@ -158,6 +161,7 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="8711011893539266636">Přepnout ztlumení mikrofonu. Ztlumení je zapnuté</translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8732462232047530626">Zobrazit náhled metadat</translation>
+<translation id="874854738381978209">Byla zjištěna síť Wi-Fi.</translation>
 <translation id="8815966864175525708">Přepnout na pořízení portrétové fotky</translation>
 <translation id="8828441885228359828">Obnovit nahrávání</translation>
 <translation id="8870695351537079478">Nahrávání se nepodařilo zahájit</translation>

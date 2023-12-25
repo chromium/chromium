@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Επίσκεψη σελίδας</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Κανένας}=1{Από 1 ιστότοπο (θα παραμείνετε συνδεδεμένοι στον Λογαριασμό σας Google)}other{Από # ιστοτόπους (θα παραμείνετε συνδεδεμένοι στον Λογαριασμό σας Google)}}</translation>
 <translation id="1165852471352757509">Τηλεοπτικά ντοκιμαντέρ και εκπομπές ενημέρωσης</translation>
+<translation id="1167877250265821930">Αποτυχία λήψης <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Κινεζικός φάκελος #1</translation>
 <translation id="1174723505405632867">Θέλετε να επιτρέψετε στο <ph name="EMBEDDED_URL" /> να χρησιμοποιεί cookie και δεδομένα ιστοτόπου στο <ph name="TOP_LEVEL_URL" />;
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">Εργαλείο παραγωγής PDF:</translation>
 <translation id="2130448033692577677">Τα πρότυπα που έχετε καθορίσει μπορεί να μην εφαρμοστούν επειδή δεν έχει ρυθμιστεί η πολιτική DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Η λήψη του πακέτου γλώσσας <ph name="LANGUAGE" /> βρίσκεται στο <ph name="PERCENT" />%…</translation>
 <translation id="2135799067377889518">Ανδρική ένδυση</translation>
 <translation id="2137891579555018930">Αναμονή για άδεια…</translation>
 <translation id="213826338245044447">Σελιδοδείκτες κινητής συσκευής</translation>
@@ -3988,6 +3990,7 @@
 <translation id="8877780815363510165">Ψάρεμα</translation>
 <translation id="8884537526797090108">Δεν είναι δυνατή η εγγραφή εμπιστευτικού περιεχομένου</translation>
 <translation id="8888187300091017436">Στρώματα</translation>
+<translation id="8890048757975398817">Έλεγχος <ph name="READERNAME" /> και εκχώρηση πρόσβασης στην έξυπνη κάρτα στην οποία έχει πρόσβαση.</translation>
 <translation id="8891727572606052622">Μη έγκυρη λειτουργία διακομιστή μεσολάβησης.</translation>
 <translation id="8894794286471754040">Πρώτα η μεγάλη πλευρά</translation>
 <translation id="8897428486789851669">Κολύμβηση</translation>
