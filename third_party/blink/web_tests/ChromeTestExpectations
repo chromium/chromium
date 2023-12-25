@@ -624,6 +624,7 @@ crbug.com/626703 external/wpt/css/css-transforms/transform-box/svgbox-stroke-box
 crbug.com/626703 external/wpt/credential-management/fedcm-disconnect-errors.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-023.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-024.html [ Failure ]
+crbug.com/626703 external/wpt/webdriver/tests/classic/element_send_keys/send_keys.py [ Failure ]
 
 # Those tests are (rarely) flaky due to crbug.com/1506833
 crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?1-1 [ Failure Pass ]
