@@ -4102,7 +4102,7 @@ test("base_unittests") {
     ]
   }
 
-  if (enable_nocompile_tests_new) {
+  if (enable_nocompile_tests) {
     deps += [ ":base_nocompile_tests" ]
   }
 }
@@ -4131,7 +4131,7 @@ action("build_date") {
   ]
 }
 
-if (enable_nocompile_tests_new) {
+if (enable_nocompile_tests) {
   nocompile_source_set("base_nocompile_tests") {
     sources = [
       "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations_pa_nocompile.nc",

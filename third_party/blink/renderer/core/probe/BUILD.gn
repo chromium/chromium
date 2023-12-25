@@ -88,7 +88,7 @@ blink_core_sources("probe") {
   public_deps = [ ":instrumentation_probes" ]
 }
 
-if (enable_nocompile_tests_new) {
+if (enable_nocompile_tests) {
   probe_generator("test_probes") {
     probe_set = "test_probes"
     probe_sink = "test_probe_sink"

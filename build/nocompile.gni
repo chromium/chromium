@@ -55,10 +55,10 @@ if (is_win) {
 }
 
 declare_args() {
-  enable_nocompile_tests_new = is_clang && !is_nacl
+  enable_nocompile_tests = is_clang && !is_nacl
 }
 
-if (enable_nocompile_tests_new) {
+if (enable_nocompile_tests) {
   template("nocompile_source_set") {
     action_foreach(target_name) {
       testonly = true

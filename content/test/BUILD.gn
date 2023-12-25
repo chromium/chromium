@@ -3067,7 +3067,7 @@ test("content_unittests") {
     "//ui/webui:test_support",
   ]
 
-  if (enable_nocompile_tests_new) {
+  if (enable_nocompile_tests) {
     deps += [ ":content_nocompile_tests" ]
   }
 
@@ -3403,7 +3403,7 @@ if (is_apple) {
   }
 }
 
-if (enable_nocompile_tests_new) {
+if (enable_nocompile_tests) {
   nocompile_source_set("content_nocompile_tests") {
     sources = [ "../browser/browser_task_traits_nocompile.nc" ]
 
