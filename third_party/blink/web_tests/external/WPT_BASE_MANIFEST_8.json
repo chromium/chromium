@@ -343580,7 +343580,7 @@
       []
      ],
      "getComputedStyle-pseudo-expected.txt": [
-      "c0321fa66001b82ac5176c0bd68bc789e59b4500",
+      "cd6506dd2307e52bb5e20cf95d788dbf7d159961",
       []
      ],
      "getComputedStyle-width-scroll.tentative-expected.txt": [
@@ -471146,7 +471146,7 @@
       ]
      ],
      "getComputedStyle-pseudo.html": [
-      "40d35cc662dd41a7a4847aa1314c8432d0ea858d",
+      "35c5efe3fa83bd800e29714f3bc84ab3ded3244e",
       [
        null,
        {}
