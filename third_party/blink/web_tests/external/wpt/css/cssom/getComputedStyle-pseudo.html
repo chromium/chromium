@@ -79,6 +79,12 @@ test(function() {
   });
 }, "Resolution of width is correct for ::before and ::after pseudo-elements");
 test(function() {
+  const div = document.getElementById('test');
+  [":bef\\oRE", "::\\000041fter"].forEach(pseudo => {
+    assert_equals(getComputedStyle(div, pseudo).width, "50px");
+  });
+}, "Pseudo-elements can use the full range of CSS syntax");
+test(function() {
   var contents = document.getElementById('contents');
   [":before", ":after"].forEach(function(pseudo) {
     assert_equals(getComputedStyle(contents, pseudo).width, "50px");
