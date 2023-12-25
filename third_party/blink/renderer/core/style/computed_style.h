@@ -1144,8 +1144,10 @@ class ComputedStyle final : public ComputedStyleBase {
   bool ShouldUseTextIndent(bool is_first_line) const;
 
   // text-transform utility functions.
-  [[nodiscard]] String ApplyTextTransform(const String&,
-                                          UChar previous_character = ' ') const;
+  [[nodiscard]] String ApplyTextTransform(
+      const String&,
+      UChar previous_character = ' ',
+      TextOffsetMap* offset_map = nullptr) const;
 
   // Line-height utility functions.
   const Length& SpecifiedLineHeight() const { return LineHeightInternal(); }

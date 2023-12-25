@@ -90,6 +90,11 @@ class CORE_EXPORT OffsetMappingBuilder {
   // annotation to the builder.
   void AppendCollapsedMapping(unsigned length);
 
+  // Append a variable offset mapping from the specified `dom_length` to the
+  // specified `text_content_length`.
+  // Either of `dom_length` or `text_content_length` should be 1.
+  void AppendVariableMapping(unsigned dom_length, unsigned text_content_length);
+
   // TODO(xiaochengh): Add the following API when we start to fix offset mapping
   // for text-transform.
   // Append an expanded offset mapping to the specified length with null

@@ -1840,7 +1840,8 @@ String ApplyMathAutoTransform(const String& text) {
 }  // namespace
 
 String ComputedStyle::ApplyTextTransform(const String& text,
-                                         UChar previous_character) const {
+                                         UChar previous_character,
+                                         TextOffsetMap* offset_map) const {
   switch (TextTransform()) {
     case ETextTransform::kNone:
       return text;
@@ -1849,12 +1850,13 @@ String ComputedStyle::ApplyTextTransform(const String& text,
     case ETextTransform::kUppercase: {
       const LayoutLocale* locale = GetFontDescription().Locale();
       CaseMap case_map(locale ? locale->CaseMapLocale() : CaseMap::Locale());
-      return DisableNewGeorgianCapitalLetters(case_map.ToUpper(text));
+      return DisableNewGeorgianCapitalLetters(
+          case_map.ToUpper(text, offset_map));
     }
     case ETextTransform::kLowercase: {
       const LayoutLocale* locale = GetFontDescription().Locale();
       CaseMap case_map(locale ? locale->CaseMapLocale() : CaseMap::Locale());
-      return case_map.ToLower(text);
+      return case_map.ToLower(text, offset_map);
     }
     case ETextTransform::kMathAuto:
       return ApplyMathAutoTransform(text);

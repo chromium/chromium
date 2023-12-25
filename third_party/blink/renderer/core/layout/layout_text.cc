@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
 #include "ui/gfx/geometry/quad_f.h"
 
 namespace blink {
@@ -879,7 +880,9 @@ void LayoutText::SetTextInternal(String text) {
 void LayoutText::ApplyTextTransform() {
   NOT_DESTROYED();
   if (const ComputedStyle* style = Style()) {
-    text_ = style->ApplyTextTransform(text_, PreviousCharacter());
+    TextOffsetMap offset_map;
+    text_ = style->ApplyTextTransform(text_, PreviousCharacter(), &offset_map);
+    has_variable_length_transform_ = !offset_map.IsEmpty();
 
     // We use the same characters here as for list markers.
     // See CollectUACounterStyleRules() in ua_counter_style_map.cc.

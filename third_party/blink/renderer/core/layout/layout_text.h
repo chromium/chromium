@@ -111,6 +111,17 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   }
   virtual String PlainText() const;
 
+  // Returns true if text-transform or -webkit-text-security changes the text
+  // length.
+  bool HasVariableLengthTransform() const {
+    NOT_DESTROYED();
+    return has_variable_length_transform_;
+  }
+  void SetHasVariableLengthTransform(bool flag) {
+    NOT_DESTROYED();
+    has_variable_length_transform_ = flag;
+  }
+
   // Returns first letter part of |LayoutTextFragment|.
   virtual LayoutText* GetFirstLetterPart() const {
     NOT_DESTROYED();
@@ -406,6 +417,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // Used for LayoutNG with accessibility. True if inline fragments are
   // associated to |AbstractInlineTextBox|.
   unsigned has_abstract_inline_text_box_ : 1;
+
+  unsigned has_variable_length_transform_ : 1;
 
   DOMNodeId node_id_ = kInvalidDOMNodeId;
 

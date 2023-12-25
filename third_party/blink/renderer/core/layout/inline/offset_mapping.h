@@ -21,7 +21,7 @@ namespace blink {
 class LayoutBlockFlow;
 class LayoutObject;
 
-enum class OffsetMappingUnitType { kIdentity, kCollapsed };
+enum class OffsetMappingUnitType { kIdentity, kCollapsed, kVariable };
 
 // An OffsetMappingUnit indicates a "simple" offset mapping between dom offset
 // range [dom_start, dom_end] on node |owner| and text content offset range
@@ -33,9 +33,13 @@ enum class OffsetMappingUnitType { kIdentity, kCollapsed };
 // - kCollapsed: The mapping is collapsed, namely, |text_content_start| and
 //   |text_content_end| are the same, and characters in the dom range are
 //   collapsed.
-// - kExpanded: The mapping is expanded, namely, |dom_end == dom_start + 1|, and
-//   |text_content_end > text_content_start + 1|, indicating that the character
-//   in the dom range is expanded into multiple characters.
+// - kVariable: The mapping is expanded or shrunk, namely.
+//   -- |dom_end == dom_start + 1|, and
+//      |text_content_end > text_content_start + 1|, indicating that the
+//      character in the dom range is expanded into multiple characters, or
+//   -- |dom_end > dom_start + 1|, and
+//      |text_content_end == text_content_start + 1|, indicating that multiple
+//      characters in the dom range is shrunk into a single character.
 // See design doc https://goo.gl/CJbxky for details.
 class CORE_EXPORT OffsetMappingUnit {
   DISALLOW_NEW();

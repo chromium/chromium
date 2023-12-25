@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
 
 namespace blink {
 class HTMLAreaElement;
@@ -519,7 +520,24 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
     return;
   }
 
-  AppendText(TransformedString::CreateFrom(*layout_text), *layout_text);
+  if (!RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled() ||
+      !layout_text->HasVariableLengthTransform()) {
+    AppendText(TransformedString(layout_text->GetText()), *layout_text);
+    return;
+  }
+  String original = layout_text->OriginalText();
+  TextOffsetMap offset_map;
+  // TODO(crbug.com/486880): -webkit-text-security never changes the length by
+  // accident. It's ok to apply only text-transform for now.
+  String transformed = layout_text->StyleRef().ApplyTextTransform(
+      original, text_.length() ? text_[text_.length() - 1] : kSpaceCharacter,
+      &offset_map);
+  DCHECK_EQ(layout_text->GetText().length(), transformed.length());
+  const Vector<uint8_t> length_map = TransformedString::CreateLengthMap(
+      original.length(), transformed.length(), offset_map);
+  AppendText(TransformedString(layout_text->GetText(),
+                               {length_map.data(), length_map.size()}),
+             *layout_text);
 }
 
 template <typename MappingBuilder>
@@ -616,10 +634,52 @@ template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::AppendTransformedString(
     const TransformedString& transformed,
     const LayoutText& layout_text) {
-  // TODO(layout-dev): Check the collapse/expansion information in
-  // `transformed`, and call appropriate mapping_builder_.Append*Mapping()
   text_.Append(transformed.View());
-  mapping_builder_.AppendIdentityMapping(transformed.View().length());
+  if (!transformed.HasLengthMap()) {
+    mapping_builder_.AppendIdentityMapping(transformed.View().length());
+    return;
+  }
+
+  // 1 followed by 0+     => expanded
+  // 2 or larger          => shrink
+  // 1+ not followed by 0 => identity
+  unsigned identity_start = kNotFound;
+  unsigned size = transformed.View().length();
+  for (unsigned i = 0; i < size; ++i) {
+    TransformedString::Length len = transformed.LengthMap()[i];
+    if (len > 1u) {
+      if (identity_start != kNotFound) {
+        mapping_builder_.AppendIdentityMapping(i - identity_start);
+        identity_start = kNotFound;
+      }
+      mapping_builder_.AppendVariableMapping(len, 1u);
+    } else if (len == 0u) {
+      // LengthMap starts with 0, or 2+ is followed by 0.  They should not
+      // happen.
+      CHECK_NE(identity_start, kNotFound);
+      if (i - identity_start > 1) {
+        mapping_builder_.AppendIdentityMapping(i - identity_start - 1);
+      }
+      identity_start = kNotFound;
+      unsigned zero_length = 1;
+      for (++i; i < size; ++i) {
+        if (transformed.LengthMap()[i] != 0) {
+          --i;
+          break;
+        }
+        ++zero_length;
+      }
+      mapping_builder_.AppendVariableMapping(1u, 1u + zero_length);
+    } else {
+      DCHECK_EQ(1u, len);
+      if (identity_start == kNotFound) {
+        identity_start = i;
+      }
+    }
+  }
+  if (identity_start != kNotFound) {
+    mapping_builder_.AppendIdentityMapping(size - identity_start);
+  }
 }
 
 template <typename MappingBuilder>

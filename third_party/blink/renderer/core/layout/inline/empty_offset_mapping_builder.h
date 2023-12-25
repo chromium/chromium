@@ -31,6 +31,7 @@ class EmptyOffsetMappingBuilder {
       delete;
   void AppendIdentityMapping(unsigned) {}
   void AppendCollapsedMapping(unsigned) {}
+  void AppendVariableMapping(unsigned, unsigned) {}
   void CollapseTrailingSpace(unsigned) {}
   void Composite(const EmptyOffsetMappingBuilder&) {}
   void Concatenate(const EmptyOffsetMappingBuilder&) {}

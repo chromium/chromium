@@ -5,11 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_TRANSFORMED_STRING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_TRANSFORMED_STRING_H_
 
+#include "base/containers/span.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
-
-class LayoutText;
 
 // Represents a text transformed in LayoutText and information on how it was
 // collapsed or expanded.  This class is necessary to generate OffsetMappings
@@ -21,10 +22,20 @@ class TransformedString {
   STACK_ALLOCATED();
 
  public:
+  using Length = const uint8_t;
+
   explicit TransformedString(StringView view) : view_(view) {}
-  static TransformedString CreateFrom(const LayoutText& layout_text);
+  TransformedString(StringView view, base::span<Length> map)
+      : view_(view), length_map_(map) {}
+  static CORE_EXPORT Vector<uint8_t> CreateLengthMap(
+      unsigned dom_length,
+      unsigned transformed_length,
+      const TextOffsetMap& offset_map);
 
   const StringView& View() const { return view_; }
+  bool HasLengthMap() const { return !length_map_.empty(); }
+  const base::span<Length>& LengthMap() const { return length_map_; }
+
   TransformedString Substring(unsigned start, unsigned length) const;
   TransformedString Substring(unsigned start) const {
     return Substring(start, view_.length() - start);
@@ -33,8 +44,7 @@ class TransformedString {
  private:
   const StringView view_;
 
-  // TODO(layout-dev): Add a data member representing information on how view_
-  // was collapsed/expanded.
+  const base::span<Length> length_map_;
 };
 
 }  // namespace blink

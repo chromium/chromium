@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
 
 namespace blink {
 
@@ -943,9 +944,11 @@ bool InlineNode::SetTextWithOffset(LayoutText* layout_text,
   FontCachePurgePreventer font_cache_purge_preventer;
 
   String new_text(std::move(new_text_in));
+  TextOffsetMap offset_map;
   new_text = layout_text->StyleRef().ApplyTextTransform(
-      new_text, layout_text->PreviousCharacter());
+      new_text, layout_text->PreviousCharacter(), &offset_map);
   layout_text->SetTextInternal(new_text);
+  layout_text->SetHasVariableLengthTransform(!offset_map.IsEmpty());
 
   InlineNode node(editor.GetLayoutBlockFlow());
   InlineNodeData* data = node.MutableData();
