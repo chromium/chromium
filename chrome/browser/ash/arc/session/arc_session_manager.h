@@ -242,6 +242,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   void OnRetryClicked() override;
   void OnSendFeedbackClicked() override;
   void OnRunNetworkTestsClicked() override;
+  void OnErrorPageShown(bool network_tests_shown) override;
 
   // StopArc(), then restart. Between them data clear may happens.
   // This is a special method to support enterprise device lost case.

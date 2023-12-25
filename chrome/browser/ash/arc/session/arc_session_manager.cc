@@ -1702,6 +1702,13 @@ void ArcSessionManager::OnRetryClicked() {
   }
 }
 
+void ArcSessionManager::OnErrorPageShown(bool network_tests_shown) {
+  if (network_tests_shown) {
+    UpdateOptInNetworkErrorActionUMA(
+        arc::OptInNetworkErrorActionType::ERROR_SHOWN);
+  }
+}
+
 void ArcSessionManager::OnSendFeedbackClicked() {
   DCHECK(support_host_);
   chrome::OpenFeedbackDialog(nullptr, chrome::kFeedbackSourceArcApp);

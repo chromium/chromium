@@ -437,6 +437,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Retry clicked"/>
   <int value="2" label="SendFeedback clicked"/>
   <int value="3" label="CheckNetwork clicked"/>
+  <int value="4" label="Network error shown">
+    This bucket encompasses all others and works as a total count for
+    network-related errors (instead of the histogram's total sample count which
+    doesn't reflect that information). This enum value was added on 2023 Dec 21
+    The data before this date is missing.
+  </int>
 </enum>
 
 <enum name="ArcOptInResult">

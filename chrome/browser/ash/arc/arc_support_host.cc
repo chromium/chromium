@@ -116,6 +116,13 @@ constexpr char kEventOnSendFeedbackClicked[] = "onSendFeedbackClicked";
 // button.
 constexpr char kEventOnRunNetworkTestsClicked[] = "onRunNetworkTestsClicked";
 
+// "onErrorPageShown" is fired when the error page is shown.
+constexpr char kEventOnErrorPageShown[] = "onErrorPageShown";
+
+// "OnErrorPageShown" should have the following fields:
+// - networkTestsShown
+constexpr char kNetworkTestsShown[] = "networkTestsShown";
+
 // "onOpenPrivacySettingsPageClicked" is fired when a user clicks privacy
 // settings link.
 constexpr char kEventOnOpenPrivacySettingsPageClicked[] =
@@ -774,6 +781,10 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
   } else if (*event == kEventOnRunNetworkTestsClicked) {
     DCHECK(error_delegate_);
     error_delegate_->OnRunNetworkTestsClicked();
+  } else if (*event == kEventOnErrorPageShown) {
+    DCHECK(error_delegate_);
+    error_delegate_->OnErrorPageShown(
+        message.FindBool(kNetworkTestsShown).value_or(false));
   } else if (*event == kEventOnOpenPrivacySettingsPageClicked) {
     chrome::ShowSettingsSubPageForProfile(profile_, chrome::kPrivacySubPage);
   } else if (*event == kEventRequestWindowBounds) {

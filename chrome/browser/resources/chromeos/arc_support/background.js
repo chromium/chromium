@@ -732,6 +732,10 @@ function showErrorPage(
   // div.
   const feedbackSeparator = doc.getElementById('div-error-separating-buttons');
   feedbackSeparator.style.order = opt_shouldShowNetworkTests ? 'initial' : -1;
+
+  sendNativeMessage('onErrorPageShown', {
+    networkTestsShown: opt_shouldShowNetworkTests,
+  });
 }
 
 /**
