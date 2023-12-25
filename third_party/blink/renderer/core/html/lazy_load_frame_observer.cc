@@ -152,6 +152,17 @@ void LazyLoadFrameObserver::LoadIfHiddenOrNearViewport(
     return;
   }
 
+  // When frames are loaded lazily, normally loading attributes are specified as
+  // |LoadingAttributeValue::kLazy|. However, the browser initiated lazyloading
+  // (e.g. LazyEmbeds) may apply lazyload automatically to some frames. In that
+  // case, target frames may not have loading="lazy" attributes. If the frame
+  // doesn't have loading="lazy", that means the frame is loaded as a lazyload
+  // manner, which is enabled by the browser initiated lazyloading.
+  //
+  // Normally the lazyload is triggered to frames regardless of size or
+  // visibility, but as the browser initiated lazyload does not apply
+  // lazyloading if the frame is small or hidden. See the comment in
+  // |IsFrameProbablyHidden()| for more details.
   LoadingAttributeValue loading_attr = GetLoadingAttributeValue(
       element_->FastGetAttribute(html_names::kLoadingAttr));
   if (loading_attr != LoadingAttributeValue::kLazy &&
