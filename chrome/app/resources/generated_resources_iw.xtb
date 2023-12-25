@@ -2675,7 +2675,7 @@
 <translation id="3019023222666709803">כלי החץ</translation>
 <translation id="3019285239893817657">לחצן למעבר אל דף משנה</translation>
 <translation id="3019595674945299805">‏שירות VPN</translation>
-<translation id="3020183492814296499">קיצורים</translation>
+<translation id="3020183492814296499">קיצורי דרך</translation>
 <translation id="3020990233660977256">מספר סידורי: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">בזמן שימוש בסוללה</translation>
 <translation id="3021066826692793094">פרפר</translation>
@@ -4680,7 +4680,7 @@
 <translation id="4642587497923912728">‏אפשר להשתמש ב-Steam ל-Chromebook (בטא) רק בחשבון הראשון שאליו נכנסו ב-Chromebook הזה.</translation>
 <translation id="4643612240819915418">&amp;פתיחת סרטון בכרטיסייה חדשה</translation>
 <translation id="4643833688073835173">‏חיישן מובנה ב-Chromebook משמש לזיהוי אנשים שנמצאים מול המכשיר. מתבצע עיבוד מיידי של כל הנתונים במכשיר ואז הם נמחקים. נתוני החיישנים אף פעם לא נשלחים אל Google.</translation>
-<translation id="4644205769234414680">לאפשר במצב אנונימי</translation>
+<translation id="4644205769234414680">לאפשר במצב פרטי</translation>
 <translation id="4645575059429386691">מנוהל על-ידי ההורה שלך</translation>
 <translation id="4645676300727003670">&amp;שמירה</translation>
 <translation id="4646675363240786305">יציאות</translation>
@@ -5072,7 +5072,7 @@
 <translation id="4959262764292427323">‏סיסמאות נשמרות בחשבון Google כדי לאפשר לך להשתמש בהן בכל המכשירים</translation>
 <translation id="4960020053211143927">בחלק מהאפליקציות אין תמיכה בשיטה הזו</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
-<translation id="4961318399572185831">העברת מסך</translation>
+<translation id="4961318399572185831">העברת המסך</translation>
 <translation id="4961361269522589229">מתכונים</translation>
 <translation id="496185450405387901">האפליקציה הזו הותקנה על ידי מנהל המערכת.</translation>
 <translation id="4963789650715167449">הסרת הכרטיסייה הנוכחית</translation>
@@ -7551,7 +7551,7 @@
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6965607054907047032">פינוי מקום בזיכרון על סמך חוסר פעילות בכרטיסיות</translation>
 <translation id="6965648386495488594">יציאה</translation>
-<translation id="6965978654500191972">התקן</translation>
+<translation id="6965978654500191972">מכשיר</translation>
 <translation id="6966370001499648704">בחירת הטלפונים שישמשו כמפתחות אבטחה</translation>
 <translation id="6967112302799758487">‏כל האפליקציות והמשחקים שהותקנו באמצעות Steam ל-Chromebook (בטא) יוסרו מהמכשיר הזה. יוסרו גם הנתונים שמשויכים לאפליקציות ולמשחקים האלה. לפני ההסרה, חשוב לגבות אפליקציות ומשחקים שנשמרו.</translation>
 <translation id="6967430741871315905">לא ניתן לבדוק אם המכשיר הזה מורשה</translation>
