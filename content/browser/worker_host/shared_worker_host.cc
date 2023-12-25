@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
@@ -53,6 +54,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_worker_client_added.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
@@ -573,6 +575,40 @@ void SharedWorkerHost::BindPressureService(
     return;
   }
 
+  // https://www.w3.org/TR/compute-pressure/#policy-control
+  if (base::ranges::any_of(GetRenderFrameIDsForWorker(), [](const auto& id) {
+        auto* render_frame_host = RenderFrameHostImpl::FromID(id);
+        return render_frame_host &&
+               !render_frame_host->IsFeatureEnabled(
+                   blink::mojom::PermissionsPolicyFeature::kComputePressure);
+      })) {
+    for (const auto& id : GetRenderFrameIDsForWorker()) {
+      auto* rfh = RenderFrameHostImpl::FromID(id);
+      if (!rfh) {
+        continue;
+      }
+
+      if (rfh->IsFeatureEnabled(
+              blink::mojom::PermissionsPolicyFeature::kComputePressure)) {
+        rfh->AddMessageToConsole(
+            blink::mojom::ConsoleMessageLevel::kWarning,
+            "This frame is connected to a Shared Worker that has requested "
+            "access to the Compute Pressure API. This worker can't access the "
+            "API because another frame connected that is not allowed to access "
+            "this feature due to Permissions Policy.");
+      } else {
+        rfh->AddMessageToConsole(
+            blink::mojom::ConsoleMessageLevel::kWarning,
+            "This frame is connected to a Shared Worker that has requested "
+            "access to the Compute Pressure API. This worker can't access the "
+            "API because this frame is not allowed to access this feature due "
+            "to Permissions Policy.");
+      }
+    }
+
+    return;
+  }
+
   if (!pressure_service_) {
     pressure_service_ =
         std::make_unique<PressureServiceForWorker<SharedWorkerHost>>(this);
@@ -726,6 +762,38 @@ void SharedWorkerHost::AddClient(
   // Pass the actual creation context type, so the client can understand if
   // there is a mismatch between security levels.
   remote_client->OnCreated(instance_.creation_context_type());
+
+  // Stop delivering Compute Pressure data if the added client is not allowed
+  // to use the policy-controlled feature.
+  // see https://www.w3.org/TR/compute-pressure/#policy-control
+  auto* render_frame_host =
+      RenderFrameHostImpl::FromID(client_render_frame_host_id);
+  if (pressure_service_ && render_frame_host &&
+      !render_frame_host->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kComputePressure)) {
+    render_frame_host->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "This frame is now connected to a Shared Worker using the Compute "
+        "Pressure API. This worker will no longer receive Compute Pressure "
+        "events because this frame is not allowed to access this feature due "
+        "to Permissions Policy.");
+
+    for (const auto& id : GetRenderFrameIDsForWorker()) {
+      auto* rfh = RenderFrameHostImpl::FromID(id);
+      if (!rfh) {
+        continue;
+      }
+
+      rfh->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kWarning,
+          "This frame is connected to a Shared Worker using the Compute "
+          "Pressure API. This worker will no longer receive Compute Pressure "
+          "events because another frame connected that is not allowed to "
+          "access this feature due to Permissions Policy.");
+    }
+
+    pressure_service_.reset();
+  }
 
   clients_.emplace_back(std::move(remote_client), next_connection_request_id_++,
                         client_render_frame_host_id);

@@ -14,6 +14,7 @@
 #include "content/browser/buckets/bucket_context.h"
 #include "content/browser/compute_pressure/pressure_service_for_worker.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/dedicated_worker_creator.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
@@ -73,7 +74,7 @@ class CrossOriginEmbedderPolicyReporter;
 // of the worker is destroyed. This lives on the UI thread.
 // TODO(crbug.com/1273717): Align this class's lifetime with the associated
 // frame.
-class DedicatedWorkerHost final
+class CONTENT_EXPORT DedicatedWorkerHost final
     : public blink::mojom::DedicatedWorkerHost,
       public blink::mojom::BackForwardCacheControllerHost,
       public RenderProcessHostObserver,
@@ -213,6 +214,16 @@ class DedicatedWorkerHost final
 
   ServiceWorkerMainResourceHandle* service_worker_handle() {
     return service_worker_handle_.get();
+  }
+
+  PressureServiceForWorker<DedicatedWorkerHost>* pressure_service() {
+    return pressure_service_.get();
+  }
+
+  // Exposed so that tests can swap the implementation and intercept calls.
+  mojo::Receiver<blink::mojom::BrowserInterfaceBroker>&
+  browser_interface_broker_receiver_for_testing() {
+    return broker_receiver_;
   }
 
   // blink::mojom::BackForwardCacheControllerHost:

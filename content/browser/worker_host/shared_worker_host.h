@@ -194,6 +194,16 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
     return content_security_policies_;
   }
 
+  PressureServiceForWorker<SharedWorkerHost>* pressure_service() {
+    return pressure_service_.get();
+  }
+
+  // Exposed so that tests can swap the implementation and intercept calls.
+  mojo::Receiver<blink::mojom::BrowserInterfaceBroker>&
+  browser_interface_broker_receiver_for_testing() {
+    return broker_receiver_;
+  }
+
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
 
   const base::UnguessableToken& GetDevToolsToken() const;
