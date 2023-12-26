@@ -260,10 +260,10 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool brp_enabled_ = false;
-#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
+#if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
     bool mac11_malloc_size_hack_enabled_ = false;
     size_t mac11_malloc_size_hack_usable_size_ = 0;
-#endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
+#endif  // PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool use_configurable_pool = false;
     bool zapping_by_free_flags = false;
@@ -272,10 +272,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     bool memory_tagging_enabled_ = false;
     TagViolationReportingMode memory_tagging_reporting_mode_ =
         TagViolationReportingMode::kUndefined;
-#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
-    size_t ref_count_size = 0;
-#endif  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
 #endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+    size_t ref_count_size = 0;
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
     ThreadIsolationOption thread_isolation;
 #endif
@@ -397,11 +395,11 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // pool and cause tests to fail.
   void DestructForTesting();
 
-#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
-  void EnableMac11MallocSizeHackIfNeeded(size_t ref_count_size);
+#if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
+  void EnableMac11MallocSizeHackIfNeeded();
   void EnableMac11MallocSizeHackForTesting();
-  void InitMac11MallocSizeHackUsableSize(size_t ref_count_size);
-#endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
+  void InitMac11MallocSizeHackUsableSize();
+#endif  // PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
 
   // Public API
   //
@@ -1923,7 +1921,7 @@ PartitionRoot::GetUsableSizeWithMac11MallocSizeHack(void* ptr) {
   auto* slot_span = SlotSpan::FromObjectInnerPtr(ptr);
   auto* root = FromSlotSpan(slot_span);
   size_t usable_size = root->GetSlotUsableSize(slot_span);
-#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
+#if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
   // Check |mac11_malloc_size_hack_enabled_| flag first as this doesn't
   // concern OS versions other than macOS 11.
   if (PA_UNLIKELY(root->settings.mac11_malloc_size_hack_enabled_ &&
@@ -1936,7 +1934,7 @@ PartitionRoot::GetUsableSizeWithMac11MallocSizeHack(void* ptr) {
       return internal::kMac11MallocSizeHackRequestedSize;
     }
   }
-#endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
+#endif  // PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
 
   return usable_size;
 }
@@ -2223,7 +2221,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
   // be false only for the aligned partition.
   if (brp_enabled()) {
     bool needs_mac11_malloc_size_hack = false;
-#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
+#if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
     // Only apply hack to size 32 allocations on macOS 11. There is a buggy
     // assertion that malloc_size() equals sizeof(class_rw_t) which is 32.
     if (PA_UNLIKELY(settings.mac11_malloc_size_hack_enabled_ &&
@@ -2231,7 +2229,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
                         internal::kMac11MallocSizeHackRequestedSize)) {
       needs_mac11_malloc_size_hack = true;
     }
-#endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
+#endif  // PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
     auto* ref_count = new (internal::PartitionRefCountPointer(slot_start))
         internal::PartitionRefCount(needs_mac11_malloc_size_hack);
 #if PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)

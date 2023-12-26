@@ -492,10 +492,11 @@ constexpr unsigned char kQuarantinedByte = 0xEF;
 // static_cast<uint32_t>(-1) is too close to a "real" size.
 constexpr size_t kInvalidBucketSize = 1;
 
-#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
-// Requested size that require the hack.
+#if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
+// Requested size that requires the hack.
 constexpr size_t kMac11MallocSizeHackRequestedSize = 32;
-#endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
+#endif
+
 }  // namespace internal
 
 // These constants are used outside PartitionAlloc itself, so we provide

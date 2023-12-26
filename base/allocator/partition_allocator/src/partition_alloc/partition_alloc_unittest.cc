@@ -3854,7 +3854,7 @@ TEST_P(PartitionAllocTest, GetUsableSizeNull) {
 }
 
 TEST_P(PartitionAllocTest, GetUsableSize) {
-#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
+#if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
   allocator.root()->EnableMac11MallocSizeHackForTesting();
 #endif
   size_t delta = 31;
@@ -3864,7 +3864,7 @@ TEST_P(PartitionAllocTest, GetUsableSize) {
     size_t usable_size = PartitionRoot::GetUsableSize(ptr);
     size_t usable_size_with_hack =
         PartitionRoot::GetUsableSizeWithMac11MallocSizeHack(ptr);
-#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
+#if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
     if (size != internal::kMac11MallocSizeHackRequestedSize)
 #endif
       EXPECT_EQ(usable_size_with_hack, usable_size);
@@ -3875,7 +3875,7 @@ TEST_P(PartitionAllocTest, GetUsableSize) {
   }
 }
 
-#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
+#if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
 TEST_P(PartitionAllocTest, GetUsableSizeWithMac11MallocSizeHack) {
   if (internal::base::mac::MacOSMajorVersion() != 11) {
     GTEST_SKIP() << "Skipping because the test is for Mac11.";
@@ -3893,7 +3893,7 @@ TEST_P(PartitionAllocTest, GetUsableSizeWithMac11MallocSizeHack) {
 
   allocator.root()->Free(ptr);
 }
-#endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
+#endif  // PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
 
 TEST_P(PartitionAllocTest, Bookkeeping) {
   auto& root = *allocator.root();
