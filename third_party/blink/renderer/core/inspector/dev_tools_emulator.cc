@@ -176,8 +176,9 @@ void DevToolsEmulator::Trace(Visitor* visitor) const {}
 void DevToolsEmulator::Shutdown() {
   CHECK(!is_shutdown_);
   is_shutdown_ = true;
-  DisableDeviceEmulation();
-  CHECK(!global_overrides_);
+  // Restore global overrides, but do not restore any page overrides, since
+  // the page may already be in an inconsistent state at this moment.
+  global_overrides_.reset();
 }
 
 void DevToolsEmulator::SetTextAutosizingEnabled(bool enabled) {
@@ -363,6 +364,7 @@ gfx::Transform DevToolsEmulator::EnableDeviceEmulation(
 }
 
 void DevToolsEmulator::DisableDeviceEmulation() {
+  CHECK(!is_shutdown_);
   if (!device_metrics_enabled_)
     return;
 
