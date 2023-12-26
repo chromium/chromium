@@ -273,9 +273,8 @@ int GetDictPrefKeyCount(Profile* profile,
 class NewTabPageHandlerTest : public testing::Test {
  public:
   NewTabPageHandlerTest()
-      : profile_(MakeTestingProfile(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_))),
+      : profile_(
+            MakeTestingProfile(test_url_loader_factory_.GetSafeWeakWrapper())),
         mock_ntp_custom_background_service_(profile_.get()),
         mock_promo_service_(*static_cast<MockPromoService*>(
             PromoServiceFactory::GetForProfile(profile_.get()))),
