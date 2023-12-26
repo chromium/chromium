@@ -95,6 +95,9 @@ void ProxyConfigServiceLacros::OnProxyChanged(
   NotifyObservers();
 }
 
+void ProxyConfigServiceLacros::
+    OnAlwaysOnVpnPreConnectUrlAllowlistEnforcedChanged(bool enforced) {}
+
 void ProxyConfigServiceLacros::OnUseAshProxyPrefChanged() {
   NotifyObservers();
 }

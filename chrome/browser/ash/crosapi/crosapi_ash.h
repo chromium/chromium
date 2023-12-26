@@ -595,6 +595,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   VpnServiceAsh* vpn_service_ash() { return vpn_service_ash_.get(); }
 
+  NetworkSettingsServiceAsh* network_settings_service_ash() {
+    return network_settings_service_ash_.get();
+  }
+
   // Caller is responsible for ensuring that the pointer stays valid.
   void SetTestControllerForTesting(TestControllerReceiver* test_controller);
 

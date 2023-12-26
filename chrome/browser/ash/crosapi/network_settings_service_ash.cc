@@ -98,6 +98,20 @@ void NetworkSettingsServiceAsh::AddNetworkSettingsObserver(
   observers_.Add(std::move(remote));
 }
 
+void NetworkSettingsServiceAsh::IsAlwaysOnVpnPreConnectUrlAllowlistEnforced(
+    IsAlwaysOnVpnPreConnectUrlAllowlistEnforcedCallback callback) {
+  std::move(callback).Run(alwayson_vpn_pre_connect_url_allowlist_enforced_);
+}
+
+void NetworkSettingsServiceAsh::SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(
+    bool enforced) {
+  alwayson_vpn_pre_connect_url_allowlist_enforced_ = enforced;
+  for (const auto& obs : observers_) {
+    obs->OnAlwaysOnVpnPreConnectUrlAllowlistEnforcedChanged(
+        alwayson_vpn_pre_connect_url_allowlist_enforced_);
+  }
+}
+
 void NetworkSettingsServiceAsh::OnProxyChanged() {
   crosapi::mojom::ProxyConfigPtr new_proxy_config =
       ProxyConfigToCrosapiProxy(ash_proxy_monitor_->GetLatestProxyConfig(),

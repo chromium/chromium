@@ -94,6 +94,14 @@ interface NetworkSettingsObserver {
     // - the proxy configuration in Ash is updated;
     // - the WPAD URL on the default network is updated.
     OnProxyChanged@0(ProxyConfig proxy_config);
+
+    // Enforcement of the `AlwaysOnVpnPreConnectUrlAllowlist` pref in the
+    // browser is determined by the network configuration and preference
+    // settings. This method is called when updates of the network and/or
+    // prefs settings change whether the `AlwaysOnVpnPreConnectUrlAllowlist`
+    // pref should be applied or not.
+    [MinVersion=1]
+    OnAlwaysOnVpnPreConnectUrlAllowlistEnforcedChanged@1(bool enfoced);
 };
 
 // Implemented by Ash-Chrome.
@@ -130,4 +138,8 @@ interface NetworkSettingsService {
     // used to control the proxy settings in the Lacros primary profile.
     [MinVersion=2]
     ClearExtensionControllingProxyMetadata@4();
+    // Returns a boolean which indicates if user traffic should be restricted to
+    // URL filters configured via the `AlwaysOnVpnPreConnectUrlAllowlist` pref.
+    [MinVersion=3]
+    IsAlwaysOnVpnPreConnectUrlAllowlistEnforced@5() => (bool enabled);
 };

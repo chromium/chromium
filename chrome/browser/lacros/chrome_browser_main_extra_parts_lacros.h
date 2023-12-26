@@ -29,6 +29,7 @@ class LacrosFileSystemProvider;
 class KioskSessionServiceLacros;
 class FieldTrialObserver;
 class NetworkChangeManagerBridge;
+class NetworkSettingsObserver;
 class TabletModePageBehavior;
 class UiMetricRecorderLacros;
 class VpnExtensionTrackerLacros;
@@ -215,6 +216,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // Observes profile information updates and sends summary info to ash. Used
   // only when the desk profiles feature is enabled.
   std::unique_ptr<crosapi::DeskProfilesLacros> desk_profiles_lacros_;
+
+  // Observers network updates from the NetworkSettingsService.
+  std::unique_ptr<NetworkSettingsObserver> network_settings_observer_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_
