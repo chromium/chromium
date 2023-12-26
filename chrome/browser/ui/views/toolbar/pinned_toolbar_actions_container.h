@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/actions/action_id.h"
@@ -27,7 +28,8 @@ class BrowserView;
 class PinnedToolbarActionsContainer
     : public ToolbarIconContainerView,
       public PinnedToolbarActionsModel::Observer,
-      public views::DragController {
+      public views::DragController,
+      public ToolbarController::PinnedActionsDelegate {
   METADATA_HEADER(PinnedToolbarActionsContainer, ToolbarIconContainerView)
 
  public:
@@ -117,6 +119,10 @@ class PinnedToolbarActionsContainer
                            const gfx::Point& press_pt,
                            const gfx::Point& p) override;
 
+  // ToolbarController::PinnedActionsDelegate:
+  actions::ActionItem* GetActionItemFor(const actions::ActionId& id) override;
+  bool IsOverflowed(const actions::ActionId& id) override;
+
   bool IsActionPinned(const actions::ActionId& id);
 
  private:
@@ -126,7 +132,6 @@ class PinnedToolbarActionsContainer
   // A struct representing the position and action being dragged.
   struct DropInfo;
 
-  actions::ActionItem* GetActionItemFor(const actions::ActionId& id);
   PinnedActionToolbarButton* AddPopOutButtonFor(const actions::ActionId& id);
   void RemovePoppedOutButtonFor(const actions::ActionId& id);
   void AddPinnedActionButtonFor(const actions::ActionId& id);
