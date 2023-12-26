@@ -228,6 +228,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                                actionProvider:actionProvider];
 }
 
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
 #pragma mark - UIResponder
 
 - (BOOL)canBecomeFirstResponder {
@@ -253,6 +254,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.indexPathOfSelectedRow = nil;
   return [super resignFirstResponder];
 }
+#endif
 
 #pragma mark - Edit Menu Actions
 
