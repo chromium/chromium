@@ -84,89 +84,6 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
   mocha.run();
 });
 
-// TODO(crbug.com/1234871) Move this test back into the list of tests below once
-// Fast pair is launched.
-var OSSettingsOsBluetoothPageOsBluetoothDevicesSubpageTest =
-    class extends OSSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_page/os_bluetooth_devices_subpage_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled.concat([
-        'ash::features::kFastPair',
-        'ash::features::kFastPairSavedDevices',
-        'ash::features::kFastPairSoftwareScanning',
-      ]),
-    };
-  }
-};
-
-TEST_F(
-    'OSSettingsOsBluetoothPageOsBluetoothDevicesSubpageTest', 'AllJsTests',
-    () => {
-      mocha.run();
-    });
-
-// TODO (b/238647706) Move this test back into the list of tests below once
-// Fast pair is launched.
-var OSSettingsOsBluetoothPageOsBluetoothSavedDevicesSubpageTest =
-    class extends OSSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_page/os_bluetooth_saved_devices_subpage_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled.concat([
-        'ash::features::kFastPair',
-        'ash::features::kFastPairSavedDevices',
-        'ash::features::kFastPairSoftwareScanning',
-      ]),
-    };
-  }
-};
-
-// TODO (b/238647706) Move this test back into the list of tests below once
-// Fast pair is launched.
-TEST_F(
-    'OSSettingsOsBluetoothPageOsBluetoothSavedDevicesSubpageTest', 'AllJsTests',
-    () => {
-      mocha.run();
-    });
-
-// TODO(crbug.com/1234871) Move this test back into the list of tests below once
-// Fast pair is launched.
-var OSSettingsOsBluetoothPageOsBluetoothSavedDevicesListTest =
-    class extends OSSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_page/os_saved_devices_list_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled.concat([
-        'ash::features::kFastPair',
-        'ash::features::kFastPairSavedDevices',
-        'ash::features::kFastPairSoftwareScanning',
-      ]),
-    };
-  }
-};
-
-TEST_F(
-    'OSSettingsOsBluetoothPageOsBluetoothSavedDevicesListTest', 'AllJsTests',
-    () => {
-      mocha.run();
-    });
-
 function crostiniTestGenPreamble() {
   GEN('crostini::FakeCrostiniFeatures fake_crostini_features;');
   GEN('fake_crostini_features.SetAll(true);');
@@ -1161,8 +1078,20 @@ TEST_F('OSSettingsCrostiniPageCrostiniSubpageRevampTest', 'AllJsTests', () => {
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
  [
+   'OsBluetoothPageOsBluetoothDevicesSubpage',
+   'os_bluetooth_page/os_bluetooth_devices_subpage_test.js'
+ ],
+ [
    'OsBluetoothPageOsBluetoothPairingDialog',
    'os_bluetooth_page/os_bluetooth_pairing_dialog_test.js'
+ ],
+ [
+   'OsBluetoothPageOsBluetoothSavedDevicesList',
+   'os_bluetooth_page/os_saved_devices_list_test.js'
+ ],
+ [
+   'OsBluetoothPageOsBluetoothSavedDevicesSubpage',
+   'os_bluetooth_page/os_bluetooth_saved_devices_subpage_test.js'
  ],
  [
    'OsBluetoothPageOsBluetoothSummary',
