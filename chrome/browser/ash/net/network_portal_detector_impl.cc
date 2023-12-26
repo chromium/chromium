@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/auth_notification_types.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"

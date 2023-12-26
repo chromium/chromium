@@ -21,8 +21,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/login_delegate.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/auth.h"
 
@@ -208,9 +206,6 @@ class LoginHandler : public content::LoginDelegate {
   // or rejected.  This should only be accessed on the UI loop.
   password_manager::PasswordForm password_form_;
 
-  // Observes other login handlers so this login handler can respond.
-  content::NotificationRegistrar registrar_;
-
   LoginAuthRequiredCallback auth_required_callback_;
 
   // This callback is called if an extension cancels an auth request for a main
@@ -221,53 +216,6 @@ class LoginHandler : public content::LoginDelegate {
   // True if the extensions logic has run and the prompt logic has started.
   bool prompt_started_;
   base::WeakPtrFactory<LoginHandler> weak_factory_{this};
-};
-
-// Details to provide the content::NotificationObserver.  Used by the automation
-// proxy for testing.
-class LoginNotificationDetails {
- public:
-  explicit LoginNotificationDetails(LoginHandler* handler)
-      : handler_(handler) {}
-
-  LoginNotificationDetails(const LoginNotificationDetails&) = delete;
-  LoginNotificationDetails& operator=(const LoginNotificationDetails&) = delete;
-
-  LoginHandler* handler() const { return handler_; }
-
- private:
-  LoginNotificationDetails() = default;
-
-  raw_ptr<LoginHandler, DanglingUntriaged>
-      handler_;  // Where to send the response.
-};
-
-// Details to provide the NotificationObserver.  Used by the automation proxy
-// for testing and by other LoginHandlers to dismiss themselves when an
-// identical auth is supplied.
-class AuthSuppliedLoginNotificationDetails : public LoginNotificationDetails {
- public:
-  AuthSuppliedLoginNotificationDetails(LoginHandler* handler,
-                                       const std::u16string& username,
-                                       const std::u16string& password)
-      : LoginNotificationDetails(handler),
-        username_(username),
-        password_(password) {}
-
-  AuthSuppliedLoginNotificationDetails(
-      const AuthSuppliedLoginNotificationDetails&) = delete;
-  AuthSuppliedLoginNotificationDetails& operator=(
-      const AuthSuppliedLoginNotificationDetails&) = delete;
-
-  const std::u16string& username() const { return username_; }
-  const std::u16string& password() const { return password_; }
-
- private:
-  // The username that was used for the authentication.
-  const std::u16string username_;
-
-  // The password that was used for the authentication.
-  const std::u16string password_;
 };
 
 #endif  // CHROME_BROWSER_UI_LOGIN_LOGIN_HANDLER_H_

@@ -155,7 +155,6 @@ static_library("browser") {
     "app_mode/app_mode_utils.h",
     "assist_ranker/assist_ranker_service_factory.cc",
     "assist_ranker/assist_ranker_service_factory.h",
-    "auth_notification_types.h",
     "autocomplete/autocomplete_classifier_factory.cc",
     "autocomplete/autocomplete_classifier_factory.h",
     "autocomplete/chrome_autocomplete_provider_client.cc",

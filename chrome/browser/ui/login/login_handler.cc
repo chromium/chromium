@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
-#include "chrome/browser/auth_notification_types.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/tab_contents/tab_util.h"
@@ -28,7 +27,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -183,7 +181,6 @@ void LoginHandler::SetAuth(const std::u16string& username,
   }
 
   LoginAuthRequiredCallback callback = std::move(auth_required_callback_);
-  registrar_.RemoveAll();
 
   // Calling NotifyAuthSupplied() first allows other LoginHandler instances to
   // call CloseContents() before us. Closing dialogs in the opposite order as
@@ -201,7 +198,6 @@ void LoginHandler::CancelAuth() {
     return;
 
   LoginAuthRequiredCallback callback = std::move(auth_required_callback_);
-  registrar_.RemoveAll();
 
   if (prompt_started_) {
     NotifyAuthCancelled();
@@ -259,28 +255,13 @@ void LoginHandler::StartInternal(
 }
 
 void LoginHandler::NotifyAuthNeeded() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  content::NotificationService* service =
-      content::NotificationService::current();
-  NavigationController* controller =
-      web_contents_ ? &web_contents_->GetController() : nullptr;
-  LoginNotificationDetails details(this);
-
-  service->Notify(chrome::NOTIFICATION_AUTH_NEEDED,
-                  content::Source<NavigationController>(controller),
-                  content::Details<LoginNotificationDetails>(&details));
+  // Only used by tests. This is being refactored. https://crbug.com/1371177.
 }
 
 void LoginHandler::NotifyAuthSupplied(const std::u16string& username,
                                       const std::u16string& password) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(WasAuthHandled());
-
-  content::NotificationService* service =
-      content::NotificationService::current();
-  NavigationController* controller = &web_contents_->GetController();
-  AuthSuppliedLoginNotificationDetails details(this, username, password);
 
   // Intentionally make a copy to avoid issues with iterator invalidation.
   LoginHandlerVector vec = GetAllLoginHandlers();
@@ -290,11 +271,6 @@ void LoginHandler::NotifyAuthSupplied(const std::u16string& username,
                                                username, password);
     }
   }
-
-  service->Notify(
-      chrome::NOTIFICATION_AUTH_SUPPLIED,
-      content::Source<NavigationController>(controller),
-      content::Details<AuthSuppliedLoginNotificationDetails>(&details));
 }
 
 void LoginHandler::NotifyAuthCancelled() {
@@ -310,15 +286,6 @@ void LoginHandler::NotifyAuthCancelled() {
                                                /*password=*/std::u16string());
     }
   }
-
-  content::NotificationService* service =
-      content::NotificationService::current();
-  NavigationController* controller =
-      web_contents_ ? &web_contents_->GetController() : nullptr;
-  LoginNotificationDetails details(this);
-  service->Notify(chrome::NOTIFICATION_AUTH_CANCELLED,
-                  content::Source<NavigationController>(controller),
-                  content::Details<LoginNotificationDetails>(&details));
 }
 
 void LoginHandler::OtherHandlerFinished(bool supplied,
