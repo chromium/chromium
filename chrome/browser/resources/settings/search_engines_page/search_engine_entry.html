@@ -3,6 +3,14 @@
         font-weight: 500;
       }
 
+      cr-policy-indicator {
+        display: inline-flex;
+        justify-content: center;
+        margin-inline-start: 16px;
+        vertical-align: middle;
+        width: 36px;
+      }
+
       #name-column {
         align-items: center;
         display: flex;
@@ -41,11 +49,12 @@
           $i18n{searchEnginesActivate}
         </cr-button>
         <cr-icon-button class="icon-edit" on-click="onEditClick_"
-            title="$i18n{edit}" hidden="[[engine.canBeActivated]]"
+            title="$i18n{edit}" hidden="[[!showEditIcon_]]"
             disabled$="[[!engine.canBeEdited]]" id="editIconButton">
         </cr-icon-button>
         <cr-icon-button class="icon-more-vert" on-click="onDotsClick_"
-            disabled$="[[engine.default]]" title="$i18n{moreActions}">
+            disabled$="[[engine.default]]" title="$i18n{moreActions}"
+            hidden="[[engine.isManaged]]">
         </cr-icon-button>
         <cr-action-menu role-description="$i18n{menu}">
           <button class="dropdown-item" on-click="onMakeDefaultClick_"
@@ -61,6 +70,10 @@
             $i18n{delete}
           </button>
         </cr-action-menu>
+        <template is="dom-if" if="[[engine.isManaged]]">
+          <cr-policy-indicator indicator-type="userPolicy">
+          </cr-policy-indicator>
+        </dom-if>
       </span>
     </div>
     <template is="dom-if" if="[[engine.extension]]">

@@ -5,6 +5,7 @@
 // clang-format off
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo, SearchEnginesInteractions, ChoiceMadeLocation} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
 // clang-format on
 
 /**
@@ -93,9 +94,12 @@ export function createSampleSearchEngine(override?: Partial<SearchEngine>):
         canBeDeactivated: false,
         default: false,
         displayName: 'Google',
+        // TODO(b/317357143): Rename to `isManaged` when the UI for DSP and SS
+        //                    are unified.
         iconURL: 'http://www.google.com/favicon.ico',
         iconPath: 'images/foo.png',
         id: 0,
+        isManaged: false,
         isOmniboxExtension: false,
         keyword: 'google.com',
         modelIndex: 0,
@@ -105,4 +109,32 @@ export function createSampleSearchEngine(override?: Partial<SearchEngine>):
         urlLocked: false,
       },
       override || {});
+}
+
+export function createSampleOmniboxExtension(): SearchEngine {
+  return {
+    canBeDefault: false,
+    canBeEdited: false,
+    canBeRemoved: false,
+    canBeActivated: false,
+    canBeDeactivated: false,
+    default: false,
+    displayName: 'Omnibox extension displayName',
+    iconPath: 'images/foo.png',
+    extension: {
+      icon: 'chrome://extension-icon/some-extension-icon',
+      id: 'dummyextensionid',
+      name: 'Omnibox extension',
+      canBeDisabled: false,
+    },
+    id: 0,
+    isOmniboxExtension: true,
+    isManaged: false,
+    keyword: 'oe',
+    modelIndex: 6,
+    name: 'Omnibox extension',
+    shouldConfirmDeletion: false,
+    url: 'chrome-extension://dummyextensionid/?q=%s',
+    urlLocked: false,
+  };
 }

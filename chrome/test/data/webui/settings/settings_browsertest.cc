@@ -307,6 +307,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, Search) {
   RunTest("settings/search_settings_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, SearchEngineEntry) {
+  RunTest("settings/search_engine_entry_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, SearchEngines) {
   RunTest("settings/search_engines_page_test.js", "mocha.run()");
 }

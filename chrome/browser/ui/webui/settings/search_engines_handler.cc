@@ -252,6 +252,7 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
   dict.Set("canBeDeactivated", list_controller_.CanDeactivate(template_url));
   dict.Set("shouldConfirmDeletion",
            list_controller_.ShouldConfirmDeletion(template_url));
+  dict.Set("isManaged", list_controller_.IsManaged(template_url));
   TemplateURL::Type type = template_url->type();
   dict.Set("isOmniboxExtension", type == TemplateURL::OMNIBOX_API_EXTENSION);
   if (type == TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION ||
