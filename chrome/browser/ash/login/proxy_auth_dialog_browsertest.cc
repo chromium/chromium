@@ -54,8 +54,15 @@ class ProxyAuthOnUserBoardScreenTest : public LoginManagerTest {
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
 };
 
+// TODO(crbug.com/1514135): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ProxyAuthDialogOnUserBoardScreen \
+  DISABLED_ProxyAuthDialogOnUserBoardScreen
+#else
+#define MAYBE_ProxyAuthDialogOnUserBoardScreen ProxyAuthDialogOnUserBoardScreen
+#endif
 IN_PROC_BROWSER_TEST_F(ProxyAuthOnUserBoardScreenTest,
-                       ProxyAuthDialogOnUserBoardScreen) {
+                       MAYBE_ProxyAuthDialogOnUserBoardScreen) {
   ASSERT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
