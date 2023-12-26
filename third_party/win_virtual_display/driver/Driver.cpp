@@ -272,6 +272,7 @@ void IndirectDeviceContext::SyncRequestedConfig() {
     bool success = edid.GetTimingEntry(0)->SetMode(
         config.width(), config.height(), config.v_sync());
     edid.SetProductCode(config.product_code());
+    edid.SetSerialNumber(config.product_code());
     if (!success) {
       TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "SetMode() unsuccessful");
     }

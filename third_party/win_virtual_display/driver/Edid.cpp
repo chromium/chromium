@@ -58,11 +58,14 @@ EdidTimingEntry* Edid::GetTimingEntry(int entry) {
                                             (entry * sizeof(EdidTimingEntry)));
 }
 
-void Edid::SetProductCode(unsigned short code) {
+void Edid::SetProductCode(uint16_t code) {
   // Manufacturer product code is bytes 10-11.
-  unsigned short* mfg_code =
-      reinterpret_cast<unsigned short*>(edidBlock.data() + 10);
-  *mfg_code = code;
+  *(reinterpret_cast<uint16_t*>(edidBlock.data() + 10)) = code;
+}
+
+void Edid::SetSerialNumber(uint32_t serial) {
+  // Serial number is bytes 12-15.
+  *(reinterpret_cast<uint32_t*>(edidBlock.data() + 12)) = serial;
 }
 
 void Edid::UpdateChecksum() {

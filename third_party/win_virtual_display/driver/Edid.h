@@ -57,8 +57,11 @@ class Edid {
   // There are 8 entries. `entry` should be in in the range [0,8).
   EdidTimingEntry* GetTimingEntry(int entry);
 
-  // Set the manufacturer product code (EDID 1.4).
-  void SetProductCode(unsigned short code);
+  // Set the 16-bit manufacturer product code (EDID 1.4).
+  void SetProductCode(uint16_t code);
+
+  // Set the 32-bit serial number (EDID 1.4).
+  void SetSerialNumber(uint32_t serial);
 
   // Updates the checksum byte to be valid.
   void UpdateChecksum();
