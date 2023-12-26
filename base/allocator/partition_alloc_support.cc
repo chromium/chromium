@@ -981,7 +981,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   {
     base::AutoLock scoped_lock(lock_);
     // Avoid initializing more than once.
-    // TODO(bartekn): See if can be converted to (D)CHECK.
     if (called_after_feature_list_init_) {
       DCHECK_EQ(established_process_type_, process_type)
           << "ReconfigureAfterFeatureListInit was already called for process '"
