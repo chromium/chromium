@@ -604,12 +604,6 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
     const ResourceRequest& request,
     bool is_static_data,
     RenderBlockingBehavior render_blocking_behavior) {
-  recordreplay::OnNetworkPrepareRequest(request);
-  recordreplay::OnNetworkReceiveResponse(resource->InspectorId(), resource->GetResponse());
-  recordreplay::OnNetworkFinishLoading(resource->InspectorId(),
-                                       resource->GetResponse().EncodedBodyLength(),
-                                       resource->GetResponse().DecodedBodyLength());
-
   if (IsDetached() || !resource_load_observer_)
     return;
 
@@ -619,6 +613,12 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
   resource_load_observer_->DidReceiveResponse(
       request.InspectorId(), request, resource->GetResponse(), resource,
       ResourceLoadObserver::ResponseSource::kFromMemoryCache);
+
+  recordreplay::OnNetworkReceiveResponse(resource->InspectorId(), resource->GetResponse());
+  recordreplay::OnNetworkFinishLoading(resource->InspectorId(),
+                                       resource->GetResponse().EncodedBodyLength(),
+                                       resource->GetResponse().DecodedBodyLength());
+
   if (resource->EncodedSize() > 0) {
     resource_load_observer_->DidReceiveData(
         request.InspectorId(),
@@ -2111,17 +2111,14 @@ bool ResourceFetcher::StartLoad(
 
     const ResourceRequestHead& request_head = resource->GetResourceRequest();
 
-    {
+    if (resource_load_observer_) {
       DCHECK(!IsDetached());
       ResourceRequest request(request_head);
       request.SetHttpBody(request_body.FormBody());
-      recordreplay::OnNetworkPrepareRequest(request);
-      if (resource_load_observer_) {
-        ResourceResponse response;
-        resource_load_observer_->WillSendRequest(
-            request, response, resource->GetType(), resource->Options(),
-            render_blocking_behavior, resource);
-      }
+      ResourceResponse response;
+      resource_load_observer_->WillSendRequest(
+          request, response, resource->GetType(), resource->Options(),
+          render_blocking_behavior, resource);
     }
 
     using QuotaType = decltype(inflight_keepalive_bytes_);

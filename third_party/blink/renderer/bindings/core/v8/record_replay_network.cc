@@ -5,10 +5,17 @@
 #include "third_party/blink/renderer/bindings/core/v8/record_replay_network.h"
 
 #include "base/base64.h"
+#include "base/json/json_writer.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/platform/web_url_error.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
@@ -128,7 +135,56 @@ static const char* GetRequestCauseString(const ResourceRequest& req) {
    */
 }
 
-void OnNetworkPrepareRequest(const blink::ResourceRequest& request) {
+static absl::optional<base::DictionaryValue>
+BuildInitiatorObject(const blink::Document* document,
+                     const blink::FetchInitiatorInfo& initiator_info) {
+  // See InspectorNetworkAgent::BuildInitiatorObject for the basis of this
+  // function. Note that it would be better if we listened to CDP Network events
+  // while replaying so we don't need this logic duplication.
+
+  if (initiator_info.is_imported_module && !initiator_info.referrer.empty()) {
+    base::DictionaryValue rv;
+    rv.SetString("url", initiator_info.referrer.Utf8());
+    rv.SetInteger("line", initiator_info.position.line_.OneBasedInt());
+    rv.SetInteger("column", initiator_info.position.column_.ZeroBasedInt());
+    return rv;
+  }
+
+  bool was_requested_by_stylesheet =
+      initiator_info.name == blink::fetch_initiator_type_names::kCSS ||
+      initiator_info.name == blink::fetch_initiator_type_names::kUacss;
+  if (was_requested_by_stylesheet && !initiator_info.referrer.empty()) {
+    base::DictionaryValue rv;
+    rv.SetString("url", initiator_info.referrer.Utf8());
+    return rv;
+  }
+
+  while (document && !document->GetScriptableDocumentParser())
+    document = document->LocalOwner() ? document->LocalOwner()->ownerDocument()
+                                      : nullptr;
+  if (document && document->GetScriptableDocumentParser()) {
+    base::DictionaryValue rv;
+
+    blink::KURL url = document->Url();
+    url.RemoveFragmentIdentifier();
+    rv.SetString("url", url.GetString().Utf8());
+
+    if (TextPosition::BelowRangePosition() != initiator_info.position) {
+      rv.SetInteger("line", initiator_info.position.line_.OneBasedInt());
+      rv.SetInteger("column", initiator_info.position.column_.ZeroBasedInt());
+    } else {
+      rv.SetInteger("line", document->GetScriptableDocumentParser()->GetTextPosition().line_.OneBasedInt());
+      rv.SetInteger("column", document->GetScriptableDocumentParser()->GetTextPosition().column_.ZeroBasedInt());
+    }
+
+    return rv;
+  }
+
+  return absl::optional<base::DictionaryValue>();
+}
+
+void OnNetworkPrepareRequest(const blink::Document* document, const blink::Resource* resource,
+                             const blink::ResourceRequest& request) {
   if (!PermitRecordReplayBrowserEvents()) {
     return;
   }
@@ -161,6 +217,14 @@ void OnNetworkPrepareRequest(const blink::ResourceRequest& request) {
     headers.Append(std::move(header_obj));
   }
   dict.SetKey("requestHeaders", std::move(headers));
+
+  if (resource) {
+    const blink::FetchInitiatorInfo& initiator_info = resource->Options().initiator_info;
+    absl::optional<base::DictionaryValue> initiator_obj = BuildInitiatorObject(document, initiator_info);
+    if (initiator_obj) {
+      dict.SetKey("initiator", *std::move(initiator_obj));
+    }
+  }
 
   BrowserEvent("Network.PrepareRequest", dict);
 

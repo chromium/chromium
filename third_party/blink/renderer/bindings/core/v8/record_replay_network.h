@@ -11,7 +11,9 @@
 
 namespace blink {
 
+class Document;
 class KURL;
+class Resource;
 class ResourceRequest;
 class ResourceResponse;
 struct WebURLError;
@@ -20,7 +22,9 @@ struct WebURLError;
 
 namespace recordreplay {
 
-void OnNetworkPrepareRequest(const blink::ResourceRequest& request);
+void OnNetworkPrepareRequest(const blink::Document* document,
+                             const blink::Resource* resource,
+                             const blink::ResourceRequest& request);
 
 void OnNetworkResourceRedirect(uint64_t inspector_id, const blink::KURL& new_url,
                                blink::ResourceRequest* new_request);

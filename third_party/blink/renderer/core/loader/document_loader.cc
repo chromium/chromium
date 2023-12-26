@@ -1706,7 +1706,7 @@ void DocumentLoader::StartLoadingInternal() {
   if (recordreplay::IsRecordingOrReplaying("notify-network")) {
     ResourceRequest request(url_);
     request.SetInspectorId(main_resource_identifier_);
-    recordreplay::OnNetworkPrepareRequest(request);
+    recordreplay::OnNetworkPrepareRequest(nullptr, nullptr, request);
   }
 
   navigation_timing_info_ = ResourceTimingInfo::Create(
