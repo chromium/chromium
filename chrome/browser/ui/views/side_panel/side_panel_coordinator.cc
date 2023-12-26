@@ -392,11 +392,10 @@ void SidePanelCoordinator::Close() {
       closing_global = true;
     }
     current_entry_.reset();
-    current_entry->OnEntryHidden();
-
     if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
       NotifyPinnedContainerOfActiveStateChange(current_entry->key(), false);
     }
+    current_entry->OnEntryHidden();
   }
 
   // Reset active entry values for all observed registries and clear cache for
