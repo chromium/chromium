@@ -254,6 +254,14 @@ bool IsValidFirmwarePatchFile(const base::FilePath& filepath) {
                                  kAllowedFilepathChars);
 }
 
+// Converts a FwupdRequest into a mojom DeviceRequest.
+firmware_update::mojom::DeviceRequestPtr GetDeviceRequest(
+    FwupdRequest request) {
+  return firmware_update::mojom::DeviceRequest::New(
+      static_cast<firmware_update::mojom::DeviceRequestId>(request.id),
+      static_cast<firmware_update::mojom::DeviceRequestKind>(request.kind));
+}
+
 }  // namespace
 
 FirmwareUpdateManager::FirmwareUpdateManager()
@@ -699,6 +707,16 @@ void FirmwareUpdateManager::BindInterface(
   receiver_.reset();
 
   receiver_.Bind(std::move(pending_receiver));
+}
+
+void FirmwareUpdateManager::OnDeviceRequestResponse(FwupdRequest request) {
+  if (!device_request_observer_.is_bound()) {
+    LOG(ERROR) << "OnDeviceRequestResponse triggered with unbound observer";
+    return;
+  }
+  // Convert the FwupdRequest into a mojom DeviceRequest, then pass that
+  // request to observers.
+  device_request_observer_->OnDeviceRequest(GetDeviceRequest(request));
 }
 
 void FirmwareUpdateManager::OnPropertiesChangedResponse(

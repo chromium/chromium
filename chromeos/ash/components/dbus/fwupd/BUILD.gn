@@ -28,6 +28,8 @@ component("fwupd") {
     "fwupd_device.h",
     "fwupd_properties.cc",
     "fwupd_properties.h",
+    "fwupd_request.cc",
+    "fwupd_request.h",
     "fwupd_update.cc",
     "fwupd_update.h",
   ]
