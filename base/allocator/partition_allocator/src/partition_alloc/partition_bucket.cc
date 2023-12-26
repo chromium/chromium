@@ -579,9 +579,16 @@ uint8_t ComputeSystemPagesPerSlotSpanInternal(size_t slot_size) {
 // it exists to avoid a race (crbug.com/1445816).
 PA_ALWAYS_INLINE size_t TagSizeForSlot(PartitionRoot* root, size_t slot_size) {
 #if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
-  // TODO(bartekn): Adjust for ref_count_size only when BRP is enabled.
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+  if (root->brp_enabled()) {
+    PA_DCHECK(root->settings.ref_count_size > 0);
+    PA_DCHECK((root->settings.ref_count_size % kMemTagGranuleSize) == 0);
+  } else {
+    PA_DCHECK(root->settings.ref_count_size == 0);
+  }
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
   return slot_size - root->settings.ref_count_size;
-#else
+#else  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
   return slot_size;
 #endif
 }
