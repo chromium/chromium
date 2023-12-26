@@ -145,8 +145,7 @@ class DemoExtensionsExternalLoaderTest : public testing::Test {
   DemoExtensionsExternalLoaderTest()
       : fake_user_manager_(std::make_unique<FakeChromeUserManager>()),
         test_shared_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {}
+            test_url_loader_factory_.GetSafeWeakWrapper()) {}
 
   DemoExtensionsExternalLoaderTest(const DemoExtensionsExternalLoaderTest&) =
       delete;
