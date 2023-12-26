@@ -459,7 +459,7 @@ void RecordHandlerImpl::ReportUploader::OnStart() {
     Status empty_records =
         Status(error::INVALID_ARGUMENT, "records_ was empty");
     LOG(ERROR) << empty_records;
-    Complete(base::unexpected(empty_records));
+    Complete(base::unexpected(std::move(empty_records)));
     return;
   }
 
@@ -611,7 +611,7 @@ void RecordHandlerImpl::ReportUploader::HandleFailedUpload(Status status) {
     return;
   }
 
-  Complete(base::unexpected(status));
+  Complete(base::unexpected(std::move(status)));
 }
 
 void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(

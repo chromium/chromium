@@ -54,10 +54,10 @@ void StorageSelector::CreateLocalStorageModule(
                  StatusOr<scoped_refptr<StorageModuleInterface>>)> cb,
              StatusOr<scoped_refptr<StorageModule>> result) {
             if (!result.has_value()) {
-              std::move(cb).Run(base::unexpected(result.error()));
+              std::move(cb).Run(base::unexpected(std::move(result).error()));
               return;
             }
-            std::move(cb).Run(result.value());
+            std::move(cb).Run(std::move(result).value());
           },
           std::move(cb)));
 }
