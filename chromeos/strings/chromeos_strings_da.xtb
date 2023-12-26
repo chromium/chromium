@@ -52,7 +52,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tilpas til scanningsområdet</translation>
 <translation id="1367951781824006909">Vælg en fil</translation>
-<translation id="1387854245479784695">Dette er den samlede værdi for alle kerner</translation>
+<translation id="1387854245479784695">Dette er den aggregerede værdi for alle kerner</translation>
 <translation id="1394661041439318933">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri i etuiet.</translation>
 <translation id="1397738625398125236">Gatewayen kan pinges</translation>
 <translation id="1398634363027580500">Meget høj HTTPS-forsinkelse</translation>
@@ -306,7 +306,7 @@
 <translation id="3340978935015468852">indstillinger</translation>
 <translation id="3359218928534347896">slå mikrofonen til/fra</translation>
 <translation id="3360306038446926262">Windows</translation>
-<translation id="3368922792935385530">Tilsluttet</translation>
+<translation id="3368922792935385530">Forbundet</translation>
 <translation id="3369013195428705271">Er du sikker på, at du vil rydde hele udskriftshistorikken? Dine igangværende udskriftsjobs ryddes ikke.</translation>
 <translation id="3373141842870501561">Baggrunden Flow med Jorden</translation>
 <translation id="337375748120863155">Oplysninger relateret til det, du har markeret. Brug venstre- eller højrepil for at få adgang til indstillingerne.</translation>

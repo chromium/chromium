@@ -669,7 +669,7 @@
 <translation id="5534303576632885660">titre</translation>
 <translation id="5539820223028224601">Gris moyen</translation>
 <translation id="554893713779400387">Activer ou désactiver la dictée</translation>
-<translation id="5549179427201066174">Activer ou désactiver les commentaires audio (icônes sonores)</translation>
+<translation id="5549179427201066174">Activer ou désactiver le retour sonore (icônes sonores)</translation>
 <translation id="556042886152191864">Bouton</translation>
 <translation id="5561345396546889625">Liste suivante</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
@@ -742,7 +742,7 @@
 <translation id="5968607524793740041">Afficher le menu contextuel</translation>
 <translation id="597121107011153418">{COUNT,plural, =1{avec # élément}one{avec # élément}other{avec # éléments}}</translation>
 <translation id="5981446804259161541">Cyan clair</translation>
-<translation id="5983179082906765664">Augmenter la granularité de la navigation</translation>
+<translation id="5983179082906765664">Augmenter le niveau de précision de la navigation</translation>
 <translation id="5992285135956208197">Document graphique</translation>
 <translation id="5999630716831179808">Voix</translation>
 <translation id="6006050241733874051">Formulaire</translation>
@@ -1073,7 +1073,7 @@
 <translation id="8476408756881832830">Interrompre la lecture pendant la diffusion des commentaires audio ChromeVox</translation>
 <translation id="8476508772960940536">vue d'ensemble des fenêtres</translation>
 <translation id="8480873377842220259">Vous allez maintenant découvrir des commandes pour la navigation de base. Vous pouvez maintenir la touche Recherche enfoncée et appuyer sur les touches fléchées pour naviguer au sein de l'écran. Pour continuer, appuyez sur Recherche+Flèche vers la droite.</translation>
-<translation id="8503360654911991865">Diminuer la granularité de la navigation</translation>
+<translation id="8503360654911991865">Diminuer le niveau de précision de la navigation</translation>
 <translation id="8520472399088452386">Bouton Toupie</translation>
 <translation id="8534394844575788431">Mise en forme</translation>
 <translation id="8542271685829952264">Pour découvrir l'ensemble des commandes et des raccourcis ChromeVox, appuyez sur la touche de recherche+point, puis utilisez les touches fléchées pour parcourir les menus, et la touche Entrée pour activer une commande. Pour revenir ici, appuyez sur la touche de recherche+o, puis sur t.</translation>
