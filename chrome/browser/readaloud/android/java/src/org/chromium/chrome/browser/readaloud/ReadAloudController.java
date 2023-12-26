@@ -221,6 +221,7 @@ public class ReadAloudController
                 public void onSuccess(String url, boolean isReadable, boolean timepointsSupported) {
                     Log.d(TAG, "onSuccess called for %s", url);
                     ReadAloudMetrics.recordIsPageReadable(isReadable);
+                    ReadAloudMetrics.recordIsPageReadabilitySuccessful(true);
                     // isPlaybackEnabled() should only be checked if isReadable == true.
                     isReadable = isReadable && ReadAloudFeatures.isPlaybackEnabled();
                     mReadabilityMap.put(url, isReadable);
@@ -232,7 +233,7 @@ public class ReadAloudController
                 @Override
                 public void onFailure(String url, Throwable t) {
                     Log.d(TAG, "onFailure called for %s because %s", url, t);
-                    ReadAloudMetrics.recordIsPageReadable(false);
+                    ReadAloudMetrics.recordIsPageReadabilitySuccessful(false);
                     mPendingRequests.remove(url);
                 }
             };

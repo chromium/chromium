@@ -14,7 +14,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 public class ReadAloudMetrics {
-    @VisibleForTesting public static String READABILITY_SUCCESS = "ReadAloud.IsPageReadable";
+    @VisibleForTesting public static String IS_READABLE = "ReadAloud.IsPageReadable";
+
+    @VisibleForTesting
+    public static String READABILITY_SUCCESS = "ReadAloud.IsPageReadabilitySuccessful";
 
     @VisibleForTesting
     public static String INELIGIBILITY_REASON = "ReadAloud.Eligibility.IneligiblityReason";
@@ -55,6 +58,10 @@ public class ReadAloudMetrics {
     }
 
     public static void recordIsPageReadable(boolean successful) {
+        RecordHistogram.recordBooleanHistogram(IS_READABLE, successful);
+    }
+
+    public static void recordIsPageReadabilitySuccessful(boolean successful) {
         RecordHistogram.recordBooleanHistogram(READABILITY_SUCCESS, successful);
     }
 

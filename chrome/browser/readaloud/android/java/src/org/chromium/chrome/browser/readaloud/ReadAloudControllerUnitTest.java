@@ -1097,8 +1097,8 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    public void testMetricRecorded_readability() {
-        final String histogramName = ReadAloudMetrics.READABILITY_SUCCESS;
+    public void testMetricRecorded_isReadable() {
+        final String histogramName = ReadAloudMetrics.IS_READABLE;
 
         var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
         mController.maybeCheckReadability(sTestGURL);
@@ -1110,8 +1110,23 @@ public class ReadAloudControllerUnitTest {
         histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
         mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), false, false);
         histogram.assertExpected();
+    }
+
+    @Test
+    public void testMetricRecorded_readabilitySuccessful() {
+        final String histogramName = ReadAloudMetrics.READABILITY_SUCCESS;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+        histogram.assertExpected();
 
         histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
         mCallbackCaptor
                 .getValue()
                 .onFailure(sTestGURL.getSpec(), new Throwable("Something went wrong"));
