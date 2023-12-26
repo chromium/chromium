@@ -876,7 +876,8 @@ void BluetoothAdapterFloss::AdapterDevicePropertyChanged(
   DCHECK(FlossDBusManager::Get());
   DCHECK(IsPresent());
 
-  BLUETOOTH_LOG(EVENT) << __func__ << ": " << device;
+  BLUETOOTH_LOG(EVENT) << __func__ << ": " << device
+                       << ": prop_type = " << static_cast<uint32_t>(prop_type);
 
   BluetoothDeviceFloss* device_ptr =
       static_cast<BluetoothDeviceFloss*>(GetDevice(device.address));
@@ -887,18 +888,14 @@ void BluetoothAdapterFloss::AdapterDevicePropertyChanged(
 
   switch (prop_type) {
     case FlossAdapterClient::BtPropertyType::kBdName:
-      if (device.name.size() != 0) {
+      if (device.name.size() != 0 &&
+          device.name != device_ptr->GetName().value_or("")) {
         device_ptr->SetName(device.name);
         device_ptr->InitializeDeviceProperties(
             BluetoothDeviceFloss::PropertiesState::kTriggeredByScan,
             base::BindOnce(&BluetoothAdapterFloss::NotifyDeviceChanged,
                            weak_ptr_factory_.GetWeakPtr(), device_ptr));
       }
-      break;
-    case FlossAdapterClient::BtPropertyType::kClassOfDevice:
-      device_ptr->FetchRemoteClass(
-          base::BindOnce(&BluetoothAdapterFloss::NotifyDeviceChanged,
-                         weak_ptr_factory_.GetWeakPtr(), device_ptr));
       break;
     case FlossAdapterClient::BtPropertyType::kTypeOfDevice:
       device_ptr->FetchRemoteType(
