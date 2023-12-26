@@ -2328,7 +2328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageDatabaseSQLiteError"
-    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+    enum="SqliteLoggedResultCode" expires_after="2024-06-23">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2391,7 +2391,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageDatabaseSQLiteError.WriteFile"
-    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+    enum="SqliteLoggedResultCode" expires_after="2024-06-23">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2755,7 +2755,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.MediaFoundationCdm.Widevine.HardwareSecure.Initialize"
-    enum="Hresult" expires_after="2024-04-11">
+    enum="Hresult" expires_after="2024-06-23">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2866,7 +2866,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.MediaLicenseDatabaseOpenQuotaError"
-    enum="QuotaError" expires_after="2024-04-11">
+    enum="QuotaError" expires_after="2024-06-23">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2876,7 +2876,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.MediaLicenseDatabaseOpenSQLiteError"
-    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+    enum="SqliteLoggedResultCode" expires_after="2024-06-23">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2973,7 +2973,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.MediaLicenseStorageHostOpenError.NotIncognito"
-    enum="MediaLicenseStorageHostOpenError" expires_after="2024-04-11">
+    enum="MediaLicenseStorageHostOpenError" expires_after="2024-06-23">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3982,7 +3982,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaRecorder.Codec" enum="MediaRecorderCodec"
-    expires_after="2024-02-11">
+    expires_after="2024-06-23">
   <owner>clarissagarvey@chromium.org</owner>
   <owner>mcasas@chromium.org</owner>
   <summary>
@@ -4728,7 +4728,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderError" enum="MediaStatusCode"
-    expires_after="2024-04-20">
+    expires_after="2024-06-23">
   <owner>posciak@chromium.org</owner>
   <owner>liberato@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
@@ -5211,7 +5211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VaapiWrapper.VADisplayStateInitializeSuccess"
-    enum="BooleanSuccess" expires_after="2024-04-20">
+    enum="BooleanSuccess" expires_after="2024-06-23">
   <owner>mcasas@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>

@@ -3941,7 +3941,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result_PostReturn"
-    enum="ServiceWorkerExternalRequestResult" expires_after="2024-04-18">
+    enum="ServiceWorkerExternalRequestResult" expires_after="2024-06-23">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

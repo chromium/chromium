@@ -5383,7 +5383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.Renderer.Duration" units="ms"
-    expires_after="2024-04-10">
+    expires_after="2024-06-23">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5397,7 +5397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.Renderer.Duration.Failed" units="ms"
-    expires_after="2024-04-06">
+    expires_after="2024-06-23">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5410,7 +5410,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.Renderer.Duration.Succeeded" units="ms"
-    expires_after="2024-04-06">
+    expires_after="2024-06-23">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>

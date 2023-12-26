@@ -2261,7 +2261,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordMigrationWarning.Export.Event"
-    enum="PasswordExportEvent" expires_after="2024-04-19">
+    enum="PasswordExportEvent" expires_after="2024-06-23">
   <owner>ioanap@chromium.org</owner>
   <owner>atsvirchkova@google.com</owner>
   <summary>
@@ -2526,7 +2526,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.PasswordSharingDesktop.UserAction"
     enum="PasswordManager.PasswordSharingDesktopActions"
-    expires_after="2024-03-01">
+    expires_after="2024-06-23">
   <owner>natiahlyi@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <owner>rgod@google.com</owner>
@@ -3954,7 +3954,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordProtection.PasswordProtectionResponseOrErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-03-17">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-06-23">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

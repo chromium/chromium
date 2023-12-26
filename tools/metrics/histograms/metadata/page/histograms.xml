@@ -3045,7 +3045,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.ImageLCPLessThanLoadEnd"
-    enum="Boolean" expires_after="2024-04-24">
+    enum="Boolean" expires_after="2024-06-23">
   <owner>haoliuk@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -3069,7 +3069,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.ImageLoadStartLessThanDocumentTTFB"
-    enum="Boolean" expires_after="2024-04-24">
+    enum="Boolean" expires_after="2024-06-23">
   <owner>haoliuk@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -3082,7 +3082,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.ImageLoadStartLessThanDocumentTtfbCauses"
     enum="LargestContentfulPaintImageLoadStartLessThanDocumentTtfbCauses"
-    expires_after="2024-04-24">
+    expires_after="2024-06-23">
   <owner>haoliuk@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>

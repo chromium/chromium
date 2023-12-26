@@ -1867,7 +1867,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.FieldFillingStats{AutofillFillingMethod}{AutofillFormType}{FillingStatus}"
-    units="fields" expires_after="2024-02-20">
+    units="fields" expires_after="2024-06-23">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2774,7 +2774,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.ManualFallback.ExplicitlyTriggered.{AutocompleteState}.Address"
-    enum="BooleanSelectManualFallback" expires_after="M125">
+    enum="BooleanSelectManualFallback" expires_after="2024-06-23">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
