@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_LOGIN_HTTP_AUTH_COORDINATOR_H_
 #define CHROME_BROWSER_UI_LOGIN_HTTP_AUTH_COORDINATOR_H_
 
+#include <map>
+
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/login_delegate.h"
 #include "net/base/auth.h"
@@ -44,18 +47,15 @@ class WebContents;
 // HttpAuthCoordinator is the class instantiated by ChromeContentBrowserClient
 // that coordinates the flows. It exists for two reasons:
 //   (1) Allow tests to perform dependency injection.
-//   (2) A single place that owns all instances of HttpAuthFlow.
+//   (2) A single place that owns all instances of Flow.
 //
-// One instance of HttpAuthFlow is created per call to CreateLoginDelegate().
-// Each instance of HttpAuthFlow creates an instance of content::LoginDelegate
-// which is returned and owned by the caller of CreateLoginDelegate().
-// HttpAuthFlow can outlive this instance due to (3b) and (5b).
+// One instance of Flow is created per call to CreateLoginDelegate().
 class HttpAuthCoordinator {
  public:
   HttpAuthCoordinator();
   virtual ~HttpAuthCoordinator();
 
-  // Creates an instance of HttpAuthFlow.
+  // Creates an instance of Flow.
   std::unique_ptr<content::LoginDelegate> CreateLoginDelegate(
       content::WebContents* web_contents,
       const net::AuthChallengeInfo& auth_info,
@@ -85,6 +85,64 @@ class HttpAuthCoordinator {
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
+
+ private:
+  // See outer class comment for details.
+  class Flow {
+   public:
+    explicit Flow(HttpAuthCoordinator* coordinator);
+    ~Flow();
+    Flow(const Flow&) = delete;
+    Flow& operator=(const Flow&) = delete;
+
+    // This callback is given to LoginHandler. The original callback is stored
+    // in `callback_`.
+    content::LoginDelegate::LoginAuthRequiredCallback GetLoginHandlerCallback(
+        content::LoginDelegate::LoginAuthRequiredCallback callback);
+
+    // The wrapper is owned by //content. Usually destruction of the wrapper
+    // will result in destruction of the Flow. However, the Flow will persist in
+    // (3b) and (5b). See HttpAuthCoordinator class comment.
+    void WrapperDestroyed();
+
+    // Passes ownership of the implementation that is being refactored.
+    void SetLoginHandler(std::unique_ptr<content::LoginDelegate> handler);
+
+   private:
+    // Called by LoginHandler when credentials are obtained or cancelled.
+    void OnCredentials(const absl::optional<net::AuthCredentials>& credentials);
+
+    // Invoking this callback will destroy the wrapper. The one instance this
+    // callback should not be invoked is if the wrapper is already destroyed.
+    content::LoginDelegate::LoginAuthRequiredCallback callback_;
+
+    // The previous implementation of HttpAuth that is being refactored.
+    std::unique_ptr<content::LoginDelegate> login_handler_;
+
+    // Owns this instance.
+    const raw_ptr<HttpAuthCoordinator> coordinator_;
+
+    base::WeakPtrFactory<Flow> weak_factory_{this};
+  };
+
+  // This is a dummy object returned to the caller of CreateLoginDelegate().
+  class LoginDelegateWrapper : public content::LoginDelegate {
+   public:
+    explicit LoginDelegateWrapper(Flow* flow);
+    ~LoginDelegateWrapper() override;
+    LoginDelegateWrapper(const LoginDelegateWrapper&) = delete;
+    LoginDelegateWrapper& operator=(const LoginDelegateWrapper&) = delete;
+
+   private:
+    raw_ptr<Flow> flow_;
+  };
+
+  // Called by a flow when it is finished.
+  void FlowFinished(Flow* flow);
+
+  // This member tracks all active flows.
+  using Flows = std::map<Flow*, std::unique_ptr<Flow>>;
+  Flows flows_;
 };
 
 #endif  // CHROME_BROWSER_UI_LOGIN_HTTP_AUTH_COORDINATOR_H_
