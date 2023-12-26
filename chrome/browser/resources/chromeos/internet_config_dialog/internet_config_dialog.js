@@ -13,10 +13,10 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview
@@ -24,71 +24,77 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
  * outside of settings (e.g. from the login screen or when configuring a
  * new network from the system tray).
  */
-Polymer({
-  is: 'internet-config-dialog',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const InternetConfigDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class InternetConfigDialogElement extends
+    InternetConfigDialogElementBase {
+  static get is() {
+    return 'internet-config-dialog';
+  }
 
-  properties: {
-    /** @private */
-    shareAllowEnable_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('shareNetworkAllowEnable');
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /** @private */
+      shareAllowEnable_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('shareNetworkAllowEnable');
+        },
       },
-    },
 
-    /** @private */
-    shareDefault_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('shareNetworkDefault');
+      /** @private */
+      shareDefault_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('shareNetworkDefault');
+        },
       },
-    },
 
-    /**
-     * The network GUID to configure, or empty when configuring a new network.
-     * @private
-     */
-    guid_: String,
+      /**
+       * The network GUID to configure, or empty when configuring a new network.
+       * @private
+       */
+      guid_: String,
 
-    /**
-     * The type of network to be configured as a string. May be set initially or
-     * updated by network-config.
-     * @private
-     */
-    type_: String,
+      /**
+       * The type of network to be configured as a string. May be set initially
+       * or updated by network-config.
+       * @private
+       */
+      type_: String,
 
-    /** @private */
-    enableConnect_: Boolean,
+      /** @private */
+      enableConnect_: Boolean,
 
-    /**
-     * Set by network-config when a configuration error occurs.
-     * @private
-     */
-    error_: {
-      type: String,
-      value: '',
-    },
-
-    /**
-     * Whether the Jelly feature flag is enabled.
-     * @private
-     */
-    isJellyEnabled_: {
-      type: Boolean,
-      readOnly: true,
-      value() {
-        return loadTimeData.valueExists('isJellyEnabled') &&
-            loadTimeData.getBoolean('isJellyEnabled');
+      /**
+       * Set by network-config when a configuration error occurs.
+       * @private
+       */
+      error_: {
+        type: String,
+        value: '',
       },
-    },
-  },
+    };
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
+    const isJellyEnabled = loadTimeData.valueExists('isJellyEnabled') &&
+        loadTimeData.getBoolean('isJellyEnabled');
     const dialogArgs = chrome.getVariableValue('dialogArguments');
     if (dialogArgs) {
       const args = JSON.parse(dialogArgs);
@@ -102,7 +108,7 @@ Polymer({
       this.guid_ = params.get('guid') || '';
     }
 
-    if (this.isJellyEnabled_) {
+    if (isJellyEnabled) {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = 'chrome://theme/colors.css?sets=legacy,sys';
@@ -118,12 +124,12 @@ Polymer({
     this.$.networkConfig.init();
 
     /** @type {!CrDialogElement} */ (this.$.dialog).showModal();
-  },
+  }
 
   /** @private */
   close_() {
     chrome.send('dialogClose');
-  },
+  }
 
   /**
    * @return {string}
@@ -132,7 +138,7 @@ Polymer({
   getDialogTitle_() {
     const type = this.i18n('OncType' + this.type_);
     return this.i18n('internetJoinType', type);
-  },
+  }
 
   /**
    * @return {string}
@@ -143,15 +149,18 @@ Polymer({
       return this.i18n(this.error_);
     }
     return this.i18n('networkErrorUnknown');
-  },
+  }
 
   /** @private */
   onCancelClick_() {
     this.close_();
-  },
+  }
 
   /** @private */
   onConnectClick_() {
     this.$.networkConfig.connect();
-  },
-});
+  }
+}
+
+customElements.define(
+    InternetConfigDialogElement.is, InternetConfigDialogElement);
