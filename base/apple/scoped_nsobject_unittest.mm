@@ -52,7 +52,7 @@ TEST(ScopedNSObjectTest, ScopedNSObject) {
   }
   ASSERT_EQ(2u, [p1.get() retainCount]);
 
-  base::apple::scoped_nsobject<NSObject> p7([NSObject new]);
+  base::apple::scoped_nsobject<NSObject> p7([[NSObject alloc] init]);
   base::apple::scoped_nsobject<NSObject> p8(std::move(p7));
   ASSERT_TRUE(p8);
   ASSERT_EQ(1u, [p8.get() retainCount]);

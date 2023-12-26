@@ -385,7 +385,7 @@ const double kKeyPressDelay = 0.02;
 // Utility to describe modifier flags. Useful in debugging.
 [[maybe_unused]] NSString* DescribeFlags(UIKeyModifierFlags flags);
 NSString* DescribeFlags(UIKeyModifierFlags flags) {
-  NSMutableString* s = [NSMutableString new];
+  NSMutableString* s = [[NSMutableString alloc] init];
   if (flags & UIKeyModifierAlphaShift) {
     [s appendString:@"CapsLock+"];
   }

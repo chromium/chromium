@@ -448,7 +448,7 @@
 
   // A non-nil UIImage has to be added in the background of the toolbar to avoid
   // having an additional blur effect.
-  [_toolbar setBackgroundImage:[UIImage new]
+  [_toolbar setBackgroundImage:[[UIImage alloc] init]
             forToolbarPosition:UIBarPositionAny
                     barMetrics:UIBarMetricsDefault];
 }

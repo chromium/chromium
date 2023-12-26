@@ -186,9 +186,9 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   ];
 
   // Make the navigation bar transparent so it completly match the view.
-  [_navigationBar setBackgroundImage:[UIImage new]
+  [_navigationBar setBackgroundImage:[[UIImage alloc] init]
                        forBarMetrics:UIBarMetricsDefault];
-  _navigationBar.shadowImage = [UIImage new];
+  _navigationBar.shadowImage = [[UIImage alloc] init];
   _navigationBar.translucent = YES;
 
   _navigationBar.tintColor = [UIColor colorNamed:kSolidWhiteColor];

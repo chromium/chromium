@@ -498,7 +498,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
   // A non-nil UIImage has to be added in the background of the toolbar to avoid
   // having an additional blur effect.
-  [self setBackgroundImage:[UIImage new]
+  [self setBackgroundImage:[[UIImage alloc] init]
         forToolbarPosition:UIBarPositionAny
                 barMetrics:UIBarMetricsDefault];
 }

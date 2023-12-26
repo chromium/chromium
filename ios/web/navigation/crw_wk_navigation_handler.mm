@@ -173,7 +173,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
         std::make_unique<web::CertVerificationErrorsCacheType>(
             kMaxCertErrorsCount);
 
-    _nativeTaskBridges = [NSMutableSet new];
+    _nativeTaskBridges = [[NSMutableSet alloc] init];
 
     _shouldPerformDownload = NO;
 
