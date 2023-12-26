@@ -252,8 +252,9 @@ chromium-metrics-reviews@google.com.
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
-    Startup metric that records the result of the
-    KeyCredentialManager.IsSupportedAsync method in the Windows Runtime API.
+    Records the result of the KeyCredentialManager.IsSupportedAsync method in
+    the Windows Runtime API. It is recorded on a low-priority thread at browser
+    startup.
   </summary>
 </histogram>
 
