@@ -248,10 +248,10 @@ std::optional<int> CookieControlsIconView::GetLabelForStatus() const {
     case CookieControlsStatus::kDisabled:  // Cookies are not blocked
       return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL;
     case CookieControlsStatus::kEnabled:  // Cookies are blocked
-      if (blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd) {
-        return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL;
-      } else {
+      if (blocking_status_ == CookieBlocking3pcdStatus::kLimited) {
         return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_LIMITED_LABEL;
+      } else {
+        return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL;
       }
     case CookieControlsStatus::kUninitialized:
       DLOG(ERROR) << "CookieControl status is not initialized";

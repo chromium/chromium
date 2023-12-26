@@ -103,6 +103,10 @@ class CookieControlsIconViewUnitTest
 
   bool In3pcd() { return GetParam() != CookieBlocking3pcdStatus::kNotIn3pcd; }
 
+  bool CookiesLimited3pcd() {
+    return GetParam() == CookieBlocking3pcdStatus::kLimited;
+  }
+
   bool LabelShown() { return view_->ShouldShowLabel(); }
 
   bool Visible() { return view_->ShouldBeVisible(); }
@@ -182,7 +186,8 @@ TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceLabelAnimation) {
   EXPECT_TRUE(LabelShown());
   EXPECT_EQ(TooltipText(),
             In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
-  EXPECT_EQ(LabelText(), In3pcd() ? LimitedLabel() : BlockedLabel());
+  EXPECT_EQ(LabelText(),
+            CookiesLimited3pcd() ? LimitedLabel() : BlockedLabel());
 }
 
 TEST_P(CookieControlsIconViewUnitTest,
