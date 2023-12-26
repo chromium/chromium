@@ -125,7 +125,7 @@ const base::Value* OriginIdentifierValueMap::GetValue(
   return nullptr;
 }
 
-void OriginIdentifierValueMap::SetValue(
+bool OriginIdentifierValueMap::SetValue(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
@@ -139,11 +139,15 @@ void OriginIdentifierValueMap::SetValue(
   CHECK_NE(ContentSettingsType::DEFAULT, content_type);
   PatternPair patterns(primary_pattern, secondary_pattern);
   ValueEntry* entry = &entries_[content_type][patterns];
+  if (entry->value == value && entry->metadata == metadata) {
+    return false;
+  }
   entry->value = std::move(value);
   entry->metadata = metadata;
+  return true;
 }
 
-void OriginIdentifierValueMap::DeleteValue(
+bool OriginIdentifierValueMap::DeleteValue(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
@@ -151,10 +155,11 @@ void OriginIdentifierValueMap::DeleteValue(
   PatternPair patterns(primary_pattern, secondary_pattern);
   auto it = entries_.find(content_type);
   if (it == entries_.end())
-    return;
+    return false;
   it->second.erase(patterns);
   if (it->second.empty())
     entries_.erase(it);
+  return true;
 }
 
 void OriginIdentifierValueMap::DeleteValues(ContentSettingsType content_type) {
