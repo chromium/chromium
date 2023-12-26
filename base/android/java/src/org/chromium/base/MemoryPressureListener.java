@@ -98,10 +98,6 @@ public class MemoryPressureListener {
         }
     }
 
-    public static void onPreFreeze() {
-        MemoryPressureListenerJni.get().onPreFreeze();
-    }
-
     /**
      * Used by applications to simulate a memory pressure signal. By throwing certain intent
      * actions.
@@ -143,7 +139,5 @@ public class MemoryPressureListener {
     @NativeMethods
     interface Natives {
         void onMemoryPressure(@MemoryPressureLevel int pressure);
-
-        void onPreFreeze();
     }
 }
