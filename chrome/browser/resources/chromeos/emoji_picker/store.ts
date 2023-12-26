@@ -4,7 +4,7 @@
 
 import {EmojiPickerApiProxy} from 'emoji_picker_api_proxy.js';
 
-import {CategoryEnum, EmojiVariants, PreferenceMapping, VisualContent} from './types.js';
+import {CategoryEnum, EmojiVariants, Gender, PreferenceMapping, Tone, VisualContent} from './types.js';
 
 const MAX_RECENTS = 10;
 
@@ -192,6 +192,34 @@ export class RecentlyUsedStore {
     }
 
     return updated;
+  }
+}
+
+interface EmojiPreferences {
+  tone: Tone|null;
+  gender: Gender|null;
+}
+
+export class EmojiPreferencesStore {
+  private static store = new Store<EmojiPreferences>(
+      'emoji-preferences', {tone: null, gender: null});
+
+  static getTone(): Tone|null {
+    return EmojiPreferencesStore.store.data.tone;
+  }
+
+  static setTone(tone: Tone) {
+    EmojiPreferencesStore.store.data.tone = tone;
+    EmojiPreferencesStore.store.save();
+  }
+
+  static getGender(): Gender|null {
+    return EmojiPreferencesStore.store.data.gender;
+  }
+
+  static setGender(gender: Gender) {
+    EmojiPreferencesStore.store.data.gender = gender;
+    EmojiPreferencesStore.store.save();
   }
 }
 
