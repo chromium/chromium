@@ -139,6 +139,10 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   _logoView.translatesAutoresizingMaskIntoConstraints = NO;
 
   _titleLabel = [[UILabel alloc] init];
+  // Add semantic group to have a coherent behaviour with the table view and
+  // the primary button, this is related to VoiceOver.
+  _titleLabel.accessibilityContainerType =
+      UIAccessibilityContainerTypeSemanticGroup;
   [_topZoneStackView addArrangedSubview:_titleLabel];
   [_titleLabel
       setText:l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE)];
@@ -219,6 +223,11 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   [_primaryButton addTarget:self
                      action:@selector(primaryButtonAction)
            forControlEvents:UIControlEventTouchUpInside];
+  // Add semantic group, so the user can skip all the table view cells, and
+  // jump to the primary button, using VoiceOver. This requires to set
+  // `semantic group` to the button too.
+  _primaryButton.accessibilityContainerType =
+      UIAccessibilityContainerTypeSemanticGroup;
 
   [NSLayoutConstraint activateConstraints:@[
     // Scroll view constraints.

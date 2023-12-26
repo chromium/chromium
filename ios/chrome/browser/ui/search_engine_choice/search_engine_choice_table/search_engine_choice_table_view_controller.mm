@@ -59,6 +59,11 @@ constexpr CGFloat kTableViewSeparatorLeadingInset = 56;
   self.styler.cellBackgroundColor =
       [UIColor colorNamed:kSecondaryBackgroundColor];
   tableView.separatorColor = [UIColor colorNamed:kGrey300Color];
+  // Add semantic group, so the user can skip all the table view cells, and
+  // jump to the primary button, using VoiceOver. This requires to set
+  // `semantic group` to the button too.
+  self.tableView.accessibilityContainerType =
+      UIAccessibilityContainerTypeSemanticGroup;
 
   [self loadModel];
 }
