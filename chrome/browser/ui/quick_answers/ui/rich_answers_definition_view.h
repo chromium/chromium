@@ -32,6 +32,10 @@ class RichAnswersDefinitionView : public RichAnswersView {
  private:
   void InitLayout();
   void AddHeaderViews();
+  void AddWordClass();
+  void AddDefinition();
+  void MaybeAddSampleSentence();
+  void MaybeAddSynonyms();
   void AddPhoneticsAudioButtonTo(views::View* container_view);
   void OnPhoneticsAudioButtonPressed();
 

@@ -87,6 +87,9 @@ gfx::FontList GetFontList(TypographyToken token) {
     case TypographyToken::kCrosBody2:
       return gfx::FontList(kGoogleSansFontFamily, gfx::Font::NORMAL,
                            /*font_size=*/13, gfx::Font::Weight::NORMAL);
+    case TypographyToken::kCrosBody2Italic:
+      return gfx::FontList(kGoogleSansFontFamily, gfx::Font::ITALIC,
+                           /*font_size=*/13, gfx::Font::Weight::NORMAL);
     case TypographyToken::kCrosButton2:
       return gfx::FontList(kGoogleSansFontFamily, gfx::Font::NORMAL,
                            /*font_size=*/13, gfx::Font::Weight::MEDIUM);

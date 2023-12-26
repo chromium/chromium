@@ -58,7 +58,12 @@ class QuickAnswersUtteranceEventDelegate
 };
 
 // |TypographyToken| values used by the Quick Answers cards.
-enum class TypographyToken { kCrosBody2, kCrosButton2, kCrosTitle1 };
+enum class TypographyToken {
+  kCrosBody2,
+  kCrosBody2Italic,
+  kCrosButton2,
+  kCrosTitle1
+};
 
 // Returns the |FontList| equivalents of |TypographyToken| values.
 // This is so Quick Answers doesn't have an //ash/style dependency.

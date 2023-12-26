@@ -34,11 +34,13 @@ class DefinitionResultParserTest : public testing::Test {
  protected:
   Value::Dict BuildDictionaryResult(const std::string& query_term,
                                     const std::string& phonetic_str,
-                                    const std::string& definition) {
+                                    const std::string& definition,
+                                    const std::string& word_class) {
     Value::Dict result;
 
-    if (!query_term.empty())
+    if (!query_term.empty()) {
       result.SetByDottedPath("dictionaryResult.queryTerm", query_term);
+    }
 
     // Build definition entry.
     Value::List entries;
@@ -65,6 +67,15 @@ class DefinitionResultParserTest : public testing::Test {
       sense.SetByDottedPath("definition.text", definition);
       senses.Append(std::move(sense));
       sense_family.Set("senses", std::move(senses));
+
+      if (!word_class.empty()) {
+        Value::List parts_of_speech;
+        Value::Dict part_of_speech;
+        part_of_speech.Set("value", word_class);
+        parts_of_speech.Append(std::move(part_of_speech));
+        sense_family.Set("partsOfSpeech", std::move(parts_of_speech));
+      }
+
       sense_families.Append(std::move(sense_family));
       entry.Set("senseFamilies", std::move(sense_families));
     }
@@ -85,9 +96,9 @@ class DefinitionResultParserTest : public testing::Test {
 };
 
 TEST_F(DefinitionResultParserTest, Success) {
-  Value::Dict result =
-      BuildDictionaryResult("unfathomable", "ˌənˈfaT͟Həməb(ə)",
-                            "incapable of being fully explored or understood.");
+  Value::Dict result = BuildDictionaryResult(
+      "unfathomable", "ˌənˈfaT͟Həməb(ə)",
+      "incapable of being fully explored or understood.", "adjective");
   QuickAnswer quick_answer;
   EXPECT_TRUE(parser_->Parse(result, &quick_answer));
 
@@ -116,6 +127,7 @@ TEST_F(DefinitionResultParserTest, Success) {
   DefinitionResult* definition_result =
       structured_result->definition_result.get();
   EXPECT_EQ(definition_result->word, "unfathomable");
+  EXPECT_EQ(definition_result->word_class, "adjective");
 
   // `PhoneticsInfo::query_text` is headword. It's a query text for TTS. We
   // should not expect this test case response from the server as either
@@ -137,17 +149,17 @@ TEST_F(DefinitionResultParserTest, EmptyValue) {
 }
 
 TEST_F(DefinitionResultParserTest, NoQueryTerm) {
-  Value::Dict result =
-      BuildDictionaryResult("", "ˌənˈfaT͟Həməb(ə)",
-                            "incapable of being fully explored or understood.");
+  Value::Dict result = BuildDictionaryResult(
+      "", "ˌənˈfaT͟Həməb(ə)", "incapable of being fully explored or understood.",
+      "adjective");
   QuickAnswer quick_answer;
   EXPECT_FALSE(parser_->Parse(result, &quick_answer));
 }
 
 TEST_F(DefinitionResultParserTest, NoQueryTermShouldFallbackToHeadword) {
-  Value::Dict result =
-      BuildDictionaryResult("", "ˌənˈfaT͟Həməb(ə)",
-                            "incapable of being fully explored or understood.");
+  Value::Dict result = BuildDictionaryResult(
+      "", "ˌənˈfaT͟Həməb(ə)", "incapable of being fully explored or understood.",
+      "adjective");
   SetHeadWord(result, "unfathomable");
   QuickAnswer quick_answer;
   EXPECT_TRUE(parser_->Parse(result, &quick_answer));
@@ -157,9 +169,9 @@ TEST_F(DefinitionResultParserTest, NoQueryTermShouldFallbackToHeadword) {
 }
 
 TEST_F(DefinitionResultParserTest, ShouldPrioritizeQueryTerm) {
-  Value::Dict result =
-      BuildDictionaryResult("Unfathomable", "ˌənˈfaT͟Həməb(ə)",
-                            "incapable of being fully explored or understood.");
+  Value::Dict result = BuildDictionaryResult(
+      "Unfathomable", "ˌənˈfaT͟Həməb(ə)",
+      "incapable of being fully explored or understood.", "adjective");
   SetHeadWord(result, "Unfathomable");
   QuickAnswer quick_answer;
   EXPECT_TRUE(parser_->Parse(result, &quick_answer));
@@ -170,7 +182,8 @@ TEST_F(DefinitionResultParserTest, ShouldPrioritizeQueryTerm) {
 
 TEST_F(DefinitionResultParserTest, NoPhonetic) {
   Value::Dict result = BuildDictionaryResult(
-      "unfathomable", "", "incapable of being fully explored or understood.");
+      "unfathomable", "", "incapable of being fully explored or understood.",
+      "adjective");
   QuickAnswer quick_answer;
   EXPECT_TRUE(parser_->Parse(result, &quick_answer));
 
@@ -184,8 +197,16 @@ TEST_F(DefinitionResultParserTest, NoPhonetic) {
 }
 
 TEST_F(DefinitionResultParserTest, NoDefinition) {
-  Value::Dict result =
-      BuildDictionaryResult("unfathomable", "ˌənˈfaT͟Həməb(ə)l", "");
+  Value::Dict result = BuildDictionaryResult("unfathomable", "ˌənˈfaT͟Həməb(ə)l",
+                                             "", "adjective");
+  QuickAnswer quick_answer;
+  EXPECT_FALSE(parser_->Parse(result, &quick_answer));
+}
+
+TEST_F(DefinitionResultParserTest, NoWordClass) {
+  Value::Dict result = BuildDictionaryResult(
+      "unfathomable", "ˌənˈfaT͟Həməb(ə)l",
+      "incapable of being fully explored or understood.", "");
   QuickAnswer quick_answer;
   EXPECT_FALSE(parser_->Parse(result, &quick_answer));
 }

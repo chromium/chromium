@@ -231,9 +231,14 @@ struct QuickAnswersRequest {
 struct Sense {
  public:
   Sense();
+  Sense(const Sense& other);
+  Sense& operator=(const Sense& other);
   ~Sense();
 
   std::string definition;
+  // Not every word will have a sample sentence or synonyms.
+  std::optional<std::string> sample_sentence;
+  std::optional<std::vector<std::string>> synonyms_list;
 };
 
 // `DefinitionResult` holds result for definition intent.
@@ -246,6 +251,7 @@ struct DefinitionResult {
   ~DefinitionResult();
 
   std::string word;
+  std::string word_class;
   PhoneticsInfo phonetics_info;
   Sense sense;
 };
