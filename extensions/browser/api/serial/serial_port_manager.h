@@ -65,7 +65,7 @@ class SerialPortManager : public BrowserContextKeyedAPI {
   static void OverrideBinderForTesting(Binder binder);
 
  private:
-  typedef ApiResourceManager<SerialConnection>::ApiResourceData ConnectionData;
+  using ConnectionData = ApiResourceManager<SerialConnection>::ApiResourceData;
   friend class BrowserContextKeyedAPIFactory<SerialPortManager>;
 
   // BrowserContextKeyedAPI implementation.
