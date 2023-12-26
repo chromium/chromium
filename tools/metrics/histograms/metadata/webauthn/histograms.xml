@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebAuthentication.ChromeOS.GetAssertionStatus"
     enum="WebAuthenticationChromeOSGetAssertionResult"
-    expires_after="2024-05-12">
+    expires_after="2024-12-31">
   <owner>martinkr@google.com</owner>
   <owner>hcyang@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -148,7 +148,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebAuthentication.ChromeOS.MakeCredentialStatus"
     enum="WebAuthenticationChromeOSMakeCredentialResult"
-    expires_after="2024-01-04">
+    expires_after="2024-12-31">
   <owner>martinkr@google.com</owner>
   <owner>hcyang@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -156,8 +156,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.ChromeOS.StartupRecordCount" units="records"
-    expires_after="2024-03-10">
+    expires_after="2024-12-31">
   <owner>martinkr@google.com</owner>
+  <owner>hcyang@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
     Records the number of records of the user's WebAuthn credentials created on
