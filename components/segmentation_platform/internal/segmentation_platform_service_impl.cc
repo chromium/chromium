@@ -149,6 +149,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
 
 SegmentationPlatformServiceImpl::~SegmentationPlatformServiceImpl() {
   signal_handler_.TearDown();
+  ClearAllUserData();
 }
 
 void SegmentationPlatformServiceImpl::GetSelectedSegment(
