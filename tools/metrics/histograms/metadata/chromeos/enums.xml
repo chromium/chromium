@@ -846,6 +846,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Feature is accessible to user. Recorded periodically."/>
 </enum>
 
+<enum name="FirmwareUpdateDeviceRequestID">
+  <int value="0" label="DoNotPowerOff"/>
+  <int value="1" label="ReplugInstall"/>
+  <int value="2" label="InsertUSBCable"/>
+  <int value="3" label="RemoveUSBCable"/>
+  <int value="4" label="PressUnlock"/>
+  <int value="5" label="RemoveReplug"/>
+</enum>
+
 <enum name="FirmwareUpdateInstallResult">
   <int value="0" label="Success"/>
   <int value="1" label="InstallFailed"/>

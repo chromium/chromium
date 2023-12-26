@@ -714,8 +714,9 @@ void FirmwareUpdateManager::OnDeviceRequestResponse(FwupdRequest request) {
     LOG(ERROR) << "OnDeviceRequestResponse triggered with unbound observer";
     return;
   }
-  // Convert the FwupdRequest into a mojom DeviceRequest, then pass that
-  // request to observers.
+  // Convert the FwupdRequest into a mojom DeviceRequest, then record the metric
+  // and pass that request to observers.
+  firmware_update::metrics::EmitDeviceRequest(GetDeviceRequest(request));
   device_request_observer_->OnDeviceRequest(GetDeviceRequest(request));
 }
 

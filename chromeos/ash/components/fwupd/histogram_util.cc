@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 
 namespace {
 
@@ -33,6 +35,19 @@ void EmitUpdateCount(int num_updates,
 void EmitInstallResult(FirmwareUpdateInstallResult result) {
   base::UmaHistogramEnumeration("ChromeOS.FirmwareUpdateUi.InstallResult",
                                 result);
+}
+
+void EmitDeviceRequest(firmware_update::mojom::DeviceRequestPtr request) {
+  std::string kind_string = "Unknown";
+  if (request->kind == mojom::DeviceRequestKind::kImmediate) {
+    kind_string = "Immediate";
+  } else if (request->kind == mojom::DeviceRequestKind::kPost) {
+    kind_string = "Post";
+  }
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"ChromeOS.FirmwareUpdateUi.RequestReceived.Kind", kind_string}),
+      request->id);
 }
 
 std::string GetSourceStr(bool is_startup) {

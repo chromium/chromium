@@ -1093,6 +1093,7 @@ TEST_F(FirmwareUpdateManagerTest, SetupDeviceRequestObserver) {
 }
 
 TEST_F(FirmwareUpdateManagerTest, DeviceRequestObserver) {
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
   FakeDeviceRequestObserver device_request_observer;
   SetupDeviceRequestObserver(&device_request_observer);
@@ -1107,10 +1108,10 @@ TEST_F(FirmwareUpdateManagerTest, DeviceRequestObserver) {
       1;
 
   for (int id_index = 0; id_index < device_request_id_size; id_index++) {
+    firmware_update::mojom::DeviceRequestId id =
+        static_cast<firmware_update::mojom::DeviceRequestId>(id_index);
     for (int kind_index = 0; kind_index < device_request_kind_size;
          kind_index++) {
-      firmware_update::mojom::DeviceRequestId id =
-          static_cast<firmware_update::mojom::DeviceRequestId>(id_index);
       firmware_update::mojom::DeviceRequestKind kind =
           static_cast<firmware_update::mojom::DeviceRequestKind>(kind_index);
 
@@ -1119,7 +1120,42 @@ TEST_F(FirmwareUpdateManagerTest, DeviceRequestObserver) {
       EXPECT_EQ(id, device_request_observer.GetLatestRequest()->id);
       EXPECT_EQ(kind, device_request_observer.GetLatestRequest()->kind);
     }
+    histogram_tester.ExpectBucketCount(
+        "ChromeOS.FirmwareUpdateUi.RequestReceived.KindImmediate", id, 1);
+    histogram_tester.ExpectBucketCount(
+        "ChromeOS.FirmwareUpdateUi.RequestReceived.KindPost", id, 1);
+    histogram_tester.ExpectBucketCount(
+        "ChromeOS.FirmwareUpdateUi.RequestReceived.KindUnknown", id, 1);
   }
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.FirmwareUpdateUi.RequestReceived.KindImmediate",
+      device_request_id_size);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.FirmwareUpdateUi.RequestReceived.KindPost",
+      device_request_id_size);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.FirmwareUpdateUi.RequestReceived.KindUnknown",
+      device_request_id_size);
+}
+
+TEST_F(FirmwareUpdateManagerTest, DeviceRequestObserverMetrics) {
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
+  FakeDeviceRequestObserver device_request_observer;
+  SetupDeviceRequestObserver(&device_request_observer);
+
+  TriggerOnDeviceRequestResponse(
+      firmware_update::mojom::DeviceRequestId::kPressUnlock,
+      firmware_update::mojom::DeviceRequestKind::kImmediate);
+
+  EXPECT_EQ(firmware_update::mojom::DeviceRequestId::kPressUnlock,
+            device_request_observer.GetLatestRequest()->id);
+  EXPECT_EQ(firmware_update::mojom::DeviceRequestKind::kImmediate,
+            device_request_observer.GetLatestRequest()->kind);
+
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.FirmwareUpdateUi.RequestReceived.KindImmediate",
+      firmware_update::mojom::DeviceRequestId::kPressUnlock, 1);
 }
 
 }  // namespace ash

@@ -1207,6 +1207,25 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.FirmwareUpdateUi.RequestReceived.Kind{Kind}"
+    enum="FirmwareUpdateDeviceRequestID" expires_after="2024-06-28">
+  <owner>cambickel@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the ID and {Kind} of request received from fwupd. A request is an
+    instruction for the user to perform some action necessary to continue the
+    update. For example, a user may be asked to unplug and then replug their
+    device. For each firmware update, there may be 0 or more requests received.
+  </summary>
+  <token key="Kind">
+    <variant name="Immediate"/>
+    <variant name="Post"/>
+    <variant name="Unknown"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.FirmwareUpdateUi.{Source}.DeviceCount"
     units="devices" expires_after="2023-01-01">
   <owner>jimmyxgong@chromium.org</owner>
