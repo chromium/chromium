@@ -415,6 +415,7 @@ ShortcutsDatabase::Shortcut::MatchCore ShortcutsBackend::MatchToMatchCore(
 
 void ShortcutsBackend::ShutdownOnUIThread() {
   history_service_observation_.Reset();
+  template_url_service_ = nullptr;
 }
 
 void ShortcutsBackend::OnURLsDeleted(
