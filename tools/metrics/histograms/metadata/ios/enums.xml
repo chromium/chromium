@@ -323,6 +323,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Tab Resumption"/>
   <int value="11" label="Parcel Tracking"/>
   <int value="12" label="Parcel Tracking See More"/>
+  <int value="13" label="Set Up List Content Notification"/>
 </enum>
 
 <enum name="IOSMainThreadFreezeDetectionNotRunningAfterReportBlock">

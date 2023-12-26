@@ -54,6 +54,8 @@ ContentSuggestionsModuleType SetUpListModuleTypeForSetUpListType(
       return ContentSuggestionsModuleType::kSetUpListAutofill;
     case SetUpListItemType::kAllSet:
       return ContentSuggestionsModuleType::kSetUpListAllSet;
+    case SetUpListItemType::kContentNotification:
+      return ContentSuggestionsModuleType::kSetUpListContentNotification;
     default:
       NOTREACHED_NORETURN();
   }
