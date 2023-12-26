@@ -54,6 +54,16 @@ class SupervisedUserService : public KeyedService,
     virtual void SetActive(bool active) = 0;
   };
 
+  // Delegate encapsulating platform-specific logic that is invoked from SUS.
+  class PlatformDelegate {
+   public:
+    virtual ~PlatformDelegate() {}
+
+    // Close all incognito tabs for this service. Called the profile becomes
+    // supervised.
+    virtual void CloseIncognitoTabs() = 0;
+  };
+
   SupervisedUserService(const SupervisedUserService&) = delete;
   SupervisedUserService& operator=(const SupervisedUserService&) = delete;
 
@@ -142,6 +152,8 @@ class SupervisedUserService : public KeyedService,
       ValidateURLSupportCallback check_webstore_url_callback,
       std::unique_ptr<supervised_user::SupervisedUserURLFilter::Delegate>
           url_filter_delegate,
+      std::unique_ptr<supervised_user::SupervisedUserService::PlatformDelegate>
+          platform_delegate,
       bool can_show_first_time_interstitial_banner);
 
  private:
@@ -198,6 +210,8 @@ class SupervisedUserService : public KeyedService,
   bool active_ = false;
 
   raw_ptr<Delegate> delegate_;
+
+  std::unique_ptr<PlatformDelegate> platform_delegate_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

@@ -78,6 +78,10 @@ class SupervisionMixin : public InProcessBrowserTestMixin {
   // Controls FakeGaia's response.
   void SetNextReAuthStatus(GaiaAuthConsumer::ReAuthProofTokenStatus status);
 
+  // Sign in (assumes that the current state is signed out). The `mode` argument
+  // must not be `kSignedOut`.
+  void SignIn(SignInMode mode);
+
   EmbeddedTestServerSetupMixin& embedded_test_server_setup_mixin() {
     return *embedded_test_server_setup_mixin_;
   }

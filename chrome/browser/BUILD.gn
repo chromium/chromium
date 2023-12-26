@@ -7797,6 +7797,17 @@ static_library("browser") {
       "supervised_user/supervised_user_settings_service_factory.cc",
       "supervised_user/supervised_user_settings_service_factory.h",
     ]
+    if (is_android) {
+      sources += [
+        "supervised_user/android/supervised_user_service_platform_delegate.cc",
+        "supervised_user/android/supervised_user_service_platform_delegate.h",
+      ]
+    } else {
+      sources += [
+        "supervised_user/supervised_user_service_platform_delegate.cc",
+        "supervised_user/supervised_user_service_platform_delegate.h",
+      ]
+    }
     if (is_chromeos_ash) {
       deps += [ "//chrome/browser/ash/crosapi" ]
     }

@@ -43,6 +43,12 @@ class MockPermissionRequestCreator : public PermissionRequestCreator {
                               SuccessCallback callback) override {}
 };
 
+class MockSupervisedUserservicePlatformDelegate
+    : public SupervisedUserService::PlatformDelegate {
+ public:
+  MOCK_METHOD(void, CloseIncognitoTabs, (), (override));
+};
+
 class ChildAccountServiceTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -73,6 +79,7 @@ class ChildAccountServiceTest : public ::testing::Test {
         /*check_webstore_url_callback=*/
         base::BindRepeating([](const GURL& url) { return false; }),
         std::make_unique<FakeURLFilterDelegate>(),
+        std::make_unique<MockSupervisedUserservicePlatformDelegate>(),
         /*can_show_first_time_interstitial_banner=*/false);
 
     list_family_members_service_ = std::make_unique<ListFamilyMembersService>(

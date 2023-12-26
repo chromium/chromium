@@ -4275,6 +4275,7 @@ if (!is_android && !is_fuchsia) {
 
     if (enable_supervised_users) {
       sources += [
+        "../browser/supervised_user/supervised_user_incognito_browsertest.cc",
         "../browser/supervised_user/supervised_user_navigation_throttle_browsertest.cc",
         "../browser/supervised_user/supervised_user_regional_url_filter_browsertest.cc",
         "../browser/supervised_user/supervised_user_service_browsertest.cc",

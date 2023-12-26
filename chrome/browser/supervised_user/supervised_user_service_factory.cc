@@ -25,6 +25,12 @@
 #include "extensions/browser/extensions_browser_client.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
+#else
+#include "chrome/browser/supervised_user/supervised_user_service_platform_delegate.h"
+#endif
+
 class FilterDelegateImpl
     : public supervised_user::SupervisedUserURLFilter::Delegate {
  public:
@@ -80,6 +86,8 @@ KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
       SyncServiceFactory::GetInstance()->GetForProfile(profile),
       base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL),
       std::make_unique<FilterDelegateImpl>(),
+      std::make_unique<SupervisedUserServicePlatformDelegate>(
+          SupervisedUserServicePlatformDelegate(*profile)),
       /*can_show_first_time_interstitial_banner=*/!profile->IsNewProfile());
 }
 

@@ -37,6 +37,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace supervised_user {
@@ -47,6 +48,11 @@ const char kExampleUrl0[] = "http://www.example0.com";
 const char kExampleUrl1[] = "http://www.example1.com/123";
 
 }  // namespace
+
+class MockPlatformDelegate : public SupervisedUserService::PlatformDelegate {
+ public:
+  MOCK_METHOD(void, CloseIncognitoTabs, (), (override));
+};
 
 class SupervisedUserServiceTestBase : public ::testing::Test {
  public:
@@ -67,6 +73,7 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
         /*check_webstore_url_callback=*/
         base::BindRepeating([](const GURL& url) { return false; }),
         std::make_unique<FakeURLFilterDelegate>(),
+        std::make_unique<MockPlatformDelegate>(),
         /*can_show_first_time_interstitial_banner=*/true);
 
     service_->Init();

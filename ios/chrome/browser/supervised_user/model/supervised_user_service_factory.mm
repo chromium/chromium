@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_service_platform_delegate.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "url/gurl.h"
@@ -100,5 +101,6 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
       // false.
       base::BindRepeating([](const GURL& url) { return false; }),
       std::make_unique<FilterDelegateImpl>(),
+      std::make_unique<SupervisedUserServicePlatformDelegate>(),
       supervised_user::ShouldShowFirstTimeBanner(browser_state));
 }

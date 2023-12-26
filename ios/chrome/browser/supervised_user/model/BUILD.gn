@@ -20,6 +20,8 @@ source_set("model") {
     "supervised_user_metrics_service_factory.mm",
     "supervised_user_service_factory.h",
     "supervised_user_service_factory.mm",
+    "supervised_user_service_platform_delegate.h",
+    "supervised_user_service_platform_delegate.mm",
     "supervised_user_url_filter_tab_helper.h",
     "supervised_user_url_filter_tab_helper.mm",
   ]

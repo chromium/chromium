@@ -28,7 +28,14 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "supervised_user_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+class MockSupervisedUserservicePlatformDelegate
+    : public supervised_user::SupervisedUserService::PlatformDelegate {
+ public:
+  MOCK_METHOD(void, CloseIncognitoTabs, (), (override));
+};
 
 class ParentalControlMetricsTest : public testing::Test {
  public:
@@ -46,6 +53,7 @@ class ParentalControlMetricsTest : public testing::Test {
             /*check_webstore_url_callback=*/
             base::BindRepeating([](const GURL& url) { return false; }),
             std::make_unique<supervised_user::FakeURLFilterDelegate>(),
+            std::make_unique<MockSupervisedUserservicePlatformDelegate>(),
             /*can_show_first_time_interstitial_banner=*/false);
     supervised_user_service_->Init();
 

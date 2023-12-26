@@ -143,6 +143,7 @@ SupervisedUserService::SupervisedUserService(
     syncer::SyncService* sync_service,
     ValidateURLSupportCallback check_webstore_url_callback,
     std::unique_ptr<SupervisedUserURLFilter::Delegate> url_filter_delegate,
+    std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate,
     bool can_show_first_time_interstitial_banner)
     : user_prefs_(user_prefs),
       settings_service_(settings_service),
@@ -150,6 +151,7 @@ SupervisedUserService::SupervisedUserService(
       identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
       delegate_(nullptr),
+      platform_delegate_(std::move(platform_delegate)),
       can_show_first_time_interstitial_banner_(
           can_show_first_time_interstitial_banner) {
   url_filter_ = std::make_unique<SupervisedUserURLFilter>(
@@ -259,7 +261,15 @@ void SupervisedUserService::OnCustodianInfoChanged() {
 }
 
 void SupervisedUserService::OnSupervisedUserIdChanged() {
-  SetActive(supervised_user::IsChildAccount(user_prefs_.get()));
+  bool is_child = supervised_user::IsChildAccount(user_prefs_.get());
+  if (is_child) {
+    // When supervision is enabled, close any incognito windows/tabs that may
+    // be open for this profile. These windows cannot be created after the
+    // user is signed in, and closing existing ones avoids unexpected
+    // behavior due to baked-in assumptions in the SupervisedUser code.
+    platform_delegate_->CloseIncognitoTabs();
+  }
+  SetActive(is_child);
 }
 
 void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
