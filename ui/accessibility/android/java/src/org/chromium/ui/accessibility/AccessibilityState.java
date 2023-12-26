@@ -674,19 +674,23 @@ public class AccessibilityState {
                 (0 != (sEventTypeMaskHeuristic & SCREEN_READER_EVENT_TYPE_MASK));
 
         boolean isOnlyAutofillRunning = false;
-        AutofillManager autofillManager = context.getSystemService(AutofillManager.class);
-        if (autofillManager != null
-                && autofillManager.isEnabled()
-                && autofillManager.hasEnabledAutofillServices()) {
-            // Confirm that autofill service is the only service running that requires
-            // accessibility.
-            if (runningServiceNames.isEmpty()
-                    || (runningServiceNames.size() == 1
-                            && runningServiceNames
-                                    .get(0)
-                                    .equals(AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID))) {
-                isOnlyAutofillRunning = true;
+        try {
+            AutofillManager autofillManager = context.getSystemService(AutofillManager.class);
+            if (autofillManager != null
+                    && autofillManager.isEnabled()
+                    && autofillManager.hasEnabledAutofillServices()) {
+                // Confirm that autofill service is the only service running that requires
+                // accessibility.
+                if (runningServiceNames.isEmpty()
+                        || (runningServiceNames.size() == 1
+                                && runningServiceNames
+                                        .get(0)
+                                        .equals(AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID))) {
+                    isOnlyAutofillRunning = true;
+                }
             }
+        } catch (RuntimeException e) {
+            Log.e(TAG, "AutofillManager did not resolve before timelimit.");
         }
 
         boolean isOnlyPasswordManagersEnabled;
