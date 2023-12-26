@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -22,6 +23,7 @@ Vector<std::pair<SMILTime, SMILTimeOrigin>> ExtractListContents(
 }
 
 TEST(SMILInstanceTimeListTest, Sort) {
+  test::TaskEnvironment task_environment;
   SMILInstanceTimeList list;
   list.Append(SMILTime::FromSecondsD(1), SMILTimeOrigin::kAttribute);
   list.Append(SMILTime::FromSecondsD(5), SMILTimeOrigin::kAttribute);
@@ -41,6 +43,7 @@ TEST(SMILInstanceTimeListTest, Sort) {
 }
 
 TEST(SMILInstanceTimeListTest, InsertSortedAndUnique) {
+  test::TaskEnvironment task_environment;
   SMILInstanceTimeList list;
   list.Append(SMILTime::FromSecondsD(1), SMILTimeOrigin::kAttribute);
   list.Append(SMILTime::FromSecondsD(2), SMILTimeOrigin::kScript);
@@ -78,6 +81,7 @@ TEST(SMILInstanceTimeListTest, InsertSortedAndUnique) {
 }
 
 TEST(SMILInstanceTimeListTest, RemoveWithOrigin) {
+  test::TaskEnvironment task_environment;
   SMILInstanceTimeList list;
   list.Append(SMILTime::FromSecondsD(1), SMILTimeOrigin::kScript);
   list.Append(SMILTime::FromSecondsD(2), SMILTimeOrigin::kAttribute);
@@ -96,6 +100,7 @@ TEST(SMILInstanceTimeListTest, RemoveWithOrigin) {
 }
 
 TEST(SMILInstanceTimeListTest, NextAfter) {
+  test::TaskEnvironment task_environment;
   SMILInstanceTimeList list;
   list.Append(SMILTime::FromSecondsD(1), SMILTimeOrigin::kScript);
   list.Append(SMILTime::FromSecondsD(2), SMILTimeOrigin::kAttribute);
@@ -125,6 +130,7 @@ class EmptyEventListener : public NativeEventListener {
 };
 
 TEST(SVGSMILElementTest, RepeatNEventListenerUseCounted) {
+  test::TaskEnvironment task_environment;
   auto dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();

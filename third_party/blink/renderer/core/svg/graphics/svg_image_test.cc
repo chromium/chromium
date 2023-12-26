@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -93,6 +94,7 @@ class SVGImageTest : public testing::Test, private ScopedMockOverlayScrollbars {
    private:
     bool should_pause_;
   };
+  test::TaskEnvironment task_environment_;
   Persistent<PauseControlImageObserver> observer_;
   scoped_refptr<SVGImage> image_;
 };
