@@ -16,10 +16,13 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,8 +30,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -40,6 +45,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -61,6 +67,10 @@ public class CustomTabPrivacySandboxDialogTest {
 
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
+
+    @Rule
+    public ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
     private String mTestPage;
     private EmbeddedTestServer mTestServer;
@@ -187,10 +197,88 @@ public class CustomTabPrivacySandboxDialogTest {
     public void adsNoticeCCT_PartialShouldNotShowNotice() throws Exception {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT", true);
+                        "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT", false);
         doTestLaunchPartialCustomTabWithInitialHeight();
 
         onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
         watcher.assertExpected();
+    }
+
+    private void startActivityForResultCCT() {
+        CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder().build();
+        Intent intent = customTabsIntent.intent;
+        intent.setData(Uri.parse("https://example.com"));
+        String packageName = ContextUtils.getApplicationContext().getPackageName();
+        intent.setPackage(packageName);
+        mChromeTabbedActivityTestRule.startMainActivityOnBlankPage();
+
+        ApplicationTestUtils.waitForActivityWithClass(
+                CustomTabActivity.class,
+                Stage.CREATED,
+                () -> {
+                    mChromeTabbedActivityTestRule.getActivity().startActivityForResult(intent, 0);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT + ":app-id/org.chromium.chrome.tests",
+        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
+                + ":force-show-notice-row-for-testing/true/notice-required/true"
+    })
+    public void adsNoticeCCT_appIdCheckDoesShowDialog() {
+        HistogramWatcher shouldShowWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT", true);
+        HistogramWatcher appIDCheckWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Startup.Android.PrivacySandbox.AdsNoticeCCTAppIDCheck", true);
+        startActivityForResultCCT();
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog)).check(matches(isDisplayed()));
+        shouldShowWatcher.pollInstrumentationThreadUntilSatisfied();
+        appIDCheckWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT + ":app-id/different.app.id",
+        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
+                + ":force-show-notice-row-for-testing/true/notice-required/true"
+    })
+    public void adsNoticeCCT_appIdCheckDoesNotShowDialog() {
+        HistogramWatcher shouldShowWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT", true);
+        HistogramWatcher appIDCheckWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Startup.Android.PrivacySandbox.AdsNoticeCCTAppIDCheck", false);
+        startActivityForResultCCT();
+        onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
+        shouldShowWatcher.pollInstrumentationThreadUntilSatisfied();
+        appIDCheckWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT + ":app-id/org.chromium.chrome.tests",
+        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
+                + ":force-show-notice-row-for-testing/true/notice-required/true"
+    })
+    public void adsNoticeCCT_AppIDNullShowDialog() {
+        HistogramWatcher shouldShowWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT", true);
+        HistogramWatcher appIDCheckWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Startup.Android.PrivacySandbox.AdsNoticeCCTAppIDCheck", false);
+        // Starting a CCT with mCustomTabActivityTestRule, causes the package name set to null
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
+        // If the package name is null, we do not show the dialog
+        onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
+        shouldShowWatcher.pollInstrumentationThreadUntilSatisfied();
+        appIDCheckWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 }
