@@ -8,6 +8,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
@@ -62,11 +63,12 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
     private View mRootContentView;
 
     // Variables used to calculate the virtual keyboard's height.
-    private int mPreviousKeyboardInset;
     private int mKeyboardInset;
 
-    // Extra inset when edge to edge is on.
-    private int mEdgeInset;
+    // Variables used to adjust view position and size when visible frame is changed.
+    private Rect mCurrentVisibleRect = new Rect();
+    private Rect mPreviousVisibleRect = new Rect();
+
     private OnLayoutChangeListener mLayoutListener =
             new OnLayoutChangeListener() {
                 @Override
@@ -166,7 +168,6 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
                             int oldRight,
                             int oldBottom) {
                         mContainerView.removeOnLayoutChangeListener(this);
-
                         mContainerView.setTranslationY(getYPositionForMoveAnimation());
                         Animator animator =
                                 ObjectAnimator.ofFloat(mContainerView, View.TRANSLATION_Y, 0);
@@ -195,7 +196,6 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
                     public void onAnimationEnd(Animator animation) {
                         mRootContentView.removeOnLayoutChangeListener(mLayoutListener);
                         mParent.removeView(mContainerView);
-
                     }
                 });
         startAnimatorOnSurfaceView(moveAnimator);
@@ -204,12 +204,15 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         }
     }
 
-    /** Adjusts the position of the snackbar on top of the soft keyboard, if any. */
+    /**
+     * Adjusts the position when visible area is updated, such as resizing the window, in order to
+     * ensure its maximum width.
+     */
     void adjustViewPosition() {
+        mParent.getWindowVisibleDisplayFrame(mCurrentVisibleRect);
         // Only update if the visible frame has changed, otherwise there will be a layout loop.
-        if (mKeyboardInset != mPreviousKeyboardInset) {
-            mPreviousKeyboardInset = mKeyboardInset;
-
+        if (!mCurrentVisibleRect.equals(mPreviousVisibleRect)) {
+            mPreviousVisibleRect.set(mCurrentVisibleRect);
             FrameLayout.LayoutParams lp = getLayoutParams();
 
             int prevBottomMargin = lp.bottomMargin;
@@ -239,11 +242,6 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         adjustViewPosition();
     }
 
-    void updateEdgeInset(int inset) {
-        mEdgeInset = inset;
-        adjustViewPosition();
-    }
-
     protected int getYPositionForMoveAnimation() {
         return mContainerView.getHeight() + getLayoutParams().bottomMargin;
     }
@@ -256,6 +254,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
      * @see SnackbarManager#overrideParent(ViewGroup)
      */
     void overrideParent(ViewGroup overridingParent) {
+        mRootContentView.removeOnLayoutChangeListener(mLayoutListener);
         mParent = overridingParent == null ? mOriginalParent : overridingParent;
         if (mContainerView.getParent() != null) {
             ((ViewGroup) mContainerView.getParent()).removeView(mContainerView);
@@ -312,6 +311,12 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
 
     private void addToParent() {
         mParent.addView(mContainerView);
+
+        // Why setting listener on parent? It turns out that if we force a relayout in the layout
+        // change listener of the view itself, the force layout flag will be reset to 0 when
+        // layout() returns. Therefore we have to do request layout on one level above the requested
+        // view.
+        mRootContentView.addOnLayoutChangeListener(mLayoutListener);
     }
 
     // TODO(fgorski): Start using color ID, to remove the view from arguments.
