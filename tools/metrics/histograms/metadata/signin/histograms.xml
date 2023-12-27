@@ -1646,15 +1646,6 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.SigninReason" enum="SigninReason"
-    expires_after="2024-04-28">
-  <owner>msarda@chromium.org</owner>
-  <owner>bsazonov@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>Logs the reason of each completed sign in.</summary>
-</histogram>
-
 <histogram name="Signin.SigninStartedAccessPoint" enum="SigninAccessPoint"
     expires_after="2024-04-28">
   <owner>msarda@chromium.org</owner>

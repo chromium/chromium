@@ -124,10 +124,6 @@ void LogSigninAccessPointCompleted(AccessPoint access_point,
   }
 }
 
-void LogSigninReason(Reason reason) {
-  base::UmaHistogramEnumeration("Signin.SigninReason", reason);
-}
-
 void LogSignInOffered(AccessPoint access_point) {
   base::UmaHistogramEnumeration("Signin.SignIn.Offered", access_point,
                                 AccessPoint::ACCESS_POINT_MAX);

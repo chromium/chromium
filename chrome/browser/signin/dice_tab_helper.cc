@@ -23,25 +23,23 @@
 // static
 DiceTabHelper::EnableSyncCallback
 DiceTabHelper::GetEnableSyncCallbackForBrowser() {
-  return base::BindRepeating(
-      [](Profile* profile, signin_metrics::AccessPoint access_point,
-         signin_metrics::PromoAction promo_action,
-         signin_metrics::Reason reason, content::WebContents* web_contents,
-         const CoreAccountInfo& account_info) {
-        DCHECK(profile);
-        Browser* browser = web_contents
-                               ? chrome::FindBrowserWithTab(web_contents)
-                               : chrome::FindBrowserWithProfile(profile);
-        if (!browser) {
-          return;
-        }
-        // TurnSyncOnHelper is suicidal (it will kill itself once it
-        // finishes enabling sync).
-        new TurnSyncOnHelper(
-            profile, browser, access_point, promo_action, reason,
-            account_info.account_id,
-            TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
-      });
+  return base::BindRepeating([](Profile* profile,
+                                signin_metrics::AccessPoint access_point,
+                                signin_metrics::PromoAction promo_action,
+                                content::WebContents* web_contents,
+                                const CoreAccountInfo& account_info) {
+    DCHECK(profile);
+    Browser* browser = web_contents ? chrome::FindBrowserWithTab(web_contents)
+                                    : chrome::FindBrowserWithProfile(profile);
+    if (!browser) {
+      return;
+    }
+    // TurnSyncOnHelper is suicidal (it will kill itself once it
+    // finishes enabling sync).
+    new TurnSyncOnHelper(profile, browser, access_point, promo_action,
+                         account_info.account_id,
+                         TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  });
 }
 
 // static

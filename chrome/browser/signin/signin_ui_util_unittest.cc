@@ -106,7 +106,6 @@ class MockSigninUiDelegate : public SigninUiDelegate {
               (Profile * profile,
                signin_metrics::AccessPoint access_point,
                signin_metrics::PromoAction promo_action,
-               signin_metrics::Reason signin_reason,
                const CoreAccountId& account_id,
                TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode),
               ());
@@ -121,7 +120,6 @@ class MockSigninUiDelegate : public SigninUiDelegateImplDice {
               (Profile * profile,
                signin_metrics::AccessPoint access_point,
                signin_metrics::PromoAction promo_action,
-               signin_metrics::Reason signin_reason,
                const CoreAccountId& account_id,
                TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode),
               ());
@@ -160,13 +158,11 @@ class SigninUiUtilTest : public BrowserWithTestWindowTest {
   void ExpectTurnSyncOn(
       signin_metrics::AccessPoint access_point,
       signin_metrics::PromoAction promo_action,
-      signin_metrics::Reason signin_reason,
       const CoreAccountId& account_id,
       TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode) {
-    EXPECT_CALL(
-        mock_delegate_,
-        ShowTurnSyncOnUI(profile(), access_point, promo_action, signin_reason,
-                         account_id, signin_aborted_mode));
+    EXPECT_CALL(mock_delegate_,
+                ShowTurnSyncOnUI(profile(), access_point, promo_action,
+                                 account_id, signin_aborted_mode));
   }
 
   void ExpectNoSigninStartedHistograms(
@@ -275,8 +271,7 @@ TEST_F(SigninUiUtilTest, EnableSyncWithExistingAccount) {
             ? signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT
             : signin_metrics::PromoAction::PROMO_ACTION_NOT_DEFAULT;
     ExpectTurnSyncOn(signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
-                     expected_promo_action,
-                     signin_metrics::Reason::kSigninPrimaryAccount, account_id,
+                     expected_promo_action, account_id,
                      TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
     EnableSync(
         GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
@@ -712,8 +707,7 @@ TEST_F(SigninUiUtilWithUnoDesktopTest, EnableSyncWithExistingWebOnlyAccount) {
             : signin_metrics::PromoAction::PROMO_ACTION_NOT_DEFAULT;
     ExpectTurnSyncOn(
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
-        expected_promo_action, signin_metrics::Reason::kSigninPrimaryAccount,
-        account_id,
+        expected_promo_action, account_id,
         TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY);
     EnableSync(
         GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
@@ -759,13 +753,11 @@ class MirrorSigninUiUtilTest : public BrowserWithTestWindowTest {
   void ExpectTurnSyncOn(
       signin_metrics::AccessPoint access_point,
       signin_metrics::PromoAction promo_action,
-      signin_metrics::Reason signin_reason,
       const CoreAccountId& account_id,
       TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode) {
-    EXPECT_CALL(
-        mock_delegate_,
-        ShowTurnSyncOnUI(profile(), access_point, promo_action, signin_reason,
-                         account_id, signin_aborted_mode));
+    EXPECT_CALL(mock_delegate_,
+                ShowTurnSyncOnUI(profile(), access_point, promo_action,
+                                 account_id, signin_aborted_mode));
   }
 
  protected:
@@ -790,8 +782,7 @@ TEST_F(MirrorSigninUiUtilTest, EnableSyncWithExistingAccount) {
 
     ExpectTurnSyncOn(
         signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
-        expected_promo_action, signin_metrics::Reason::kSigninPrimaryAccount,
-        account_info.account_id,
+        expected_promo_action, account_info.account_id,
         TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
     EnableSyncFromMultiAccountPromo(
         profile(), account_info,

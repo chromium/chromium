@@ -366,8 +366,7 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
                                               existing_account_promo_action);
   signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
   GetSigninUiDelegate()->ShowTurnSyncOnUI(
-      profile, access_point, existing_account_promo_action,
-      signin_metrics::Reason::kSigninPrimaryAccount, account.account_id,
+      profile, access_point, existing_account_promo_action, account.account_id,
       signin_aborted_mode);
 #else
   NOTREACHED();

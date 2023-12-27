@@ -194,7 +194,6 @@ TurnSyncOnHelper::TurnSyncOnHelper(
     Profile* profile,
     signin_metrics::AccessPoint signin_access_point,
     signin_metrics::PromoAction signin_promo_action,
-    signin_metrics::Reason signin_reason,
     const CoreAccountId& account_id,
     SigninAbortedMode signin_aborted_mode,
     std::unique_ptr<Delegate> delegate,
@@ -204,7 +203,6 @@ TurnSyncOnHelper::TurnSyncOnHelper(
       identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
       signin_access_point_(signin_access_point),
       signin_promo_action_(signin_promo_action),
-      signin_reason_(signin_reason),
       signin_aborted_mode_(signin_aborted_mode),
       account_info_(
           identity_manager_->FindExtendedAccountInfoByAccountId(account_id)),
@@ -237,13 +235,11 @@ TurnSyncOnHelper::TurnSyncOnHelper(
     Browser* browser,
     signin_metrics::AccessPoint signin_access_point,
     signin_metrics::PromoAction signin_promo_action,
-    signin_metrics::Reason signin_reason,
     const CoreAccountId& account_id,
     SigninAbortedMode signin_aborted_mode)
     : TurnSyncOnHelper(profile,
                        signin_access_point,
                        signin_promo_action,
-                       signin_reason,
                        account_id,
                        signin_aborted_mode,
                        std::make_unique<TurnSyncOnHelperDelegateImpl>(browser),
@@ -500,10 +496,8 @@ void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
                                              signin_access_point_);
   // If the account is already signed in, `SetPrimaryAccount()` above is a no-op
   // and the logs below are inaccurate.
-  // TODO(crbug.com/1402935): Review and rebuild the SigninReason logging.
   signin_metrics::LogSigninAccessPointCompleted(signin_access_point_,
                                                 signin_promo_action_);
-  signin_metrics::LogSigninReason(signin_reason_);
   base::RecordAction(base::UserMetricsAction("Signin_Signin_Succeed"));
 
   bool user_accepted_management =

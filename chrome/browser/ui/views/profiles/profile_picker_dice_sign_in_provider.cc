@@ -262,7 +262,6 @@ void ProfilePickerDiceSignInProvider::FinishFlowInPicker(
     Profile* profile,
     signin_metrics::AccessPoint /*access_point*/,
     signin_metrics::PromoAction /*promo_action*/,
-    signin_metrics::Reason /*reason*/,
     content::WebContents* /*contents*/,
     const CoreAccountInfo& account_info) {
   CHECK_EQ(profile, profile_.get());

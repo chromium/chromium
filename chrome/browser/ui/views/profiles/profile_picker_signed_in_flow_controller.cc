@@ -69,9 +69,6 @@ void ProfilePickerSignedInFlowController::Init() {
   new TurnSyncOnHelper(
       profile_, signin_access_point_,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-      signin_util::IsForceSigninEnabled()
-          ? signin_metrics::Reason::kForcedSigninPrimaryAccount
-          : signin_metrics::Reason::kSigninPrimaryAccount,
       account_info.account_id,
       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
       std::make_unique<ProfilePickerTurnSyncOnDelegate>(

@@ -397,8 +397,6 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
         signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN,
         signin_metrics::SourceForRefreshTokenOperation::
             kInlineLoginHandler_Signin);
-
-    signin_metrics::LogSigninReason(signin_metrics::Reason::kReauthentication);
   } else {
     if (confirm_untrusted_signin_) {
       // Display a confirmation dialog to the user.
@@ -462,8 +460,7 @@ void InlineSigninHelper::CreateSyncStarter(const std::string& refresh_token) {
 
   new TurnSyncOnHelper(
       profile_, signin::GetAccessPointForEmbeddedPromoURL(current_url_),
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-      signin::GetSigninReasonForEmbeddedPromoURL(current_url_), account_id,
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, account_id,
       TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT, std::move(delegate),
       base::BindOnce(&OnSigninComplete, profile_, email_, password_,
                      is_force_sign_in_with_usermanager_));

@@ -687,7 +687,6 @@ class ProfileMenuViewSigninErrorButtonTest : public ProfileMenuViewTestBase,
                 (Profile * profile,
                  signin_metrics::AccessPoint access_point,
                  signin_metrics::PromoAction promo_action,
-                 signin_metrics::Reason signin_reason,
                  const CoreAccountId& account_id,
                  TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode),
                 ());
@@ -762,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSigninErrorButtonTest, OpenReauthDialog) {
           browser()->profile(),
           signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
           signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-          signin_metrics::Reason::kReauthentication, account_info().account_id,
+          account_info().account_id,
           TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT))
       .WillOnce([&loop]() { loop.Quit(); });
 

@@ -27,7 +27,6 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
       base::RepeatingCallback<void(Profile*,
                                    signin_metrics::AccessPoint,
                                    signin_metrics::PromoAction,
-                                   signin_metrics::Reason,
                                    content::WebContents*,
                                    const CoreAccountInfo&)>;
 

@@ -96,8 +96,6 @@ const signin_metrics::AccessPoint kAccessPoint =
     signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER;
 const signin_metrics::PromoAction kSigninPromoAction =
     signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT;
-const signin_metrics::Reason kSigninReason =
-    signin_metrics::Reason::kReauthentication;
 
 struct ExpectedMetricsState {
   // Access point that triggered sign-in, might be different from the one
@@ -564,8 +562,8 @@ class TurnSyncOnHelperTest : public testing::Test {
     WeakClosure weak_closure;
 
     auto* helper = new TurnSyncOnHelper(
-        profile(), kAccessPoint, kSigninPromoAction, kSigninReason, account_id_,
-        mode, std::make_unique<TestTurnSyncOnHelperDelegate>(this),
+        profile(), kAccessPoint, kSigninPromoAction, account_id_, mode,
+        std::make_unique<TestTurnSyncOnHelperDelegate>(this),
         weak_closure.Get().Then(flow_completion_loop_.QuitClosure()));
 
     // In no circumstance should the flow complete synchronously. It can cause
@@ -670,8 +668,6 @@ class TurnSyncOnHelperTest : public testing::Test {
     EXPECT_THAT(
         histogram_tester_->GetAllSamples("Signin.SigninCompletedAccessPoint"),
         BucketsAre(Bucket(kAccessPoint, expected.sign_in_recorded)));
-    EXPECT_THAT(histogram_tester_->GetAllSamples("Signin.SigninReason"),
-                BucketsAre(Bucket(kSigninReason, expected.sign_in_recorded)));
 
     EXPECT_THAT(histogram_tester_->GetAllSamples("Signin.SyncOptIn.Completed"),
                 BucketsAre(Bucket(kAccessPoint,

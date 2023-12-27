@@ -235,8 +235,8 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
   new TurnSyncOnHelper(
       profile, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-      signin_metrics::Reason::kUnknownReason, second_account_id, aborted_mode(),
-      std::move(owned_delegate), run_loop.QuitClosure());
+      second_account_id, aborted_mode(), std::move(owned_delegate),
+      run_loop.QuitClosure());
 
   delegate->WaitUntilBlock();
   EXPECT_EQ(Delegate::BlockingStep::kSyncConfirmation,
@@ -353,8 +353,7 @@ IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTest, UndoSyncRemoveAccount) {
   base::WeakPtr<Delegate> delegate = owned_delegate->GetWeakPtr();
   new TurnSyncOnHelper(
       profile, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-      signin_metrics::Reason::kUnknownReason, account_id,
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, account_id,
       TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
       std::move(owned_delegate), run_loop.QuitClosure());
 
@@ -419,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTestWithUnoDesktop,
   new TurnSyncOnHelper(
       profile, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-      signin_metrics::Reason::kUnknownReason, first_account_id,
+      first_account_id,
       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY,
       std::move(owned_delegate), run_loop.QuitClosure());
 
@@ -475,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(
   new TurnSyncOnHelper(
       profile, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-      signin_metrics::Reason::kUnknownReason, second_account_id,
+      second_account_id,
       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY,
       std::move(owned_delegate), run_loop.QuitClosure());
 
@@ -534,8 +533,7 @@ IN_PROC_BROWSER_TEST_F(
   new TurnSyncOnHelper(
       profile, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-      signin_metrics::Reason::kUnknownReason, second_account_id,
-      TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
+      second_account_id, TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
       std::move(owned_delegate), run_loop.QuitClosure());
 
   delegate->WaitUntilBlock();
