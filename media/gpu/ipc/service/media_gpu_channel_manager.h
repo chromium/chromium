@@ -22,7 +22,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <d3d11.h>
-#include <d3d12.h>
 #include <wrl.h>
 #endif
 
@@ -58,10 +57,6 @@ class MediaGpuChannelManager
   const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device() const {
     return d3d11_device_;
   }
-
-  const Microsoft::WRL::ComPtr<ID3D12Device>& d3d12_device() const {
-    return d3d12_device_;
-  }
 #endif
 
  private:
@@ -74,7 +69,6 @@ class MediaGpuChannelManager
 
 #if BUILDFLAG(IS_WIN)
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
-  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device_;
 #endif
 };
 

@@ -5,9 +5,10 @@
 #include "media/gpu/windows/supported_profile_helpers.h"
 
 #include <algorithm>
+#include <limits>
 #include <memory>
+#include <utility>
 
-#include <d3d12video.h>
 #include <d3d9.h>
 #include <dxva2api.h>
 
@@ -17,104 +18,7 @@
 #include "media/base/media_switches.h"
 #include "media/gpu/windows/av1_guids.h"
 
-namespace media {
-
 namespace {
-
-class D3DVideoDeviceWrapper {
- public:
-  virtual ~D3DVideoDeviceWrapper() = default;
-  virtual std::vector<GUID> GetVideoDecodeProfileGuids() = 0;
-  virtual bool IsResolutionSupported(const GUID& profile,
-                                     const gfx::Size& resolution,
-                                     DXGI_FORMAT format) = 0;
-};
-
-class D3D11VideoDeviceWrapper : public D3DVideoDeviceWrapper {
- public:
-  explicit D3D11VideoDeviceWrapper(ComD3D11VideoDevice video_device)
-      : video_device_(video_device) {
-    CHECK(video_device);
-  }
-  ~D3D11VideoDeviceWrapper() override = default;
-
-  std::vector<GUID> GetVideoDecodeProfileGuids() override {
-    std::vector<GUID> result;
-    UINT profile_count = video_device_->GetVideoDecoderProfileCount();
-    for (UINT i = 0; i < profile_count; i++) {
-      GUID profile_id;
-      if (SUCCEEDED(video_device_->GetVideoDecoderProfile(i, &profile_id))) {
-        result.push_back(profile_id);
-      }
-    }
-    return result;
-  }
-
-  bool IsResolutionSupported(const GUID& profile,
-                             const gfx::Size& resolution,
-                             DXGI_FORMAT format) override {
-    D3D11_VIDEO_DECODER_DESC desc = {
-        profile,                                 // Guid
-        static_cast<UINT>(resolution.width()),   // SampleWidth
-        static_cast<UINT>(resolution.height()),  // SampleHeight
-        format                                   // OutputFormat
-    };
-    UINT config_count;
-    return SUCCEEDED(video_device_->GetVideoDecoderConfigCount(
-               &desc, &config_count)) &&
-           config_count > 0;
-  }
-
- private:
-  ComD3D11VideoDevice video_device_;
-};
-
-class D3D12VideoDeviceWrapper : public D3DVideoDeviceWrapper {
- public:
-  explicit D3D12VideoDeviceWrapper(
-      Microsoft::WRL::ComPtr<ID3D12VideoDevice> video_device)
-      : video_device_(video_device) {
-    CHECK(video_device);
-  }
-  ~D3D12VideoDeviceWrapper() override = default;
-
-  std::vector<GUID> GetVideoDecodeProfileGuids() override {
-    std::vector<GUID> result;
-    D3D12_FEATURE_DATA_VIDEO_DECODE_PROFILE_COUNT profile_count{};
-    HRESULT hr = video_device_->CheckFeatureSupport(
-        D3D12_FEATURE_VIDEO_DECODE_PROFILE_COUNT, &profile_count,
-        sizeof(profile_count));
-    if (FAILED(hr)) {
-      return {};
-    }
-    result.resize(profile_count.ProfileCount);
-    D3D12_FEATURE_DATA_VIDEO_DECODE_PROFILES profiles{
-        .ProfileCount = profile_count.ProfileCount, .pProfiles = result.data()};
-    hr = video_device_->CheckFeatureSupport(D3D12_FEATURE_VIDEO_DECODE_PROFILES,
-                                            &profiles, sizeof(profiles));
-    if (FAILED(hr)) {
-      return {};
-    }
-    return result;
-  }
-
-  bool IsResolutionSupported(const GUID& profile,
-                             const gfx::Size& resolution,
-                             DXGI_FORMAT format) override {
-    D3D12_FEATURE_DATA_VIDEO_DECODE_SUPPORT support{
-        .Configuration = {profile},
-        .Width = static_cast<UINT>(resolution.width()),
-        .Height = static_cast<UINT>(resolution.height()),
-        .DecodeFormat = format};
-    return SUCCEEDED(video_device_->CheckFeatureSupport(
-               D3D12_FEATURE_VIDEO_DECODE_SUPPORT, &support,
-               sizeof(support))) &&
-           support.SupportFlags == D3D12_VIDEO_DECODE_SUPPORT_FLAG_SUPPORTED;
-  }
-
- private:
-  Microsoft::WRL::ComPtr<ID3D12VideoDevice> video_device_;
-};
 
 // Windows Media Foundation H.264 decoding does not support decoding videos
 // with any dimension smaller than 48 pixels:
@@ -124,13 +28,40 @@ class D3D12VideoDeviceWrapper : public D3DVideoDeviceWrapper {
 // hardware decode for videos above ~360p, see http://crbug.com/684792.
 constexpr gfx::Size kMinResolution(64, 64);
 
-SupportedResolutionRange GetResolutionsForGUID(
-    D3DVideoDeviceWrapper* video_device_wrapper,
+bool IsResolutionSupportedForDevice(const gfx::Size& resolution_to_test,
+                                    const GUID& decoder_guid,
+                                    ID3D11VideoDevice* video_device,
+                                    DXGI_FORMAT format) {
+  D3D11_VIDEO_DECODER_DESC desc = {
+      decoder_guid,                                    // Guid
+      static_cast<UINT>(resolution_to_test.width()),   // SampleWidth
+      static_cast<UINT>(resolution_to_test.height()),  // SampleHeight
+      format                                           // OutputFormat
+  };
+
+  // We've chosen the least expensive test for identifying if a given resolution
+  // is supported. Actually creating the VideoDecoder instance only fails ~0.4%
+  // of the time and the outcome is that we will offer support and then
+  // immediately fall back to software; e.g., playback still works. Since these
+  // calls can take hundreds of milliseconds to complete and are often executed
+  // during startup, this seems a reasonably trade off.
+  //
+  // See the deprecated histograms Media.DXVAVDA.GetDecoderConfigStatus which
+  // succeeds 100% of the time and Media.DXVAVDA.CreateDecoderStatus which
+  // only succeeds 99.6% of the time (in a 28 day aggregation).
+  UINT config_count;
+  return SUCCEEDED(
+             video_device->GetVideoDecoderConfigCount(&desc, &config_count)) &&
+         config_count > 0;
+}
+
+media::SupportedResolutionRange GetResolutionsForGUID(
+    ID3D11VideoDevice* video_device,
     const GUID& decoder_guid,
     const std::vector<gfx::Size>& resolutions_to_test,
     DXGI_FORMAT format = DXGI_FORMAT_NV12,
     const gfx::Size& min_resolution = kMinResolution) {
-  SupportedResolutionRange result;
+  media::SupportedResolutionRange result;
 
   // Verify input is in ascending order by height.
   DCHECK(std::is_sorted(resolutions_to_test.begin(), resolutions_to_test.end(),
@@ -139,18 +70,8 @@ SupportedResolutionRange GetResolutionsForGUID(
                         }));
 
   for (const auto& res : resolutions_to_test) {
-    // We've chosen the least expensive test for identifying if a given
-    // resolution is supported. Actually creating the VideoDecoder instance only
-    // fails ~0.4% of the time and the outcome is that we will offer support and
-    // then immediately fall back to software; e.g., playback still works. Since
-    // these calls can take hundreds of milliseconds to complete and are often
-    // executed during startup, this seems a reasonably trade off.
-    //
-    // See the deprecated histograms Media.DXVAVDA.GetDecoderConfigStatus which
-    // succeeds 100% of the time and Media.DXVAVDA.CreateDecoderStatus which
-    // only succeeds 99.6% of the time (in a 28 day aggregation).
-    if (!video_device_wrapper->IsResolutionSupported(decoder_guid, res,
-                                                     format)) {
+    if (!IsResolutionSupportedForDevice(res, decoder_guid, video_device,
+                                        format)) {
       break;
     }
     result.max_landscape_resolution = res;
@@ -161,8 +82,8 @@ SupportedResolutionRange GetResolutionsForGUID(
   const gfx::Size flipped(result.max_landscape_resolution.height(),
                           result.max_landscape_resolution.width());
   if (flipped == result.max_landscape_resolution ||
-      video_device_wrapper->IsResolutionSupported(decoder_guid, flipped,
-                                                  format)) {
+      IsResolutionSupportedForDevice(flipped, decoder_guid, video_device,
+                                     format)) {
     result.max_portrait_resolution = flipped;
   }
 
@@ -173,6 +94,8 @@ SupportedResolutionRange GetResolutionsForGUID(
 }
 
 }  // namespace
+
+namespace media {
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 GUID GetHEVCRangeExtensionPrivateGUID(uint8_t bitdepth,
@@ -239,12 +162,10 @@ DXGI_FORMAT GetOutputDXGIFormat(uint8_t bitdepth,
   return {};
 }
 
-namespace {
-
-SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
-    D3DVideoDeviceWrapper* video_device_wrapper,
+SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
+    ComD3D11Device device,
     const gpu::GpuDriverBugWorkarounds& workarounds) {
-  TRACE_EVENT0("gpu,startup", "GetSupportedD3DVideoDecoderResolutions");
+  TRACE_EVENT0("gpu,startup", "GetSupportedD3D11VideoDecoderResolutions");
   SupportedResolutionRangeMap supported_resolutions;
 
   // We always insert support for H.264 regardless of the tests below. It's old
@@ -264,15 +185,18 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
   for (const auto profile : kSupportedH264Profiles)
     supported_resolutions[profile] = h264_profile;
 
-  if (!video_device_wrapper) {
+  if (!device)
     return supported_resolutions;
-  }
 
   // To detect if a driver supports the desired resolutions, we try and create
   // a DXVA decoder instance for that resolution and profile. If that succeeds
   // we assume that the driver supports decoding for that resolution.
   // Legacy AMD drivers with UVD3 or earlier and some Intel GPU's crash while
   // creating surfaces larger than 1920 x 1088.
+  ComD3D11VideoDevice video_device;
+  if (FAILED(device.As(&video_device)))
+    return supported_resolutions;
+
   const std::vector<gfx::Size> kModernResolutions = {
       gfx::Size(4096, 2160), gfx::Size(4096, 2304), gfx::Size(7680, 4320),
       gfx::Size(8192, 4320), gfx::Size(8192, 8192)};
@@ -280,11 +204,15 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
   // Enumerate supported video profiles and look for the known profile for each
   // codec. We first look through the the decoder profiles so we don't run N
   // resolution tests for a profile that's unsupported.
-  for (const GUID& profile_id :
-       video_device_wrapper->GetVideoDecodeProfileGuids()) {
+  UINT profile_count = video_device->GetVideoDecoderProfileCount();
+  for (UINT i = 0; i < profile_count; i++) {
+    GUID profile_id;
+    if (FAILED(video_device->GetVideoDecoderProfile(i, &profile_id)))
+      continue;
+
     if (profile_id == D3D11_DECODER_PROFILE_H264_VLD_NOFGT) {
       const auto result = GetResolutionsForGUID(
-          video_device_wrapper, profile_id,
+          video_device.Get(), profile_id,
           {gfx::Size(2560, 1440), gfx::Size(3840, 2160), gfx::Size(4096, 2160),
            gfx::Size(4096, 2304), gfx::Size(4096, 4096)});
 
@@ -302,12 +230,12 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
     if (!workarounds.disable_accelerated_av1_decode) {
       if (profile_id == DXVA_ModeAV1_VLD_Profile0) {
         supported_resolutions[AV1PROFILE_PROFILE_MAIN] = GetResolutionsForGUID(
-            video_device_wrapper, profile_id, kModernResolutions);
+            video_device.Get(), profile_id, kModernResolutions);
         continue;
       }
       if (profile_id == DXVA_ModeAV1_VLD_Profile1) {
         supported_resolutions[AV1PROFILE_PROFILE_HIGH] = GetResolutionsForGUID(
-            video_device_wrapper, profile_id, kModernResolutions);
+            video_device.Get(), profile_id, kModernResolutions);
         continue;
       }
       if (profile_id == DXVA_ModeAV1_VLD_Profile2) {
@@ -318,7 +246,7 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
         // too late. In these cases we'll end up initializing the decoder and
         // failing on the first decode (which will trigger software fallback).
         supported_resolutions[AV1PROFILE_PROFILE_PRO] = GetResolutionsForGUID(
-            video_device_wrapper, profile_id, kModernResolutions);
+            video_device.Get(), profile_id, kModernResolutions);
         continue;
       }
     }
@@ -326,7 +254,7 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
     if (!workarounds.disable_accelerated_vp9_decode) {
       if (profile_id == D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0) {
         supported_resolutions[VP9PROFILE_PROFILE0] = GetResolutionsForGUID(
-            video_device_wrapper, profile_id, kModernResolutions);
+            video_device.Get(), profile_id, kModernResolutions);
         continue;
       }
 
@@ -335,7 +263,7 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
           profile_id == D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2 &&
           base::win::GetVersion() != base::win::Version::WIN10_RS3) {
         supported_resolutions[VP9PROFILE_PROFILE2] =
-            GetResolutionsForGUID(video_device_wrapper, profile_id,
+            GetResolutionsForGUID(video_device.Get(), profile_id,
                                   kModernResolutions, DXGI_FORMAT_P010);
         continue;
       }
@@ -350,7 +278,7 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
       constexpr gfx::Size kMinVp8Resolution = gfx::Size(640, 480);
 
       supported_resolutions[VP8PROFILE_ANY] = GetResolutionsForGUID(
-          video_device_wrapper, profile_id,
+          video_device.Get(), profile_id,
           {gfx::Size(4096, 2160), gfx::Size(4096, 2304), gfx::Size(4096, 4096)},
           DXGI_FORMAT_NV12, kMinVp8Resolution);
       continue;
@@ -361,7 +289,7 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
         base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
       if (profile_id == D3D11_DECODER_PROFILE_HEVC_VLD_MAIN) {
         supported_resolutions[HEVCPROFILE_MAIN] = GetResolutionsForGUID(
-            video_device_wrapper, profile_id, kModernResolutions);
+            video_device.Get(), profile_id, kModernResolutions);
         continue;
       }
       // For range extensions only test main10_422 with P010, and apply
@@ -370,13 +298,13 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
       // YUV444 8/10/12 bit.
       if (profile_id == DXVA_ModeHEVC_VLD_Main422_10_Intel) {
         supported_resolutions[HEVCPROFILE_REXT] =
-            GetResolutionsForGUID(video_device_wrapper, profile_id,
+            GetResolutionsForGUID(video_device.Get(), profile_id,
                                   kModernResolutions, DXGI_FORMAT_P010);
         continue;
       }
       if (profile_id == D3D11_DECODER_PROFILE_HEVC_VLD_MAIN10) {
         supported_resolutions[HEVCPROFILE_MAIN10] =
-            GetResolutionsForGUID(video_device_wrapper, profile_id,
+            GetResolutionsForGUID(video_device.Get(), profile_id,
                                   kModernResolutions, DXGI_FORMAT_P010);
         continue;
       }
@@ -385,34 +313,6 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
   }
 
   return supported_resolutions;
-}
-
-}  // namespace
-
-SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
-    ComD3D11Device device,
-    const gpu::GpuDriverBugWorkarounds& workarounds) {
-  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
-  std::unique_ptr<D3D11VideoDeviceWrapper> video_device_wrapper;
-  if (device && SUCCEEDED(device.As(&video_device))) {
-    video_device_wrapper =
-        std::make_unique<D3D11VideoDeviceWrapper>(video_device);
-  }
-  return GetSupportedD3DVideoDecoderResolutions(video_device_wrapper.get(),
-                                                workarounds);
-}
-
-SupportedResolutionRangeMap GetSupportedD3D12VideoDecoderResolutions(
-    Microsoft::WRL::ComPtr<ID3D12Device> device,
-    const gpu::GpuDriverBugWorkarounds& workarounds) {
-  Microsoft::WRL::ComPtr<ID3D12VideoDevice> video_device;
-  std::unique_ptr<D3D12VideoDeviceWrapper> video_device_wrapper;
-  if (device && SUCCEEDED(device.As(&video_device))) {
-    video_device_wrapper =
-        std::make_unique<D3D12VideoDeviceWrapper>(video_device);
-  }
-  return GetSupportedD3DVideoDecoderResolutions(video_device_wrapper.get(),
-                                                workarounds);
 }
 
 }  // namespace media

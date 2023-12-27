@@ -33,10 +33,6 @@ class D3DVideoDecoderWrapper {
   explicit D3DVideoDecoderWrapper(MediaLog* media_log);
   virtual ~D3DVideoDecoderWrapper();
 
-  // Get whether single video decoder texture is recommended by the driver.
-  // Returns whether this operation succeeds.
-  virtual absl::optional<bool> UseSingleTexture() const = 0;
-
   // Clear all internal states.
   virtual void Reset() = 0;
 
@@ -47,7 +43,7 @@ class D3DVideoDecoderWrapper {
   // If so, re-copying same data could be avoided.
   virtual bool HasPendingBuffer(BufferType type) = 0;
 
-  // Submit a slice.
+  // Submit a slice and clear the buffers.
   virtual bool SubmitSlice() = 0;
 
   // Submit a frame to start decoding.
@@ -92,6 +88,7 @@ class D3DVideoDecoderWrapper {
   std::vector<uint8_t> slice_info_bytes_;
   absl::optional<ScopedSequenceD3DInputBuffer> bitstream_buffer_;
 
+ private:
   raw_ptr<MediaLog> media_log_ = nullptr;
 };
 
