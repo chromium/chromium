@@ -72,7 +72,7 @@ std::string GetHeadword(const base::Value::Dict& entry_result) {
 }
 
 const std::string GetSampleSentence(const base::Value::Dict& result) {
-  const std::string* sample_sentence = new std::string();
+  std::string sample_sentence = std::string();
 
   // Check both the `exampleGroups` and `additionalExamples` keys for a
   // sample sentence text.
@@ -81,18 +81,18 @@ const std::string GetSampleSentence(const base::Value::Dict& result) {
   if (example_groups) {
     const Value::List* examples = example_groups->FindList(kExamplesKey);
     if (examples && !examples->empty()) {
-      sample_sentence = &(examples->front().GetString());
+      sample_sentence = examples->front().GetString();
     }
   }
-  if (sample_sentence->empty()) {
+  if (sample_sentence.empty()) {
     const Value::List* additional_examples =
         result.FindList(kAdditionalExamplesKey);
     if (additional_examples && !additional_examples->empty()) {
-      sample_sentence = &(additional_examples->front().GetString());
+      sample_sentence = additional_examples->front().GetString();
     }
   }
 
-  return *sample_sentence;
+  return sample_sentence;
 }
 
 const std::vector<std::string> GetSynonymsList(
