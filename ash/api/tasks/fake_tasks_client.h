@@ -66,10 +66,21 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   size_t RunPendingUpdateTaskCallbacks();
 
   void set_paused(bool paused) { paused_ = paused; }
+  void set_run_with_errors(bool run_with_errors) {
+    run_with_errors_ = run_with_errors;
+  }
 
   ui::ListModel<TaskList>* task_lists() { return task_lists_.get(); }
 
  private:
+  void AddTaskImpl(const std::string& task_list_id,
+                   const std::string& title,
+                   TasksClient::OnTaskSavedCallback callback);
+  void UpdateTaskImpl(const std::string& task_list_id,
+                      const std::string& task_id,
+                      const std::string& title,
+                      TasksClient::OnTaskSavedCallback callback);
+
   void PopulateTasks(base::Time tasks_due_time);
   void PopulateTaskLists(base::Time tasks_due_time);
 
@@ -87,7 +98,11 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   int bubble_closed_count_ = 0;
   int completed_tasks_ = 0;
 
-  // If `false` - callbacks executed immediately. If `true` - callbacks get
+  // If `false` - callbacks are executed normally; if `true` - executed with
+  // simulated error (currently works for `AddTask` and `UpdateTask` only).
+  bool run_with_errors_ = false;
+
+  // If `false` - callbacks are executed immediately; if `true` - callbacks get
   // saved to the corresponding list and executed once
   // `RunPending**Callbacks()` is called.
   bool paused_ = false;

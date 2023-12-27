@@ -47,6 +47,7 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView {
   using MarkAsCompletedCallback =
       base::RepeatingCallback<void(const std::string& task_id, bool completed)>;
   using SaveCallback = base::RepeatingCallback<void(
+      base::WeakPtr<GlanceablesTaskViewV2> view,
       const std::string& task_id,
       const std::string& title,
       api::TasksClient::OnTaskSavedCallback callback)>;

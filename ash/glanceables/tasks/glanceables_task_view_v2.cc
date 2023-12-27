@@ -398,7 +398,8 @@ void GlanceablesTaskViewV2::OnFinishedEditing(const std::u16string& title) {
   UpdateTaskTitleViewForState(TaskTitleViewState::kView);
 
   if (task_id_.empty() || task_title_ != old_title) {
-    save_callback_.Run(task_id_, base::UTF16ToUTF8(task_title_),
+    save_callback_.Run(weak_ptr_factory_.GetWeakPtr(), task_id_,
+                       base::UTF16ToUTF8(task_title_),
                        base::BindOnce(&GlanceablesTaskViewV2::OnSaved,
                                       weak_ptr_factory_.GetWeakPtr()));
     // TODO(b/301253574): introduce "disabled" state for this view to prevent

@@ -15,6 +15,7 @@
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -233,7 +234,8 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, EntersAndExitsEditState) {
 }
 
 TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesSaveCallbackAfterAdding) {
-  base::test::TestFuture<const std::string&, const std::string&,
+  base::test::TestFuture<base::WeakPtr<GlanceablesTaskViewV2>,
+                         const std::string&, const std::string&,
                          api::TasksClient::OnTaskSavedCallback>
       future;
 
@@ -252,7 +254,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesSaveCallbackAfterAdding) {
   PressAndReleaseKey(ui::VKEY_W);
   PressAndReleaseKey(ui::VKEY_ESCAPE);
 
-  const auto [task_id, title, callback] = future.Take();
+  const auto [task_view, task_id, title, callback] = future.Take();
   EXPECT_TRUE(task_id.empty());
   EXPECT_EQ(title, "New");
 }
@@ -263,7 +265,8 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesSaveCallbackAfterEditing) {
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time());
 
-  base::test::TestFuture<const std::string&, const std::string&,
+  base::test::TestFuture<base::WeakPtr<GlanceablesTaskViewV2>,
+                         const std::string&, const std::string&,
                          api::TasksClient::OnTaskSavedCallback>
       future;
 
@@ -283,13 +286,14 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesSaveCallbackAfterEditing) {
   PressAndReleaseKey(ui::VKEY_D);
   PressAndReleaseKey(ui::VKEY_ESCAPE);
 
-  const auto [task_id, title, callback] = future.Take();
+  const auto [task_view, task_id, title, callback] = future.Take();
   EXPECT_EQ(task_id, "task-id");
   EXPECT_EQ(title, "Task title upd");
 }
 
 TEST_F(GlanceablesTaskViewStableLaunchTest, SupportsEditingRightAfterAdding) {
-  base::test::TestFuture<const std::string&, const std::string&,
+  base::test::TestFuture<base::WeakPtr<GlanceablesTaskViewV2>,
+                         const std::string&, const std::string&,
                          api::TasksClient::OnTaskSavedCallback>
       future;
 
@@ -310,7 +314,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, SupportsEditingRightAfterAdding) {
     PressAndReleaseKey(ui::VKEY_ESCAPE);
 
     // Verify that `task_id` is empty after adding a task.
-    auto [task_id, title, callback] = future.Take();
+    auto [task_view, task_id, title, callback] = future.Take();
     EXPECT_TRUE(task_id.empty());
     EXPECT_EQ(title, "New");
 
@@ -332,7 +336,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, SupportsEditingRightAfterAdding) {
     PressAndReleaseKey(ui::VKEY_ESCAPE);
 
     // Verify that `task_id` equals to "task-id" after editing the same task.
-    const auto [task_id, title, callback] = future.Take();
+    const auto [task_view, task_id, title, callback] = future.Take();
     EXPECT_EQ(task_id, "task-id");
     EXPECT_EQ(title, "New 1");
   }

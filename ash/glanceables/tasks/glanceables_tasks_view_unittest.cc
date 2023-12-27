@@ -85,6 +85,11 @@ class GlanceablesTasksViewTest : public AshTestBase {
         base::to_underlying(GlanceablesViewId::kProgressBar)));
   }
 
+  const views::View* GetErrorMessage() const {
+    return views::AsViewClass<views::View>(view_->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kGlanceablesErrorMessageView)));
+  }
+
   api::FakeTasksClient* tasks_client() const {
     return fake_glanceables_tasks_client_.get();
   }
@@ -303,6 +308,61 @@ TEST_F(GlanceablesTasksViewTest, DoesNotAddTaskWithBlankTitle) {
   EXPECT_EQ(GetTaskItemsContainerView()->children().size(),
             initial_tasks_count);
   EXPECT_EQ(tasks_client()->RunPendingAddTaskCallbacks(), 0u);
+}
+
+TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterAdding) {
+  tasks_client()->set_paused(true);
+  tasks_client()->set_run_with_errors(true);
+
+  const auto* const task_items_container_view = GetTaskItemsContainerView();
+  ASSERT_TRUE(task_items_container_view);
+
+  EXPECT_EQ(task_items_container_view->children().size(), 2u);
+  EXPECT_FALSE(GetErrorMessage());
+
+  GestureTapOn(GetAddNewTaskButton());
+  PressAndReleaseKey(ui::VKEY_N, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_E);
+  PressAndReleaseKey(ui::VKEY_W);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+  EXPECT_EQ(task_items_container_view->children().size(), 3u);
+  EXPECT_FALSE(GetErrorMessage());
+
+  EXPECT_EQ(tasks_client()->RunPendingAddTaskCallbacks(), 1u);
+  EXPECT_EQ(task_items_container_view->children().size(), 2u);
+  EXPECT_TRUE(GetErrorMessage());
+}
+
+TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterEditing) {
+  tasks_client()->set_paused(true);
+  tasks_client()->set_run_with_errors(true);
+
+  const auto* const task_items_container_view = GetTaskItemsContainerView();
+  ASSERT_TRUE(task_items_container_view);
+
+  EXPECT_EQ(task_items_container_view->children().size(), 2u);
+  EXPECT_FALSE(GetErrorMessage());
+
+  const auto* const title_label = views::AsViewClass<views::Label>(
+      task_items_container_view->children()[0]->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+  GestureTapOn(title_label);
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_SPACE);
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_U);
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_P);
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_D);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+  EXPECT_EQ(task_items_container_view->children().size(), 2u);
+  EXPECT_FALSE(GetErrorMessage());
+
+  EXPECT_EQ(tasks_client()->RunPendingUpdateTaskCallbacks(), 1u);
+  EXPECT_EQ(task_items_container_view->children().size(), 2u);
+  EXPECT_TRUE(GetErrorMessage());
+
+  // TODO(b/308446582): Confirm if the title needs to be reverted back in case
+  // of error.
 }
 
 }  // namespace ash
