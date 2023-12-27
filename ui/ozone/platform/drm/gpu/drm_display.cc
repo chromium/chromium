@@ -310,6 +310,21 @@ bool DrmDisplay::SetHDCPState(
                                  kContentProtectionStates));
 }
 
+void DrmDisplay::SetColorTemperatureAdjustment(
+    const display::ColorTemperatureAdjustment& cta) {
+  drm_->plane_manager()->SetColorTemperatureAdjustment(crtc_, cta);
+}
+
+void DrmDisplay::SetColorCalibration(
+    const display::ColorCalibration& calibration) {
+  drm_->plane_manager()->SetColorCalibration(crtc_, calibration);
+}
+
+void DrmDisplay::SetGammaAdjustment(
+    const display::GammaAdjustment& adjustment) {
+  drm_->plane_manager()->SetGammaAdjustment(crtc_, adjustment);
+}
+
 void DrmDisplay::SetColorMatrix(const std::vector<float>& color_matrix) {
   if (!drm_->plane_manager()->SetColorMatrix(crtc_, color_matrix)) {
     LOG(ERROR) << "Failed to set color matrix for display: crtc_id = " << crtc_;

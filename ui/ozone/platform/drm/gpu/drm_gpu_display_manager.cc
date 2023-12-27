@@ -415,7 +415,7 @@ void DrmGpuDisplayManager::SetColorTemperatureAdjustment(
     LOG(WARNING) << __func__ << ": there is no display with ID " << display_id;
     return;
   }
-  // TODO(https://crbug.com/1505062): Use this parameter.
+  display->SetColorTemperatureAdjustment(cta);
 }
 
 void DrmGpuDisplayManager::SetColorCalibration(
@@ -426,7 +426,7 @@ void DrmGpuDisplayManager::SetColorCalibration(
     LOG(WARNING) << __func__ << ": there is no display with ID " << display_id;
     return;
   }
-  // TODO(https://crbug.com/1505062): Use this parameter.
+  display->SetColorCalibration(calibration);
 }
 
 void DrmGpuDisplayManager::SetGammaAdjustment(
@@ -437,7 +437,7 @@ void DrmGpuDisplayManager::SetGammaAdjustment(
     LOG(WARNING) << __func__ << ": there is no display with ID " << display_id;
     return;
   }
-  // TODO(https://crbug.com/1505062): Use this parameter.
+  display->SetGammaAdjustment(adjustment);
 }
 
 void DrmGpuDisplayManager::SetColorMatrix(

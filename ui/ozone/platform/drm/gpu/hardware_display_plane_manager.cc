@@ -298,6 +298,36 @@ HardwareDisplayPlaneManager::ResetConnectorsCacheAndGetValidIds(
   return valid_ids;
 }
 
+void HardwareDisplayPlaneManager::SetColorTemperatureAdjustment(
+    uint32_t crtc_id,
+    const display::ColorTemperatureAdjustment& cta) {
+  const auto crtc_index = LookupCrtcIndex(crtc_id);
+  DCHECK(crtc_index.has_value());
+  CrtcState* crtc_state = &crtc_state_[*crtc_index];
+  crtc_state->color_temperature_adjustment = cta;
+  // TODO(https://crbug.com/1505062): Re-compute and commit CRTC state.
+}
+
+void HardwareDisplayPlaneManager::SetColorCalibration(
+    uint32_t crtc_id,
+    const display::ColorCalibration& calibration) {
+  const auto crtc_index = LookupCrtcIndex(crtc_id);
+  DCHECK(crtc_index.has_value());
+  CrtcState* crtc_state = &crtc_state_[*crtc_index];
+  crtc_state->color_calibration = calibration;
+  // TODO(https://crbug.com/1505062): Re-compute and commit CRTC state.
+}
+
+void HardwareDisplayPlaneManager::SetGammaAdjustment(
+    uint32_t crtc_id,
+    const display::GammaAdjustment& adjustment) {
+  const auto crtc_index = LookupCrtcIndex(crtc_id);
+  DCHECK(crtc_index.has_value());
+  CrtcState* crtc_state = &crtc_state_[*crtc_index];
+  crtc_state->gamma_adjustment = adjustment;
+  // TODO(https://crbug.com/1505062): Re-compute and commit CRTC state.
+}
+
 bool HardwareDisplayPlaneManager::SetColorMatrix(
     uint32_t crtc_id,
     const std::vector<float>& color_matrix) {
@@ -556,5 +586,7 @@ HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
   hc.has_independent_cursor_plane = *driver != "amdgpu" && *driver != "radeon";
   return hc;
 }
+
+void HardwareDisplayPlaneManager::UpdateAndCommitCrtcState(CrtcState* state) {}
 
 }  // namespace ui
