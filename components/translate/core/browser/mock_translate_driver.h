@@ -39,7 +39,7 @@ class MockTranslateDriver : public TranslateDriver {
   const GURL& GetVisibleURL() override;
   ukm::SourceId GetUkmSourceId() override;
   LanguageState& GetLanguageState();
-  bool HasCurrentPage() override;
+  bool HasCurrentPage() const override;
   void OpenUrlInNewTab(const GURL& url) override {}
 
   void set_incognito() { is_incognito_ = true; }

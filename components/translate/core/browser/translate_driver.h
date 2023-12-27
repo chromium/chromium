@@ -86,7 +86,7 @@ class TranslateDriver {
   virtual ukm::SourceId GetUkmSourceId() = 0;
 
   // Returns whether the driver has access to the current page.
-  virtual bool HasCurrentPage() = 0;
+  virtual bool HasCurrentPage() const = 0;
 
   // Opens |url| in a new tab.
   virtual void OpenUrlInNewTab(const GURL& url) = 0;

@@ -235,7 +235,7 @@ ukm::SourceId IOSTranslateDriver::GetUkmSourceId() {
   return ukm::GetSourceIdForWebStateDocument(web_state_);
 }
 
-bool IOSTranslateDriver::HasCurrentPage() {
+bool IOSTranslateDriver::HasCurrentPage() const {
   DCHECK(web_state_->IsRealized());
   return (web_state_->GetNavigationManager()->GetVisibleItem() != nullptr);
 }

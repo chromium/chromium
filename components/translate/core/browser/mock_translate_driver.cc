@@ -69,7 +69,7 @@ LanguageState& MockTranslateDriver::GetLanguageState() {
   return language_state_;
 }
 
-bool MockTranslateDriver::HasCurrentPage() {
+bool MockTranslateDriver::HasCurrentPage() const {
   return true;
 }
 

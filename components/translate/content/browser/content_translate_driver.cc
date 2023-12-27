@@ -166,14 +166,11 @@ ukm::SourceId ContentTranslateDriver::GetUkmSourceId() {
   return web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 }
 
-bool ContentTranslateDriver::HasCurrentPage() {
-  // TODO(https://crbug.com/524208): This function used to check the existence
-  // of GetLastCommittedEntry(), which will always exist now. Consider removing
-  // this function, making the callers assume HasCurrentPage() is always true.
-  return !web_contents()
-              ->GetController()
-              .GetLastCommittedEntry()
-              ->IsInitialEntry();
+bool ContentTranslateDriver::HasCurrentPage() const {
+  // TODO(crbug.com/524208): This method previously checked for the existence of
+  // GetLastCommittedEntry(), which always exists now. Check if this is true for
+  // other implementations and consider removing this method.
+  return true;
 }
 
 void ContentTranslateDriver::OpenUrlInNewTab(const GURL& url) {

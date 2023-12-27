@@ -87,7 +87,7 @@ class IOSTranslateDriver
   const GURL& GetLastCommittedURL() override;
   const GURL& GetVisibleURL() override;
   ukm::SourceId GetUkmSourceId() override;
-  bool HasCurrentPage() override;
+  bool HasCurrentPage() const override;
   void OpenUrlInNewTab(const GURL& url) override;
 
  private:
