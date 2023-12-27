@@ -66,37 +66,6 @@ TEST(FunctionRef, Method) {
   [&s](FunctionRef<int(const S*)> ref) { EXPECT_EQ(25, ref(&s)); }(&S::Method);
 }
 
-// Tests for passing a `base::FunctionRef` as an `absl::FunctionRef`.
-TEST(FunctionRef, AbslConversion) {
-  // Matching signatures should work.
-  {
-    bool called = false;
-    auto lambda = [&called](float) {
-      called = true;
-      return 'a';
-    };
-    FunctionRef<char(float)> ref(lambda);
-    [](absl::FunctionRef<char(float)> absl_ref) {
-      absl_ref(1.0);
-    }(ref.ToAbsl());
-    EXPECT_TRUE(called);
-  }
-
-  // `absl::FunctionRef` should be able to adapt "similar enough" signatures.
-  {
-    bool called = false;
-    auto lambda = [&called](float) {
-      called = true;
-      return 'a';
-    };
-    FunctionRef<char(float)> ref(lambda);
-    [](absl::FunctionRef<void(float)> absl_ref) {
-      absl_ref(1.0);
-    }(ref.ToAbsl());
-    EXPECT_TRUE(called);
-  }
-}
-
 // `FunctionRef` allows functors with convertible return types to be adapted.
 TEST(FunctionRef, ConvertibleReturnTypes) {
   {

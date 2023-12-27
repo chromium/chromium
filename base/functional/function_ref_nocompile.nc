@@ -8,15 +8,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
-#include "third_party/abseil-cpp/absl/functional/function_ref.h"
 
 namespace base {
 
 void CannotBindFunctionRefs() {
   // `Bind{Once,Repeating}` do not accept `FunctionRef` args due to potential
   // lifetime concerns.
-  [](absl::FunctionRef<void()> ref) { BindOnce(ref); }([] {});       // expected-error@*:* {{Functor may not be a FunctionRef, since that is a non-owning reference that may go out of scope before the callback executes.}}
-  [](absl::FunctionRef<void()> ref) { BindRepeating(ref); }([] {});  // expected-error@*:* {{Functor may not be a FunctionRef, since that is a non-owning reference that may go out of scope before the callback executes.}}
   [](FunctionRef<void()> ref) { BindOnce(ref); }([] {});             // expected-error@*:* {{Functor may not be a FunctionRef, since that is a non-owning reference that may go out of scope before the callback executes.}}
   [](FunctionRef<void()> ref) { BindRepeating(ref); }([] {});        // expected-error@*:* {{Functor may not be a FunctionRef, since that is a non-owning reference that may go out of scope before the callback executes.}}
 }

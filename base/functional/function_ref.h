@@ -88,13 +88,6 @@ class FunctionRef<R(Args...)> {
     return wrapped_func_ref_(std::forward<Args>(args)...);
   }
 
-  absl::FunctionRef<R(Args...)> ToAbsl() const { return wrapped_func_ref_; }
-
-  // In Chrome, converting to `absl::FunctionRef` should be explicitly done
-  // through `ToAbsl()`.
-  template <typename Signature>
-  operator absl::FunctionRef<Signature>() = delete;
-
  private:
   absl::FunctionRef<R(Args...)> wrapped_func_ref_;
 };
