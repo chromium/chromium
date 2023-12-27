@@ -68,13 +68,6 @@ BASE_DECLARE_FEATURE(kDownloadTailoredWarnings);
 // passwords for local decryption on encrypted archives.
 BASE_DECLARE_FEATURE(kEncryptedArchivesMetadata);
 
-// Enables decreased Phishguard password length minimum.
-BASE_DECLARE_FEATURE(kEvaluateProtectedPasswordLengthMinimum);
-
-// Specifies the minimum password length for password protection.
-extern const base::FeatureParam<int>
-    kEvaluateProtectedPasswordLengthMinimumValue;
-
 // Allows the Extension Telemetry Service to accept and use configurations
 // sent by the server.
 BASE_DECLARE_FEATURE(kExtensionTelemetryConfiguration);

@@ -76,14 +76,6 @@ BASE_FEATURE(kEncryptedArchivesMetadata,
              "SafeBrowsingEncryptedArchivesMetadata",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEvaluateProtectedPasswordLengthMinimum,
-             "EvaluateProtectedPasswordLengthMinimum",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kEvaluateProtectedPasswordLengthMinimumValue{
-    &kEvaluateProtectedPasswordLengthMinimum, "MinimumValue",
-    /*default_value=*/4};
-
 BASE_FEATURE(kExtensionTelemetryConfiguration,
              "SafeBrowsingExtensionTelemetryConfiguration",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -330,7 +322,6 @@ constexpr struct {
     {&kCreateWarningShownClientSafeBrowsingReports, false},
     {&kDelayedWarnings, true},
     {&kDownloadTailoredWarnings, true},
-    {&kEvaluateProtectedPasswordLengthMinimum, false},
     {&kExtensionTelemetryDisableOffstoreExtensions, true},
     {&kExtensionTelemetryInterceptRemoteHostsContactedInRenderer, true},
     {&kExtensionTelemetryPotentialPasswordTheft, true},

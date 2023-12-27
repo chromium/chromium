@@ -24,14 +24,6 @@
 
 namespace password_manager {
 
-size_t GetMinPasswordLengthToCheck() {
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kEvaluateProtectedPasswordLengthMinimum)) {
-    return safe_browsing::kEvaluateProtectedPasswordLengthMinimumValue.Get();
-  }
-  return kMinPasswordLengthToCheck;
-}
-
 namespace {
 // Returns true iff |suffix_candidate| is a suffix of |str|.
 bool IsSuffix(const std::u16string& str,
@@ -131,7 +123,7 @@ void PasswordReuseDetector::CheckReuse(
     PasswordReuseDetectorConsumer* consumer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(consumer);
-  if (input.size() < GetMinPasswordLengthToCheck()) {
+  if (input.size() < kMinPasswordLengthToCheck) {
     consumer->OnReuseCheckDone(false, 0, std::nullopt, {},
                                SavedPasswordsCount(), std::string(), 0);
     return;
@@ -338,7 +330,7 @@ void PasswordReuseDetector::ClearAllNonGmailPasswordHash() {
 
 void PasswordReuseDetector::AddPassword(const PasswordForm& form) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (form.password_value.size() < GetMinPasswordLengthToCheck()) {
+  if (form.password_value.size() < kMinPasswordLengthToCheck) {
     return;
   }
 
@@ -348,7 +340,7 @@ void PasswordReuseDetector::AddPassword(const PasswordForm& form) {
 
 void PasswordReuseDetector::RemovePassword(const PasswordForm& form) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (form.password_value.size() < GetMinPasswordLengthToCheck()) {
+  if (form.password_value.size() < kMinPasswordLengthToCheck) {
     return;
   }
 
