@@ -169,7 +169,14 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, AutotestPrivate) {
 }
 
 // Set of tests where ARC is enabled and test apps and packages are registered.
-IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, AutotestPrivateArcEnabled) {
+// TODO(https://crbug.com/1514431): re-enable the following test.
+#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
+#define MAYBE_AutotestPrivateArcEnabled DISABLED_AutotestPrivateArcEnabled
+#else
+#define MAYBE_AutotestPrivateArcEnabled AutotestPrivateArcEnabled
+#endif
+IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest,
+                       MAYBE_AutotestPrivateArcEnabled) {
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(browser()->profile());
   ASSERT_TRUE(prefs);
 

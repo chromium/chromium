@@ -332,8 +332,9 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDns) {
   RunTest("settings/secure_dns_test.js", "runMochaSuite('SettingsSecureDns')");
 }
 
+// TODO(https://crbug.com/1514418): re-enable the test after fixed it.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDnsDialog) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_SecureDnsDialog) {
   RunTest("settings/secure_dns_test.js",
           "runMochaSuite('OsSettingsRevampSecureDnsDialog')");
 }
