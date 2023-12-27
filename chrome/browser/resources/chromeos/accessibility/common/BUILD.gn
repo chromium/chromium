@@ -42,7 +42,6 @@ js_sources = [
   "node_utils.js",
   "rect_util.js",
   "repeated_event_handler.js",
-  "repeated_tree_change_handler.js",
   "sentence_utils.js",
   "testing/accessibility_test_base.js",
   "testing/test_node_generator.js",
@@ -58,6 +57,7 @@ ts_modules = [
   "automation_util.ts",
   "tree_walker.ts",
   "word_utils.ts",
+  "repeated_tree_change_handler.ts",
   "settings.ts",
   "string_util.ts",
 ]
