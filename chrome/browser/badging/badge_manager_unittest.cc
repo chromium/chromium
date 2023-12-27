@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
+#include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/badging/test_badge_manager_delegate.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -41,16 +42,6 @@ typedef std::pair<GURL, std::optional<int>> SetBadgeAction;
 constexpr uint64_t kBadgeContents = 1;
 const webapps::AppId kAppId = "1";
 
-class TestBadgeManager : public BadgeManager {
- public:
-  TestBadgeManager(Profile* profile, web_app::WebAppSyncBridge* sync_bridge)
-      : BadgeManager(profile, sync_bridge) {}
-
-  ~TestBadgeManager() override = default;
-  TestBadgeManager(const TestBadgeManager&) = delete;
-  TestBadgeManager& operator=(const TestBadgeManager&) = delete;
-};
-
 }  // namespace
 
 namespace badging {
@@ -74,9 +65,6 @@ class BadgeManagerUnittest : public ::testing::Test {
     provider_ = web_app::FakeWebAppProvider::Get(profile());
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
-    badge_manager_ = std::make_unique<TestBadgeManager>(
-        profile(), &provider().sync_bridge_unsafe());
-
     // Delegate lifetime is managed by BadgeManager
     auto owned_delegate = std::make_unique<TestBadgeManagerDelegate>(
         profile_.get(), &badge_manager());
@@ -85,8 +73,8 @@ class BadgeManagerUnittest : public ::testing::Test {
   }
 
   void TearDown() override {
-    // Set `provider_` to nullptr before `profile_` is reset to avoid a dangling
-    // pointer.
+    // Clear raw_ptrs before `profile_` is reset to avoid a dangling pointer.
+    delegate_ = nullptr;
     provider_ = nullptr;
     profile_.reset();
   }
@@ -97,7 +85,9 @@ class BadgeManagerUnittest : public ::testing::Test {
     delegate_ = delegate;
   }
 
-  BadgeManager& badge_manager() const { return *badge_manager_; }
+  BadgeManager& badge_manager() const {
+    return *BadgeManagerFactory::GetForProfile(profile());
+  }
 
   Profile* profile() const { return profile_.get(); }
 
@@ -108,9 +98,7 @@ class BadgeManagerUnittest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<BadgeManager> badge_manager_;
 
-  // Must be declared after `badge_manager_` to avoid a dangling pointer.
   raw_ptr<TestBadgeManagerDelegate> delegate_;
 };
 
@@ -213,11 +201,12 @@ TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
       web_app::FakeWebAppProvider::Get(other_profile.get());
   web_app::test::AwaitStartWebAppProviderAndSubsystems(other_profile.get());
 
-  auto other_badge_manager = std::make_unique<TestBadgeManager>(
-      other_profile.get(), &new_provider->sync_bridge_unsafe());
+  BadgeManager* other_badge_manager =
+      BadgeManagerFactory::GetForProfile(other_profile.get());
+  ASSERT_TRUE(other_badge_manager);
 
   auto owned_other_delegate = std::make_unique<TestBadgeManagerDelegate>(
-      other_profile.get(), other_badge_manager.get());
+      other_profile.get(), other_badge_manager);
   auto* other_delegate = owned_other_delegate.get();
   other_badge_manager->SetDelegate(std::move(owned_other_delegate));
 
@@ -272,18 +261,6 @@ TEST_F(BadgeManagerUnittest, BadgingWithNoDelegateDoesNotCrash) {
   // Set the delegate to nullptr to avoid a dangling pointer.
   set_delegate(nullptr);
   badge_manager().SetDelegate(nullptr);
-
-  badge_manager().SetBadgeForTesting(kAppId, std::nullopt,
-                                     ukm::TestUkmRecorder::Get());
-  badge_manager().SetBadgeForTesting(kAppId, std::make_optional(kBadgeContents),
-                                     ukm::TestUkmRecorder::Get());
-  badge_manager().ClearBadgeForTesting(kAppId, ukm::TestUkmRecorder::Get());
-}
-
-// Tests methods which use the web app sync_bridge do not crash when web
-// apps aren't supported (and thus sync_bridge is null).
-TEST_F(BadgeManagerUnittest, BadgingWithNoSyncBridgeDoesNotCrash) {
-  badge_manager().SetSyncBridgeForTesting(nullptr);
 
   badge_manager().SetBadgeForTesting(kAppId, std::nullopt,
                                      ukm::TestUkmRecorder::Get());
