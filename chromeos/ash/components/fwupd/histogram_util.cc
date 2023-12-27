@@ -32,6 +32,11 @@ void EmitUpdateCount(int num_updates,
                               num_updates);
 }
 
+void EmitInstallFailedWithStatus(FwupdStatus last_fwupd_status) {
+  base::UmaHistogramEnumeration(
+      "ChromeOS.FirmwareUpdateUi.InstallFailedWithStatus", last_fwupd_status);
+}
+
 void EmitInstallResult(FirmwareUpdateInstallResult result) {
   base::UmaHistogramEnumeration("ChromeOS.FirmwareUpdateUi.InstallResult",
                                 result);

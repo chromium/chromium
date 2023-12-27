@@ -42,25 +42,6 @@
 namespace ash {
 
 namespace {
-// State of the fwupd daemon. Enum defined here:
-// https://github.com/fwupd/fwupd/blob/4389f9f913588edae7243a8dbed88ce3788c8bc2/libfwupd/fwupd-enums.h
-enum class FwupdStatus {
-  kUnknown,
-  kIdle,
-  kLoading,
-  kDecompressing,
-  kDeviceRestart,
-  kDeviceWrite,
-  kDeviceVerify,
-  kScheduling,
-  kDownloading,
-  kDeviceRead,
-  kDeviceErase,
-  kWaitingForAuth,
-  kDeviceBusy,
-  kShutdown,
-  kWaitingForUser,
-};
 
 static constexpr auto FwupdStatusStringMap =
     base::MakeFixedFlatMap<FwupdStatus, const char*>(
@@ -353,6 +334,7 @@ void FirmwareUpdateManager::ResetInstallState() {
   install_controller_receiver_.reset();
   update_progress_observer_.reset();
   device_request_observer_.reset();
+  last_fwupd_status_ = FwupdStatus::kUnknown;
 }
 
 void FirmwareUpdateManager::PrepareForUpdate(
@@ -673,6 +655,9 @@ void FirmwareUpdateManager::OnUpdateListResponse(const std::string& device_id,
 void FirmwareUpdateManager::OnInstallResponse(bool success) {
   auto state = success ? firmware_update::mojom::UpdateState::kSuccess
                        : firmware_update::mojom::UpdateState::kFailed;
+  if (!success) {
+    firmware_update::metrics::EmitInstallFailedWithStatus(last_fwupd_status_);
+  }
   const auto result =
       success ? firmware_update::metrics::FirmwareUpdateInstallResult::kSuccess
               : firmware_update::metrics::FirmwareUpdateInstallResult::
@@ -726,6 +711,7 @@ void FirmwareUpdateManager::OnPropertiesChangedResponse(
     return;
   }
   const auto status = FwupdStatus(properties->status.value());
+  last_fwupd_status_ = status;
   const auto percentage = properties->percentage.value();
   VLOG(1) << "fwupd: OnPropertiesChangedResponse called with Status: "
           << GetFwupdStatusString(static_cast<FwupdStatus>(status))

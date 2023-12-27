@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
+#include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 
 namespace ash::firmware_update::metrics {
 
@@ -31,6 +32,7 @@ void EmitUpdateCount(int num_updates,
                      int num_critical_updates,
                      bool is_startup);
 
+void EmitInstallFailedWithStatus(FwupdStatus last_fwupd_status);
 void EmitInstallResult(FirmwareUpdateInstallResult result);
 void EmitDeviceRequest(firmware_update::mojom::DeviceRequestPtr request);
 

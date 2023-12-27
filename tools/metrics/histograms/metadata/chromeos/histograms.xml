@@ -1194,6 +1194,18 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <token key="FeatureName" variants="FeaturesLoggingUsageEvents"/>
 </histogram>
 
+<histogram name="ChromeOS.FirmwareUpdateUi.InstallFailedWithStatus"
+    enum="FirmwareUpdateFwupdStatus" expires_after="2024-06-28">
+  <owner>cambickel@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the most recent FwupdStatus when a firmware install fails for any
+    reason.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.FirmwareUpdateUi.InstallResult"
     enum="FirmwareUpdateInstallResult" expires_after="2024-04-28">
   <owner>jimmyxgong@chromium.org</owner>

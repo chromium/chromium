@@ -247,6 +247,30 @@ class FirmwareUpdateManagerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  firmware_update::mojom::FirmwareUpdatePtr CreateFakeUpdate() {
+    auto update = firmware_update::mojom::FirmwareUpdate::New();
+    update->device_id = "id";
+    update->device_name = base::UTF8ToUTF16(std::string("name"));
+    update->device_version = "version";
+    update->device_description = base::UTF8ToUTF16(std::string("description"));
+    update->priority = firmware_update::mojom::UpdatePriority::kMedium;
+    update->filepath = base::FilePath("filepath");
+    update->checksum = "checksum";
+    return update;
+  }
+
+  void TriggerInstallFailed() {
+    // Create a fake update so that the following method call works correctly.
+    firmware_update_manager_->inflight_update_ = CreateFakeUpdate();
+    // Trigger an unsuccessful update.
+    firmware_update_manager_->OnInstallResponse(/*success=*/false);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetStatus(FwupdStatus fwupd_status) {
+    SetProperties(/*percentage=*/0, static_cast<uint32_t>(fwupd_status));
+  }
+
   void SetFakeUrlForTesting(const std::string& fake_url) {
     firmware_update_manager_->SetFakeUrlForTesting(fake_url);
   }
@@ -1156,6 +1180,55 @@ TEST_F(FirmwareUpdateManagerTest, DeviceRequestObserverMetrics) {
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.FirmwareUpdateUi.RequestReceived.KindImmediate",
       firmware_update::mojom::DeviceRequestId::kPressUnlock, 1);
+}
+
+struct FailedInstallParam {
+  explicit FailedInstallParam(FwupdStatus fwupd_status)
+      : fwupd_status(fwupd_status) {}
+
+  FwupdStatus fwupd_status;
+};
+
+class FirmwareUpdateManagerTest_FailedInstall
+    : public FirmwareUpdateManagerTest,
+      public testing::WithParamInterface<FailedInstallParam> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    FirmwareUpdateManagerTest_FailedInstall,
+    FirmwareUpdateManagerTest_FailedInstall,
+    ::testing::Values(FailedInstallParam(FwupdStatus::kUnknown),
+                      FailedInstallParam(FwupdStatus::kIdle),
+                      FailedInstallParam(FwupdStatus::kLoading),
+                      FailedInstallParam(FwupdStatus::kDecompressing),
+                      FailedInstallParam(FwupdStatus::kDeviceRestart),
+                      FailedInstallParam(FwupdStatus::kDeviceWrite),
+                      FailedInstallParam(FwupdStatus::kDeviceVerify),
+                      FailedInstallParam(FwupdStatus::kScheduling),
+                      FailedInstallParam(FwupdStatus::kDownloading),
+                      FailedInstallParam(FwupdStatus::kDeviceRead),
+                      FailedInstallParam(FwupdStatus::kDeviceErase),
+                      FailedInstallParam(FwupdStatus::kWaitingForAuth),
+                      FailedInstallParam(FwupdStatus::kDeviceBusy),
+                      FailedInstallParam(FwupdStatus::kShutdown),
+                      FailedInstallParam(FwupdStatus::kWaitingForUser)));
+
+TEST_P(FirmwareUpdateManagerTest_FailedInstall, FailedInstall_WaitingForUser) {
+  base::HistogramTester histogram_tester;
+
+  // These three steps are necessary for SetStatus and TriggerInstallFailed to
+  // work correctly.
+  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
+  FakeUpdateProgressObserver update_progress_observer;
+  SetupProgressObserver(&update_progress_observer);
+
+  SetStatus(GetParam().fwupd_status);
+  TriggerInstallFailed();
+
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.FirmwareUpdateUi.InstallFailedWithStatus", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.FirmwareUpdateUi.InstallFailedWithStatus",
+      GetParam().fwupd_status, 1);
 }
 
 }  // namespace ash

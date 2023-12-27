@@ -35,6 +35,29 @@ class SimpleURLLoader;
 }  // namespace network
 
 namespace ash {
+
+// State of the fwupd daemon. Enum defined here:
+// https://github.com/fwupd/fwupd/blob/4389f9f913588edae7243a8dbed88ce3788c8bc2/libfwupd/fwupd-enums.h
+// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+enum class FwupdStatus {
+  kUnknown,
+  kIdle,
+  kLoading,
+  kDecompressing,
+  kDeviceRestart,
+  kDeviceWrite,
+  kDeviceVerify,
+  kScheduling,
+  kDownloading,
+  kDeviceRead,
+  kDeviceErase,
+  kWaitingForAuth,
+  kDeviceBusy,
+  kShutdown,
+  kWaitingForUser,
+  kMaxValue = kWaitingForUser,
+};
+
 // FirmwareUpdateManager contains all logic that runs the firmware update SWA.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
     : public FwupdClient::Observer,
@@ -219,6 +242,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
 
   // The device update that is currently inflight.
   firmware_update::mojom::FirmwareUpdatePtr inflight_update_;
+
+  // The most recent FwupdStatus, used for the purpose of recording metrics.
+  FwupdStatus last_fwupd_status_ = FwupdStatus::kUnknown;
 
   // Used to show the firmware update notification and to determine which
   // metric to fire (Startup/Refresh).
