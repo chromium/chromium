@@ -758,7 +758,6 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1513445")
     public void testMultipleFresBackButton() throws Exception {
         launchViewIntent(TEST_URL);
         FirstRunActivity firstFreActivity = waitForFirstRunActivity();
@@ -772,6 +771,9 @@ public class FirstRunIntegrationTest {
                 0,
                 secondFreData.abortFirstRunExperienceCallback.getCallCount());
 
+        Assert.assertTrue(
+                "FirstRunActivity should intercept back press",
+                secondFreActivity.getOnBackPressedDispatcher().hasEnabledCallbacks());
         TestThreadUtils.runOnUiThreadBlocking(
                 secondFreActivity.getOnBackPressedDispatcher()::onBackPressed);
         secondFreData.abortFirstRunExperienceCallback.waitForCallback(

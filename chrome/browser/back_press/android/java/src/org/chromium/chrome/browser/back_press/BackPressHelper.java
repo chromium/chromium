@@ -68,6 +68,10 @@ public final class BackPressHelper {
                         handler.handleBackPress();
                     }
                 };
+        // Update it now since ObservableSupplier posts updates asynchronously.
+        if (handler.getHandleBackPressChangedSupplier().get() != null) {
+            callback.setEnabled(handler.getHandleBackPressChangedSupplier().get());
+        }
         handler.getHandleBackPressChangedSupplier().addObserver(callback::setEnabled);
         dispatcher.addCallback(lifecycleOwner, callback);
     }
