@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -104,10 +103,6 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
                                     std::move(on_suggestions_returned))});
     return true;
   }
-
-  // TODO(crbug.com/1190334): Remove this after ensuring that in practice
-  // |profile_database_| is never null.
-  base::debug::DumpWithoutCrashing();
   return false;
 }
 
