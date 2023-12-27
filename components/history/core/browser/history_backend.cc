@@ -3246,7 +3246,6 @@ void HistoryBackend::BeginSingletonTransaction() {
   singleton_transaction_ = db_->CreateTransaction();
 
   bool success = singleton_transaction_->Begin();
-  UMA_HISTOGRAM_BOOLEAN("History.Backend.TransactionBeginSuccess", success);
   if (success) {
     DCHECK_EQ(db_->transaction_nesting(), 1);
   } else {
