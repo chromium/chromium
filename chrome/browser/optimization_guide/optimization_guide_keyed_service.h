@@ -263,6 +263,10 @@ class OptimizationGuideKeyedService
   scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>
       on_device_component_manager_;
 
+  // The tab URL provider to use for fetching information for the user's active
+  // tabs. Will be null if the user is off the record.
+  std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
+
   // Manages the storing, loading, and fetching of hints.
   std::unique_ptr<optimization_guide::ChromeHintsManager> hints_manager_;
 
@@ -280,10 +284,6 @@ class OptimizationGuideKeyedService
   // hosts. Will be null if the user has not consented to this type of browser
   // behavior.
   std::unique_ptr<optimization_guide::TopHostProvider> top_host_provider_;
-
-  // The tab URL provider to use for fetching information for the user's active
-  // tabs. Will be null if the user is off the record.
-  std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
 
   // Manages the model execution. Not created for off the record profiles.
   std::unique_ptr<optimization_guide::ModelExecutionManager>
