@@ -7,10 +7,11 @@
 namespace page_load_metrics {
 namespace test {
 
-WeakMockTimer::WeakMockTimer() {}
+WeakMockTimer::WeakMockTimer() = default;
+WeakMockTimer::~WeakMockTimer() = default;
 
-WeakMockTimerProvider::WeakMockTimerProvider() {}
-WeakMockTimerProvider::~WeakMockTimerProvider() {}
+WeakMockTimerProvider::WeakMockTimerProvider() = default;
+WeakMockTimerProvider::~WeakMockTimerProvider() = default;
 
 base::MockOneShotTimer* WeakMockTimerProvider::GetMockTimer() const {
   return timer_.get();
