@@ -234,8 +234,12 @@ function assert(v, msg = "") {
   }
 }
 
+function isFunction(val) {
+  return typeof val === "function";
+}
+
 function isObject(val) {
-  return !!val && (typeof val === "object" || typeof val === "function")
+  return !!val && (typeof val === "object" || isFunction(val))
 }
 
 function typeofMaybeNull(value) {
@@ -388,7 +392,7 @@ function messageCallback(message) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// main.js
+// Command Handlers
 ///////////////////////////////////////////////////////////////////////////////
 
 // Methods for interacting with the record/replay driver.
@@ -397,31 +401,6 @@ function messageCallback(message) {
 // inject via evaluatePrivilegd can know what contexts are available.
 const gExecutionContexts = new Map();
 const gContextChangeCallbacks = new Set();
-
-initMessages();
-addEventListener("Runtime.consoleAPICalled", onConsoleAPICall);
-addEventListener("Runtime.executionContextCreated", ({ context }) => {
-  gExecutionContexts.set(context.id, context);
-  for (const callback of gContextChangeCallbacks) {
-    callback(context, "add");
-  }
-});
-addEventListener("Runtime.executionContextDestroyed", ({ executionContextId }) => {
-  const context = gExecutionContexts.get(executionContextId);
-  for (const callback of gContextChangeCallbacks) {
-    callback(context, "remove");
-  }
-  gExecutionContexts.delete(executionContextId);
-});
-addEventListener("Runtime.executionContextsCleared", () => {
-  for (const context of gExecutionContexts.values()) {
-    for (const callback of gContextChangeCallbacks) {
-      callback(context, "remove");
-    }
-  }
-  gExecutionContexts.clear();
-});
-sendMessage("Runtime.enable");
 
 const CommandCallbacks = {
   "Graphics.getDevicePixelRatio": Graphics_getDevicePixelRatio,
@@ -606,7 +585,7 @@ function Target_topFrameLocation() {
     if (e instanceof CDPMessageError) {
       // No available context group; this can happen, so just return nothing.
       if (e.code == CDPERROR_MISSINGCONTEXT) {
-        warning(`JS Target_topFrameLocation has no context.`);
+        warning(`[RUN-2600] JS Target_topFrameLocation has no context.`);
         return {};
       }
     }
@@ -634,7 +613,7 @@ function getStackFrames() {
     if (e instanceof CDPMessageError) {
       // No available context group; this can happen, so just return nothing.
       if (e.code == CDPERROR_MISSINGCONTEXT) {
-        warning(`JS getStackFrames has no context.`);
+        warning(`[RUN-2600] JS getStackFrames has no context.`);
         return [];
       }
     }
@@ -714,8 +693,9 @@ function Pause_evaluateInFrame({ frameId: frameIndexStr, expression }) {
   gCurrentEvaluateFrame = frame;
   let rv;
   try {
+    onBeforeEval();
     rv = doEvaluation();
-    return buildRrpObjectResult(rv);
+    return buildEvalResult(rv);
   } catch (err) {
     return handleEvalError(err);
   } finally {
@@ -742,6 +722,7 @@ function Pause_evaluateInFrame({ frameId: frameIndexStr, expression }) {
 function Pause_evaluateInGlobal({ expression }) {
   let rv;
   try {
+    onBeforeEval();
     rv = sendMessage(
       "Runtime.evaluate",
       {
@@ -752,7 +733,20 @@ function Pause_evaluateInGlobal({ expression }) {
   } catch (err) {
     return handleEvalError(err);
   }
-  return buildRrpObjectResult(rv);
+  return buildEvalResult(rv);
+}
+
+function onBeforeEval() {
+  onReplayApiReset();
+}
+
+function buildEvalResult(cdpResult) {
+  if (usedReplayApi && cdpResult?.exceptionDetails) {
+    // Emit warning if an eval that used the Replay API throws.
+    const cdpException = cdpResult.exceptionDetails.exception?.description || cdpResult.exceptionDetails;
+    warning(`REPLAY_API_EVAL_ERROR ${JSON_stringify(cdpException)}`);
+  }
+  return buildRrpObjectResult(cdpResult);
 }
 
 function Pause_getAllFrames() {
@@ -1004,6 +998,12 @@ function getPlainObjectByRrpId(rrpId) {
     gPlainObjectByRrpId.set(rrpId, plainObject);
   }
   return plainObject;
+}
+
+function getPlainObjectFromCdpObject(cdpObject) {
+  const cdpId = cdpObject.objectId;
+  assert(cdpId);
+  return fromJsGetObjectByCdpId(cdpId);
 }
 
 /**
@@ -1430,7 +1430,7 @@ ProtocolObjectPreview.prototype = {
       } catch (e) {
         // No available context group; this can happen, so just return nothing.
         if (e.code == CDPERROR_MISSINGCONTEXT) {
-          warning(`JS ProtocolObjectPreview.fill has no context.`);
+          warning(`[RUN-2600] JS ProtocolObjectPreview.fill has no context.`);
           cdpProperties = { result: [] };
         } else {
           throw e;
@@ -2118,7 +2118,6 @@ function DOM_getEventListeners({ node }) {
 
   if (nodeObject.nodeName && nodeObject.nodeName == "HTML") {
     // Add event listeners for the document and window as well.
-    // TODO: figure out ownerGlobal for chromium - https://linear.app/replay/issue/RUN-1041
     listenerInfos.push(
       ...fromJsCollectEventListeners(nodeObject.parentNode)   // document
       // ...fromJsCollectEventListeners(nodeObject.ownerGlobal)  // window
@@ -3069,6 +3068,9 @@ function adjustCoordinateByTransformMatrix(coord, m) {
  * Export internal methods via `__RECORD_REPLAY_ARGUMENTS__`.
  * This is to be used for internal debugging purposes.
  * ##########################################################################*/
+
+// TODO: Get rid of `internal`. There is no reason to have this in addition to
+//       __RECORD_REPLAY_ARGUMENTS__ and __RECORD_REPLAY__.
 __RECORD_REPLAY_ARGUMENTS__.internal = {
   getBlinkNodeIdByRrpId,
   getCdpObjectByRrpId,
@@ -3129,6 +3131,74 @@ Object.assign(__RECORD_REPLAY__, {
   getCurrentEvaluateFrame,
   replayEval
 });
+
+/** ###########################################################################
+ * {@link patchReplayApi} decorates our API objects/functions with extra
+ * diagnostics, e.g. whether the Replay API was called at all.
+ * ##########################################################################*/
+
+let usedReplayApi = 0;
+
+function onReplayApiUsed() {
+  ++usedReplayApi;
+}
+
+function onReplayApiReset() {
+  usedReplayApi = 0;
+}
+
+function patchReplayApi() {
+  patchReplayApiObject(__RECORD_REPLAY__);
+  patchReplayApiObject(__RECORD_REPLAY_ARGUMENTS__);
+  patchReplayApiObject(__RECORD_REPLAY_ARGUMENTS__.internal);
+}
+
+function patchReplayApiObject(obj) {
+  for (const key in obj) {
+    const value = obj[key];
+    if (isFunction(value)) {
+      obj[key] = wrapReplayApiFunction(value);
+    }
+  }
+}
+
+function wrapReplayApiFunction(fn) {
+  return (...args) => {
+    onReplayApiUsed();
+    return fn(...args);
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// main.js
+///////////////////////////////////////////////////////////////////////////////
+
+patchReplayApi();
+initMessages();
+addEventListener("Runtime.consoleAPICalled", onConsoleAPICall);
+addEventListener("Runtime.executionContextCreated", ({ context }) => {
+  gExecutionContexts.set(context.id, context);
+  for (const callback of gContextChangeCallbacks) {
+    callback(context, "add");
+  }
+});
+addEventListener("Runtime.executionContextDestroyed", ({ executionContextId }) => {
+  const context = gExecutionContexts.get(executionContextId);
+  for (const callback of gContextChangeCallbacks) {
+    callback(context, "remove");
+  }
+  gExecutionContexts.delete(executionContextId);
+});
+addEventListener("Runtime.executionContextsCleared", () => {
+  for (const context of gExecutionContexts.values()) {
+    for (const callback of gContextChangeCallbacks) {
+      callback(context, "remove");
+    }
+  }
+  gExecutionContexts.clear();
+});
+sendMessage("Runtime.enable");
 
 } catch (e) {
   log(`Error: Initialization exception ${e}`);
@@ -3858,11 +3928,7 @@ static void SendMessageToFrontend(const v8_inspector::StringView& message) {
   if (result->IsString()) {
     v8::String::Utf8Value messageValue(isolate, result);
     std::string messageStr(*messageValue);
-
-    // TODO: Replace this with an API call to `RecordReplaySetCrashReasonCallback`
-    // See RUN-1562: https://linear.app/replay/issue/RUN-1562
-    recordreplay::Print("ErrorFatal %s:%d %s", "js", 0, messageStr.c_str());
-    IMMEDIATE_CRASH();
+    recordreplay::Crash("CDPMessageCallback FAILED %s:%d %s", "js", 0, messageStr.c_str());
   }
 }
 
@@ -3999,7 +4065,7 @@ static void SendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
       // Construct our error result.
       std::unique_ptr<base::DictionaryValue> error(new base::DictionaryValue);
-      error->SetStringKey("message", "No context group available for Isolate.");
+      error->SetStringKey("message", "[RUN-2600] No context group available for Isolate.");
       error->SetIntKey("code", CDPERROR_MISSINGCONTEXT);
 
       base::DictionaryValue result;
@@ -4397,7 +4463,7 @@ getObjectByCdpId(v8::Isolate* isolate,
 
   absl::optional<int> contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
   if (!contextGroupId.has_value()) {
-    recordreplay::Warning("getObjectByCdpId - Failed to find contextGroupId");
+    recordreplay::Warning("[RUN-2600] getObjectByCdpId - Failed to find contextGroupId");
     return false;
   }
 
@@ -4446,7 +4512,7 @@ static void fromJsMakeDebuggeeValue(
   auto contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
 
   if (!contextGroupId.has_value()) {
-      recordreplay::Warning("fromJsMakeDebuggeeValue - no valid context id");
+      recordreplay::Warning("[RUN-2600] fromJsMakeDebuggeeValue - no valid context id");
       args.GetReturnValue().SetNull();
       return;
   }
@@ -4481,7 +4547,7 @@ static void fromJsGetArgumentsInFrame(
   auto contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
 
   if (!contextGroupId.has_value()) {
-    recordreplay::Warning("fromJsGetArgumentsInFrame - no valid context id");
+    recordreplay::Warning("[RUN-2600] fromJsGetArgumentsInFrame - no valid context id");
     args.GetReturnValue().SetNull();
     return;
   }
@@ -5070,7 +5136,7 @@ static void fromJsGetMatchedStylesForElement(
 
   auto cssAgent = getOrCreateInspectorCSSAgent(isolate);
   if (!cssAgent.has_value()) {
-    recordreplay::Warning("CDP CSS.getMatchedStylesForNode failed no context id");
+    recordreplay::Warning("[RUN-2600] fromJsGetMatchedStylesForElement failed no context id");
     args.GetReturnValue().SetNull();
     return;
   }
@@ -5137,7 +5203,7 @@ static void fromJsCssGetStylesheetByCpdId(
   auto sheetId = ToCoreString(args[0].As<v8::String>());
   auto cssAgent = getOrCreateInspectorCSSAgent(isolate);
   if (!cssAgent.has_value()) {
-    recordreplay::Warning("fromJsCssGetStylesheetByCpdId failed no context id");
+    recordreplay::Warning("[RUN-2600] fromJsCssGetStylesheetByCpdId failed no context id");
     args.GetReturnValue().SetNull();
     return;
   }
@@ -5161,7 +5227,7 @@ static void fromJsDomPerformSearch(
   auto query = ToCoreString(args[0].As<v8::String>());
   auto domAgent = getOrCreateInspectorDOMAgent(isolate);
   if (!domAgent.has_value()) {
-    recordreplay::Warning("fromJsDomPerformSearch failed no context id");
+    recordreplay::Warning("[RUN-2600] fromJsDomPerformSearch failed no context id");
     return;
   }
 
@@ -5215,7 +5281,7 @@ static void fromJsCollectEventListeners(const v8::FunctionCallbackInfo<v8::Value
 
   v8::Local<v8::Array> result = v8::Array::New(isolate);
   if (!node) {
-    recordreplay::Warning("JS fromJsCollectEventListeners: invalid argument is not blink Node");
+    recordreplay::Warning("[RUN-2282] JS fromJsCollectEventListeners: invalid argument is not blink Node");
   } else {
     auto report_for_all_contexts = true;
     V8EventListenerInfoList eventListenerInfos;
