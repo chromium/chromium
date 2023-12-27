@@ -93,7 +93,16 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
 
       narrow_: {
         type: Boolean,
-        observer: 'onNarrowChanged_',
+        observer: 'onMaxWidthChanged_',
+      },
+
+      collapsed_: {
+        type: Boolean,
+        observer: 'onMaxWidthChanged_',
+      },
+
+      pageTitle_: {
+        type: String,
       },
 
       /*
@@ -129,6 +138,8 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
 
   private selectedPage_: Page;
   private narrow_: boolean;
+  private collapsed_: boolean;
+  private pageTitle_: string = this.i18n('passwordManagerTitle');
   private toastMessage_: string;
   private showUndo_: boolean;
   private focusConfig_: FocusConfig;
@@ -214,9 +225,15 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     return this.$.toolbar.searchField.isSearchFocused();
   }
 
-  private onNarrowChanged_() {
+  private onMaxWidthChanged_() {
     if (this.$.drawer.open && !this.narrow_) {
       this.$.drawer.close();
+    }
+    // Window is greater than 980px but less than 1200px.
+    if (!this.narrow_ && this.collapsed_) {
+      this.pageTitle_ = this.i18n('passwordManagerString');
+    } else {
+      this.pageTitle_ = this.i18n('passwordManagerTitle');
     }
   }
 

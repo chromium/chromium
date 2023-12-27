@@ -42,10 +42,12 @@ export class PasswordManagerToolbarElement extends
   static get properties() {
     return {
       narrow: Boolean,
+      pageName: String,
     };
   }
 
   narrow: boolean;
+  pageName: string;
 
   override currentRouteChanged(newRoute: Route, _oldRoute: Route): void {
     this.updateSearchTerm(newRoute.queryParameters);
