@@ -24,8 +24,6 @@ inline constexpr int kContentTextWidth = 280;
 // Spacing constants.
 inline constexpr int kContentSingleSpacing = 8;
 inline constexpr int kContentDoubleSpacing = 16;
-inline constexpr gfx::Insets kViewVerticalSpacingMargins =
-    gfx::Insets::TLBR(0, 0, kContentSingleSpacing, 0);
 inline constexpr gfx::Insets kViewHorizontalSpacingMargins =
     gfx::Insets::TLBR(0, 0, 0, kContentSingleSpacing);
 

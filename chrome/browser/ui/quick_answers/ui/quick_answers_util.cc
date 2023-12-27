@@ -144,7 +144,6 @@ View* AddFillLayoutChildView(View* container,
                              std::unique_ptr<views::View> view) {
   View* child_view = container->AddChildView(std::move(view));
   child_view->SetLayoutManager(std::make_unique<views::FillLayout>());
-  child_view->SetProperty(views::kMarginsKey, kViewVerticalSpacingMargins);
 
   return child_view;
 }
@@ -167,7 +166,7 @@ std::unique_ptr<views::Separator> CreateSeparatorView() {
           .Build();
   separator->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::TLBR(kContentDoubleSpacing, 0, kContentDoubleSpacing, 0));
+      gfx::Insets::TLBR(kContentSingleSpacing, 0, kContentSingleSpacing, 0));
   return separator;
 }
 

@@ -68,12 +68,11 @@ void RichAnswersDefinitionView::InitLayout() {
 }
 
 void RichAnswersDefinitionView::AddHeaderViews() {
-  views::View* container_view = AddFillLayoutChildView(content_view_);
   // This box layout will have the view flex values as:
   // - header_view (flex=1): resize (either shrink or expand as necessary)
   // - settings_button_view (flex=0): no resize
   views::BoxLayoutView* box_layout_view =
-      container_view->AddChildView(std::make_unique<views::BoxLayoutView>());
+      content_view_->AddChildView(std::make_unique<views::BoxLayoutView>());
   views::FlexLayoutView* header_view =
       box_layout_view->AddChildView(CreateHorizontalLayoutView());
 
@@ -102,7 +101,7 @@ void RichAnswersDefinitionView::AddHeaderViews() {
     if (phonetics_label_width <= header_space_available) {
       header_view->AddChildView(std::move(phonetics_label));
     } else {
-      AddFillLayoutChildView(content_view_, std::move(phonetics_label));
+      content_view_->AddChildView(std::move(phonetics_label));
     }
   }
 
@@ -151,21 +150,17 @@ void RichAnswersDefinitionView::OnPhoneticsAudioButtonPressed() {
 }
 
 void RichAnswersDefinitionView::AddWordClass() {
-  AddFillLayoutChildView(
-      content_view_,
-      QuickAnswersTextLabel::CreateLabelWithStyle(
-          definition_result_.word_class,
-          GetFontList(TypographyToken::kCrosBody2Italic), kContentTextWidth,
-          /*is_multi_line=*/false, cros_tokens::kCrosSysSecondary));
+  content_view_->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
+      definition_result_.word_class,
+      GetFontList(TypographyToken::kCrosBody2Italic), kContentTextWidth,
+      /*is_multi_line=*/false, cros_tokens::kCrosSysSecondary));
 }
 
 void RichAnswersDefinitionView::AddDefinition() {
-  AddFillLayoutChildView(
-      content_view_,
-      QuickAnswersTextLabel::CreateLabelWithStyle(
-          definition_result_.sense.definition,
-          GetFontList(TypographyToken::kCrosBody2), kContentTextWidth,
-          /*is_multi_line=*/true, cros_tokens::kCrosSysOnSurface));
+  content_view_->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
+      definition_result_.sense.definition,
+      GetFontList(TypographyToken::kCrosBody2), kContentTextWidth,
+      /*is_multi_line=*/true, cros_tokens::kCrosSysOnSurface));
 }
 
 void RichAnswersDefinitionView::MaybeAddSampleSentence() {
@@ -175,12 +170,10 @@ void RichAnswersDefinitionView::MaybeAddSampleSentence() {
     return;
   }
 
-  AddFillLayoutChildView(
-      content_view_,
-      QuickAnswersTextLabel::CreateLabelWithStyle(
-          "\"" + sample_sentence.value() + "\"",
-          GetFontList(TypographyToken::kCrosBody2), kContentTextWidth,
-          /*is_multi_line=*/true, cros_tokens::kCrosSysSecondary));
+  content_view_->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
+      "\"" + sample_sentence.value() + "\"",
+      GetFontList(TypographyToken::kCrosBody2), kContentTextWidth,
+      /*is_multi_line=*/true, cros_tokens::kCrosSysSecondary));
 }
 
 void RichAnswersDefinitionView::MaybeAddSynonyms() {
@@ -190,31 +183,30 @@ void RichAnswersDefinitionView::MaybeAddSynonyms() {
     return;
   }
 
-  views::View* container_view = AddFillLayoutChildView(content_view_);
   // This box layout will have the view flex values as:
   // - similar_label (flex=0): no resize
   // - synonyms_label (flex=1): resize (either shrink or expand as necessary)
-  views::BoxLayoutView* labels_view =
-      container_view->AddChildView(std::make_unique<views::BoxLayoutView>());
-  labels_view->SetCrossAxisAlignment(
+  views::BoxLayoutView* box_layout_view =
+      content_view_->AddChildView(std::make_unique<views::BoxLayoutView>());
+  box_layout_view->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
-  labels_view->SetBetweenChildSpacing(kContentSingleSpacing);
+  box_layout_view->SetBetweenChildSpacing(kContentSingleSpacing);
 
   QuickAnswersTextLabel* similar_label =
-      labels_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
+      box_layout_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
           l10n_util::GetStringUTF8(
               IDS_QUICK_ANSWERS_DEFINITION_SYNONYMS_LABEL_TEXT),
           GetFontList(TypographyToken::kCrosBody2), kContentTextWidth,
           /*is_multi_line=*/true, cros_tokens::kHighlightColorGreen));
   std::string synonyms_text = base::JoinString(synonyms_list.value(), ", ");
   QuickAnswersTextLabel* synonyms_label =
-      labels_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
+      box_layout_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
           synonyms_text, GetFontList(TypographyToken::kCrosBody2),
           kContentTextWidth - similar_label->CalculatePreferredSize().width(),
           /*is_multi_line=*/true, cros_tokens::kCrosSysSecondary));
 
-  labels_view->SetFlexForView(similar_label, /*flex=*/0);
-  labels_view->SetFlexForView(synonyms_label, /*flex=*/1);
+  box_layout_view->SetFlexForView(similar_label, /*flex=*/0);
+  box_layout_view->SetFlexForView(synonyms_label, /*flex=*/1);
 }
 
 BEGIN_METADATA(RichAnswersDefinitionView, RichAnswersView)

@@ -34,7 +34,7 @@ class RichAnswersTranslationView : public RichAnswersView {
   void InitLayout();
   void AddLanguageTitle(const std::string& locale, bool is_header_view);
   views::FlexLayoutView* AddLanguageText(const std::string& language_text,
-                                         bool may_append_buttons);
+                                         bool maybe_append_buttons);
   void AddReadAndCopyButtons(views::FlexLayoutView* translated_text_view);
   void OnReadButtonPressed(const std::string& read_text,
                            const std::string& locale);

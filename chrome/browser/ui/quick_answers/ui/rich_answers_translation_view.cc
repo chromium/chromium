@@ -56,7 +56,7 @@ void RichAnswersTranslationView::InitLayout() {
 
   // Text to translate.
   AddLanguageText(translation_result_.text_to_translate,
-                  /*may_append_buttons=*/false);
+                  /*maybe_append_buttons=*/false);
 
   // Separator.
   content_view_->AddChildView(CreateSeparatorView());
@@ -65,8 +65,8 @@ void RichAnswersTranslationView::InitLayout() {
   AddLanguageTitle(translation_result_.target_locale, /*is_header_view=*/false);
 
   // Translated text.
-  auto* translated_text_view = AddLanguageText(
-      translation_result_.translated_text, /*may_append_buttons=*/true);
+  views::FlexLayoutView* translated_text_view = AddLanguageText(
+      translation_result_.translated_text, /*maybe_append_buttons=*/true);
 
   // Read and copy buttons.
   AddReadAndCopyButtons(translated_text_view);
@@ -79,24 +79,18 @@ void RichAnswersTranslationView::AddLanguageTitle(const std::string& locale,
 
   if (is_header_view) {
     AddHeaderViewsTo(content_view_, base::UTF16ToUTF8(locale_name));
-  } else {
-    AddFillLayoutChildView(
-        content_view_,
-        QuickAnswersTextLabel::CreateLabelWithStyle(
-            base::UTF16ToUTF8(locale_name),
-            GetFontList(TypographyToken::kCrosButton2), kContentHeaderWidth,
-            /*is_multi_line=*/false, cros_tokens::kCrosSysSecondary));
+    return;
   }
+
+  content_view_->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
+      base::UTF16ToUTF8(locale_name),
+      GetFontList(TypographyToken::kCrosButton2), kContentHeaderWidth,
+      /*is_multi_line=*/false, cros_tokens::kCrosSysSecondary));
 }
 
 views::FlexLayoutView* RichAnswersTranslationView::AddLanguageText(
     const std::string& language_text,
-    bool may_append_buttons) {
-  auto* container_view = AddFillLayoutChildView(content_view_);
-  auto* language_text_view = container_view->AddChildView(
-      views::Builder<views::FlexLayoutView>()
-          .SetOrientation(views::LayoutOrientation::kHorizontal)
-          .Build());
+    bool maybe_append_buttons) {
   std::unique_ptr<QuickAnswersTextLabel> language_text_label =
       QuickAnswersTextLabel::CreateLabelWithStyle(
           language_text, GetFontList(TypographyToken::kCrosTitle1),
@@ -104,24 +98,33 @@ views::FlexLayoutView* RichAnswersTranslationView::AddLanguageText(
           /*is_multi_line=*/true, cros_tokens::kCrosSysOnSurface);
   // If appending the read and copy buttons is an option, then check if
   // the button views can fit on a single line with the text label.
-  if (may_append_buttons &&
+  if (maybe_append_buttons &&
       (language_text_label->CalculatePreferredSize().width() +
        kReadAndCopyButtonsWidth) <= kContentTextWidth) {
     should_append_buttons_ = true;
-  }
-  language_text_view->AddChildView(std::move(language_text_label));
 
-  return language_text_view;
+    views::View* container_view = AddFillLayoutChildView(content_view_);
+    views::FlexLayoutView* language_text_view = container_view->AddChildView(
+        views::Builder<views::FlexLayoutView>()
+            .SetOrientation(views::LayoutOrientation::kHorizontal)
+            .Build());
+    language_text_view->AddChildView(std::move(language_text_label));
+
+    return language_text_view;
+  }
+
+  content_view_->AddChildView(std::move(language_text_label));
+  return nullptr;
 }
 
 void RichAnswersTranslationView::AddReadAndCopyButtons(
     views::FlexLayoutView* translated_text_view) {
   views::View* container_view;
 
-  // If |should_append_buttons_| is true, then append the buttons to the same
-  // view as the translated text. Otherwise, add the buttons on a separate line
-  // underneath.
-  if (should_append_buttons_) {
+  // If `should_append_buttons_` is true and the provided `translated_text_view`
+  // is valid, then append the buttons to the `translated_text_view`.
+  // Otherwise, add the buttons on a separate line.
+  if (should_append_buttons_ && translated_text_view) {
     translated_text_view->SetDefault(views::kMarginsKey,
                                      kViewHorizontalSpacingMargins);
     container_view = translated_text_view;
@@ -129,7 +132,7 @@ void RichAnswersTranslationView::AddReadAndCopyButtons(
     container_view = AddFillLayoutChildView(content_view_);
   }
 
-  auto* button_views =
+  views::View* button_views =
       container_view->AddChildView(CreateHorizontalLayoutView());
 
   // Setup an invisible web view to play TTS audio.
