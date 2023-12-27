@@ -504,7 +504,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.ExternalMetrics.SamplesRead" units="count"
-    expires_after="2024-02-04">
+    expires_after="2025-01-30">
   <owner>iby@google.com</owner>
   <owner>mutexlox@google.com</owner>
   <owner>cros-telemetry@google.com</owner>
