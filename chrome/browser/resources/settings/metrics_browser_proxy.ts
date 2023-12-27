@@ -120,7 +120,7 @@ export enum SafetyCheckNotificationsModuleInteractions {
  * numeric values should never be reused.
  *
  * Must be kept in sync with the
- * SafetyChecUnusedSitePermissionsModuleInteractions enum in
+ * SafetyCheckUnusedSitePermissionsModuleInteractions enum in
  * histograms/enums.xml
  */
 export enum SafetyCheckUnusedSitePermissionsModuleInteractions {
@@ -130,6 +130,45 @@ export enum SafetyCheckUnusedSitePermissionsModuleInteractions {
   UNDO_ALLOW_AGAIN = 3,
   UNDO_ACKNOWLEDGE_ALL = 4,
   MINIMIZE = 5,
+  // Max value should be updated whenever new entries are added.
+  MAX_VALUE = 6,
+}
+
+/**
+ * Contains all entry points for Safety Hub page.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the SafetyHubEntryPoint enum in
+ * histograms/enums.xml and safety_hub/safety_hub_constants.h.
+ */
+export enum SafetyHubEntryPoint {
+  PRIVACY_SAFE = 0,
+  PRIVACY_WARNING = 1,
+  SITE_SETTINGS = 2,
+  THREE_DOT_MENU = 3,
+  NOTIFICATIONS = 4,
+  // Max value should be updated whenever new entries are added.
+  MAX_VALUE = 5,
+}
+
+/**
+ * Contains all Safety Hub modules.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the SafetyHubModuleType enum in
+ * histograms/enums.xml and safety_hub/safety_hub_constants.h.
+ */
+export enum SafetyHubModuleType {
+  PERMISSIONS = 0,
+  NOTIFICATIONS = 1,
+  SAFE_BROWSING = 2,
+  EXTENSIONS = 3,
+  PASSWORDS = 4,
+  VERSION = 5,
   // Max value should be updated whenever new entries are added.
   MAX_VALUE = 6,
 }
@@ -342,6 +381,30 @@ export interface MetricsBrowserProxy {
 
   /**
    * Helper function that calls recordHistogram for the
+   * Settings.SafetyHub.EntryPointShown histogram
+   */
+  recordSafetyHubEntryPointShown(page: SafetyHubEntryPoint): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   *Settings.SafetyHub.EntryPointClicked histogram
+   */
+  recordSafetyHubEntryPointClicked(page: SafetyHubEntryPoint): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.SafetyHub.DashboardWarning histogram
+   */
+  recordSafetyHubModuleWarningImpression(module: SafetyHubModuleType): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.SafetyHub.HasDashboardShowAnyWarning histogram
+   */
+  recordSafetyHubDashboardAnyWarning(visible: boolean): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
    * Settings.SafetyHub.[card_name].StatusOnClick histogram
    */
   recordSafetyHubCardStateClicked(
@@ -482,6 +545,37 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     chrome.send(
         'metricsHandler:recordInHistogram',
         [histogramName, state, SafetyHubCardState.MAX_VALUE]);
+  }
+
+  recordSafetyHubEntryPointShown(page: SafetyHubEntryPoint) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.EntryPointShown',
+      page,
+      SafetyHubEntryPoint.MAX_VALUE,
+    ]);
+  }
+
+  recordSafetyHubEntryPointClicked(page: SafetyHubEntryPoint) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.EntryPointClicked',
+      page,
+      SafetyHubEntryPoint.MAX_VALUE,
+    ]);
+  }
+
+  recordSafetyHubModuleWarningImpression(module: SafetyHubModuleType) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.DashboardWarning',
+      module,
+      SafetyHubModuleType.MAX_VALUE,
+    ]);
+  }
+
+  recordSafetyHubDashboardAnyWarning(visible: boolean) {
+    chrome.send('metricsHandler:recordBooleanHistogram', [
+      'Settings.SafetyHub.HasDashboardShowAnyWarning',
+      visible,
+    ]);
   }
 
   recordSettingsPageHistogram(interaction: PrivacyElementInteractions) {

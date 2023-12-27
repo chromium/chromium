@@ -6,8 +6,8 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {CardInfo, CardState, ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent,SettingsSafetyHubPageElement} from 'chrome://settings/lazy_load.js';
-import {LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, PasswordManagerImpl, PasswordManagerPage, Router, routes} from 'chrome://settings/settings.js';
+import {CardInfo, CardState, ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent, SettingsSafetyHubPageElement} from 'chrome://settings/lazy_load.js';
+import {LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, PasswordManagerImpl, PasswordManagerPage, Router, routes, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -363,5 +363,111 @@ suite('SafetyHubPage', function() {
   test('Dismiss all menu notifications on page load', async function() {
     Router.getInstance().navigateTo(routes.SAFETY_HUB);
     await safetyHubBrowserProxy.whenCalled('dismissActiveMenuNotification');
+  });
+
+  test('Metric Recording', async function() {
+    const safeCardData: CardInfo = {
+      header: 'Dummy header',
+      subheader: 'Dummy subheader',
+      state: CardState.SAFE,
+    };
+
+    const unsafeCardData: CardInfo = {
+      header: 'Dummy header',
+      subheader: 'Dummy subheader',
+      state: CardState.WARNING,
+    };
+
+    function reset() {
+      // Reset all cards and modules on safety hub page.
+      safetyHubBrowserProxy.setPasswordCardData(safeCardData);
+      safetyHubBrowserProxy.setVersionCardData(safeCardData);
+      safetyHubBrowserProxy.setSafeBrowsingCardData(safeCardData);
+      safetyHubBrowserProxy.setUnusedSitePermissions([]);
+      safetyHubBrowserProxy.setNotificationPermissionReview([]);
+      safetyHubBrowserProxy.setNumberOfExtensionsThatNeedReview(0);
+      metricsBrowserProxy.reset();
+    }
+
+    async function refresh(): Promise<void> {
+      // Refresh the page to consume recent mock data.
+      document.body.removeChild(testElement);
+      testElement = document.createElement('settings-safety-hub-page');
+      document.body.appendChild(testElement);
+      await flushTasks();
+    }
+
+    reset();
+    await refresh();
+    // Expect recordSafetyHubDashboardAnyWarning is called as false since
+    // there is no warning.
+    let result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubDashboardAnyWarning');
+    assertEquals(false, result);
+
+    // Check general interaction and impression metrics.
+    result = await metricsBrowserProxy.whenCalled('recordSafetyHubImpression');
+    assertEquals(SafetyHubSurfaces.SAFETY_HUB_PAGE, result);
+    result = await metricsBrowserProxy.whenCalled('recordSafetyHubInteraction');
+    assertEquals(SafetyHubSurfaces.SAFETY_HUB_PAGE, result);
+
+    // Expect recordSafetyHubModuleWarningImpression is called for password
+    // card.
+    reset();
+    safetyHubBrowserProxy.setPasswordCardData(unsafeCardData);
+    await refresh();
+    result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubModuleWarningImpression');
+    assertEquals(SafetyHubModuleType.PASSWORDS, result);
+
+    // Expect recordSafetyHubModuleWarningImpression is called for version card.
+    reset();
+    safetyHubBrowserProxy.setVersionCardData(unsafeCardData);
+    await refresh();
+    result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubModuleWarningImpression');
+    assertEquals(SafetyHubModuleType.VERSION, result);
+
+    // Expect recordSafetyHubModuleWarningImpression is called for safe browsing
+    // card.
+    reset();
+    safetyHubBrowserProxy.setSafeBrowsingCardData(unsafeCardData);
+    await refresh();
+    result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubModuleWarningImpression');
+    assertEquals(SafetyHubModuleType.SAFE_BROWSING, result);
+
+    // Expect recordSafetyHubModuleWarningImpression is called for unused site
+    // permissions.
+    reset();
+    safetyHubBrowserProxy.setUnusedSitePermissions(
+        unusedSitePermissionMockData);
+    await refresh();
+    result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubModuleWarningImpression');
+    assertEquals(SafetyHubModuleType.PERMISSIONS, result);
+
+    // Expect recordSafetyHubModuleWarningImpression is called for notification
+    // permissions.
+    reset();
+    safetyHubBrowserProxy.setNotificationPermissionReview(
+        notificationPermissionMockData);
+    await refresh();
+    result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubModuleWarningImpression');
+    assertEquals(SafetyHubModuleType.NOTIFICATIONS, result);
+
+    // Expect recordSafetyHubModuleWarningImpression is called for extensions.
+    reset();
+    safetyHubBrowserProxy.setNumberOfExtensionsThatNeedReview(1);
+    await refresh();
+    result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubModuleWarningImpression');
+    assertEquals(SafetyHubModuleType.EXTENSIONS, result);
+
+    // Expect recordSafetyHubDashboardAnyWarning is called as true.
+    result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubDashboardAnyWarning');
+    assertEquals(true, result);
   });
 });

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubSurfaces} from 'chrome://settings/settings.js';
+import {DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestMetricsBrowserProxy extends TestBrowserProxy implements
@@ -28,6 +28,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordDeleteBrowsingDataAction',
       'recordSafetyHubImpression',
       'recordSafetyHubInteraction',
+      'recordSafetyHubEntryPointShown',
+      'recordSafetyHubEntryPointClicked',
+      'recordSafetyHubModuleWarningImpression',
+      'recordSafetyHubDashboardAnyWarning',
     ]);
   }
 
@@ -124,5 +128,21 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordSafetyHubInteraction(surface: SafetyHubSurfaces) {
     this.methodCalled('recordSafetyHubInteraction', surface);
+  }
+
+  recordSafetyHubEntryPointShown(page: SafetyHubEntryPoint) {
+    this.methodCalled('recordSafetyHubModuleWarningImpression', page);
+  }
+
+  recordSafetyHubEntryPointClicked(page: SafetyHubEntryPoint) {
+    this.methodCalled('recordSafetyHubEntryPointClicked', page);
+  }
+
+  recordSafetyHubModuleWarningImpression(module: SafetyHubModuleType) {
+    this.methodCalled('recordSafetyHubModuleWarningImpression', module);
+  }
+
+  recordSafetyHubDashboardAnyWarning(visible: boolean) {
+    this.methodCalled('recordSafetyHubDashboardAnyWarning', visible);
   }
 }
