@@ -63,8 +63,8 @@ class CryptographerImpl : public Cryptographer {
   // Does NOT set or change the default encryption key.
   void EmplaceKeysFrom(const NigoriKeyBag& key_bag);
 
-  // Adds all keys from |keys| that weren't previously known.
-  void EmplaceCrossUserSharingKeysFrom(const CrossUserSharingKeys& keys);
+  // Drops any pre-existing key pairs and adds all keys from |keys|.
+  void ReplaceCrossUserSharingKeys(CrossUserSharingKeys keys);
 
   // Adds the given Public-private key-pair associated with |version|.
   void EmplaceKeyPair(CrossUserSharingPublicPrivateKeyPair key_pair,

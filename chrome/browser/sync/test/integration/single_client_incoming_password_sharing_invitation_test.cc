@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
+#include "chrome/browser/sync/test/integration/password_sharing_invitation_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -39,6 +40,9 @@ using password_manager::PasswordForm;
 using password_manager::PasswordStoreInterface;
 using password_manager::metrics_util::
     ProcessIncomingPasswordSharingInvitationResult;
+using password_sharing_helper::CreateDefaultIncomingInvitation;
+using password_sharing_helper::CreateDefaultSenderDisplayInfo;
+using password_sharing_helper::CreateEncryptedIncomingInvitationSpecifics;
 using passwords_helper::GetAccountPasswordStoreInterface;
 using passwords_helper::GetAllLogins;
 using passwords_helper::GetProfilePasswordStoreInterface;
@@ -56,134 +60,39 @@ using testing::SizeIs;
 namespace {
 
 constexpr char kPasswordValue[] = "password";
-constexpr char kSignonRealm[] = "signon_realm";
-constexpr char kOrigin[] = "http://abc.com/";
-constexpr char kUsernameElement[] = "username_element";
 constexpr char kUsernameValue[] = "username";
-constexpr char kPasswordElement[] = "password_element";
-constexpr char kPasswordDisplayName[] = "password_display_name";
-constexpr char kPasswordAvatarUrl[] = "http://avatar.url/";
-
-constexpr char kSenderEmail[] = "sender@gmail.com";
-constexpr char kSenderDisplayName[] = "Sender Name";
-constexpr char kSenderProfileImageUrl[] = "http://sender.url/image";
-
-constexpr char kLocalPasswordValue[] = "local_password_value";
-
-constexpr uint32_t kSenderKeyVersion = 1;
-
-sync_pb::CrossUserSharingPublicKey PublicKeyToProto(
-    const syncer::CrossUserSharingPublicKey& public_key) {
-  sync_pb::CrossUserSharingPublicKey proto;
-  auto raw_public_key = public_key.GetRawPublicKey();
-  proto.set_x25519_public_key(
-      std::string(raw_public_key.begin(), raw_public_key.end()));
-  proto.set_version(kSenderKeyVersion);
-  return proto;
-}
-
-PasswordSharingInvitationData CreateUnencryptedInvitationData() {
-  PasswordSharingInvitationData password_invitation_data;
-  PasswordSharingInvitationData::PasswordGroupData* password_group_data =
-      password_invitation_data.mutable_password_group_data();
-
-  password_group_data->set_username_value(kUsernameValue);
-  password_group_data->set_password_value(kPasswordValue);
-
-  sync_pb::PasswordSharingInvitationData::PasswordGroupElementData*
-      element_data = password_group_data->add_element_data();
-
-  element_data->set_signon_realm(kSignonRealm);
-  element_data->set_origin(kOrigin);
-  element_data->set_username_element(kUsernameElement);
-  element_data->set_password_element(kPasswordElement);
-  element_data->set_display_name(kPasswordDisplayName);
-  element_data->set_avatar_url(kPasswordAvatarUrl);
-
-  return password_invitation_data;
-}
-
-std::vector<uint8_t> EncryptInvitationData(
-    const PasswordSharingInvitationData& unencrypted_password_data,
-    const sync_pb::CrossUserSharingPublicKey& recipient_public_key,
-    const syncer::CrossUserSharingPublicPrivateKeyPair& sender_key_pair) {
-  std::unique_ptr<syncer::CryptographerImpl> sender_cryptographer =
-      syncer::CryptographerImpl::CreateEmpty();
-
-  // Clone `sender_key_pair` since the cryptographer requires it to be moved.
-  absl::optional<syncer::CrossUserSharingPublicPrivateKeyPair>
-      sender_key_pair_copy =
-          syncer::CrossUserSharingPublicPrivateKeyPair::CreateByImport(
-              sender_key_pair.GetRawPrivateKey());
-  DCHECK(sender_key_pair_copy);
-  sender_cryptographer->EmplaceKeyPair(std::move(sender_key_pair_copy.value()),
-                                       kSenderKeyVersion);
-  sender_cryptographer->SelectDefaultCrossUserSharingKey(kSenderKeyVersion);
-
-  std::string serialized_data;
-  bool success = unencrypted_password_data.SerializeToString(&serialized_data);
-  DCHECK(success);
-
-  absl::optional<std::vector<uint8_t>> result =
-      sender_cryptographer->AuthEncryptForCrossUserSharing(
-          base::as_bytes(base::make_span(serialized_data)),
-          base::as_bytes(
-              base::make_span(recipient_public_key.x25519_public_key())));
-  DCHECK(result);
-
-  return result.value();
-}
 
 IncomingPasswordSharingInvitationSpecifics CreateInvitationSpecifics(
     const sync_pb::CrossUserSharingPublicKey& recipient_public_key) {
-  syncer::CrossUserSharingPublicPrivateKeyPair sender_key_pair =
-      syncer::CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
-  std::vector<uint8_t> encrypted_password = EncryptInvitationData(
-      CreateUnencryptedInvitationData(), recipient_public_key, sender_key_pair);
-  IncomingPasswordSharingInvitationSpecifics specifics;
-  specifics.set_encrypted_password_sharing_invitation_data(
-      std::string(encrypted_password.begin(), encrypted_password.end()));
-  specifics.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  specifics.set_recipient_key_version(recipient_public_key.version());
-
-  absl::optional<syncer::CrossUserSharingPublicKey> sender_public_key =
-      syncer::CrossUserSharingPublicKey::CreateByImport(
-          sender_key_pair.GetRawPublicKey());
-  DCHECK(sender_public_key);
-  sync_pb::UserInfo* sender_info = specifics.mutable_sender_info();
-  sender_info->mutable_cross_user_sharing_public_key()->CopyFrom(
-      PublicKeyToProto(sender_public_key.value()));
-  sender_info->mutable_user_display_info()->set_email(kSenderEmail);
-  sender_info->mutable_user_display_info()->set_display_name(
-      kSenderDisplayName);
-  sender_info->mutable_user_display_info()->set_profile_image_url(
-      kSenderProfileImageUrl);
-
-  return specifics;
+  return CreateEncryptedIncomingInvitationSpecifics(
+      CreateDefaultIncomingInvitation(kUsernameValue, kPasswordValue),
+      CreateDefaultSenderDisplayInfo(), recipient_public_key,
+      /*sender_key_pair=*/
+      syncer::CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair());
 }
 
-// Waits for the incoming password to be stored locally.
-class PasswordStoredChecker : public SingleClientStatusChangeChecker {
- public:
-  PasswordStoredChecker(SyncServiceImpl* sync_service,
-                        PasswordStoreInterface* password_store,
-                        size_t expected_count)
-      : SingleClientStatusChangeChecker(sync_service),
-        password_store_(password_store),
-        expected_count_(expected_count) {}
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Fill in fields in `password_data` required for computing password client tag.
+// This is useful for testing collisions. Note that the `invitation` must
+// contain only one password in a group.
+void FillPasswordClientTagFromInvitation(
+    const sync_pb::PasswordSharingInvitationData& invitation_data,
+    sync_pb::PasswordSpecificsData* password_data) {
+  const sync_pb::PasswordSharingInvitationData::PasswordGroupData&
+      invitation_group_data = invitation_data.password_group_data();
+  CHECK_EQ(invitation_group_data.element_data().size(), 1);
+  const sync_pb::PasswordSharingInvitationData::PasswordGroupElementData&
+      invitation_group_element_data = invitation_group_data.element_data(0);
 
-  bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for " << expected_count_ << " passwords in the store. ";
-
-    size_t current_count = GetAllLogins(password_store_).size();
-    *os << "Current password count in the store: " << current_count;
-    return current_count == expected_count_;
-  }
-
- private:
-  const raw_ptr<PasswordStoreInterface> password_store_;
-  const size_t expected_count_;
-};
+  password_data->set_username_value(invitation_group_data.username_value());
+  password_data->set_origin(invitation_group_element_data.origin());
+  password_data->set_username_element(
+      invitation_group_element_data.username_element());
+  password_data->set_password_element(
+      invitation_group_element_data.password_element());
+  password_data->set_signon_realm(invitation_group_element_data.signon_realm());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Waits until all the incoming invitations are deleted from the fake server.
 class ServerPasswordInvitationChecker
@@ -248,31 +157,18 @@ class SingleClientIncomingPasswordSharingInvitationTest : public SyncTest {
     return nigori_specifics.cross_user_sharing_public_key();
   }
 
-  void InjectInvitationToServer() {
+  void InjectInvitationToServer(
+      const sync_pb::IncomingPasswordSharingInvitationSpecifics&
+          invitation_specifics) {
     EntitySpecifics specifics;
     specifics.mutable_incoming_password_sharing_invitation()->CopyFrom(
-        CreateInvitationSpecifics(GetPublicKeyFromServer()));
+        invitation_specifics);
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
             /*non_unique_name=*/"",
             /*client_tag=*/
             specifics.incoming_password_sharing_invitation().guid(), specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
-  }
-
-  void InjectTestPasswordToFakeServer() {
-    sync_pb::PasswordSpecificsData password_data;
-    // Used for computing the client tag.
-    password_data.set_origin(kOrigin);
-    password_data.set_username_element(kUsernameElement);
-    password_data.set_username_value(kUsernameValue);
-    password_data.set_password_element(kPasswordElement);
-    password_data.set_signon_realm(kSignonRealm);
-    // Other data.
-    password_data.set_password_value(kLocalPasswordValue);
-
-    passwords_helper::InjectKeystoreEncryptedServerPassword(password_data,
-                                                            GetFakeServer());
   }
 
   bool SetupSyncTransportWithoutPasswordAccountStorage() {
@@ -295,47 +191,68 @@ class SingleClientIncomingPasswordSharingInvitationTest : public SyncTest {
 IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
                        ShouldStoreIncomingPassword) {
   ASSERT_TRUE(SetupSync());
-  InjectInvitationToServer();
-  EXPECT_TRUE(PasswordStoredChecker(GetSyncService(0),
-                                    GetProfilePasswordStoreInterface(0),
-                                    /*expected_count=*/1)
-                  .Wait());
+
+  sync_pb::PasswordSharingInvitationData invitation_data =
+      CreateDefaultIncomingInvitation(kUsernameValue, kPasswordValue);
+  sync_pb::UserDisplayInfo sender_display_info =
+      CreateDefaultSenderDisplayInfo();
+
+  PasswordFormsAddedChecker password_forms_added_checker(
+      GetProfilePasswordStoreInterface(0),
+      /*expected_new_password_forms=*/1);
+  InjectInvitationToServer(CreateEncryptedIncomingInvitationSpecifics(
+      invitation_data, sender_display_info,
+      /*recipient_public_key=*/GetPublicKeyFromServer(),
+      syncer::CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()));
+
+  EXPECT_TRUE(password_forms_added_checker.Wait());
   std::vector<std::unique_ptr<PasswordForm>> all_logins =
       GetAllLogins(GetProfilePasswordStoreInterface(0));
   ASSERT_EQ(1u, all_logins.size());
   const PasswordForm& password_form = *all_logins.front();
-  EXPECT_EQ(password_form.signon_realm, kSignonRealm);
-  EXPECT_EQ(password_form.url.spec(), kOrigin);
+  const sync_pb::PasswordSharingInvitationData::PasswordGroupData&
+      invitation_group_data = invitation_data.password_group_data();
+  const sync_pb::PasswordSharingInvitationData::PasswordGroupElementData&
+      invitation_group_element_data = invitation_group_data.element_data(0);
+  EXPECT_EQ(password_form.signon_realm,
+            invitation_group_element_data.signon_realm());
+  EXPECT_EQ(password_form.url.spec(), invitation_group_element_data.origin());
   EXPECT_EQ(base::UTF16ToUTF8(password_form.username_element),
-            kUsernameElement);
-  EXPECT_EQ(base::UTF16ToUTF8(password_form.username_value), kUsernameValue);
+            invitation_group_element_data.username_element());
+  EXPECT_EQ(base::UTF16ToUTF8(password_form.username_value),
+            invitation_group_data.username_value());
   EXPECT_EQ(base::UTF16ToUTF8(password_form.password_element),
-            kPasswordElement);
-  EXPECT_EQ(base::UTF16ToUTF8(password_form.password_value), kPasswordValue);
+            invitation_group_element_data.password_element());
+  EXPECT_EQ(base::UTF16ToUTF8(password_form.password_value),
+            invitation_group_data.password_value());
   EXPECT_EQ(base::UTF16ToUTF8(password_form.display_name),
-            kPasswordDisplayName);
-  EXPECT_EQ(password_form.icon_url.spec(), kPasswordAvatarUrl);
-  EXPECT_EQ(base::UTF16ToUTF8(password_form.sender_email), kSenderEmail);
-  EXPECT_EQ(base::UTF16ToUTF8(password_form.sender_name), kSenderDisplayName);
+            invitation_group_element_data.display_name());
+  EXPECT_EQ(password_form.icon_url.spec(),
+            invitation_group_element_data.avatar_url());
+
+  EXPECT_EQ(base::UTF16ToUTF8(password_form.sender_email),
+            sender_display_info.email());
+  EXPECT_EQ(base::UTF16ToUTF8(password_form.sender_name),
+            sender_display_info.display_name());
   EXPECT_EQ(password_form.sender_profile_image_url,
-            GURL(kSenderProfileImageUrl));
+            GURL(sender_display_info.profile_image_url()));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
                        ShouldIssueTombstoneAfterProcessingInvitation) {
   ASSERT_TRUE(SetupSync());
 
-  InjectInvitationToServer();
+  PasswordFormsAddedChecker password_forms_added_checker(
+      GetProfilePasswordStoreInterface(0),
+      /*expected_new_password_forms=*/1);
+  InjectInvitationToServer(CreateInvitationSpecifics(GetPublicKeyFromServer()));
 
   // Wait the invitation to be processed and the password stored.
-  ASSERT_TRUE(PasswordStoredChecker(GetSyncService(0),
-                                    GetProfilePasswordStoreInterface(0),
-                                    /*expected_count=*/1)
-                  .Wait());
+  ASSERT_TRUE(password_forms_added_checker.Wait());
 
   // Check that all the invitations are eventually deleted from the server.
-  // PasswordStoredChecker above guarantees that there is an invitation present
-  // on the server (which was injected earlier).
+  // PasswordFormsAddedChecker above guarantees that there is an invitation
+  // present on the server (which was injected earlier).
   EXPECT_TRUE(ServerPasswordInvitationChecker(/*expected_count=*/0).Wait());
 }
 
@@ -351,14 +268,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
   // Then stop sync service, inject an invitation to the server, and re-enable
   // sync again.
   GetClient(0)->SignOutPrimaryAccount();
-  InjectInvitationToServer();
+  InjectInvitationToServer(CreateInvitationSpecifics(GetPublicKeyFromServer()));
+  PasswordFormsAddedChecker password_forms_added_checker(
+      GetProfilePasswordStoreInterface(0),
+      /*expected_new_password_forms=*/1);
   ASSERT_TRUE(GetClient(0)->SetupSync());
 
   // Wait the invitation to be processed and the password stored.
-  ASSERT_TRUE(PasswordStoredChecker(GetSyncService(0),
-                                    GetProfilePasswordStoreInterface(0),
-                                    /*expected_count=*/1)
-                  .Wait());
+  ASSERT_TRUE(password_forms_added_checker.Wait());
   EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(0)),
               Contains(Pointee(
                   AllOf(Field(&PasswordForm::password_value,
@@ -373,6 +290,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
 IN_PROC_BROWSER_TEST_F(
     SingleClientIncomingPasswordSharingInvitationTest,
     ShouldIgnoreIncomingInvitationIfPasswordExistsAtInitialSync) {
+  constexpr char kLocalPasswordValue[] = "local_password";
   base::HistogramTester histogram_tester;
 
   // First, setup sync to initialize Nigori node with a public key to be able to
@@ -380,18 +298,32 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(SetupSync());
 
   // Then stop sync service, inject an invitation and a different password
-  // (but having the same client tag to cause a collision) to the server, and
-  // re-enable sync again.
+  // (but having the same client tag to cause a collision) to the server.
   GetClient(0)->SignOutPrimaryAccount();
-  InjectTestPasswordToFakeServer();
-  InjectInvitationToServer();
+
+  sync_pb::PasswordSharingInvitationData invitation_data =
+      CreateDefaultIncomingInvitation(kUsernameValue, kPasswordValue);
+  InjectInvitationToServer(CreateEncryptedIncomingInvitationSpecifics(
+      invitation_data, CreateDefaultSenderDisplayInfo(),
+      /*recipient_public_key=*/GetPublicKeyFromServer(),
+      /*sender_key_pair=*/
+      syncer::CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()));
+
+  sync_pb::PasswordSpecificsData password_data;
+  password_data.set_password_value(kLocalPasswordValue);
+  FillPasswordClientTagFromInvitation(invitation_data, &password_data);
+  passwords_helper::InjectKeystoreEncryptedServerPassword(password_data,
+                                                          GetFakeServer());
+
+  PasswordFormsAddedChecker password_forms_added_checker(
+      GetProfilePasswordStoreInterface(0),
+      /*expected_new_password_forms=*/1);
+
+  // Re-enable sync again.
   ASSERT_TRUE(GetClient(0)->SetupSync());
 
   // Wait the password to be stored.
-  ASSERT_TRUE(PasswordStoredChecker(GetSyncService(0),
-                                    GetProfilePasswordStoreInterface(0),
-                                    /*expected_count=*/1)
-                  .Wait());
+  ASSERT_TRUE(password_forms_added_checker.Wait());
 
   // Verify that the invitation has been processed and a tombstone has been
   // uploaded.
@@ -436,11 +368,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
   PasswordSyncActiveChecker(GetSyncService(0)).Wait();
   ASSERT_THAT(GetAllLogins(GetAccountPasswordStoreInterface(0)), IsEmpty());
 
-  InjectInvitationToServer();
-  EXPECT_TRUE(PasswordStoredChecker(GetSyncService(0),
-                                    GetAccountPasswordStoreInterface(0),
-                                    /*expected_count=*/1)
-                  .Wait());
+  PasswordFormsAddedChecker password_forms_added_checker(
+      GetAccountPasswordStoreInterface(0),
+      /*expected_new_password_forms=*/1);
+  InjectInvitationToServer(CreateInvitationSpecifics(GetPublicKeyFromServer()));
+  EXPECT_TRUE(password_forms_added_checker.Wait());
   EXPECT_TRUE(ServerPasswordInvitationChecker(/*expected_count=*/0).Wait());
 
   EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(0)), IsEmpty());

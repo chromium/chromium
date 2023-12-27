@@ -88,9 +88,8 @@ void CryptographerImpl::EmplaceKeysFrom(const NigoriKeyBag& key_bag) {
   key_bag_.AddAllUnknownKeysFrom(key_bag);
 }
 
-void CryptographerImpl::EmplaceCrossUserSharingKeysFrom(
-    const CrossUserSharingKeys& keys) {
-  cross_user_sharing_keys_.AddAllUnknownKeysFrom(keys);
+void CryptographerImpl::ReplaceCrossUserSharingKeys(CrossUserSharingKeys keys) {
+  cross_user_sharing_keys_ = std::move(keys);
 }
 
 void CryptographerImpl::SelectDefaultEncryptionKey(

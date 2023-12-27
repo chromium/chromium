@@ -22,6 +22,7 @@
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/cookie_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
+#include "chrome/browser/sync/test/integration/password_sharing_invitation_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -46,6 +47,7 @@
 #include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/nigori/cross_user_sharing_keys.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "components/sync/test/nigori_test_utils.h"
@@ -83,6 +85,10 @@ namespace {
 
 using fake_server::GetServerNigori;
 using fake_server::SetNigoriInFakeServer;
+using password_sharing_helper::CreateDefaultIncomingInvitation;
+using password_sharing_helper::CreateDefaultSenderDisplayInfo;
+using password_sharing_helper::CreateEncryptedIncomingInvitationSpecifics;
+using passwords_helper::GetProfilePasswordStoreInterface;
 using syncer::BuildCustomPassphraseNigoriSpecifics;
 using syncer::BuildKeystoreNigoriSpecifics;
 using syncer::BuildTrustedVaultNigoriSpecifics;
@@ -93,6 +99,8 @@ using syncer::TrustedVaultKeyParamsForTesting;
 using testing::Eq;
 using testing::NotNull;
 using testing::SizeIs;
+
+constexpr int kKeyPairVersion = 0;
 
 MATCHER_P(IsDataEncryptedWith, key_params, "") {
   const sync_pb::EncryptedData& encrypted_data = arg;
@@ -134,6 +142,15 @@ std::string ComputeKeyName(const KeyParamsForTesting& key_params) {
   return syncer::Nigori::CreateByDerivation(key_params.derivation_params,
                                             key_params.password)
       ->GetKeyName();
+}
+
+syncer::CrossUserSharingKeys GenerateNewKeyPair() {
+  syncer::CrossUserSharingKeys cross_user_sharing_keys =
+      syncer::CrossUserSharingKeys::CreateEmpty();
+  syncer::CrossUserSharingPublicPrivateKeyPair key_pair =
+      syncer::CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+  cross_user_sharing_keys.AddKeyPair(std::move(key_pair), kKeyPairVersion);
+  return cross_user_sharing_keys;
 }
 
 class WifiConfigurationsSyncActiveChecker
@@ -287,8 +304,13 @@ class SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest
     : public SingleClientNigoriSyncTest {
  public:
   SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest() {
-    override_features_.InitAndEnableFeature(
-        syncer::kSharingOfferKeyPairBootstrap);
+    // Enable the password receiving flow to verify cross-user sharing keys by
+    // decrypting incoming password sharing invitations.
+    override_features_.InitWithFeatures(
+        /*enabled_features=*/{syncer::kSharingOfferKeyPairBootstrap,
+                              password_manager::features::
+                                  kPasswordManagerEnableReceiverService},
+        /*disabled_features=*/{});
   }
 
   SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest(
@@ -300,6 +322,49 @@ class SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest
 
   ~SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest() override =
       default;
+
+  void InjectInvitationToServer(
+      const sync_pb::IncomingPasswordSharingInvitationSpecifics&
+          invitation_specifics) {
+    sync_pb::EntitySpecifics specifics;
+    specifics.mutable_incoming_password_sharing_invitation()->CopyFrom(
+        invitation_specifics);
+    GetFakeServer()->InjectEntity(
+        syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+            /*non_unique_name=*/"",
+            /*client_tag=*/
+            specifics.incoming_password_sharing_invitation().guid(), specifics,
+            /*creation_time=*/0, /*last_modified_time=*/0));
+  }
+
+  // Returns the current public key from the server.
+  sync_pb::CrossUserSharingPublicKey GetPublicKeyFromServer() const {
+    sync_pb::NigoriSpecifics nigori_specifics;
+    CHECK(fake_server::GetServerNigori(GetFakeServer(), &nigori_specifics));
+    CHECK(nigori_specifics.has_cross_user_sharing_public_key());
+    return nigori_specifics.cross_user_sharing_public_key();
+  }
+
+  void InjectNigoriWithCrossUserSharingKey(
+      const std::vector<uint8_t>& keystore_key,
+      const syncer::CrossUserSharingKeys& key_pair) {
+    const KeyParamsForTesting kDefaultKeyParams =
+        Pbkdf2PassphraseKeyParamsForTesting("password");
+    const KeyParamsForTesting keystore_key_params =
+        KeystoreKeyParamsForTesting(keystore_key);
+    SetNigoriInFakeServer(
+        BuildKeystoreNigoriSpecificsWithCrossUserSharingKeys(
+            /*keybag_keys_params=*/{kDefaultKeyParams, keystore_key_params},
+            /*keystore_decryptor_params*/ {kDefaultKeyParams},
+            /*keystore_key_params=*/keystore_key_params,
+            /*cross_user_sharing_keys=*/key_pair,
+            /*cross_user_sharing_public_key=*/
+            syncer::CrossUserSharingPublicKey::CreateByImport(
+                key_pair.GetKeyPair(kKeyPairVersion).GetRawPublicKey())
+                .value(),
+            /*cross_user_sharing_public_key_version=*/kKeyPairVersion),
+        GetFakeServer());
+  }
 
  private:
   base::test::ScopedFeatureList override_features_;
@@ -733,6 +798,52 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(private_key.has_value());
   EXPECT_THAT(specifics.cross_user_sharing_public_key().x25519_public_key(),
               testing::ElementsAreArray(private_key->GetRawPublicKey()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest,
+    ShouldPreferServerKeyPair) {
+  // Generates a local key pair and uploads it to the server.
+  ASSERT_TRUE(SetupSync());
+
+  sync_pb::NigoriSpecifics specifics;
+  ASSERT_TRUE(GetServerNigori(GetFakeServer(), &specifics));
+  ASSERT_TRUE(specifics.has_cross_user_sharing_public_key());
+
+  const std::vector<std::vector<uint8_t>>& keystore_keys =
+      GetFakeServer()->GetKeystoreKeys();
+  ASSERT_THAT(keystore_keys, SizeIs(1));
+  ASSERT_THAT(
+      specifics.encryption_keybag(),
+      IsDataEncryptedWith(KeystoreKeyParamsForTesting(keystore_keys.back())));
+
+  // Mimic server-side Nigori update by some other client. Current client should
+  // honor the server version of the key pair with the same version.
+  syncer::CrossUserSharingKeys new_key_pair = GenerateNewKeyPair();
+  InjectNigoriWithCrossUserSharingKey(keystore_keys.front(), new_key_pair);
+
+  // There is no easy way to wait for Cryptographer update to make it sure that
+  // the new key pair is propagated, so use bookmarks to verify that there was a
+  // sync cycle before testing password sharing.
+  // TODO(crbug.com/1511180): consider waiting for Cryptographer update rather
+  // than relying on bookmarks.
+  GetFakeServer()->InjectEntity(bookmarks_helper::CreateBookmarkServerEntity(
+      "title", GURL("http://abc.com")));
+  ASSERT_TRUE(bookmarks_helper::BookmarksTitleChecker(0, "title", 1).Wait());
+
+  // Add a new invitation encrypted using the new generated public key. The
+  // client should be able to decrypt this invitation.
+  PasswordFormsAddedChecker password_forms_added_checker(
+      GetProfilePasswordStoreInterface(0),
+      /*expected_new_password_forms=*/1);
+  InjectInvitationToServer(CreateEncryptedIncomingInvitationSpecifics(
+      CreateDefaultIncomingInvitation("username", "password"),
+      CreateDefaultSenderDisplayInfo(),
+      /*recipient_public_key=*/GetPublicKeyFromServer(),
+      syncer::CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()));
+
+  // Wait the invitation to be processed and the password stored.
+  EXPECT_TRUE(password_forms_added_checker.Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(

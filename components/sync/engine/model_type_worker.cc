@@ -267,6 +267,7 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
       !invitation.sender_info().has_cross_user_sharing_public_key()) {
     LogCrossUserSharingDecryptionResult(
         CrossUserSharingDecryptionResult::kInvitationMissingFields);
+    DLOG(ERROR) << "The invitation is missing required fields";
     return false;
   }
 
@@ -281,6 +282,7 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
   if (!decrypted) {
     LogCrossUserSharingDecryptionResult(
         CrossUserSharingDecryptionResult::kFailedToDecryptInvitation);
+    DLOG(ERROR) << "Failed to decrypt the invitation";
     return false;
   }
 
@@ -288,6 +290,7 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
                                                    decrypted->size())) {
     LogCrossUserSharingDecryptionResult(
         CrossUserSharingDecryptionResult::kFailedToParseDecryptedInvitation);
+    DLOG(ERROR) << "Failed to parse the decrypted invitation";
     return false;
   }
 

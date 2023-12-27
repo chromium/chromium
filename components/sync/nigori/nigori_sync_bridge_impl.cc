@@ -236,6 +236,7 @@ absl::optional<CrossUserSharingPublicKey> PublicKeyFromProto(
 
 // These values are persisted to UMA. Entries should not be renumbered and
 // numeric values should never be reused.
+// TODO(crbug.com/1511180): add a bucket for the pending keys state.
 enum class CrossUserSharingKeyPairStateForUMA {
   kValidKeyPair = 0,
   kPublicKeyNotInitialized = 1,
@@ -380,6 +381,10 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
 
   if (base::FeatureList::IsEnabled(kSharingOfferKeyPairBootstrap) &&
       !state_.cross_user_sharing_public_key.has_value()) {
+    // Generate a new key pair if there is no public key in the local state.
+    // Note that this can trigger a key pair generation if the current client
+    // has been just upgraded from the older version (so it wasn't aware of key
+    // pairs). Other clients are expected to apply the newly generated key pair.
     QueuePendingLocalCommit(
         PendingLocalNigoriCommit::
             ForCrossUserSharingPublicPrivateKeyInitializer());
@@ -888,8 +893,12 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
       state_.cross_user_sharing_key_pair_version = absl::nullopt;
       state_.cross_user_sharing_public_key = absl::nullopt;
     } else if (state_.cross_user_sharing_key_pair_version.has_value()) {
-      state_.cryptographer->EmplaceCrossUserSharingKeysFrom(
-          new_cross_user_sharing_keys);
+      // Use the keys from the server and replace any pre-existing ones (so in
+      // case of conflict the server wins). One of cases when this can happen is
+      // when one of older clients is upgraded to a newer version and generated
+      // a new key pair because it wasn't aware of the previous key pair.
+      state_.cryptographer->ReplaceCrossUserSharingKeys(
+          std::move(new_cross_user_sharing_keys));
       state_.cryptographer->SelectDefaultCrossUserSharingKey(
           state_.cross_user_sharing_key_pair_version.value());
     }

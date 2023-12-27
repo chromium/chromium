@@ -37,10 +37,6 @@ class CrossUserSharingKeys {
   size_t size() const;
   bool HasKeyPair(const uint32_t key_version) const;
 
-  // Merges all keys from another CrossUserSharingKeys object, which means
-  // adding all keys that we don't know about.
-  void AddAllUnknownKeysFrom(const CrossUserSharingKeys& other);
-
   // Adds a Public-private key-pair associated with |version|.
   void AddKeyPair(CrossUserSharingPublicPrivateKeyPair key_pair,
                   uint32_t version);
@@ -61,7 +57,7 @@ class CrossUserSharingKeys {
   CrossUserSharingKeys();
 
   // Public-private key-pairs we know about, mapped by version.
-  std::map<uint32_t, const CrossUserSharingPublicPrivateKeyPair> key_pairs_map_;
+  std::map<uint32_t, CrossUserSharingPublicPrivateKeyPair> key_pairs_map_;
 };
 
 }  // namespace syncer

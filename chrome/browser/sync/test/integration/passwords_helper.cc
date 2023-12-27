@@ -29,6 +29,7 @@
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
+#include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/test_utils.h"
 #include "url/gurl.h"
 
@@ -69,6 +70,8 @@ class PasswordStoreConsumerHelper
  private:
   // This RunLoop uses kNestableTasksAllowed because it runs nested within
   // another RunLoop.
+  // TODO(crbug.com/1514434): consider changing this to PasswordStoreInterface
+  // observer to avoid nested run loops.
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   std::vector<std::unique_ptr<PasswordForm>> result_;
   base::WeakPtrFactory<PasswordStoreConsumerHelper> weak_ptr_factory_{this};
@@ -485,4 +488,43 @@ bool ServerPasswordsEqualityChecker::IsExitConditionSatisfied(
         << mismatch_details_stream.str();
   }
   return is_matching;
+}
+
+PasswordFormsAddedChecker::PasswordFormsAddedChecker(
+    password_manager::PasswordStoreInterface* password_store,
+    size_t expected_new_password_forms)
+    : password_store_(password_store),
+      expected_new_password_forms_(expected_new_password_forms) {
+  password_store_->AddObserver(this);
+}
+
+PasswordFormsAddedChecker::~PasswordFormsAddedChecker() {
+  password_store_->RemoveObserver(this);
+}
+
+bool PasswordFormsAddedChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for " << expected_new_password_forms_
+      << " passwords added to the store. ";
+
+  *os << "Current number of added password forms to the store: "
+      << num_added_passwords_;
+  return num_added_passwords_ == expected_new_password_forms_;
+}
+
+void PasswordFormsAddedChecker::OnLoginsChanged(
+    password_manager::PasswordStoreInterface* store,
+    const password_manager::PasswordStoreChangeList& changes) {
+  for (const password_manager::PasswordStoreChange& change : changes) {
+    if (change.type() == password_manager::PasswordStoreChange::ADD) {
+      num_added_passwords_++;
+    }
+  }
+
+  CheckExitCondition();
+}
+
+void PasswordFormsAddedChecker::OnLoginsRetained(
+    password_manager::PasswordStoreInterface* store,
+    const std::vector<password_manager::PasswordForm>& retained_passwords) {
+  // Not used.
 }
