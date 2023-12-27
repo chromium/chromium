@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/login/http_auth_coordinator.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_tab_helper.h"
 
@@ -19,26 +20,15 @@ HttpAuthCoordinator::CreateLoginDelegate(
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
-  auto flow_owned = std::make_unique<Flow>(this);
+  auto flow_owned = std::make_unique<Flow>(
+      this, web_contents, auth_info, request_id,
+      is_request_for_primary_main_frame, url, response_headers,
+      std::move(auth_required_callback));
   Flow* flow = flow_owned.get();
   flows_[flow] = std::move(flow_owned);
 
-  content::LoginDelegate::LoginAuthRequiredCallback wrapped_callback =
-      flow->GetLoginHandlerCallback(std::move(auth_required_callback));
-
-  // For subresources, create a LoginHandler directly, which may show a login
-  // prompt to the user. Main frame resources go through LoginTabHelper, which
-  // manages a more complicated flow to avoid confusion about which website is
-  // showing the prompt.
-  if (is_request_for_primary_main_frame) {
-    flow->SetLoginHandler(CreateLoginDelegateFromTabHelper(
-        web_contents, auth_info, request_id, url, response_headers,
-        std::move(wrapped_callback)));
-  } else {
-    flow->SetLoginHandler(CreateLoginDelegateFromLoginHandler(
-        web_contents, auth_info, request_id, url, response_headers,
-        std::move(wrapped_callback)));
-  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&Flow::ShowDialog, flow->GetWeakPtr()));
 
   return std::make_unique<LoginDelegateWrapper>(flow);
 }
@@ -72,16 +62,28 @@ HttpAuthCoordinator::CreateLoginDelegateFromLoginHandler(
   return login_handler;
 }
 
-HttpAuthCoordinator::Flow::Flow(HttpAuthCoordinator* coordinator)
-    : coordinator_(coordinator) {}
-HttpAuthCoordinator::Flow::~Flow() = default;
-
-content::LoginDelegate::LoginAuthRequiredCallback
-HttpAuthCoordinator::Flow::GetLoginHandlerCallback(
-    content::LoginDelegate::LoginAuthRequiredCallback callback) {
-  callback_ = std::move(callback);
-  return base::BindOnce(&Flow::OnCredentials, weak_factory_.GetWeakPtr());
+HttpAuthCoordinator::Flow::Flow(
+    HttpAuthCoordinator* coordinator,
+    content::WebContents* web_contents,
+    const net::AuthChallengeInfo& auth_info,
+    const content::GlobalRequestID& request_id,
+    bool is_request_for_primary_main_frame,
+    const GURL& url,
+    scoped_refptr<net::HttpResponseHeaders> response_headers,
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
+    : coordinator_(coordinator),
+      auth_info_(auth_info),
+      request_id_(request_id),
+      is_request_for_primary_main_frame_(is_request_for_primary_main_frame),
+      url_(url),
+      response_headers_(response_headers),
+      callback_(std::move(auth_required_callback)) {
+  if (web_contents) {
+    web_contents_ = web_contents->GetWeakPtr();
+  }
 }
+
+HttpAuthCoordinator::Flow::~Flow() = default;
 
 void HttpAuthCoordinator::Flow::WrapperDestroyed() {
   callback_.Reset();
@@ -91,9 +93,37 @@ void HttpAuthCoordinator::Flow::WrapperDestroyed() {
   coordinator_->FlowFinished(this);
 }
 
-void HttpAuthCoordinator::Flow::SetLoginHandler(
-    std::unique_ptr<content::LoginDelegate> handler) {
-  login_handler_ = std::move(handler);
+void HttpAuthCoordinator::Flow::ShowDialog() {
+  // If we're being asked to show a dialog, then the callback must still be
+  // valid.
+  CHECK(callback_);
+
+  // If the WebContents is no longer valid, then we cannot show a dialog.
+  if (!web_contents_) {
+    std::move(callback_).Run(absl::nullopt);
+    return;
+  }
+
+  auto wrapped_callback = base::BindOnce(&Flow::OnCredentials, GetWeakPtr());
+
+  // For subresources, create a LoginHandler directly, which may show a login
+  // prompt to the user. Main frame resources go through LoginTabHelper, which
+  // manages a more complicated flow to avoid confusion about which website is
+  // showing the prompt.
+  if (is_request_for_primary_main_frame_) {
+    login_handler_ = coordinator_->CreateLoginDelegateFromTabHelper(
+        web_contents_.get(), auth_info_, request_id_, url_, response_headers_,
+        std::move(wrapped_callback));
+  } else {
+    login_handler_ = coordinator_->CreateLoginDelegateFromLoginHandler(
+        web_contents_.get(), auth_info_, request_id_, url_, response_headers_,
+        std::move(wrapped_callback));
+  }
+}
+
+base::WeakPtr<HttpAuthCoordinator::Flow>
+HttpAuthCoordinator::Flow::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void HttpAuthCoordinator::Flow::OnCredentials(

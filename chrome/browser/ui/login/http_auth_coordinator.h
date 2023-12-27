@@ -65,7 +65,6 @@ class HttpAuthCoordinator {
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
 
- protected:
   // Exposed for testing.
   virtual std::unique_ptr<content::LoginDelegate>
   CreateLoginDelegateFromTabHelper(
@@ -90,37 +89,51 @@ class HttpAuthCoordinator {
   // See outer class comment for details.
   class Flow {
    public:
-    explicit Flow(HttpAuthCoordinator* coordinator);
+    Flow(HttpAuthCoordinator* coordinator,
+         content::WebContents* web_contents,
+         const net::AuthChallengeInfo& auth_info,
+         const content::GlobalRequestID& request_id,
+         bool is_request_for_primary_main_frame,
+         const GURL& url,
+         scoped_refptr<net::HttpResponseHeaders> response_headers,
+         content::LoginDelegate::LoginAuthRequiredCallback
+             auth_required_callback);
     ~Flow();
     Flow(const Flow&) = delete;
     Flow& operator=(const Flow&) = delete;
-
-    // This callback is given to LoginHandler. The original callback is stored
-    // in `callback_`.
-    content::LoginDelegate::LoginAuthRequiredCallback GetLoginHandlerCallback(
-        content::LoginDelegate::LoginAuthRequiredCallback callback);
 
     // The wrapper is owned by //content. Usually destruction of the wrapper
     // will result in destruction of the Flow. However, the Flow will persist in
     // (3b) and (5b). See HttpAuthCoordinator class comment.
     void WrapperDestroyed();
 
-    // Passes ownership of the implementation that is being refactored.
-    void SetLoginHandler(std::unique_ptr<content::LoginDelegate> handler);
+    // Show a dialog to the user.
+    void ShowDialog();
+
+    // Returns a weak pointer to use with async callbacks.
+    base::WeakPtr<Flow> GetWeakPtr();
 
    private:
     // Called by LoginHandler when credentials are obtained or cancelled.
     void OnCredentials(const absl::optional<net::AuthCredentials>& credentials);
-
-    // Invoking this callback will destroy the wrapper. The one instance this
-    // callback should not be invoked is if the wrapper is already destroyed.
-    content::LoginDelegate::LoginAuthRequiredCallback callback_;
 
     // The previous implementation of HttpAuth that is being refactored.
     std::unique_ptr<content::LoginDelegate> login_handler_;
 
     // Owns this instance.
     const raw_ptr<HttpAuthCoordinator> coordinator_;
+
+    // Stores information about the original CreateLoginDelegate request.
+    base::WeakPtr<content::WebContents> web_contents_;
+    const net::AuthChallengeInfo auth_info_;
+    const content::GlobalRequestID request_id_;
+    const bool is_request_for_primary_main_frame_;
+    const GURL url_;
+    const scoped_refptr<net::HttpResponseHeaders> response_headers_;
+
+    // Invoking this callback will destroy the wrapper. The one instance this
+    // callback should not be invoked is if the wrapper is already destroyed.
+    content::LoginDelegate::LoginAuthRequiredCallback callback_;
 
     base::WeakPtrFactory<Flow> weak_factory_{this};
   };
