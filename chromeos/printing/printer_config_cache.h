@@ -19,10 +19,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-
-namespace network::mojom {
-class URLLoaderFactory;
-}
+#include "services/network/public/cpp/simple_url_loader.h"
 
 namespace chromeos {
 
@@ -49,8 +46,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) PrinterConfigCache {
   // connecting to actual Chrome OS Printing serving root.
   static std::unique_ptr<PrinterConfigCache> Create(
       const base::Clock* clock,
-      base::RepeatingCallback<network::mojom::URLLoaderFactory*()>
-          loader_factory_dispenser,
+      base::RepeatingCallback<network::mojom::URLLoaderFactory*()>,
       bool use_localhost_as_root);
   virtual ~PrinterConfigCache() = default;
 
