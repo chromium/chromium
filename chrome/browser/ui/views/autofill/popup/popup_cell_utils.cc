@@ -154,11 +154,16 @@ std::unique_ptr<views::ImageView> GetIconImageViewFromIcon(
     case Suggestion::Icon::kKey:
       return ImageViewFromVectorIcon(kKeyIcon, kIconSize);
     case Suggestion::Icon::kEdit:
-      return ImageViewFromVectorIcon(vector_icons::kEditIcon, kIconSize);
+      return ImageViewFromVectorIcon(vector_icons::kEditChromeRefreshIcon,
+                                     kIconSize);
     case Suggestion::Icon::kCode:
       return ImageViewFromVectorIcon(vector_icons::kCodeIcon, kIconSize);
     case Suggestion::Icon::kLocation:
-      return ImageViewFromVectorIcon(vector_icons::kLocationOnIcon, kIconSize);
+      return ImageViewFromVectorIcon(
+          ShouldApplyNewAutofillPopupStyle()
+              ? vector_icons::kLocationOnChromeRefreshIcon
+              : vector_icons::kLocationOnIcon,
+          kIconSize);
     case Suggestion::Icon::kDelete:
       return ImageViewFromVectorIcon(kTrashCanLightIcon, kIconSize);
     case Suggestion::Icon::kClear:
