@@ -294809,6 +294809,10 @@
      }
     },
     "nonce-hiding": {
+     "dangling-html-or-body.html.headers": [
+      "67d4c81e589d487b25bdb73a89f8ba1c49a0c431",
+      []
+     ],
      "nonces.html.headers": [
       "daf482b5aba4ff052b94c99f422910727c600aae",
       []
@@ -415011,7 +415015,7 @@
     ],
     "import_export": {
      "ec_importKey.https.any.js": [
-      "31f062e313f6fe9dc735fc9a5588df0c098fde98",
+      "a01bfbb0ef2e1881e83aaefe76f1ca39805c9304",
       [
        "WebCryptoAPI/import_export/ec_importKey.https.any.html",
        {
@@ -431962,6 +431966,13 @@
      ]
     },
     "nonce-hiding": {
+     "dangling-html-or-body.html": [
+      "4ba65e05b885cbc780fab7f1650689016f257ac2",
+      [
+       null,
+       {}
+      ]
+     ],
      "nonce-hiding-move-document.html": [
       "49de893ba03fbd25125fcf13eff8c352e4992d85",
       [
