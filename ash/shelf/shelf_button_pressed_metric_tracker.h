@@ -74,14 +74,14 @@ class ASH_EXPORT ShelfButtonPressedMetricTracker {
   void ResetMinimizedData();
 
   // Time source for performed action times.
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Stores the time of the last window minimize action.
   base::TimeTicks time_of_last_minimize_;
 
   // Stores the source button of the last window minimize action.
   // NOTE: This may become stale and should not be operated on. Not owned.
-  raw_ptr<const views::Button, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<const views::Button, DanglingUntriaged>
       last_minimized_source_button_ = nullptr;
 };
 

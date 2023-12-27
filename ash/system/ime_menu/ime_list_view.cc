@@ -150,7 +150,7 @@ class ImeListItemView : public views::Button {
   }
 
  private:
-  raw_ptr<ImeListView, ExperimentalAsh> ime_list_view_;
+  raw_ptr<ImeListView> ime_list_view_;
   bool selected_;
 };
 
@@ -212,10 +212,10 @@ class KeyboardStatusRow : public views::View {
 
  private:
   // `ToggleButton` to toggle keyboard on or off.
-  raw_ptr<views::ToggleButton, ExperimentalAsh> toggle_ = nullptr;
+  raw_ptr<views::ToggleButton> toggle_ = nullptr;
 
   // `KnobSwitch` to toggle keyboard on or off.
-  raw_ptr<Switch, ExperimentalAsh> qs_toggle_ = nullptr;
+  raw_ptr<Switch> qs_toggle_ = nullptr;
 };
 
 BEGIN_METADATA(KeyboardStatusRow, views::View)

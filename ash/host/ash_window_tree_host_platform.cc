@@ -42,7 +42,7 @@ class ScopedEnableUnadjustedMouseEventsOzone
   }
 
  private:
-  raw_ptr<ui::InputController, ExperimentalAsh> input_controller_;
+  raw_ptr<ui::InputController> input_controller_;
 };
 
 AshWindowTreeHostPlatform::AshWindowTreeHostPlatform(

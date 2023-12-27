@@ -74,11 +74,9 @@ class ASH_EXPORT CameraRollView : public views::View,
   // Update the camera roll section to display the latest items.
   void Update();
 
-  raw_ptr<phonehub::CameraRollManager, ExperimentalAsh> camera_roll_manager_ =
-      nullptr;
-  raw_ptr<phonehub::UserActionRecorder, ExperimentalAsh> user_action_recorder_ =
-      nullptr;
-  raw_ptr<CameraRollItemsView, ExperimentalAsh> items_view_ = nullptr;
+  raw_ptr<phonehub::CameraRollManager> camera_roll_manager_ = nullptr;
+  raw_ptr<phonehub::UserActionRecorder> user_action_recorder_ = nullptr;
+  raw_ptr<CameraRollItemsView> items_view_ = nullptr;
   bool content_present_metric_emitted_ = false;
 };
 

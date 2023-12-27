@@ -110,7 +110,7 @@ class HoldingSpaceItemViewsSectionTest
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<HoldingSpaceViewDelegate> view_delegate_;
 
-  raw_ptr<TestHoldingSpaceItemViewsSection, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TestHoldingSpaceItemViewsSection, DanglingUntriaged>
       item_views_section_ = nullptr;
 };
 

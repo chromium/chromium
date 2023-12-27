@@ -60,19 +60,19 @@ class ASH_EXPORT CalendarEventListView
       int parent_view_id);
 
   // Owned by `CalendarView`.
-  raw_ptr<CalendarViewController, ExperimentalAsh> calendar_view_controller_;
+  raw_ptr<CalendarViewController> calendar_view_controller_;
 
   // Owned by `CalendarEventListView`.
-  const raw_ptr<views::View, ExperimentalAsh> close_button_container_;
-  raw_ptr<IconButton, ExperimentalAsh> close_button_;
-  const raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_;
+  const raw_ptr<views::View> close_button_container_;
+  raw_ptr<IconButton> close_button_;
+  const raw_ptr<views::ScrollView> scroll_view_;
 
   // Adds fade in/out gradients to `scroll_view_`.
   std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
 
   // The content of the `scroll_view_`, which carries a list of
   // `CalendarEventListItemView`. Owned by `CalendarEventListView`.
-  const raw_ptr<views::View, ExperimentalAsh> content_view_;
+  const raw_ptr<views::View> content_view_;
 
   // The current or the next event in the event list view.
   raw_ptr<views::View> current_or_next_event_view_ = nullptr;

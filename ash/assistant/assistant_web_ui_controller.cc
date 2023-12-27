@@ -60,8 +60,8 @@ class AssistantWebContainerEventObserver : public ui::EventObserver {
   }
 
  private:
-  raw_ptr<AssistantWebUiController, ExperimentalAsh> owner_ = nullptr;
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<AssistantWebUiController> owner_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
 
   std::unique_ptr<views::EventMonitor> event_monitor_;
 };

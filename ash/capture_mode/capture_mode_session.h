@@ -386,13 +386,13 @@ class ASH_EXPORT CaptureModeSession
       std::make_unique<views::Widget>();
 
   // The content view of the above widget and owned by its views hierarchy.
-  raw_ptr<CaptureModeBarView, DanglingUntriaged | ExperimentalAsh>
-      capture_mode_bar_view_ = nullptr;
+  raw_ptr<CaptureModeBarView, DanglingUntriaged> capture_mode_bar_view_ =
+      nullptr;
 
   views::UniqueWidgetPtr capture_mode_settings_widget_;
 
   // The content view of the above widget and owned by its views hierarchy.
-  raw_ptr<CaptureModeSettingsView, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<CaptureModeSettingsView, DanglingUntriaged>
       capture_mode_settings_view_ = nullptr;
 
   // Widget which displays capture region size during a region capture session.
@@ -405,14 +405,13 @@ class ASH_EXPORT CaptureModeSession
   // starting capturing, the widget will transform into a 3-second countdown
   // timer.
   views::UniqueWidgetPtr capture_label_widget_;
-  raw_ptr<CaptureLabelView, DanglingUntriaged | ExperimentalAsh>
-      capture_label_view_ = nullptr;
+  raw_ptr<CaptureLabelView, DanglingUntriaged> capture_label_view_ = nullptr;
 
   // Widget that hosts the recording type menu, from which the user can pick the
   // desired recording format type.
   views::UniqueWidgetPtr recording_type_menu_widget_;
-  raw_ptr<RecordingTypeMenuView, DanglingUntriaged | ExperimentalAsh>
-      recording_type_menu_view_ = nullptr;
+  raw_ptr<RecordingTypeMenuView, DanglingUntriaged> recording_type_menu_view_ =
+      nullptr;
 
   // Magnifier glass used during a region capture session.
   MagnifierGlass magnifier_glass_;
@@ -474,8 +473,7 @@ class ASH_EXPORT CaptureModeSession
 
   // The window which had input capture prior to entering the session. It may be
   // null if no such window existed.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh>
-      input_capture_window_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> input_capture_window_ = nullptr;
 
   // The display observer between init/shutdown.
   std::optional<display::ScopedDisplayObserver> display_observer_;

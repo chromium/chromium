@@ -248,7 +248,7 @@ class SplitViewMetricsController : public SplitViewObserver,
   // We need to save an ptr of the observed `SplitViewController`. Because the
   // `RootWindowController` will be deconstructed in advance. Then, we cannot
   // use it to get observed `SplitViewController`.
-  const raw_ptr<SplitViewController, ExperimentalAsh> split_view_controller_;
+  const raw_ptr<SplitViewController> split_view_controller_;
 
   // Indicates whether it is recording split view metrics.
   bool in_split_view_recording_ = false;
@@ -257,7 +257,7 @@ class SplitViewMetricsController : public SplitViewObserver,
   DeviceOrientation orientation_ = DeviceOrientation::kLandscape;
 
   // Current observed desk.
-  raw_ptr<const Desk, ExperimentalAsh> current_desk_ = nullptr;
+  raw_ptr<const Desk> current_desk_ = nullptr;
 
   // Observed windows on the active desk.
   std::vector<raw_ptr<aura::Window, VectorExperimental>> observed_windows_;

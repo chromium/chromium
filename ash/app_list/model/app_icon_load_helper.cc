@@ -28,7 +28,7 @@ class AppIconLoadHelper::AppItemHelper : public AppListItemObserver {
   const AppListItem* app_item() const { return app_item_; }
 
  private:
-  raw_ptr<AppListItem, ExperimentalAsh> app_item_ = nullptr;
+  raw_ptr<AppListItem> app_item_ = nullptr;
   IconLoadCallback icon_load_callback_;
   base::ScopedObservation<AppListItem, AppListItemObserver>
       app_item_observeration_{this};
@@ -77,7 +77,7 @@ class AppIconLoadHelper::AppItemListHelper : public AppListItemListObserver {
 
   void UpdateHelper();
 
-  const raw_ptr<AppListItemList, ExperimentalAsh> list_;
+  const raw_ptr<AppListItemList> list_;
   IconLoadCallback icon_load_callback_;
   base::ScopedObservation<AppListItemList, AppListItemListObserver>
       list_observeration_{this};

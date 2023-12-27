@@ -63,7 +63,7 @@ class ASH_EXPORT BluetoothDeviceListControllerImpl
       base::flat_map<std::string, BluetoothDeviceListItemView*>* previous_views,
       size_t index);
 
-  const raw_ptr<BluetoothDetailedView, DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<BluetoothDetailedView, DanglingUntriaged>
       bluetooth_detailed_view_;
 
   bool is_bluetooth_enabled_ = false;

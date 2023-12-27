@@ -172,8 +172,7 @@ class ProgressIndicatorView : public views::View {
 
   // Copies the address of `progress_indicator_` to the specified `ptr`.
   // NOTE: This method should only be invoked after `SetHoldingSpaceItem()`.
-  void CopyProgressIndicatorAddressTo(
-      raw_ptr<ProgressIndicator, ExperimentalAsh>* ptr) {
+  void CopyProgressIndicatorAddressTo(raw_ptr<ProgressIndicator>* ptr) {
     DCHECK(progress_indicator_);
     *ptr = progress_indicator_.get();
   }
@@ -218,8 +217,7 @@ BEGIN_METADATA(ProgressIndicatorView, views::View)
 END_METADATA
 
 BEGIN_VIEW_BUILDER(/*no export*/, ProgressIndicatorView, views::View)
-VIEW_BUILDER_METHOD(CopyProgressIndicatorAddressTo,
-                    raw_ptr<ProgressIndicator, ExperimentalAsh>*)
+VIEW_BUILDER_METHOD(CopyProgressIndicatorAddressTo, raw_ptr<ProgressIndicator>*)
 VIEW_BUILDER_PROPERTY(const HoldingSpaceItem*, HoldingSpaceItem)
 END_VIEW_BUILDER
 

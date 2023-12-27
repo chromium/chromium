@@ -115,7 +115,7 @@ class ObserverToCloseWidget : public ui::ImplicitAnimationObserver {
   }
 
  private:
-  const raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  const raw_ptr<views::Widget> widget_;
 };
 
 }  // namespace

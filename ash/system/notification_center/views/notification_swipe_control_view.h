@@ -57,10 +57,10 @@ class ASH_EXPORT NotificationSwipeControlView : public views::View {
 
   void ButtonPressed(const ui::Event& event);
 
-  const raw_ptr<message_center::MessageView, ExperimentalAsh> message_view_;
+  const raw_ptr<message_center::MessageView> message_view_;
 
   // Owned by views hierarchy.
-  raw_ptr<views::ImageButton, ExperimentalAsh> settings_button_ = nullptr;
+  raw_ptr<views::ImageButton> settings_button_ = nullptr;
 
   base::WeakPtrFactory<NotificationSwipeControlView> weak_factory_{this};
 };

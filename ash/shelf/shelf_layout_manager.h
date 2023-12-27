@@ -631,8 +631,8 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
 
   float target_opacity_ = 0.0f;
 
-  const raw_ptr<ShelfWidget, ExperimentalAsh> shelf_widget_;
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const raw_ptr<ShelfWidget> shelf_widget_;
+  const raw_ptr<Shelf> shelf_;
 
   // Count of pending visibility update suspensions. Skip updating the shelf
   // visibility state if it is greater than 0.

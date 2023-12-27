@@ -303,8 +303,8 @@ class UserAddingScreenIndicator : public views::View {
   }
 
  private:
-  raw_ptr<views::ImageView, ExperimentalAsh> info_icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::ImageView> info_icon_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 };
 
 BEGIN_METADATA(UserAddingScreenIndicator)

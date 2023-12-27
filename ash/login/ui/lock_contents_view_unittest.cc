@@ -3305,8 +3305,8 @@ class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
     GetSessionControllerClient()->FlushForTest();
   }
 
-  raw_ptr<LoginShelfView, DanglingUntriaged | ExperimentalAsh>
-      login_shelf_view_ = nullptr;  // Unowned.
+  raw_ptr<LoginShelfView, DanglingUntriaged> login_shelf_view_ =
+      nullptr;  // Unowned.
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

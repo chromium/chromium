@@ -485,12 +485,12 @@ class AppListItemView::FolderIconView : public views::View,
   }
 
   // The folder item this icon view paints.
-  raw_ptr<AppListFolderItem, ExperimentalAsh> folder_item_;
+  raw_ptr<AppListFolderItem> folder_item_;
 
   // Whether Jelly style feature is enabled.
   const bool jelly_style_;
 
-  raw_ptr<const AppListConfig, DanglingUntriaged | ExperimentalAsh> config_;
+  raw_ptr<const AppListConfig, DanglingUntriaged> config_;
 
   // The scaling factor used for cardified states in tablet mode.
   float icon_scale_;

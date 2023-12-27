@@ -279,14 +279,13 @@ class PieMenuButton : public views::Button,
   float sweep_angle_ = 0.0f;
 
   // If not null, the icon that paints at the center of this button.
-  const raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_ = nullptr;
+  const raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
 
   // The cached image of the above `icon_` if any.
   gfx::ImageSkia icon_image_;
 
   // The sub menu container that this button opens when it gets pressed.
-  raw_ptr<PieSubMenuContainerView, ExperimentalAsh>
-      associated_sub_menu_container_ = nullptr;
+  raw_ptr<PieSubMenuContainerView> associated_sub_menu_container_ = nullptr;
 };
 
 BEGIN_METADATA(PieMenuButton, views::Button)

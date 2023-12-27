@@ -70,7 +70,7 @@ class ArcNotificationContentView::MouseEnterExitHandler
   }
 
  private:
-  const raw_ptr<ArcNotificationContentView, ExperimentalAsh> owner_;
+  const raw_ptr<ArcNotificationContentView> owner_;
 };
 
 class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
@@ -222,7 +222,7 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
   // Android.
   bool swipe_captured_ = false;
 
-  const raw_ptr<ArcNotificationContentView, ExperimentalAsh> owner_;
+  const raw_ptr<ArcNotificationContentView> owner_;
   bool is_current_slide_handled_by_android_ = false;
 
   base::ScopedObservation<ui::EventTarget, ui::EventHandler> observation_{this};
@@ -258,7 +258,7 @@ class ArcNotificationContentView::SlideHelper {
   }
 
  private:
-  const raw_ptr<ArcNotificationContentView, ExperimentalAsh> owner_;
+  const raw_ptr<ArcNotificationContentView> owner_;
 
   // True if the view is not at the original position.
   bool slide_in_progress_ = false;

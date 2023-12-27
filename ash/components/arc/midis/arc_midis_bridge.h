@@ -51,7 +51,7 @@ class ArcMidisBridge : public KeyedService, public mojom::MidisHost {
       bool result);
   void OnMojoConnectionError();
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
   mojo::Remote<mojom::MidisHost> midis_host_remote_;
 

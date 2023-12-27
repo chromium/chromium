@@ -40,7 +40,7 @@ class DiagnosticsManager {
   std::unique_ptr<SystemDataProvider> system_data_provider_;
   std::unique_ptr<SystemRoutineController> system_routine_controller_;
   std::unique_ptr<InputDataProvider> input_data_provider_;
-  raw_ptr<content::WebUI, ExperimentalAsh> webui_;
+  raw_ptr<content::WebUI> webui_;
 };
 
 }  // namespace diagnostics

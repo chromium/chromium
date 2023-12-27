@@ -134,7 +134,7 @@ class ASH_EXPORT DisplayColorManager
   // changes, https://crrev.com/1914343003.
   void ResetDisplayColorCalibration(int64_t display_id);
 
-  raw_ptr<display::DisplayConfigurator, ExperimentalAsh> configurator_;
+  raw_ptr<display::DisplayConfigurator> configurator_;
 
   // This is a pre-allocated storage in order to avoid re-allocating the
   // matrix array every time when converting a skia matrix to a matrix array.

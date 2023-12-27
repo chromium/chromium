@@ -69,7 +69,7 @@ class FeatureTilesContainerView::RowContainer : public views::FlexLayoutView {
   }
 
  private:
-  const raw_ptr<FeatureTilesContainerView, ExperimentalAsh> container_;
+  const raw_ptr<FeatureTilesContainerView> container_;
 };
 
 BEGIN_METADATA(FeatureTilesContainerView, RowContainer, views::FlexLayoutView)

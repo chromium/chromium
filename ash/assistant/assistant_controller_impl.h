@@ -158,7 +158,7 @@ class ASH_EXPORT AssistantControllerImpl
 
   // |assistant_| can be nullptr if libassistant creation is not yet completed,
   // i.e. it cannot take a request.
-  raw_ptr<assistant::Assistant, ExperimentalAsh> assistant_ = nullptr;
+  raw_ptr<assistant::Assistant> assistant_ = nullptr;
 
   // Assistant sub-controllers.
   AssistantAlarmTimerControllerImpl assistant_alarm_timer_controller_{this};

@@ -91,7 +91,7 @@ class HideNudgeObserver : public ui::ImplicitAnimationObserver {
   }
 
  private:
-  const raw_ptr<ContextualNudge, ExperimentalAsh> drag_handle_nudge_;
+  const raw_ptr<ContextualNudge> drag_handle_nudge_;
 };
 
 }  // namespace

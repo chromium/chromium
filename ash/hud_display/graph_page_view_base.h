@@ -56,15 +56,12 @@ class GraphPageViewBase : public views::View {
   void OnButtonPressed();
 
   // Container for the |ReferenceLines| object.
-  raw_ptr<views::View, ExperimentalAsh> reference_lines_container_ =
-      nullptr;  // not owned
+  raw_ptr<views::View> reference_lines_container_ = nullptr;  // not owned
 
   // Container for the legend object.
-  raw_ptr<views::View, ExperimentalAsh> legend_container_ =
-      nullptr;  // not owned
-  raw_ptr<views::ImageButton, ExperimentalAsh> legend_min_max_button_ =
-      nullptr;                                         // not owned
-  raw_ptr<Legend, ExperimentalAsh> legend_ = nullptr;  // not owned
+  raw_ptr<views::View> legend_container_ = nullptr;              // not owned
+  raw_ptr<views::ImageButton> legend_min_max_button_ = nullptr;  // not owned
+  raw_ptr<Legend> legend_ = nullptr;                             // not owned
 
   SEQUENCE_CHECKER(ui_sequence_checker_);
 };

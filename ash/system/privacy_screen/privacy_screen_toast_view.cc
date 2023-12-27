@@ -117,8 +117,8 @@ class PrivacyScreenToastLabelView : public views::View {
   }
 
  private:
-  raw_ptr<views::Label, ExperimentalAsh> label_;
-  raw_ptr<PrivacyScreenToastManagedView, ExperimentalAsh> managed_view_;
+  raw_ptr<views::Label> label_;
+  raw_ptr<PrivacyScreenToastManagedView> managed_view_;
 };
 
 BEGIN_METADATA(PrivacyScreenToastLabelView)

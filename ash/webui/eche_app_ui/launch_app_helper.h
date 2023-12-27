@@ -134,7 +134,7 @@ class LaunchAppHelper {
   base::flat_set<std::string> session_packages_launched_;
   base::TimeTicks session_packages_last_reset_ = base::TimeTicks();
 
-  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_;
+  raw_ptr<phonehub::PhoneHubManager> phone_hub_manager_;
   LaunchEcheAppFunction launch_eche_app_function_;
   LaunchNotificationFunction launch_notification_function_;
   CloseNotificationFunction close_notification_function_;

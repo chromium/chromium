@@ -436,11 +436,10 @@ class AcceleratorControllerTest : public AshTestBase {
     return true;
   }
 
-  raw_ptr<AcceleratorControllerImpl, DanglingUntriaged | ExperimentalAsh>
-      controller_ = nullptr;  // Not owned.
+  raw_ptr<AcceleratorControllerImpl, DanglingUntriaged> controller_ =
+      nullptr;  // Not owned.
   std::unique_ptr<AcceleratorControllerImpl::TestApi> test_api_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged | ExperimentalAsh>
-      new_window_delegate_;
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_;
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 
@@ -2452,8 +2451,8 @@ class AcceleratorControllerImprovedKeyboardShortcutsTest
   }
 
  protected:
-  raw_ptr<TestInputMethodManager, DanglingUntriaged | ExperimentalAsh>
-      input_method_manager_ = nullptr;  // Not owned.
+  raw_ptr<TestInputMethodManager, DanglingUntriaged> input_method_manager_ =
+      nullptr;  // Not owned.
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -2507,8 +2506,8 @@ class AcceleratorControllerInputMethodTest : public AcceleratorControllerTest {
   }
 
  protected:
-  raw_ptr<AcceleratorMockInputMethod, DanglingUntriaged | ExperimentalAsh>
-      mock_input_ = nullptr;  // Not owned.
+  raw_ptr<AcceleratorMockInputMethod, DanglingUntriaged> mock_input_ =
+      nullptr;  // Not owned.
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -2773,7 +2772,7 @@ class FakeMagnificationManager {
 
  private:
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  raw_ptr<PrefService> prefs_;
 };
 
 TEST_F(MagnifiersAcceleratorsTester, TestToggleFullscreenMagnifier) {

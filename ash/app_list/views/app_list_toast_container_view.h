@@ -142,8 +142,7 @@ class AppListToastContainerView : public views::View {
   // Called when the fade out animation for the `toast_view_` is finished.
   void OnFadeOutToastViewComplete();
 
-  const raw_ptr<AppListA11yAnnouncer, DanglingUntriaged | ExperimentalAsh>
-      a11y_announcer_;
+  const raw_ptr<AppListA11yAnnouncer, DanglingUntriaged> a11y_announcer_;
 
   // The app list toast container is visually part of the apps grid and should
   // provide context menu options generally available in the apps grid.
@@ -152,14 +151,12 @@ class AppListToastContainerView : public views::View {
   // Whether the toast container is part of the tablet mode app list UI.
   const bool tablet_mode_;
 
-  raw_ptr<AppListToastView, DanglingUntriaged | ExperimentalAsh> toast_view_ =
-      nullptr;
+  raw_ptr<AppListToastView, DanglingUntriaged> toast_view_ = nullptr;
 
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
-  const raw_ptr<AppListNudgeController, DanglingUntriaged | ExperimentalAsh>
-      nudge_controller_;
-  const raw_ptr<AppListKeyboardController, DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<AppListViewDelegate> view_delegate_;
+  const raw_ptr<Delegate> delegate_;
+  const raw_ptr<AppListNudgeController, DanglingUntriaged> nudge_controller_;
+  const raw_ptr<AppListKeyboardController, DanglingUntriaged>
       keyboard_controller_;
 
   // Caches the current toast type.

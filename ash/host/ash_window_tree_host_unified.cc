@@ -64,9 +64,9 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
   }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> src_root_;
-  raw_ptr<aura::Window, ExperimentalAsh> dst_root_;
-  raw_ptr<AshWindowTreeHostDelegate, ExperimentalAsh> delegate_;  // Not owned.
+  raw_ptr<aura::Window> src_root_;
+  raw_ptr<aura::Window> dst_root_;
+  raw_ptr<AshWindowTreeHostDelegate> delegate_;  // Not owned.
 };
 
 AshWindowTreeHostUnified::AshWindowTreeHostUnified(

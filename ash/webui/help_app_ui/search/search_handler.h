@@ -85,7 +85,7 @@ class SearchHandler : public mojom::SearchHandler,
   mojom::SearchResultPtr ResultToSearchResult(
       const local_search_service::Result& result) const;
 
-  raw_ptr<SearchTagRegistry, ExperimentalAsh> search_tag_registry_;
+  raw_ptr<SearchTagRegistry> search_tag_registry_;
   mojo::Remote<local_search_service::mojom::Index> index_remote_;
 
   CacheStatus cache_status_;

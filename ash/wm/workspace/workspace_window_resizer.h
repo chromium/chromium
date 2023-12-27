@@ -221,7 +221,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   gfx::PointF last_location_in_screen_;
 
   // Window the drag has magnetically attached to.
-  raw_ptr<aura::Window, ExperimentalAsh> magnetism_window_ = nullptr;
+  raw_ptr<aura::Window> magnetism_window_ = nullptr;
 
   // Used to verify |magnetism_window_| is still valid.
   aura::WindowTracker window_tracker_;

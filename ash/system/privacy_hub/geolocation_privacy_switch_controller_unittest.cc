@@ -76,9 +76,7 @@ class PrivacyHubGeolocationControllerTest : public AshTestBase {
             prefs::kUserGeolocationAccessLevel));
   }
 
-  raw_ptr<GeolocationPrivacySwitchController,
-          DanglingUntriaged | ExperimentalAsh>
-      controller_;
+  raw_ptr<GeolocationPrivacySwitchController, DanglingUntriaged> controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
   const base::HistogramTester histogram_tester_;
 };

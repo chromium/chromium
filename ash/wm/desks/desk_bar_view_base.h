@@ -360,7 +360,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   bool pause_layout_ = false;
 
   // Mini view whose preview is being dragged.
-  raw_ptr<DeskMiniView, ExperimentalAsh> drag_view_ = nullptr;
+  raw_ptr<DeskMiniView> drag_view_ = nullptr;
 
   // The screen location of the most recent drag position. This value is valid
   // only when the below `dragged_item_over_bar_` is true.
@@ -388,26 +388,26 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   raw_ptr<views::View> background_view_ = nullptr;
 
   // Put the contents in a `ScrollView` to support scrollable desks.
-  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
   // Contents of `scroll_view_`, which includes `mini_views_`,
   // `expanded_state_new_desk_button_` and optionally
   // `expanded_state_library_button_` currently.
-  raw_ptr<views::View, ExperimentalAsh> scroll_view_contents_ = nullptr;
+  raw_ptr<views::View> scroll_view_contents_ = nullptr;
 
   // The default desk button, the new desk button and the library button.
-  raw_ptr<DefaultDeskButton, ExperimentalAsh> default_desk_button_ = nullptr;
-  raw_ptr<DeskIconButton, ExperimentalAsh> new_desk_button_ = nullptr;
-  raw_ptr<DeskIconButton, ExperimentalAsh> library_button_ = nullptr;
+  raw_ptr<DefaultDeskButton> default_desk_button_ = nullptr;
+  raw_ptr<DeskIconButton> new_desk_button_ = nullptr;
+  raw_ptr<DeskIconButton> library_button_ = nullptr;
 
   // Labels to be shown under the desk icon buttons when they're at the active
   // state.
-  raw_ptr<views::Label, ExperimentalAsh> new_desk_button_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> library_button_label_ = nullptr;
+  raw_ptr<views::Label> new_desk_button_label_ = nullptr;
+  raw_ptr<views::Label> library_button_label_ = nullptr;
 
   // Scroll arrow buttons.
-  raw_ptr<ScrollArrowButton, ExperimentalAsh> left_scroll_button_ = nullptr;
-  raw_ptr<ScrollArrowButton, ExperimentalAsh> right_scroll_button_ = nullptr;
+  raw_ptr<ScrollArrowButton> left_scroll_button_ = nullptr;
+  raw_ptr<ScrollArrowButton> right_scroll_button_ = nullptr;
 
   // Observe mouse events on the desk bar widget and updates the states of the
   // mini_views accordingly.

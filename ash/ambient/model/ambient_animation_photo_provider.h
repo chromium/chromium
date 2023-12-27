@@ -103,9 +103,8 @@ class ASH_EXPORT AmbientAnimationPhotoProvider
   void RecordDynamicAssetMetrics();
 
   // Unowned pointers. Must outlive the |AmbientAnimationPhotoProvider|.
-  const raw_ptr<const AmbientAnimationStaticResources, ExperimentalAsh>
-      static_resources_;
-  const raw_ptr<const AmbientBackendModel, ExperimentalAsh> backend_model_;
+  const raw_ptr<const AmbientAnimationStaticResources> static_resources_;
+  const raw_ptr<const AmbientBackendModel> backend_model_;
 
   // Map's key is hash of the static image asset's string id.
   base::flat_map<cc::SkottieResourceIdHash, scoped_refptr<StaticImageAssetImpl>>

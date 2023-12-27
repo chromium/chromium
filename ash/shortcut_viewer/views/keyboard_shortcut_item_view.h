@@ -62,15 +62,15 @@ class KeyboardShortcutItemView : public views::View {
   void CalculateLayout(int width) const;
 
   // Not owned. Pointer to the keyboard shortcut item.
-  raw_ptr<const ash::KeyboardShortcutItem, ExperimentalAsh> shortcut_item_;
+  raw_ptr<const ash::KeyboardShortcutItem> shortcut_item_;
 
   const ash::ShortcutCategory category_;
 
   // View of the text describing what action the shortcut performs.
-  raw_ptr<views::StyledLabel, ExperimentalAsh> description_label_view_;
+  raw_ptr<views::StyledLabel> description_label_view_;
 
   // View of the text listing the keys making up the shortcut.
-  raw_ptr<views::StyledLabel, ExperimentalAsh> shortcut_label_view_;
+  raw_ptr<views::StyledLabel> shortcut_label_view_;
 
   // Saves the results of the last CalculateLayout() call to avoid repeated
   // calculation.

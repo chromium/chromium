@@ -86,16 +86,15 @@ class ASH_EXPORT AppListAssistantMainStage
   void MaybeHideZeroStateAndShowFooter();
   void InitializeUIForStartingSession(bool from_search);
 
-  const raw_ptr<AssistantViewDelegate, ExperimentalAsh>
-      delegate_;  // Owned by Shell.
+  const raw_ptr<AssistantViewDelegate> delegate_;  // Owned by Shell.
 
   // Owned by view hierarchy.
-  raw_ptr<AssistantProgressIndicator, ExperimentalAsh> progress_indicator_;
-  raw_ptr<views::Separator, ExperimentalAsh> horizontal_separator_;
-  raw_ptr<AssistantQueryView, ExperimentalAsh> query_view_;
-  raw_ptr<UiElementContainerView, ExperimentalAsh> ui_element_container_;
-  raw_ptr<AssistantZeroStateView, ExperimentalAsh> zero_state_view_;
-  raw_ptr<AssistantFooterView, ExperimentalAsh> footer_;
+  raw_ptr<AssistantProgressIndicator> progress_indicator_;
+  raw_ptr<views::Separator> horizontal_separator_;
+  raw_ptr<AssistantQueryView> query_view_;
+  raw_ptr<UiElementContainerView> ui_element_container_;
+  raw_ptr<AssistantZeroStateView> zero_state_view_;
+  raw_ptr<AssistantFooterView> footer_;
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

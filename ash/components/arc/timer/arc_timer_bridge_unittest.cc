@@ -145,7 +145,7 @@ class ArcTimerTest : public testing::Test {
 
   ArcTimerStore arc_timer_store_;
 
-  raw_ptr<ArcTimerBridge, ExperimentalAsh> timer_bridge_;
+  raw_ptr<ArcTimerBridge> timer_bridge_;
 };
 
 bool ArcTimerTest::StoreReadFds(const std::vector<clockid_t> clocks,

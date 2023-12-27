@@ -80,7 +80,7 @@ class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
   void OnUserCanceledUnsupportedAppsDialog();
 
   // Pointer to the widget (if any) that contains the current dialog.
-  raw_ptr<views::Widget, ExperimentalAsh> dialog_widget_ = nullptr;
+  raw_ptr<views::Widget> dialog_widget_ = nullptr;
 
   // When a caller creates an unsupported apps dialog, they provide a callback
   // for the result. Since we can only bind the callback once, we have to store

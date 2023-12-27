@@ -48,8 +48,8 @@ class ASH_EXPORT BluetoothDeviceListItemBatteryView : public views::View {
 
   std::optional<uint8_t> last_shown_battery_percentage_;
 
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
 };
 
 }  // namespace ash

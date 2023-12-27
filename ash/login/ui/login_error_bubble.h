@@ -42,8 +42,8 @@ class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> content_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> alert_icon_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> content_ = nullptr;
+  raw_ptr<views::ImageView> alert_icon_ = nullptr;
 
   std::u16string message_;
 };

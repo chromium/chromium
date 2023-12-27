@@ -57,7 +57,7 @@ class ScopedWindowClosingObserver : public aura::WindowObserver {
   void OnWindowDestroyed(aura::Window* window) override { CHECK(false); }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 };
 
 bool IsNonSysModalWindowConsideredActivatable(aura::Window* window) {

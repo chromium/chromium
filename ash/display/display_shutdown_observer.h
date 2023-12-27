@@ -30,8 +30,7 @@ class DisplayShutdownObserver : public SessionObserver {
   // SessionObserver:
   void OnChromeTerminating() override;
 
-  const raw_ptr<display::DisplayConfigurator, ExperimentalAsh>
-      display_configurator_;
+  const raw_ptr<display::DisplayConfigurator> display_configurator_;
   ScopedSessionObserver scoped_session_observer_;
 };
 

@@ -30,7 +30,7 @@ class UnifiedCalendarViewController : public DetailedViewController {
 
  private:
   // Owned by `QuickSettingsView`'s detailed_view_container_.
-  raw_ptr<CalendarView, DanglingUntriaged | ExperimentalAsh> view_ = nullptr;
+  raw_ptr<CalendarView, DanglingUntriaged> view_ = nullptr;
 };
 
 }  // namespace ash

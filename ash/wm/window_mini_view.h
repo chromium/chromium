@@ -186,18 +186,17 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
 
   // The window this class is meant to be a header for. This class also may
   // optionally show a mirrored view of this window.
-  raw_ptr<aura::Window, ExperimentalAsh> source_window_;
+  raw_ptr<aura::Window> source_window_;
 
   // A view that represents the header of `this`.
-  raw_ptr<WindowMiniViewHeaderView, ExperimentalAsh> header_view_ = nullptr;
+  raw_ptr<WindowMiniViewHeaderView> header_view_ = nullptr;
 
   // A view that covers the area except the header. It is null when the window
   // associated is not pillar or letter boxed.
-  raw_ptr<views::View, ExperimentalAsh> backdrop_view_ = nullptr;
+  raw_ptr<views::View> backdrop_view_ = nullptr;
 
   // Optionally shows a preview of |window_|.
-  raw_ptr<WindowPreviewView, DanglingUntriaged | ExperimentalAsh>
-      preview_view_ = nullptr;
+  raw_ptr<WindowPreviewView, DanglingUntriaged> preview_view_ = nullptr;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};

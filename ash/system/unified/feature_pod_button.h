@@ -69,9 +69,9 @@ class ASH_EXPORT FeaturePodLabelButton : public views::Button {
   void OnEnabledChanged();
 
   // Owned by views hierarchy.
-  const raw_ptr<views::Label, ExperimentalAsh> label_;
-  const raw_ptr<views::Label, ExperimentalAsh> sub_label_;
-  const raw_ptr<views::ImageView, ExperimentalAsh> detailed_view_arrow_;
+  const raw_ptr<views::Label> label_;
+  const raw_ptr<views::Label> sub_label_;
+  const raw_ptr<views::ImageView> detailed_view_arrow_;
   base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
           base::BindRepeating(&FeaturePodLabelButton::OnEnabledChanged,
@@ -162,8 +162,8 @@ class ASH_EXPORT FeaturePodButton : public views::View {
   void OnEnabledChanged();
 
   // Owned by views hierarchy.
-  const raw_ptr<FeaturePodIconButton, ExperimentalAsh> icon_button_;
-  const raw_ptr<FeaturePodLabelButton, ExperimentalAsh> label_button_;
+  const raw_ptr<FeaturePodIconButton> icon_button_;
+  const raw_ptr<FeaturePodLabelButton> label_button_;
 
   // If true, it is preferred by the FeaturePodController that the view is
   // visible. Usually, this should match visible(), but in case that the

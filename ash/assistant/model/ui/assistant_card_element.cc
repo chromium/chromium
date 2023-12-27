@@ -76,7 +76,7 @@ class AssistantCardElement::Processor : public AshWebView::Observer {
   }
 
   // |card_element_| should outlive the Processor.
-  const raw_ptr<AssistantCardElement, ExperimentalAsh> card_element_;
+  const raw_ptr<AssistantCardElement> card_element_;
   ProcessingCallback callback_;
 
   std::unique_ptr<AshWebView> contents_view_;

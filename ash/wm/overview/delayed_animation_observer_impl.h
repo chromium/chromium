@@ -32,7 +32,7 @@ class ASH_EXPORT ForceDelayObserver : public DelayedAnimationObserver {
  private:
   void Finish();
 
-  raw_ptr<OverviewDelegate, ExperimentalAsh> owner_ = nullptr;
+  raw_ptr<OverviewDelegate> owner_ = nullptr;
   base::WeakPtrFactory<ForceDelayObserver> weak_ptr_factory_{this};
 };
 
@@ -56,7 +56,7 @@ class ASH_EXPORT EnterAnimationObserver : public ui::ImplicitAnimationObserver,
   void Shutdown() override;
 
  private:
-  raw_ptr<OverviewDelegate, ExperimentalAsh> owner_ = nullptr;
+  raw_ptr<OverviewDelegate> owner_ = nullptr;
 };
 
 // An observer which watches a overview exit animation and signals its owner
@@ -79,7 +79,7 @@ class ASH_EXPORT ExitAnimationObserver : public ui::ImplicitAnimationObserver,
   void Shutdown() override;
 
  private:
-  raw_ptr<OverviewDelegate, ExperimentalAsh> owner_ = nullptr;
+  raw_ptr<OverviewDelegate> owner_ = nullptr;
 };
 
 }  // namespace ash

@@ -163,7 +163,7 @@ class ASH_EXPORT AuthFactorModel {
   virtual void DoHandleTapOrClick() = 0;
 
   base::RepeatingClosure update_state_callback_;
-  raw_ptr<AuthIconView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<AuthIconView> icon_ = nullptr;
 };
 
 }  // namespace ash

@@ -62,8 +62,8 @@ class SnapGroup : public aura::WindowObserver, public WindowStateObserver {
   // True while we are updating the windows during a swap.
   bool is_swapping_ = false;
 
-  raw_ptr<aura::Window, ExperimentalAsh> window1_;
-  raw_ptr<aura::Window, ExperimentalAsh> window2_;
+  raw_ptr<aura::Window> window1_;
+  raw_ptr<aura::Window> window2_;
 };
 
 }  // namespace ash

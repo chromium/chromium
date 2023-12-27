@@ -106,8 +106,7 @@ class ShelfBackgroundAnimatorTestApi {
 
  private:
   // The instance to provide internal access to.
-  raw_ptr<ShelfBackgroundAnimator, DanglingUntriaged | ExperimentalAsh>
-      animator_;
+  raw_ptr<ShelfBackgroundAnimator, DanglingUntriaged> animator_;
 };
 
 class ShelfBackgroundAnimatorTest : public AshTestBase {
@@ -138,8 +137,7 @@ class ShelfBackgroundAnimatorTest : public AshTestBase {
   TestShelfBackgroundObserver observer_;
 
   // Test target.
-  raw_ptr<ShelfBackgroundAnimator, DanglingUntriaged | ExperimentalAsh>
-      animator_;
+  raw_ptr<ShelfBackgroundAnimator, DanglingUntriaged> animator_;
 
   // Provides internal access to |animator_|.
   std::unique_ptr<ShelfBackgroundAnimatorTestApi> test_api_;

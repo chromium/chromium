@@ -39,7 +39,7 @@ class SetValueEffectSlider : public views::View {
 
  private:
   // Owned by the views hierarchy.
-  raw_ptr<TabSlider, ExperimentalAsh> tab_slider_ = nullptr;
+  raw_ptr<TabSlider> tab_slider_ = nullptr;
 
   // The id associated with this effect.
   const VcEffectId effect_id_;

@@ -57,8 +57,7 @@ class TestTextInputView : public views::WidgetDelegateView {
   void FocusOnTextInput() { text_field_->RequestFocus(); }
 
  private:
-  raw_ptr<views::Textfield, ExperimentalAsh>
-      text_field_;  // owned by views hierarchy.
+  raw_ptr<views::Textfield> text_field_;  // owned by views hierarchy.
 };
 
 ////////////////////////////////////////////////////////////////////////////////

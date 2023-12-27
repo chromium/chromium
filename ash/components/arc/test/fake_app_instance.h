@@ -275,7 +275,7 @@ class FakeAppInstance : public mojom::AppInstance {
   arc::mojom::RawIconPngDataPtr GetFakeIcon(mojom::ScaleFactor scale_factor);
 
   // Mojo endpoints.
-  raw_ptr<mojom::AppHost, DanglingUntriaged | ExperimentalAsh> app_host_;
+  raw_ptr<mojom::AppHost, DanglingUntriaged> app_host_;
   // Number of requests to start PAI flows.
   int start_pai_request_count_ = 0;
   // Response for PAI flow state;

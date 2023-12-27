@@ -44,7 +44,7 @@ class ASH_EXPORT AppListKeyboardController {
   bool HandleMovingFocusToAppsGrid(int column);
   bool HandleMovingFocusToRecents(int column);
 
-  const raw_ptr<AppListViewProvider, ExperimentalAsh> view_provider_;
+  const raw_ptr<AppListViewProvider> view_provider_;
 };
 
 }  // namespace ash

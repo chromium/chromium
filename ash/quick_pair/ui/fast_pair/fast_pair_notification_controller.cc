@@ -155,8 +155,7 @@ class NotificationDelegate : public message_center::NotificationDelegate {
   base::RepeatingClosure on_primary_click_;
   base::RepeatingClosure on_secondary_click_;
   base::OnceCallback<void(FastPairNotificationDismissReason)> on_close_;
-  raw_ptr<base::OneShotTimer, DanglingUntriaged | ExperimentalAsh>
-      expire_notification_timer_;
+  raw_ptr<base::OneShotTimer, DanglingUntriaged> expire_notification_timer_;
 };
 
 FastPairNotificationController::FastPairNotificationController(

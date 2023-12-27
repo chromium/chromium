@@ -65,7 +65,7 @@ class ASH_EXPORT DetachableBaseNotificationController
   // Removes kBaseRequiresUpdateNotificationId if it was previously shown.
   void RemoveUpdateRequiredNotification();
 
-  raw_ptr<DetachableBaseHandler, ExperimentalAsh> detachable_base_handler_;
+  raw_ptr<DetachableBaseHandler> detachable_base_handler_;
 
   base::ScopedObservation<DetachableBaseHandler, DetachableBaseObserver>
       detachable_base_observation_{this};

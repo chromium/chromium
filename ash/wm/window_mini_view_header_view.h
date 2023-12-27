@@ -62,15 +62,15 @@ class ASH_EXPORT WindowMiniViewHeaderView : public views::BoxLayoutView {
  private:
   // The parent view of `this`, which is guaranteed not null during the lifetime
   // of `this`.
-  raw_ptr<WindowMiniView, ExperimentalAsh> window_mini_view_;
+  raw_ptr<WindowMiniView> window_mini_view_;
 
   // A view that wraps up the icon and title label. Owned by the views
   // hierarchy.
-  raw_ptr<views::BoxLayoutView, ExperimentalAsh> icon_label_view_;
+  raw_ptr<views::BoxLayoutView> icon_label_view_;
 
   // Views for the icon and title. Owned by the views hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<views::ImageView> icon_view_ = nullptr;
 
   std::optional<gfx::RoundedCornersF> header_view_rounded_corners_;
 };

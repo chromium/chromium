@@ -34,7 +34,7 @@ class ASH_EXPORT TrayInfoLabel : public views::View {
   const views::Label* label() { return label_; }
 
  private:
-  const raw_ptr<views::Label, ExperimentalAsh> label_;
+  const raw_ptr<views::Label> label_;
 };
 
 }  // namespace ash

@@ -75,7 +75,7 @@ class QuickSettingsFooterTest : public NoSessionAshTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by `widget_`.
-  raw_ptr<QuickSettingsFooter, DanglingUntriaged | ExperimentalAsh> footer_;
+  raw_ptr<QuickSettingsFooter, DanglingUntriaged> footer_;
 };
 
 // Tests that all buttons are with the correct view id, catalog name and UMA

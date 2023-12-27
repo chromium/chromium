@@ -60,7 +60,7 @@ class UnifiedIMEDetailedViewController : public DetailedViewController,
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
   // The view being controlled.
-  raw_ptr<IMEDetailedView, DanglingUntriaged | ExperimentalAsh> view_ = nullptr;
+  raw_ptr<IMEDetailedView, DanglingUntriaged> view_ = nullptr;
 
   // Whether the on-screen keyboard is suppressed, for example by being in
   // tablet mode with an external keyboard attached.

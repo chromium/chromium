@@ -112,7 +112,7 @@ class CalendarEmptyEventListView : public PillButton {
 
  private:
   // Owned by the parent view. Guaranteed to outlive this.
-  const raw_ptr<CalendarViewController, ExperimentalAsh> controller_;
+  const raw_ptr<CalendarViewController> controller_;
 };
 
 BEGIN_METADATA(CalendarEmptyEventListView)

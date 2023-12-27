@@ -60,7 +60,7 @@ class CursorSetter {
                        chromeos::OrientationType orientation,
                        std::optional<int> custom_type_id) const;
 
-  const raw_ptr<wm::CursorManager, ExperimentalAsh> cursor_manager_;
+  const raw_ptr<wm::CursorManager> cursor_manager_;
   const gfx::NativeCursor original_cursor_;
   const bool original_cursor_visible_;
 

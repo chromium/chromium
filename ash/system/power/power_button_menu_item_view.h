@@ -59,10 +59,10 @@ class ASH_EXPORT PowerButtonMenuItemView : public views::ImageButton {
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
   // Owned by views hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
+  raw_ptr<views::ImageView> icon_view_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
 
-  const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
+  const raw_ref<const gfx::VectorIcon> icon_;
 };
 
 }  // namespace ash

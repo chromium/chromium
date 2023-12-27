@@ -378,8 +378,8 @@ class ScopedTransformRecordingLayerDelegate : public ui::LayerDelegate {
     max_translation_.SetToMax(end_translation_);
   }
 
-  const raw_ptr<ui::Layer, ExperimentalAsh> layer_;
-  const raw_ptr<ui::LayerDelegate, ExperimentalAsh> layer_delegate_;
+  const raw_ptr<ui::Layer> layer_;
+  const raw_ptr<ui::LayerDelegate> layer_delegate_;
 
   bool did_animate_ = false;
   gfx::Vector2dF start_scale_;

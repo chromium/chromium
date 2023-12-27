@@ -57,7 +57,7 @@ class ASH_EXPORT WindowTransientDescendantIterator {
 
   // The current window that |this| refers to. A null |current_window_| denotes
   // an empty iterator and is used as the last possible value in the traversal.
-  raw_ptr<aura::Window, ExperimentalAsh> current_window_;
+  raw_ptr<aura::Window> current_window_;
 
   // Windows that satisfy this predicate will not be shown.
   TransientTreeIgnorePredicate hide_predicate_ = base::NullCallback();

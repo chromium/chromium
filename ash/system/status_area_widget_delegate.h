@@ -83,8 +83,8 @@ class ASH_EXPORT StatusAreaWidgetDelegate : public views::AccessiblePaneView,
   // screen.
   void SetBorderOnChild(views::View* child, bool extend_border_to_edge);
 
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
-  raw_ptr<const FocusCycler, ExperimentalAsh> focus_cycler_for_testing_;
+  const raw_ptr<Shelf> shelf_;
+  raw_ptr<const FocusCycler> focus_cycler_for_testing_;
   gfx::Rect target_bounds_;
 
   // When true, the default focus of the status area widget is the last

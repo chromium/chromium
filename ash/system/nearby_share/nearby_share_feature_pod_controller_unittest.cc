@@ -70,10 +70,9 @@ class NearbyShareFeaturePodControllerTest : public NoSessionAshTestBase {
   std::unique_ptr<NearbyShareFeaturePodController> pod_controller_;
   std::unique_ptr<FeatureTile> tile_;
 
-  raw_ptr<TestNearbyShareDelegate, DanglingUntriaged | ExperimentalAsh>
-      test_delegate_ = nullptr;
-  raw_ptr<NearbyShareController, DanglingUntriaged | ExperimentalAsh>
-      nearby_share_controller_ = nullptr;
+  raw_ptr<TestNearbyShareDelegate, DanglingUntriaged> test_delegate_ = nullptr;
+  raw_ptr<NearbyShareController, DanglingUntriaged> nearby_share_controller_ =
+      nullptr;
 };
 
 TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisibilityNotLoggedIn) {

@@ -191,7 +191,7 @@ class NetworkInfoBubbleTest : public AshTestBase {
  private:
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkInfoBubbleDelegate fake_delegate_;
-  raw_ptr<NetworkInfoBubble, ExperimentalAsh> network_info_bubble_ = nullptr;
+  raw_ptr<NetworkInfoBubble> network_info_bubble_ = nullptr;
   std::string wifi_path_;
   std::unique_ptr<views::Widget> widget_;
 

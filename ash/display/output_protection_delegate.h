@@ -56,7 +56,7 @@ class ASH_EXPORT OutputProtectionDelegate : public aura::WindowObserver,
   bool RegisterClientIfNecessary();
 
   // Native window being observed.
-  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
+  raw_ptr<aura::Window> window_ = nullptr;
 
   // Display ID of the observed window.
   int64_t display_id_;

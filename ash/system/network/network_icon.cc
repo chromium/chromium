@@ -80,8 +80,7 @@ class NetworkIconImpl {
   void GenerateImage(const NetworkStateProperties* network);
 
   // Gets the color for the icon
-  raw_ptr<const ui::ColorProvider, DanglingUntriaged | ExperimentalAsh>
-      color_provider_;
+  raw_ptr<const ui::ColorProvider, DanglingUntriaged> color_provider_;
 
   // Defines color theme and VPN badging
   const IconType icon_type_;

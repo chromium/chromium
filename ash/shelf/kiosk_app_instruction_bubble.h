@@ -37,7 +37,7 @@ class ASH_EXPORT KioskAppInstructionBubble
   void OnThemeChanged() override;
   gfx::Size CalculatePreferredSize() const override;
 
-  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
 };
 
 }  // namespace ash

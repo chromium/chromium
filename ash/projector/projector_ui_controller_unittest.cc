@@ -82,8 +82,7 @@ class ProjectorUiControllerTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<ProjectorUiController, DanglingUntriaged | ExperimentalAsh>
-      controller_;
+  raw_ptr<ProjectorUiController, DanglingUntriaged> controller_;
   MockProjectorClient projector_client_;
 };
 

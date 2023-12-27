@@ -74,7 +74,7 @@ class ASH_EXPORT PhantomWindowController {
   void ShowPhantomWidget();
 
   // Window that the phantom window is stacked above.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 
   // Target bounds of |phantom_widget_| in screen coordinates for animation.
   gfx::Rect target_bounds_in_screen_;

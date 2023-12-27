@@ -44,7 +44,7 @@ class ScopedTestStateObserver : public TrayActionObserver {
   void ClearObservedStates() { observed_states_.clear(); }
 
  private:
-  raw_ptr<TrayAction, ExperimentalAsh> tray_action_;
+  raw_ptr<TrayAction> tray_action_;
 
   std::vector<TrayActionState> observed_states_;
 };

@@ -89,7 +89,7 @@ class CompatModeButtonController {
 
   std::unique_ptr<ResizeToggleMenu> resize_toggle_menu_;
 
-  raw_ptr<ArcResizeLockPrefDelegate, ExperimentalAsh> pref_delegate_;
+  raw_ptr<ArcResizeLockPrefDelegate> pref_delegate_;
 
   bool visible_when_button_pressed_{false};
 

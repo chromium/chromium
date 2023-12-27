@@ -93,7 +93,7 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   int GetAutoScrollOffset() const;
 
   // The scroll view that contains this view (and other views).
-  const raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_;
+  const raw_ptr<views::ScrollView> scroll_view_;
 
   // Timer to scroll the `scroll_view_`.
   base::OneShotTimer auto_scroll_timer_;

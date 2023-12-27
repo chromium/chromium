@@ -103,13 +103,13 @@ class MediaStringView : public views::View,
   raw_ptr<MediaStringView::Delegate> delegate_ = nullptr;
 
   // Music eighth note.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
 
   // Container of media info text.
-  raw_ptr<views::View, ExperimentalAsh> media_text_container_ = nullptr;
+  raw_ptr<views::View> media_text_container_ = nullptr;
 
   // With an extra copy of media info text for scrolling animation.
-  raw_ptr<views::Label, ExperimentalAsh> media_text_ = nullptr;
+  raw_ptr<views::Label> media_text_ = nullptr;
 
   // Used to receive updates to the active media controller.
   mojo::Remote<media_session::mojom::MediaController> media_controller_remote_;

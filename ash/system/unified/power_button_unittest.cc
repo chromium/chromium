@@ -140,7 +140,7 @@ class PowerButtonTest : public NoSessionAshTestBase {
   bool IsDownChevron() { return ChevronIconsMatch(/*use_up_chevron=*/false); }
 
   // Owned by view hierarchy.
-  raw_ptr<PowerButton, DanglingUntriaged | ExperimentalAsh> button_ = nullptr;
+  raw_ptr<PowerButton, DanglingUntriaged> button_ = nullptr;
 
   base::HistogramTester histogram_tester_;
 };

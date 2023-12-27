@@ -141,8 +141,8 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
     }
   }
 
-  raw_ptr<views::Widget, ExperimentalAsh> widget_;
-  raw_ptr<WindowState, ExperimentalAsh> window_state_;
+  raw_ptr<views::Widget> widget_;
+  raw_ptr<WindowState> window_state_;
   std::unique_ptr<ImmersiveFullscreenController>
       immersive_fullscreen_controller_;
   display::ScopedDisplayObserver display_observer_{this};

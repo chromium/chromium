@@ -69,7 +69,7 @@ class TestSessionStateAnimator::AnimationSequence
   bool sequence_aborted_ = false;
 
   // The TestSessionAnimator that created this.  Not owned.
-  raw_ptr<TestSessionStateAnimator, ExperimentalAsh> animator_;
+  raw_ptr<TestSessionStateAnimator> animator_;
 };
 
 TestSessionStateAnimator::ActiveAnimation::ActiveAnimation(

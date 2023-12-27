@@ -98,7 +98,7 @@ class HideAnimationObserver : public ui::ImplicitAnimationObserver {
 
  private:
   // Unowned.
-  const raw_ptr<ui::Layer, DanglingUntriaged | ExperimentalAsh> layer_;
+  const raw_ptr<ui::Layer, DanglingUntriaged> layer_;
 };
 
 class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
@@ -258,15 +258,14 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
     canvas->DrawLine(start_point, end_point, flags);
   }
 
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
-  const raw_ptr<views::View, ExperimentalAsh> owner_view_;
+  const raw_ptr<Shelf> shelf_;
+  const raw_ptr<views::View> owner_view_;
 
   // The pointer to the login shelf view that resides in the shelf widget. Set
   // only when the login shelf widget is not in use.
   // TODO(https://crbug.com/1343114): remove this data member and its related
   // code after the login shelf widget is ready.
-  raw_ptr<LoginShelfView, ExperimentalAsh> login_shelf_from_shelf_widget_ =
-      nullptr;
+  raw_ptr<LoginShelfView> login_shelf_from_shelf_widget_ = nullptr;
 
   SkColor background_color_;
   float corner_radius_ = 0.0f;
@@ -372,15 +371,15 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
   // Prevents calls to UpdateOpaqueBackground from inadvertently showing
   // |opaque_background_| during animations.
   bool hide_background_for_transitions_ = false;
-  const raw_ptr<ShelfWidget, ExperimentalAsh> shelf_widget_;
-  raw_ptr<FocusCycler, ExperimentalAsh> focus_cycler_ = nullptr;
+  const raw_ptr<ShelfWidget> shelf_widget_;
+  raw_ptr<FocusCycler> focus_cycler_ = nullptr;
 
   // Pointer to the login shelf view - visible only when the session is
   // inactive. The view is owned by this view's hierarchy.
   // Set only when the login shelf widget is not in use.
   // TODO(https://crbug.com/1343114): remove this data member when the login
   // shelf widget is in use.
-  raw_ptr<LoginShelfView, ExperimentalAsh> login_shelf_view_ = nullptr;
+  raw_ptr<LoginShelfView> login_shelf_view_ = nullptr;
 
   // A background layer that may be visible depending on a
   // ShelfBackgroundAnimator.
@@ -394,7 +393,7 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
 
   // A drag handle shown in tablet mode when we are not on the home screen.
   // Owned by the view hierarchy.
-  raw_ptr<DragHandle, ExperimentalAsh> drag_handle_ = nullptr;
+  raw_ptr<DragHandle> drag_handle_ = nullptr;
 
   // When true, the default focus of the shelf is the last focusable child.
   bool default_last_focusable_child_ = false;

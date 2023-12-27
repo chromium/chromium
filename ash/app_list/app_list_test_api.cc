@@ -264,8 +264,8 @@ class WindowAddedWaiter : public aura::WindowObserver {
     run_loop_.Quit();
   }
 
-  const raw_ptr<aura::Window, ExperimentalAsh> container_;
-  raw_ptr<aura::Window, ExperimentalAsh> added_window_ = nullptr;
+  const raw_ptr<aura::Window> container_;
+  raw_ptr<aura::Window> added_window_ = nullptr;
   base::RunLoop run_loop_;
 };
 
@@ -291,7 +291,7 @@ class ScopedItemMoveAnimationDisabler {
   }
 
  private:
-  const raw_ptr<AppsGridView, ExperimentalAsh> apps_grid_;
+  const raw_ptr<AppsGridView> apps_grid_;
 };
 
 }  // namespace

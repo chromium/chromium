@@ -43,7 +43,7 @@ class ASH_EXPORT AutozoomFeaturePodController : public FeaturePodControllerBase,
 
   void UpdateTileVisibility();
 
-  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
+  raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;
 
   base::WeakPtrFactory<AutozoomFeaturePodController> weak_factory_{this};
 };

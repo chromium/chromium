@@ -148,7 +148,7 @@ class FirstNonAnimatedFrameStartedWaiter : public ui::CompositorObserver {
   }
 
  private:
-  raw_ptr<ui::Compositor, ExperimentalAsh> compositor_;
+  raw_ptr<ui::Compositor> compositor_;
   bool done_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
 };

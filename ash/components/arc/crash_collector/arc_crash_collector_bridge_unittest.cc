@@ -32,7 +32,7 @@ class ArcCrashCollectorBridgeTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
   user_prefs::TestBrowserContextWithPrefs context_;
-  const raw_ptr<ArcCrashCollectorBridge, ExperimentalAsh> bridge_;
+  const raw_ptr<ArcCrashCollectorBridge> bridge_;
 };
 
 TEST_F(ArcCrashCollectorBridgeTest, ConstructDestruct) {}

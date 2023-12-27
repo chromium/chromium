@@ -147,8 +147,7 @@ class VpnDetailedViewTest : public AshTestBase {
 
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<FakeDetailedViewDelegate> delegate_;
-  raw_ptr<VpnDetailedView, DanglingUntriaged | ExperimentalAsh>
-      vpn_detailed_view_ = nullptr;
+  raw_ptr<VpnDetailedView, DanglingUntriaged> vpn_detailed_view_ = nullptr;
 };
 
 TEST_F(VpnDetailedViewTest, Basics) {

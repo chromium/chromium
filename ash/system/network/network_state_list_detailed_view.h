@@ -111,13 +111,13 @@ class ASH_EXPORT NetworkStateListDetailedView
   // Track login state.
   LoginStatus login_;
 
-  raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
+  raw_ptr<TrayNetworkStateModel> model_;
 
-  raw_ptr<views::Button, ExperimentalAsh> info_button_;
-  raw_ptr<views::Button, ExperimentalAsh> settings_button_;
+  raw_ptr<views::Button> info_button_;
+  raw_ptr<views::Button> settings_button_;
 
   // A small bubble for displaying network info.
-  raw_ptr<InfoBubble, ExperimentalAsh> info_bubble_;
+  raw_ptr<InfoBubble> info_bubble_;
 
   // Timer for starting and stopping network scans.
   base::RepeatingTimer network_scan_repeating_timer_;

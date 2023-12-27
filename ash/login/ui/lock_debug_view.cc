@@ -633,7 +633,7 @@ class LockDebugView::DebugDataDispatcherTransformer
   // The debug overlay UI takes ground-truth data from |root_dispatcher_|,
   // applies a series of transformations to it, and exposes it to the UI via
   // |debug_dispatcher_|.
-  raw_ptr<LoginDataDispatcher, ExperimentalAsh> root_dispatcher_;  // Unowned.
+  raw_ptr<LoginDataDispatcher> root_dispatcher_;  // Unowned.
   LoginDataDispatcher debug_dispatcher_;
 
   // Original set of users from |root_dispatcher_|.
@@ -655,7 +655,7 @@ class LockDebugView::DebugDataDispatcherTransformer
   // In such a case, we want to bypass the event handling mechanism and do
   // direct calls to the lock screen. We need either an instance of
   // LockDebugView or LockContentsView in order to do so.
-  const raw_ptr<LockDebugView, ExperimentalAsh> lock_debug_view_;
+  const raw_ptr<LockDebugView> lock_debug_view_;
 };
 
 // In-memory wrapper around LoginDetachableBaseModel used by lock UI.

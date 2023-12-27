@@ -41,8 +41,8 @@ class PowerButtonContainer : public views::Button {
 
  private:
   // Owned by views hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> power_icon_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> arrow_icon_ = nullptr;
+  raw_ptr<views::ImageView> power_icon_ = nullptr;
+  raw_ptr<views::ImageView> arrow_icon_ = nullptr;
 };
 
 // The power button that lives in the `QuickSettingsView` footer. The
@@ -90,16 +90,15 @@ class ASH_EXPORT PowerButton : public views::View {
   void OnButtonActivated(const ui::Event& event);
 
   // Owned by views hierarchy.
-  raw_ptr<views::View, ExperimentalAsh> background_view_ = nullptr;
-  raw_ptr<PowerButtonContainer, ExperimentalAsh> button_content_ = nullptr;
+  raw_ptr<views::View> background_view_ = nullptr;
+  raw_ptr<PowerButtonContainer> button_content_ = nullptr;
 
   // The context menu, which will be set as the controller to show the power
   // button menu view.
   std::unique_ptr<MenuController> context_menu_;
 
   // Owned by UnifiedSystemTrayBubble.
-  const raw_ptr<UnifiedSystemTrayController,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<UnifiedSystemTrayController, DanglingUntriaged>
       tray_controller_;
 };
 

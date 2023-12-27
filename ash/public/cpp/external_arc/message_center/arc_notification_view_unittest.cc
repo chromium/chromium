@@ -214,7 +214,7 @@ class ArcNotificationViewTest : public AshTestBase {
 
   std::unique_ptr<MockArcNotificationSurface> surface_;
   std::unique_ptr<Notification> notification_;
-  raw_ptr<ArcNotificationView, ExperimentalAsh> notification_view_ =
+  raw_ptr<ArcNotificationView> notification_view_ =
       nullptr;  // owned by its widget.
 
   std::unique_ptr<MockArcNotificationItem> item_;

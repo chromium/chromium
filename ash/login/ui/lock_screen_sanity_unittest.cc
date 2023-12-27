@@ -68,7 +68,7 @@ class LockScreenAppFocuser {
 
  private:
   bool reversed_tab_order_ = false;
-  raw_ptr<views::Widget, ExperimentalAsh> lock_screen_app_widget_;
+  raw_ptr<views::Widget> lock_screen_app_widget_;
 };
 
 testing::AssertionResult VerifyFocused(views::View* view) {

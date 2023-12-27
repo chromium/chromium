@@ -97,12 +97,12 @@ class KeyboardShortcutView : public views::WidgetDelegateView {
 
   // Owned by views hierarchy.
   // The container for category tabs and lists of KeyboardShortcutItemViews.
-  raw_ptr<views::TabbedPane, ExperimentalAsh> categories_tabbed_pane_ = nullptr;
+  raw_ptr<views::TabbedPane> categories_tabbed_pane_ = nullptr;
   // The container for KeyboardShortcutItemViews matching a user's query.
-  raw_ptr<views::View, ExperimentalAsh> search_results_container_ = nullptr;
+  raw_ptr<views::View> search_results_container_ = nullptr;
 
   // Owned by views hierarchy.
-  raw_ptr<KSVSearchBoxView, ExperimentalAsh> search_box_view_ = nullptr;
+  raw_ptr<KSVSearchBoxView> search_box_view_ = nullptr;
 
   // Contains all the shortcut item views from all categories. This list is also
   // used for searching. The views are not owned by the Views hierarchy to avoid

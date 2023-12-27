@@ -113,8 +113,7 @@ class FakeNotificationSurface : public exo::NotificationSurface {
     // null SharedMainThreadContextProvider in test under mash.
   }
 
-  const raw_ptr<exo::NotificationSurfaceManager, ExperimentalAsh>
-      manager_;  // Not owned.
+  const raw_ptr<exo::NotificationSurfaceManager> manager_;  // Not owned.
 };
 
 aura::Window* GetFocusedWindow() {
@@ -273,8 +272,7 @@ class ArcNotificationContentViewTest : public AshTestBase {
   std::unique_ptr<exo::NotificationSurface> notification_surface_;
 
   // owned by the |wrapper_widget_|.
-  raw_ptr<ArcNotificationView, DanglingUntriaged | ExperimentalAsh>
-      notification_view_ = nullptr;
+  raw_ptr<ArcNotificationView, DanglingUntriaged> notification_view_ = nullptr;
   std::unique_ptr<views::Widget> wrapper_widget_;
 };
 

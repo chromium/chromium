@@ -118,7 +118,7 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
     return;
   }
 
-  const raw_ptr<UnifiedSystemTrayModel, ExperimentalAsh> model_;
+  const raw_ptr<UnifiedSystemTrayModel> model_;
 
   base::WeakPtrFactory<UnifiedKeyboardBrightnessView> weak_factory_{this};
 };

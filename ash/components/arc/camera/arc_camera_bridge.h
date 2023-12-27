@@ -52,7 +52,7 @@ class ArcCameraBridge : public KeyedService, public mojom::CameraHost {
  private:
   class PendingStartCameraServiceResult;
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   std::map<PendingStartCameraServiceResult*,

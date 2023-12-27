@@ -125,7 +125,7 @@ class KEYBOARD_EXPORT ContainerBehavior {
   virtual void SetAreaToRemainOnScreen(const gfx::Rect& rect) = 0;
 
  protected:
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // The opacity of virtual keyboard container when show animation
   // starts or hide animation finishes. This cannot be zero because we

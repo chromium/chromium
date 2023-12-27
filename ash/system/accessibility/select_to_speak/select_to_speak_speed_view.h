@@ -53,7 +53,7 @@ class SelectToSpeakSpeedView : public views::BoxLayoutView,
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* key_event) override;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

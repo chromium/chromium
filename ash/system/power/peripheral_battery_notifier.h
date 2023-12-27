@@ -96,8 +96,7 @@ class ASH_EXPORT PeripheralBatteryNotifier
   // provided by PeripheralBatteryListener.
   std::map<std::string, NotificationInfo> battery_notifications_;
 
-  raw_ptr<PeripheralBatteryListener, ExperimentalAsh>
-      peripheral_battery_listener_;
+  raw_ptr<PeripheralBatteryListener> peripheral_battery_listener_;
 };
 
 }  // namespace ash

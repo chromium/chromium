@@ -122,13 +122,13 @@ class ASH_EXPORT DeskButtonWidget : public ShelfComponent,
   // Default child view to focus when `OnNativeWidgetActivationChanged()`
   // occurs. When it's not null, it should point to the desk button, the
   // previous desk button, or the next desk button.
-  raw_ptr<views::View, ExperimentalAsh> default_child_to_focus_ = nullptr;
+  raw_ptr<views::View> default_child_to_focus_ = nullptr;
 
   // Stored focused view for the widget. This is used to restore the focus to
   // the desk button when the desk bar is closed. When it's not null, it should
   // point to the desk button, the previous desk button, or the next desk
   // button.
-  raw_ptr<views::View, ExperimentalAsh> stored_focused_view_ = nullptr;
+  raw_ptr<views::View> stored_focused_view_ = nullptr;
 };
 
 }  // namespace ash

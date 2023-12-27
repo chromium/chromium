@@ -84,7 +84,7 @@ class AnimationSetter {
 
  private:
   // The window which gets used.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 
   // Previous animation type.
   const int previous_animation_type_;

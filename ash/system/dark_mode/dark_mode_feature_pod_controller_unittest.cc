@@ -49,8 +49,7 @@ class DarkModeFeaturePodControllerTest : public AshTestBase {
  private:
   std::unique_ptr<DarkModeFeaturePodController> feature_pod_controller_;
   std::unique_ptr<FeatureTile> tile_;
-  raw_ptr<UnifiedSystemTray, DanglingUntriaged | ExperimentalAsh> system_tray_ =
-      nullptr;
+  raw_ptr<UnifiedSystemTray, DanglingUntriaged> system_tray_ = nullptr;
 };
 
 // Tests that toggling dark mode from the system tray disables auto scheduling

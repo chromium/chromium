@@ -42,8 +42,8 @@ class FederatedServiceControllerImplTestBase : public NoSessionAshTestBase {
   }
 
  protected:
-  raw_ptr<FederatedServiceControllerImpl, DanglingUntriaged | ExperimentalAsh>
-      controller_ = nullptr;
+  raw_ptr<FederatedServiceControllerImpl, DanglingUntriaged> controller_ =
+      nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

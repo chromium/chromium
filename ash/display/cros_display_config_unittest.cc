@@ -229,8 +229,7 @@ class CrosDisplayConfigTest : public AshTestBase {
   CrosDisplayConfig* cros_display_config() { return cros_display_config_; }
 
  private:
-  raw_ptr<CrosDisplayConfig, DanglingUntriaged | ExperimentalAsh>
-      cros_display_config_ = nullptr;
+  raw_ptr<CrosDisplayConfig, DanglingUntriaged> cros_display_config_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

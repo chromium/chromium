@@ -197,10 +197,10 @@ class ASH_EXPORT GeolocationController
   std::unique_ptr<base::OneShotTimer> timer_;
 
   // Optional Used in tests to override the time of "Now".
-  raw_ptr<base::Clock, ExperimentalAsh> clock_ = nullptr;  // Not owned.
+  raw_ptr<base::Clock> clock_ = nullptr;  // Not owned.
 
   // Optional Used in tests to override all local time operations.
-  raw_ptr<const LocalTimeConverter, ExperimentalAsh> local_time_converter_ =
+  raw_ptr<const LocalTimeConverter> local_time_converter_ =
       nullptr;  // Not owned.
 
   // The ID of the current timezone in the format similar to "America/Chicago".

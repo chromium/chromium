@@ -110,20 +110,18 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
   void OnImeMenuTrayBubbleShown() override;
 
   // Feature buttons:
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> dictation_button_ = nullptr;
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> select_to_speak_button_ =
-      nullptr;
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> virtual_keyboard_button_ =
-      nullptr;
+  raw_ptr<TrayBackgroundView> dictation_button_ = nullptr;
+  raw_ptr<TrayBackgroundView> select_to_speak_button_ = nullptr;
+  raw_ptr<TrayBackgroundView> virtual_keyboard_button_ = nullptr;
 
   // Button to list all available features.
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> a11y_tray_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> a11y_tray_button_ = nullptr;
   // Button to move the view around corners.
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> position_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> position_button_ = nullptr;
   // Button to list all available keyboard languages.
-  raw_ptr<ImeMenuTray, ExperimentalAsh> ime_button_ = nullptr;
+  raw_ptr<ImeMenuTray> ime_button_ = nullptr;
 
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

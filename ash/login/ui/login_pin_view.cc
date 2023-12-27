@@ -257,8 +257,8 @@ class LoginPinView::DigitPinButton : public BasePinButton {
   ~DigitPinButton() override = default;
 
  private:
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> sub_label_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
+  raw_ptr<views::Label> sub_label_ = nullptr;
 };
 
 BEGIN_METADATA(LoginPinView, DigitPinButton, BasePinButton)
@@ -400,7 +400,7 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
   std::unique_ptr<base::RepeatingTimer> repeat_timer_ =
       std::make_unique<base::RepeatingTimer>();
 
-  raw_ptr<views::ImageView, ExperimentalAsh> image_ = nullptr;
+  raw_ptr<views::ImageView> image_ = nullptr;
   base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(base::BindRepeating(
           &LoginPinView::BackspacePinButton::OnEnabledChanged,
@@ -436,7 +436,7 @@ class LoginPinView::SubmitPinButton : public BasePinButton {
         ui::ImageModel::FromVectorIcon(kLockScreenArrowIcon, color_id));
   }
 
-  raw_ptr<views::ImageView, ExperimentalAsh> image_ = nullptr;
+  raw_ptr<views::ImageView> image_ = nullptr;
   base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
           base::BindRepeating(&LoginPinView::SubmitPinButton::UpdateImage,

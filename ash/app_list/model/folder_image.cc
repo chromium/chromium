@@ -60,8 +60,7 @@ class FolderImageSource : public gfx::CanvasImageSource {
   // gfx::CanvasImageSource overrides:
   void Draw(gfx::Canvas* canvas) override;
 
-  const raw_ref<const AppListConfig, DanglingUntriaged | ExperimentalAsh>
-      app_list_config_;
+  const raw_ref<const AppListConfig, DanglingUntriaged> app_list_config_;
   Icons icons_;
   gfx::Size size_;
 };

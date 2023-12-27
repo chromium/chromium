@@ -143,8 +143,7 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
 
    private:
     // WorkspaceLayoutManager has at least as long a lifetime as this class.
-    raw_ptr<const WorkspaceLayoutManager, ExperimentalAsh>
-        workspace_layout_manager_;
+    raw_ptr<const WorkspaceLayoutManager> workspace_layout_manager_;
     // The key is the window to be observed, and the value is the parent of the
     // window.
     std::map<aura::Window*, aura::Window*> observed_windows_;
@@ -182,12 +181,12 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
 
   bool IsPopupNotificationWindow(aura::Window* window) const;
 
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
-  raw_ptr<RootWindowController, ExperimentalAsh> root_window_controller_;
-  raw_ptr<aura::Window, ExperimentalAsh> settings_bubble_container_;
-  raw_ptr<aura::Window, ExperimentalAsh> accessibility_bubble_container_;
-  raw_ptr<aura::Window, ExperimentalAsh> shelf_container_;
+  raw_ptr<aura::Window> window_;
+  raw_ptr<aura::Window> root_window_;
+  raw_ptr<RootWindowController> root_window_controller_;
+  raw_ptr<aura::Window> settings_bubble_container_;
+  raw_ptr<aura::Window> accessibility_bubble_container_;
+  raw_ptr<aura::Window> shelf_container_;
 
   display::ScopedDisplayObserver display_observer_{this};
 

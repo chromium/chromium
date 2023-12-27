@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionChipView : public ChipView {
   const base::UnguessableToken& suggestion_id() const { return suggestion_id_; }
 
  private:
-  const raw_ptr<AssistantViewDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<AssistantViewDelegate> delegate_;
   const base::UnguessableToken suggestion_id_;
 
   base::WeakPtrFactory<SuggestionChipView> weak_factory_{this};

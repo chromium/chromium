@@ -250,12 +250,11 @@ class ASH_EXPORT NotificationListView
   // Updates the state between each Clear All animation phase.
   void UpdateClearAllAnimation();
 
-  const raw_ptr<NotificationCenterView, ExperimentalAsh> message_center_view_;
+  const raw_ptr<NotificationCenterView> message_center_view_;
 
   // Non-null during State::EXPAND_OR_COLLAPSE. Keeps track of the
   // MessageViewContainer that is animating.
-  raw_ptr<MessageViewContainer, ExperimentalAsh>
-      expand_or_collapsing_container_ = nullptr;
+  raw_ptr<MessageViewContainer> expand_or_collapsing_container_ = nullptr;
 
   // If true, ChildPreferredSizeChanged() will be ignored. Used to prevent
   // PreferredSizeChanged() triggered by system SetExpanded() calls.

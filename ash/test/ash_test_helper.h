@@ -81,7 +81,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     bool start_session = true;
     // If this is not set, a TestShellDelegate will be used automatically.
     std::unique_ptr<ShellDelegate> delegate;
-    raw_ptr<PrefService, ExperimentalAsh> local_state = nullptr;
+    raw_ptr<PrefService> local_state = nullptr;
 
     // Used only when setting up a pixel diff test.
     std::optional<pixel_test::InitParams> pixel_test_init_params;
@@ -235,8 +235,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
   // InputMethodManager is not owned by this class. It is stored in a
   // global that is registered via InputMethodManager::Initialize().
-  raw_ptr<input_method::MockInputMethodManagerImpl,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<input_method::MockInputMethodManagerImpl, DanglingUntriaged>
       input_method_manager_ = nullptr;
 
   federated::FakeServiceConnectionImpl fake_federated_service_connection_;

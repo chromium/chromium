@@ -763,8 +763,7 @@ class ASH_EXPORT WallpaperControllerImpl
   WallpaperMode wallpaper_mode_ = WALLPAPER_NONE;
 
   // Client interface in chrome browser.
-  raw_ptr<WallpaperControllerClient, ExperimentalAsh>
-      wallpaper_controller_client_ = nullptr;
+  raw_ptr<WallpaperControllerClient> wallpaper_controller_client_ = nullptr;
 
   base::ObserverList<WallpaperControllerObserver>::Unchecked observers_;
 

@@ -53,10 +53,10 @@ class VirtualKeyboardTray : public TrayBackgroundView,
 
  private:
   // Owned by the views hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
 
   // Unowned.
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const raw_ptr<Shelf> shelf_;
 };
 
 }  // namespace ash

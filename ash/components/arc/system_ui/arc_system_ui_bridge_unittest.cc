@@ -122,7 +122,7 @@ class ArcSystemUIBridgeTest : public testing::Test {
   user_prefs::TestBrowserContextWithPrefs context_;
   FakeSystemUiInstance system_ui_instance_;
   std::unique_ptr<TestColorPaletteController> test_palette_;
-  const raw_ptr<ArcSystemUIBridge, ExperimentalAsh> bridge_;
+  const raw_ptr<ArcSystemUIBridge> bridge_;
   base::test::MockLog log_;
 };
 

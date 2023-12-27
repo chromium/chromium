@@ -40,8 +40,8 @@ class LoginTooltipView : public LoginBaseBubbleView {
   views::Label* label() { return label_; }
 
  private:
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> info_icon_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
+  raw_ptr<views::ImageView> info_icon_ = nullptr;
 };
 
 }  // namespace ash

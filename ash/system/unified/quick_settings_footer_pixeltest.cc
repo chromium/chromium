@@ -62,8 +62,7 @@ class QuickSettingsFooterPixelTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_;
 
   // Owned by view hierarchy.
-  raw_ptr<QuickSettingsFooter, DanglingUntriaged | ExperimentalAsh> footer_ =
-      nullptr;
+  raw_ptr<QuickSettingsFooter, DanglingUntriaged> footer_ = nullptr;
 };
 
 TEST_F(QuickSettingsFooterPixelTest, FooterShouldBeRenderedCorrectly) {

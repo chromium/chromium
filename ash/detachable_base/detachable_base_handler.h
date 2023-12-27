@@ -125,7 +125,7 @@ class ASH_EXPORT DetachableBaseHandler
   // update.
   void NotifyBaseRequiresFirmwareUpdate(bool requires_update);
 
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 
   // Tablet mode state currently reported by power manager - tablet mode getting
   // turned on is used as a signal that the base is detached.

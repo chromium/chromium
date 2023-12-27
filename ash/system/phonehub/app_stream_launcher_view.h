@@ -81,12 +81,11 @@ class ASH_EXPORT AppStreamLauncherView
   void CreateGridView(
       const std::vector<phonehub::Notification::AppMetadata>* apps_list);
 
-  raw_ptr<views::Button, DanglingUntriaged | ExperimentalAsh>
-      arrow_back_button_ = nullptr;
-  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_;
+  raw_ptr<views::Button, DanglingUntriaged> arrow_back_button_ = nullptr;
+  raw_ptr<phonehub::PhoneHubManager> phone_hub_manager_;
 
   // Contains all the apps
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> items_container_;
+  raw_ptr<views::View, DanglingUntriaged> items_container_;
 
   base::WeakPtrFactory<AppStreamLauncherView> weak_factory_{this};
 };

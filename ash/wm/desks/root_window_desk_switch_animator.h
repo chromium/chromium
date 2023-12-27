@@ -365,7 +365,7 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   int GetXPositionOfScreenshot(int index);
 
   // The root window that this animator is associated with.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window, DanglingUntriaged> root_window_;
 
   // The type of animator, this will determine what type of animation is
   // created.
@@ -377,7 +377,7 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // The index of the desk to activate and animate to with this animator.
   int ending_desk_index_;
 
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // The owner of the layer tree of the old detached layers of the removed
   // desk's windows. This is only valid if |for_remove_| is true. This layer

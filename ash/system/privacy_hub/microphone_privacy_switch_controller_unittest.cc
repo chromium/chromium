@@ -243,8 +243,7 @@ class PrivacyHubMicrophoneControllerTest
 
  private:
   const base::HistogramTester histogram_tester_;
-  raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_ =
-      nullptr;
+  raw_ptr<MockNewWindowDelegate> new_window_delegate_ = nullptr;
   std::unique_ptr<TestNewWindowDelegateProvider> window_delegate_provider_;
   std::unique_ptr<FakeVideoConferenceTrayController>
       fake_video_conference_tray_controller_;

@@ -49,7 +49,7 @@ class ASH_EXPORT NetworkListHeaderView : public views::View,
   friend class NetworkListTetherHostsHeaderViewTest;
 
   // Owned by the views hierarchy.
-  raw_ptr<HoverHighlightView, ExperimentalAsh> entry_row_ = nullptr;
+  raw_ptr<HoverHighlightView> entry_row_ = nullptr;
 };
 
 }  // namespace ash

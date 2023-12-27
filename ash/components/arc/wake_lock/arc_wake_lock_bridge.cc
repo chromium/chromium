@@ -112,7 +112,7 @@ class ArcWakeLockBridge::WakeLockRequester {
   const device::mojom::WakeLockType type_;
 
   // Used to get wake locks. Not owned.
-  const raw_ptr<device::mojom::WakeLockProvider, ExperimentalAsh> provider_;
+  const raw_ptr<device::mojom::WakeLockProvider> provider_;
 
   // Number of outstanding Android requests.
   int64_t wake_lock_count_ = 0;

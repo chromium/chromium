@@ -71,9 +71,8 @@ class ASH_EXPORT NetworkFeaturePodController
   void UpdateTileStateIfExists();
 
   // Owned by the views hierarchy.
-  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
-  raw_ptr<UnifiedSystemTrayController, DanglingUntriaged | ExperimentalAsh>
-      tray_controller_;
+  raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;
+  raw_ptr<UnifiedSystemTrayController, DanglingUntriaged> tray_controller_;
 
   base::WeakPtrFactory<NetworkFeaturePodController> weak_ptr_factory_{this};
 };

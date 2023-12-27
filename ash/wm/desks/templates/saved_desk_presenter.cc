@@ -278,12 +278,12 @@ class WindowCloseObserver : public aura::WindowObserver {
 
   void Terminate() { delete this; }
 
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window> root_window_;
 
-  raw_ptr<aura::Window, ExperimentalAsh> system_modal_container_ = nullptr;
+  raw_ptr<aura::Window> system_modal_container_ = nullptr;
 
   // Current desk container. Will be used when monitoring for new windows.
-  raw_ptr<aura::Window, ExperimentalAsh> desk_container_ = nullptr;
+  raw_ptr<aura::Window> desk_container_ = nullptr;
 
   // Tracks whether a modal "confirm close" dialog has been showed.
   bool modal_dialog_showed_ = false;
@@ -300,8 +300,7 @@ class WindowCloseObserver : public aura::WindowObserver {
 
   // The desk that the user has saved and that we will remove once windows have
   // been removed.
-  raw_ptr<const Desk, DanglingUntriaged | ExperimentalAsh> desk_to_remove_ =
-      nullptr;
+  raw_ptr<const Desk, DanglingUntriaged> desk_to_remove_ = nullptr;
 
   // UUID and name of the saved desk.
   const base::Uuid saved_desk_uuid_;

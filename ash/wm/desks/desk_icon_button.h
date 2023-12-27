@@ -104,7 +104,7 @@ class ASH_EXPORT DeskIconButton : public DeskButtonBase {
   // id `kColorAshCurrentDeskColor` even if it's not already focused.
   bool paint_as_active_ = false;
 
-  const raw_ptr<const gfx::VectorIcon, ExperimentalAsh> button_icon_;
+  const raw_ptr<const gfx::VectorIcon> button_icon_;
   const ui::ColorId icon_color_id_;
   const ui::ColorId background_color_id_;
 

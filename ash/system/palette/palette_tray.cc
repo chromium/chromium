@@ -151,8 +151,8 @@ class BatteryView : public views::View {
 
  private:
   StylusBatteryDelegate stylus_battery_delegate_;
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 };
 
 BEGIN_METADATA(BatteryView)
@@ -223,9 +223,9 @@ class TitleView : public views::View {
 
   // Unowned pointers to button views so we can determine which button was
   // clicked.
-  raw_ptr<views::View, ExperimentalAsh> settings_button_;
-  raw_ptr<views::View, ExperimentalAsh> help_button_;
-  raw_ptr<PaletteTray, DanglingUntriaged | ExperimentalAsh> palette_tray_;
+  raw_ptr<views::View> settings_button_;
+  raw_ptr<views::View> help_button_;
+  raw_ptr<PaletteTray, DanglingUntriaged> palette_tray_;
 };
 
 BEGIN_METADATA(TitleView)
@@ -251,7 +251,7 @@ class StylusEventHandler : public ui::EventHandler {
   }
 
  private:
-  raw_ptr<PaletteTray, ExperimentalAsh> palette_tray_;
+  raw_ptr<PaletteTray> palette_tray_;
 };
 
 }  // namespace

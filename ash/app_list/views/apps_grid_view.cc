@@ -225,8 +225,8 @@ class AppsGridView::FolderIconItemHider : public AppListItemObserver,
 
  private:
   // The item view of `folder_item_`;
-  raw_ptr<AppListItemView, ExperimentalAsh> item_view_;
-  raw_ptr<AppListFolderItem, ExperimentalAsh> folder_item_;
+  raw_ptr<AppListItemView> item_view_;
+  raw_ptr<AppListFolderItem> folder_item_;
 
   base::ScopedObservation<AppListItem, AppListItemObserver>
       folder_item_observer_{this};
@@ -259,7 +259,7 @@ class AppsGridView::DragViewHider : public views::ViewObserver {
   const views::View* drag_view() const { return drag_view_; }
 
  private:
-  raw_ptr<AppListItemView, ExperimentalAsh> drag_view_;
+  raw_ptr<AppListItemView> drag_view_;
 
   base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
       this};
@@ -300,7 +300,7 @@ class AppsGridView::ScopedModelUpdate {
   }
 
  private:
-  const raw_ptr<AppsGridView, ExperimentalAsh> apps_grid_view_;
+  const raw_ptr<AppsGridView> apps_grid_view_;
   const gfx::Size initial_grid_size_;
 };
 

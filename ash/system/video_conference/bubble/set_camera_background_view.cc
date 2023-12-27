@@ -187,7 +187,7 @@ class RecentlyUsedBackgroundView : public views::View {
   }
 
  private:
-  raw_ptr<BubbleView, ExperimentalAsh> bubble_view_;
+  raw_ptr<BubbleView> bubble_view_;
 
   base::WeakPtrFactory<RecentlyUsedBackgroundView> weak_factory_{this};
 };

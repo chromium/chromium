@@ -111,7 +111,7 @@ class SmartLockAuthFactorModelUnittest : public AshTestBase {
   }
 
   std::unique_ptr<SmartLockAuthFactorModel> smart_lock_model_;
-  raw_ptr<AuthFactorModel, ExperimentalAsh> model_ = nullptr;
+  raw_ptr<AuthFactorModel> model_ = nullptr;
   AuthIconView icon_;
   bool on_state_changed_called_ = false;
   bool arrow_button_tap_callback_called_ = false;

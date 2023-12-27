@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantTextElementView
  private:
   void InitLayout(const std::string& text);
 
-  raw_ptr<views::Label, ExperimentalAsh> label_;  // Owned by view hierarchy.
+  raw_ptr<views::Label> label_;  // Owned by view hierarchy.
 };
 
 }  // namespace ash

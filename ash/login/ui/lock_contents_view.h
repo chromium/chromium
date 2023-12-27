@@ -427,35 +427,34 @@ class ASH_EXPORT LockContentsView
 
   std::vector<UserState> users_;
 
-  const raw_ptr<LoginDataDispatcher, LeakedDanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<LoginDataDispatcher, LeakedDanglingUntriaged>
       data_dispatcher_;  // Unowned.
   std::unique_ptr<LoginDetachableBaseModel> detachable_base_model_;
 
-  raw_ptr<LoginBigUserView, ExperimentalAsh> primary_big_view_ = nullptr;
-  raw_ptr<LoginBigUserView, ExperimentalAsh> opt_secondary_big_view_ = nullptr;
-  raw_ptr<ScrollableUsersListView, ExperimentalAsh> users_list_ = nullptr;
+  raw_ptr<LoginBigUserView> primary_big_view_ = nullptr;
+  raw_ptr<LoginBigUserView> opt_secondary_big_view_ = nullptr;
+  raw_ptr<ScrollableUsersListView> users_list_ = nullptr;
 
   // View for media controls that appear on the lock screen if it is enabled.
   // |media_view_| is used if the flag media::kGlobalMediaControlsCrOSUpdatedUI
   // is enabled, otherwise |media_controls_view_| is used.
-  raw_ptr<LockScreenMediaControlsView, ExperimentalAsh> media_controls_view_ =
-      nullptr;
-  raw_ptr<LockScreenMediaView, ExperimentalAsh> media_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> middle_spacing_view_ = nullptr;
+  raw_ptr<LockScreenMediaControlsView> media_controls_view_ = nullptr;
+  raw_ptr<LockScreenMediaView> media_view_ = nullptr;
+  raw_ptr<views::View> middle_spacing_view_ = nullptr;
 
   // View that contains the note action button and the system info labels,
   // placed on the top right corner of the screen without affecting layout of
   // other views.
-  raw_ptr<views::View, ExperimentalAsh> top_header_ = nullptr;
+  raw_ptr<views::View> top_header_ = nullptr;
 
   // View for launching a note taking action handler from the lock screen.
-  raw_ptr<NoteActionLaunchButton, ExperimentalAsh> note_action_ = nullptr;
+  raw_ptr<NoteActionLaunchButton> note_action_ = nullptr;
 
   // View for showing the version, enterprise and bluetooth info.
-  raw_ptr<views::View, ExperimentalAsh> system_info_ = nullptr;
+  raw_ptr<views::View> system_info_ = nullptr;
 
   // Contains authentication user and the additional user views.
-  raw_ptr<NonAccessibleView, ExperimentalAsh> main_view_ = nullptr;
+  raw_ptr<NonAccessibleView> main_view_ = nullptr;
 
   // If the kiosk app button is not visible, the kiosk app default message would
   // be shown.
@@ -475,23 +474,23 @@ class ASH_EXPORT LockContentsView
   // All error bubbles and the tooltip view are child views of LockContentsView,
   // and will be torn down when LockContentsView is torn down.
   // Bubble for displaying authentication error.
-  raw_ptr<AuthErrorBubble, ExperimentalAsh> auth_error_bubble_;
+  raw_ptr<AuthErrorBubble> auth_error_bubble_;
   // Bubble for displaying detachable base errors.
-  raw_ptr<LoginErrorBubble, ExperimentalAsh> detachable_base_error_bubble_;
+  raw_ptr<LoginErrorBubble> detachable_base_error_bubble_;
   // Bubble for displaying management details.
-  raw_ptr<ManagementBubble, ExperimentalAsh> management_bubble_;
+  raw_ptr<ManagementBubble> management_bubble_;
   // Indicator at top of screen for displaying a warning message when a
   // secondary user is being added.
-  raw_ptr<views::View, ExperimentalAsh> user_adding_screen_indicator_ = nullptr;
+  raw_ptr<views::View> user_adding_screen_indicator_ = nullptr;
   // Bubble for displaying warning banner message.
-  raw_ptr<LoginErrorBubble, ExperimentalAsh> warning_banner_bubble_;
+  raw_ptr<LoginErrorBubble> warning_banner_bubble_;
 
   // View that is shown on login timeout with camera usage.
   raw_ptr<LoginCameraTimeoutView, AcrossTasksDanglingUntriaged>
       login_camera_timeout_view_ = nullptr;
 
   // Bottom status indicator displaying entreprise domain or ADB enabled alert
-  raw_ptr<BottomStatusIndicator, ExperimentalAsh> bottom_status_indicator_;
+  raw_ptr<BottomStatusIndicator> bottom_status_indicator_;
 
   // Tracks the visibility of the extension Ui window.
   bool extension_ui_visible_ = false;
@@ -525,8 +524,7 @@ class ASH_EXPORT LockContentsView
   bool enable_system_info_if_possible_ = false;
 
   // Expanded view for public account user to select language and keyboard.
-  raw_ptr<LoginExpandedPublicAccountView, ExperimentalAsh> expanded_view_ =
-      nullptr;
+  raw_ptr<LoginExpandedPublicAccountView> expanded_view_ = nullptr;
 
   // Whether the virtual keyboard is currently shown. Used to determine whether
   // to show the PIN keyboard or not.

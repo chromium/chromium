@@ -213,7 +213,7 @@ class MultiWindowResizeController::ResizeView : public views::View {
   }
 
  private:
-  raw_ptr<MultiWindowResizeController, ExperimentalAsh> controller_;
+  raw_ptr<MultiWindowResizeController> controller_;
   const Direction direction_;
 
   SkPath GeneratePath(const gfx::Rect& bounds) {
@@ -306,7 +306,7 @@ class MultiWindowResizeController::ResizeMouseWatcherHost
   }
 
  private:
-  raw_ptr<MultiWindowResizeController, ExperimentalAsh> host_;
+  raw_ptr<MultiWindowResizeController> host_;
 };
 
 MultiWindowResizeController::ResizeWindows::ResizeWindows()

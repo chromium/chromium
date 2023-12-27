@@ -109,7 +109,7 @@ class ASH_EXPORT DeskAnimationBase
   virtual LatencyReportCallback GetLatencyReportCallback() const = 0;
   virtual metrics_util::ReportCallback GetSmoothnessReportCallback() const = 0;
 
-  const raw_ptr<DesksController, ExperimentalAsh> controller_;
+  const raw_ptr<DesksController> controller_;
 
   // An animator object per each root. Once all the animations are complete,
   // this list is cleared.

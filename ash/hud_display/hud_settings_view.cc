@@ -70,7 +70,7 @@ class HUDCheckboxHandler {
   void UpdateState() const { update_state_.Run(checkbox_.get()); }
 
  private:
-  const raw_ptr<views::Checkbox, ExperimentalAsh> checkbox_;  // not owned.
+  const raw_ptr<views::Checkbox> checkbox_;  // not owned.
   base::RepeatingCallback<void(views::Checkbox*)> update_state_;
 };
 
@@ -233,10 +233,8 @@ class AnimationSpeedControl : public views::SliderListener, public views::View {
   // Map slider values to animation scale.
   using SliderValuesMap = base::flat_map<float, float>;
 
-  raw_ptr<views::View, ExperimentalAsh> hints_container_ =
-      nullptr;  // not owned.
-  raw_ptr<AnimationSpeedSlider, ExperimentalAsh> slider_ =
-      nullptr;  // not owned.
+  raw_ptr<views::View> hints_container_ = nullptr;  // not owned.
+  raw_ptr<AnimationSpeedSlider> slider_ = nullptr;  // not owned.
 
   SliderValuesMap slider_values_;
 };

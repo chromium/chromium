@@ -127,7 +127,7 @@ class FullscreenLauncherAnimationObserver
   }
 
  private:
-  const raw_ptr<ui::Layer, ExperimentalAsh> layer_;
+  const raw_ptr<ui::Layer> layer_;
   AnimationCompleteCallback complete_callback_;
 };
 

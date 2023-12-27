@@ -97,7 +97,7 @@ class ASH_EXPORT TabSlider : public views::TableLayoutView {
   const InitParams params_;
 
   // Owned by view hierarchy.
-  raw_ptr<SelectorView, ExperimentalAsh> selector_view_;
+  raw_ptr<SelectorView> selector_view_;
   std::vector<raw_ptr<TabSliderButton, VectorExperimental>> buttons_;
 
   base::CallbackListSubscription enabled_changed_subscription_;

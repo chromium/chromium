@@ -131,8 +131,8 @@ class HoldingSpaceTrayIcon::ResizeAnimation
   void AdvanceToEnd() { animation_.End(); }
 
  private:
-  const raw_ptr<HoldingSpaceTrayIcon, ExperimentalAsh> icon_;
-  const raw_ptr<views::View, ExperimentalAsh> previews_container_;
+  const raw_ptr<HoldingSpaceTrayIcon> icon_;
+  const raw_ptr<views::View> previews_container_;
   const gfx::Size initial_size_;
   const gfx::Size target_size_;
 

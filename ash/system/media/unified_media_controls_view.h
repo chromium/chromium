@@ -81,15 +81,14 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
 
   SkPath GetArtworkClipPath();
 
-  const raw_ptr<UnifiedMediaControlsController, ExperimentalAsh> controller_ =
-      nullptr;
+  const raw_ptr<UnifiedMediaControlsController> controller_ = nullptr;
 
-  raw_ptr<views::ImageView, ExperimentalAsh> artwork_view_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> drop_down_icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> artist_label_ = nullptr;
-  raw_ptr<MediaActionButton, ExperimentalAsh> play_pause_button_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> button_row_ = nullptr;
+  raw_ptr<views::ImageView> artwork_view_ = nullptr;
+  raw_ptr<views::ImageView> drop_down_icon_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<views::Label> artist_label_ = nullptr;
+  raw_ptr<MediaActionButton> play_pause_button_ = nullptr;
+  raw_ptr<views::View> button_row_ = nullptr;
 
   bool is_in_empty_state_ = false;
 };

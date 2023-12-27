@@ -67,8 +67,7 @@ class ASH_EXPORT LockActionHandlerLayoutManager
   void UpdateChildren(mojom::TrayActionState action_state,
                       LockScreenActionBackgroundState background_state);
 
-  raw_ptr<LockScreenActionBackgroundController, ExperimentalAsh>
-      action_background_controller_;
+  raw_ptr<LockScreenActionBackgroundController> action_background_controller_;
 
   base::ScopedObservation<TrayAction, TrayActionObserver>
       tray_action_observation_{this};

@@ -51,7 +51,7 @@ class ASH_EXPORT GlanceableTrayBubble : public TrayBubbleBase {
   void UpdateBubble();
 
   // Owner of this class.
-  raw_ptr<DateTray, ExperimentalAsh> tray_;
+  raw_ptr<DateTray> tray_;
 
   // Bubble wrapper that manages the bubble widget when shown.
   std::unique_ptr<TrayBubbleWrapper> bubble_wrapper_;

@@ -392,8 +392,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 
  protected:
   std::unique_ptr<aura::Window> game_window_;
-  raw_ptr<chromeos::FrameHeader, DanglingUntriaged | ExperimentalAsh>
-      frame_header_;
+  raw_ptr<chromeos::FrameHeader, DanglingUntriaged> frame_header_;
   std::unique_ptr<GameDashboardContextTestApi> test_api_;
 
   void DragToolbarToPoint(Movement move_type,
@@ -1334,7 +1333,7 @@ class OnOverviewModeEndedWaiter : public OverviewObserver {
  private:
   base::RunLoop run_loop_;
   // Owned by Shell.
-  const raw_ptr<OverviewController, ExperimentalAsh> overview_controller_;
+  const raw_ptr<OverviewController> overview_controller_;
 };
 
 // Verifies that in overview mode, the Game Dashboard button is not visible, the

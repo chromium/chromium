@@ -144,8 +144,7 @@ class FirmwareUpdateStartupNotificationTest : public NoSessionAshTestBase {
     FirmwareUpdateManager::Get()->RequestAllUpdates();
   }
 
-  raw_ptr<FwupdClient, DanglingUntriaged | ExperimentalAsh> dbus_client_ =
-      nullptr;
+  raw_ptr<FwupdClient, DanglingUntriaged> dbus_client_ = nullptr;
   std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
   std::unique_ptr<FirmwareUpdateNotificationController>
       firmware_update_notification_controller_;

@@ -62,8 +62,8 @@ class ArcImeBridgeImpl : public ArcImeBridge, public mojom::ImeHost {
                     SendKeyEventCallback callback) override;
 
  private:
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
-  const raw_ptr<ArcBridgeService, ExperimentalAsh> bridge_service_;
+  const raw_ptr<Delegate> delegate_;
+  const raw_ptr<ArcBridgeService> bridge_service_;
 };
 
 }  // namespace arc

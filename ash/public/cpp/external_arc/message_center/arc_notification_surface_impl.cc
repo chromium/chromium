@@ -76,8 +76,7 @@ class CustomWindowDelegate : public aura::WindowDelegate {
   }
 
  private:
-  const raw_ptr<exo::NotificationSurface, ExperimentalAsh>
-      notification_surface_;
+  const raw_ptr<exo::NotificationSurface> notification_surface_;
 };
 
 }  // namespace

@@ -73,7 +73,7 @@ class ASH_EXPORT AppListToastView : public views::View {
     views::Button::PressedCallback close_button_callback_;
     bool style_for_tablet_mode_ = false;
     bool has_icon_background_ = false;
-    raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_ = nullptr;
+    raw_ptr<AppListViewDelegate> view_delegate_ = nullptr;
   };
 
   // Whether `view` is a ToastPillButton.
@@ -134,7 +134,7 @@ class ASH_EXPORT AppListToastView : public views::View {
     void OnFocus() override;
     void OnBlur() override;
 
-    raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_ = nullptr;
+    raw_ptr<AppListViewDelegate> view_delegate_ = nullptr;
   };
 
   // Attach the icon to the toast based on theming and available icons.
@@ -153,23 +153,22 @@ class ASH_EXPORT AppListToastView : public views::View {
   // Whether the toast icon should be styled with a background.
   bool has_icon_background_ = false;
 
-  raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_ = nullptr;
+  raw_ptr<AppListViewDelegate> view_delegate_ = nullptr;
 
   // Toast icon view.
-  raw_ptr<views::ImageView, DanglingUntriaged | ExperimentalAsh> icon_ =
-      nullptr;
+  raw_ptr<views::ImageView, DanglingUntriaged> icon_ = nullptr;
   // Label with the main text for the toast.
-  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
   // Label with the subtext for the toast.
-  raw_ptr<views::Label, ExperimentalAsh> subtitle_label_ = nullptr;
+  raw_ptr<views::Label> subtitle_label_ = nullptr;
   // The button for the toast.
-  raw_ptr<ToastPillButton, ExperimentalAsh> toast_button_ = nullptr;
+  raw_ptr<ToastPillButton> toast_button_ = nullptr;
   // The close button for the toast.
-  raw_ptr<views::Button, ExperimentalAsh> close_button_ = nullptr;
+  raw_ptr<views::Button> close_button_ = nullptr;
   // Helper view to layout labels.
-  raw_ptr<views::View, ExperimentalAsh> label_container_ = nullptr;
+  raw_ptr<views::View> label_container_ = nullptr;
   // Layout manager for the view.
-  raw_ptr<views::BoxLayout, ExperimentalAsh> layout_manager_ = nullptr;
+  raw_ptr<views::BoxLayout> layout_manager_ = nullptr;
 };
 
 }  // namespace ash

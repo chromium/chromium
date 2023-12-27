@@ -172,8 +172,8 @@ class RecordedWindowRootObserver : public aura::WindowObserver {
   }
 
  private:
-  const raw_ptr<aura::Window, ExperimentalAsh> root_;
-  const raw_ptr<VideoRecordingWatcher, ExperimentalAsh> owner_;
+  const raw_ptr<aura::Window> root_;
+  const raw_ptr<VideoRecordingWatcher> owner_;
 };
 
 // -----------------------------------------------------------------------------

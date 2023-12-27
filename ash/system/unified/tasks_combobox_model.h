@@ -51,8 +51,7 @@ class ASH_EXPORT TasksComboboxModel : public ui::ComboboxModel {
 
  private:
   // Owned by `GlanceableTasksClientImpl`.
-  const raw_ptr<const ui::ListModel<api::TaskList>, ExperimentalAsh>
-      task_lists_;
+  const raw_ptr<const ui::ListModel<api::TaskList>> task_lists_;
 };
 
 }  // namespace ash

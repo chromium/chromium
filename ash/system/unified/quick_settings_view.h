@@ -131,32 +131,28 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   friend class UnifiedVolumeViewTest;
 
   // Owned by UnifiedSystemTrayBubble.
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
+  const raw_ptr<UnifiedSystemTrayController> controller_;
 
   // Owned by views hierarchy.
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> system_tray_container_ =
-      nullptr;
-  raw_ptr<QuickSettingsHeader, ExperimentalAsh> header_ = nullptr;
-  raw_ptr<FeatureTilesContainerView, ExperimentalAsh> feature_tiles_container_ =
-      nullptr;
-  raw_ptr<PaginationView, ExperimentalAsh> pagination_view_ = nullptr;
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> sliders_container_ = nullptr;
-  raw_ptr<QuickSettingsFooter, ExperimentalAsh> footer_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> detailed_view_container_ = nullptr;
+  raw_ptr<views::FlexLayoutView> system_tray_container_ = nullptr;
+  raw_ptr<QuickSettingsHeader> header_ = nullptr;
+  raw_ptr<FeatureTilesContainerView> feature_tiles_container_ = nullptr;
+  raw_ptr<PaginationView> pagination_view_ = nullptr;
+  raw_ptr<views::FlexLayoutView> sliders_container_ = nullptr;
+  raw_ptr<QuickSettingsFooter> footer_ = nullptr;
+  raw_ptr<views::View> detailed_view_container_ = nullptr;
 
   // Null if media::kGlobalMediaControlsCrOSUpdatedUI is enabled.
-  raw_ptr<UnifiedMediaControlsContainer, ExperimentalAsh>
-      media_controls_container_ = nullptr;
+  raw_ptr<UnifiedMediaControlsContainer> media_controls_container_ = nullptr;
 
   // Null if media::kGlobalMediaControlsCrOSUpdatedUI is disabled.
-  raw_ptr<QuickSettingsMediaViewContainer, ExperimentalAsh>
-      media_view_container_ = nullptr;
+  raw_ptr<QuickSettingsMediaViewContainer> media_view_container_ = nullptr;
 
   // The maximum height available to the view.
   int max_height_ = 0;
 
   // The view that is saved by calling SaveFocus().
-  raw_ptr<views::View, ExperimentalAsh> saved_focused_view_ = nullptr;
+  raw_ptr<views::View> saved_focused_view_ = nullptr;
 
   const std::unique_ptr<ui::EventHandler> interacted_by_tap_recorder_;
 };

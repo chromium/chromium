@@ -86,9 +86,8 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
   base::ObserverList<Observer> observers_;
 
   // Owned by views hierarchy.
-  raw_ptr<DictationBubbleView, ExperimentalAsh> dictation_bubble_view_ =
-      nullptr;
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<DictationBubbleView> dictation_bubble_view_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
 
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       input_method_observer_{this};

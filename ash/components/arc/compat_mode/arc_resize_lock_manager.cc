@@ -108,7 +108,7 @@ class WindowActivationObserver : public wm::ActivationChangeObserver,
     ash::Shell::Get()->activation_client()->RemoveObserver(this);
   }
 
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  const raw_ptr<aura::Window> window_;
   base::OnceClosure on_activated_;
   base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };
@@ -160,7 +160,7 @@ class AppIdObserver : public aura::WindowObserver {
 
   ~AppIdObserver() override { observer_.Reset(); }
 
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  const raw_ptr<aura::Window> window_;
   base::OnceCallback<void(aura::Window*)> on_ready_;
   base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };

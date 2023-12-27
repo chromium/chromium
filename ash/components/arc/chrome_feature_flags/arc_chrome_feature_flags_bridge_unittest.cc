@@ -57,7 +57,7 @@ class ArcChromeFeatureFlagsBridgeTest : public testing::Test {
   user_prefs::TestBrowserContextWithPrefs context_;
   FakeChromeFeatureFlagsInstance instance_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  const raw_ptr<ArcChromeFeatureFlagsBridge, ExperimentalAsh> bridge_;
+  const raw_ptr<ArcChromeFeatureFlagsBridge> bridge_;
 };
 
 TEST_F(ArcChromeFeatureFlagsBridgeTest, ConstructDestruct) {

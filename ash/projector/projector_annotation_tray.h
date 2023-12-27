@@ -91,9 +91,9 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
   void SetIconImage(bool is_active);
 
   // Image view of the tray icon.
-  const raw_ptr<views::ImageView, ExperimentalAsh> image_view_;
+  const raw_ptr<views::ImageView> image_view_;
 
-  raw_ptr<HoverHighlightView, ExperimentalAsh> pen_view_;
+  raw_ptr<HoverHighlightView> pen_view_;
 
   // The bubble that appears after clicking the annotation tools tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;

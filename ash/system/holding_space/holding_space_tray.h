@@ -196,19 +196,19 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // Default tray icon shown when there are no previews available (or the
   // previews are disabled).
   // Owned by views hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> default_tray_icon_ = nullptr;
+  raw_ptr<views::ImageView> default_tray_icon_ = nullptr;
 
   // Content forward tray icon that contains holding space item previews.
   // Owned by views hierarchy.
-  raw_ptr<HoldingSpaceTrayIcon, ExperimentalAsh> previews_tray_icon_ = nullptr;
+  raw_ptr<HoldingSpaceTrayIcon> previews_tray_icon_ = nullptr;
 
   // The view drawn on top of all other child views to indicate that this
   // view is a drop target capable of handling the current drag payload.
-  raw_ptr<views::View, ExperimentalAsh> drop_target_overlay_ = nullptr;
+  raw_ptr<views::View> drop_target_overlay_ = nullptr;
 
   // The icon parented by the `drop_target_overlay_` to indicate that this view
   // is a drop target capable of handling the current drag payload.
-  raw_ptr<views::ImageView, ExperimentalAsh> drop_target_icon_ = nullptr;
+  raw_ptr<views::ImageView> drop_target_icon_ = nullptr;
 
   // Owns the `ui::Layer` which paints indication of progress for all holding
   // space items in the model attached to the holding space controller.

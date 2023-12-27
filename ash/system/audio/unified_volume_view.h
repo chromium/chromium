@@ -86,14 +86,14 @@ class ASH_EXPORT UnifiedVolumeView : public UnifiedSliderView,
   void ChildVisibilityChanged(views::View* child) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
 
-  const raw_ptr<IconButton, ExperimentalAsh> more_button_;
+  const raw_ptr<IconButton> more_button_;
 
   // Whether this `UnifiedVolumeView` is the view for the active output node.
   bool const is_active_output_node_;
 
   uint64_t device_id_ = 0;
   // Owned by the views hierarchy.
-  raw_ptr<IconButton, ExperimentalAsh> live_caption_button_ = nullptr;
+  raw_ptr<IconButton> live_caption_button_ = nullptr;
 };
 
 }  // namespace ash

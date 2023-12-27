@@ -51,9 +51,9 @@ class LocatePhoneQuickActionController
   // phone. Make changes to item's state if necessary.
   void CheckRequestedState();
 
-  raw_ptr<phonehub::FindMyDeviceController, ExperimentalAsh>
-      find_my_device_controller_ = nullptr;
-  raw_ptr<QuickActionItem, ExperimentalAsh> item_ = nullptr;
+  raw_ptr<phonehub::FindMyDeviceController> find_my_device_controller_ =
+      nullptr;
+  raw_ptr<QuickActionItem> item_ = nullptr;
 
   // Keep track the current state of the item.
   ActionState state_ = ActionState::kOff;

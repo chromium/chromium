@@ -199,7 +199,7 @@ class DragWindowFromShelfController::WindowsHider
   }
 
  private:
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> dragged_window_;
+  raw_ptr<aura::Window, DanglingUntriaged> dragged_window_;
   std::vector<raw_ptr<aura::Window, VectorExperimental>> hidden_windows_;
 };
 

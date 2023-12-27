@@ -98,7 +98,7 @@ class MirroringScreenPositionClient
   }
 
  private:
-  raw_ptr<MirrorWindowController, ExperimentalAsh> controller_;  // not owned.
+  raw_ptr<MirrorWindowController> controller_;  // not owned.
 };
 
 // A trivial CaptureClient that does nothing. That is, calls to set/release
@@ -147,7 +147,7 @@ struct MirrorWindowController::MirroringHostInfo {
   ~MirroringHostInfo();
   std::unique_ptr<AshWindowTreeHost> ash_host;
   gfx::Size mirror_window_host_size;
-  raw_ptr<aura::Window, ExperimentalAsh> mirror_window = nullptr;
+  raw_ptr<aura::Window> mirror_window = nullptr;
 };
 
 MirrorWindowController::MirroringHostInfo::MirroringHostInfo() = default;

@@ -145,7 +145,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AnimatedContainerView
       const base::WeakPtr<AnimatedContainerView>& weak_ptr,
       const ui::CallbackLayerAnimationObserver& observer);
 
-  const raw_ptr<AssistantViewDelegate, ExperimentalAsh>
+  const raw_ptr<AssistantViewDelegate>
       delegate_;  // Owned by AssistantController.
 
   // The animators used to trigger the animations of the individual views.

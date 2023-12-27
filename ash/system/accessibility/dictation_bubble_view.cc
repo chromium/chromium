@@ -44,7 +44,7 @@ constexpr int kSpaceBetweenIconAndTextDip = 4;
 constexpr int kMaxNumHints = 5;
 
 std::unique_ptr<views::ImageView> CreateImageView(
-    raw_ptr<views::ImageView, ExperimentalAsh>* destination_view,
+    raw_ptr<views::ImageView>* destination_view,
     const gfx::VectorIcon& icon) {
   return views::Builder<views::ImageView>()
       .CopyAddressTo(destination_view)
@@ -54,7 +54,7 @@ std::unique_ptr<views::ImageView> CreateImageView(
 }
 
 std::unique_ptr<views::Label> CreateLabelView(
-    raw_ptr<views::Label, ExperimentalAsh>* destination_view,
+    raw_ptr<views::Label>* destination_view,
     const std::u16string& text,
     ui::ColorId enabled_color_id) {
   return views::Builder<views::Label>()
@@ -173,20 +173,19 @@ class ASH_EXPORT TopRowView : public views::View {
 
   // Owned by the views hierarchy.
   // An animation that is shown when Dictation is standing by.
-  raw_ptr<views::AnimatedImageView, ExperimentalAsh> standby_animation_ =
-      nullptr;
+  raw_ptr<views::AnimatedImageView> standby_animation_ = nullptr;
   // An image that is shown when Dictation is standing by. Only used if the
   // above AnimatedImageView fails to initialize.
-  raw_ptr<views::ImageView, ExperimentalAsh> standby_image_ = nullptr;
+  raw_ptr<views::ImageView> standby_image_ = nullptr;
   // If true, this view will use `standby_animation_`. Otherwise, will use
   // `standby_image_`.
   bool use_standby_animation_ = false;
   // An image that is shown when a macro is successfully run.
-  raw_ptr<views::ImageView, ExperimentalAsh> macro_succeeded_image_ = nullptr;
+  raw_ptr<views::ImageView> macro_succeeded_image_ = nullptr;
   // An image that is shown when a macro fails to run.
-  raw_ptr<views::ImageView, ExperimentalAsh> macro_failed_image_ = nullptr;
+  raw_ptr<views::ImageView> macro_failed_image_ = nullptr;
   // A label that displays non-final speech results.
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 };
 
 BEGIN_METADATA(TopRowView, views::View)

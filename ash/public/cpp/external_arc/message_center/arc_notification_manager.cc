@@ -76,7 +76,7 @@ class DoNotDisturbManager : public message_center::MessageCenterObserver {
   }
 
  private:
-  const raw_ptr<ArcNotificationManager, ExperimentalAsh> manager_;
+  const raw_ptr<ArcNotificationManager> manager_;
 };
 
 class VisibilityManager : public message_center::MessageCenterObserver {
@@ -103,7 +103,7 @@ class VisibilityManager : public message_center::MessageCenterObserver {
     return MessageCenterVisibility::VISIBILITY_TRANSIENT;
   }
 
-  const raw_ptr<ArcNotificationManager, ExperimentalAsh> manager_;
+  const raw_ptr<ArcNotificationManager> manager_;
 };
 
 }  // namespace

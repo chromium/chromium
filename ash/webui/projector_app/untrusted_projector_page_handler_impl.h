@@ -93,7 +93,7 @@ class UntrustedProjectorPageHandlerImpl
   mojo::Remote<projector::mojom::UntrustedProjectorPage> projector_remote_;
 
   // Primary user pref service.
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
   ProjectorXhrSender xhr_sender_;
 
   base::WeakPtrFactory<UntrustedProjectorPageHandlerImpl> weak_ptr_factory_{

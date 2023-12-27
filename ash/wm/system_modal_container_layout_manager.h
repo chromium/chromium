@@ -112,7 +112,7 @@ class ASH_EXPORT SystemModalContainerLayoutManager
   }
 
   // The container that owns the layout manager.
-  raw_ptr<aura::Window, ExperimentalAsh> container_;
+  raw_ptr<aura::Window> container_;
 
   // WindowDimmer used to dim windows behind the modal window(s) being shown in
   // |container_|.

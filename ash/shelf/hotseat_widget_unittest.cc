@@ -336,8 +336,7 @@ class HotseatTransitionAnimationObserver
     int aborted;
   } observer_counts_ = {0};
   std::unique_ptr<base::RunLoop> run_loop_;
-  raw_ptr<HotseatTransitionAnimator, ExperimentalAsh>
-      hotseat_transition_animator_;
+  raw_ptr<HotseatTransitionAnimator> hotseat_transition_animator_;
 };
 
 // Used to test the Hotseat, ScrollableShelf, and DenseShelf features.

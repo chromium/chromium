@@ -168,8 +168,7 @@ class ASH_EXPORT AshNotificationView
         AshNotificationView* parent_notification_view);
 
    private:
-    raw_ptr<AshNotificationView, ExperimentalAsh> parent_notification_view_ =
-        nullptr;
+    raw_ptr<AshNotificationView> parent_notification_view_ = nullptr;
   };
   BEGIN_VIEW_BUILDER(/*no export*/,
                      GroupedNotificationsContainer,
@@ -217,11 +216,11 @@ class ASH_EXPORT AshNotificationView
    private:
     friend class AshNotificationViewTestBase;
     // Showing notification title.
-    const raw_ptr<views::Label, ExperimentalAsh> title_view_;
+    const raw_ptr<views::Label> title_view_;
 
     // Timestamp view shown alongside the title in collapsed state.
-    const raw_ptr<views::Label, ExperimentalAsh> title_row_divider_;
-    const raw_ptr<views::Label, ExperimentalAsh> timestamp_in_collapsed_view_;
+    const raw_ptr<views::Label> title_row_divider_;
+    const raw_ptr<views::Label> timestamp_in_collapsed_view_;
 
     // The maximum width available to the title row.
     int max_available_width_ = 0;
@@ -309,35 +308,27 @@ class ASH_EXPORT AshNotificationView
   void AttachBinaryImageAsDropData(ui::OSExchangeData* data);
 
   // Owned by views hierarchy.
-  raw_ptr<views::View, ExperimentalAsh> main_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> main_right_view_ = nullptr;
-  raw_ptr<RoundedImageView, ExperimentalAsh> app_icon_view_ = nullptr;
-  raw_ptr<AshNotificationExpandButton, ExperimentalAsh> expand_button_ =
-      nullptr;
-  raw_ptr<views::View, ExperimentalAsh> left_content_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> message_label_in_expanded_state_ =
-      nullptr;
-  raw_ptr<views::ScrollView, ExperimentalAsh>
-      grouped_notifications_scroll_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> grouped_notifications_container_ =
-      nullptr;
-  raw_ptr<views::View, ExperimentalAsh> collapsed_summary_view_ = nullptr;
-  raw_ptr<message_center::NotificationControlButtonsView, ExperimentalAsh>
+  raw_ptr<views::View> main_view_ = nullptr;
+  raw_ptr<views::View> main_right_view_ = nullptr;
+  raw_ptr<RoundedImageView> app_icon_view_ = nullptr;
+  raw_ptr<AshNotificationExpandButton> expand_button_ = nullptr;
+  raw_ptr<views::View> left_content_ = nullptr;
+  raw_ptr<views::Label> message_label_in_expanded_state_ = nullptr;
+  raw_ptr<views::ScrollView> grouped_notifications_scroll_view_ = nullptr;
+  raw_ptr<views::View> grouped_notifications_container_ = nullptr;
+  raw_ptr<views::View> collapsed_summary_view_ = nullptr;
+  raw_ptr<message_center::NotificationControlButtonsView>
       control_buttons_view_ = nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> turn_off_notifications_button_ =
-      nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> inline_settings_cancel_button_ =
-      nullptr;
-  raw_ptr<views::View, ExperimentalAsh> snooze_button_spacer_ = nullptr;
-  raw_ptr<IconButton, ExperimentalAsh> snooze_button_ = nullptr;
+  raw_ptr<views::LabelButton> turn_off_notifications_button_ = nullptr;
+  raw_ptr<views::LabelButton> inline_settings_cancel_button_ = nullptr;
+  raw_ptr<views::View> snooze_button_spacer_ = nullptr;
+  raw_ptr<IconButton> snooze_button_ = nullptr;
 
   // These views below are dynamically created inside view hierarchy.
-  raw_ptr<NotificationTitleRow, DanglingUntriaged | ExperimentalAsh>
-      title_row_ = nullptr;
+  raw_ptr<NotificationTitleRow, DanglingUntriaged> title_row_ = nullptr;
 
   // Layout manager for the container of header and left content.
-  raw_ptr<views::BoxLayout, ExperimentalAsh> header_left_content_layout_ =
-      nullptr;
+  raw_ptr<views::BoxLayout> header_left_content_layout_ = nullptr;
 
   // Corner radius of the notification view.
   int top_radius_ = 0;

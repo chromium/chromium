@@ -262,22 +262,22 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   void OnAnimatedInFromPromiseApp(base::RepeatingClosure callback);
 
   // The icon part of a button can be animated independently of the rest.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_ = nullptr;
+  raw_ptr<views::ImageView> icon_view_ = nullptr;
 
   // The host badge icon part of a button, can be animated independently of the
   // rest.
   raw_ptr<views::ImageView> host_badge_icon_view_ = nullptr;
 
   // The ShelfView showing this ShelfAppButton. Owned by RootWindowController.
-  const raw_ptr<ShelfView, ExperimentalAsh> shelf_view_;
+  const raw_ptr<ShelfView> shelf_view_;
 
   // Draws an indicator underneath the image to represent the state of the
   // application.
-  const raw_ptr<AppStatusIndicatorView, ExperimentalAsh> indicator_;
+  const raw_ptr<AppStatusIndicatorView> indicator_;
 
   // Draws an indicator in the top right corner of the image to represent an
   // active notification.
-  raw_ptr<DotIndicator, ExperimentalAsh> notification_indicator_ = nullptr;
+  raw_ptr<DotIndicator> notification_indicator_ = nullptr;
 
   // The current application state, a bitfield of State enum values.
   int state_ = STATE_NORMAL;

@@ -147,15 +147,13 @@ class ASH_EXPORT AppListSearchView : public views::View,
   // is pressed.
   void OnSearchNotifierButtonPressed();
 
-  const raw_ptr<SearchResultPageDialogController,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<SearchResultPageDialogController, DanglingUntriaged>
       dialog_controller_;
 
-  const raw_ptr<SearchBoxView, DanglingUntriaged | ExperimentalAsh>
-      search_box_view_;
+  const raw_ptr<SearchBoxView, DanglingUntriaged> search_box_view_;
 
   // The scroll view that contains all the result_container_views_.
-  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
   // Whether changes in search result containers are hidden from the
   // accessibility framework.
@@ -167,12 +165,11 @@ class ASH_EXPORT AppListSearchView : public views::View,
       result_container_views_;
 
   // The notifier that shows the search privacy notice or educational nudge.
-  raw_ptr<AppListToastView, ExperimentalAsh> search_notifier_ = nullptr;
+  raw_ptr<AppListToastView> search_notifier_ = nullptr;
 
   // The container of the image search results. This is owned by the views
   // hierarchy and is an element in result_container_views_;
-  raw_ptr<SearchResultImageListView, ExperimentalAsh> image_search_container_ =
-      nullptr;
+  raw_ptr<SearchResultImageListView> image_search_container_ = nullptr;
 
   // Cache of the last shown search results' animation metadata.
   std::vector<SearchResultContainerView::SearchResultAimationMetadata>

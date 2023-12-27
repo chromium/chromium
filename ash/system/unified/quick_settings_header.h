@@ -59,12 +59,10 @@ class ASH_EXPORT QuickSettingsHeader : public views::View {
   void UpdateVisibilityAndLayout();
 
   // Owned by views hierarchy.
-  raw_ptr<EnterpriseManagedView, ExperimentalAsh> enterprise_managed_view_ =
-      nullptr;
-  raw_ptr<ManagedStateView, ExperimentalAsh> supervised_view_ = nullptr;
-  raw_ptr<ChannelIndicatorQuickSettingsView, ExperimentalAsh> channel_view_ =
-      nullptr;
-  raw_ptr<EolNoticeQuickSettingsView, ExperimentalAsh> eol_notice_ = nullptr;
+  raw_ptr<EnterpriseManagedView> enterprise_managed_view_ = nullptr;
+  raw_ptr<ManagedStateView> supervised_view_ = nullptr;
+  raw_ptr<ChannelIndicatorQuickSettingsView> channel_view_ = nullptr;
+  raw_ptr<EolNoticeQuickSettingsView> eol_notice_ = nullptr;
 };
 
 }  // namespace ash

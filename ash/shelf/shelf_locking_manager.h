@@ -47,7 +47,7 @@ class ASH_EXPORT ShelfLockingManager : public SessionObserver,
   // Update the shelf state for session and screen lock changes.
   void UpdateLockedState();
 
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const raw_ptr<Shelf> shelf_;
   bool session_locked_ = false;
   bool screen_locked_ = false;
 

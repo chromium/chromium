@@ -407,7 +407,7 @@ class DesksController::DeskTraversalsMetricsHelper {
 
   // Pointer to the DesksController that owns this. Guaranteed to be not
   // nullptr for the lifetime of |this|.
-  const raw_ptr<DesksController, ExperimentalAsh> controller_;
+  const raw_ptr<DesksController> controller_;
 
   base::OneShotTimer timer_;
 

@@ -208,7 +208,7 @@ class ArcSessionDelegateImpl : public ArcSessionImpl::Delegate {
                        mojo::ScopedMessagePipeHandle server_pipe);
 
   // Owned by ArcServiceManager.
-  const raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_;
+  const raw_ptr<ArcBridgeService> arc_bridge_service_;
 
   const version_info::Channel channel_;
 

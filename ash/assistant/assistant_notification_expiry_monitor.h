@@ -53,8 +53,7 @@ class AssistantNotificationExpiryMonitor {
   std::vector<const AssistantNotification*> GetNotifications() const;
 
   base::OneShotTimer timer_;
-  const raw_ptr<AssistantNotificationControllerImpl, ExperimentalAsh>
-      controller_;
+  const raw_ptr<AssistantNotificationControllerImpl> controller_;
   std::unique_ptr<Observer> observer_;
 };
 

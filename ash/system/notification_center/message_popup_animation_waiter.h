@@ -31,8 +31,7 @@ class MessagePopupAnimationWaiter {
   void OnPopupAnimationFinished();
 
   // The message popup collection whose animations are being waited for.
-  const raw_ptr<AshMessagePopupCollection, ExperimentalAsh>
-      message_popup_collection_;
+  const raw_ptr<AshMessagePopupCollection> message_popup_collection_;
 
   base::RunLoop run_loop_;
 

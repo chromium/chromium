@@ -52,8 +52,7 @@ class ASH_EXPORT BubbleEventFilter : public ui::EventHandler {
 
  private:
   const raw_ptr<views::Widget> bubble_widget_;
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh>
-      button_;  // May be null.
+  raw_ptr<views::View, DanglingUntriaged> button_;  // May be null.
   base::RepeatingClosure on_click_outside_;
 };
 

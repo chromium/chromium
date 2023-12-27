@@ -152,7 +152,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
     std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
     bool enabled_ = false;
     const std::string pref_name_;
-    raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_;
+    raw_ptr<const gfx::VectorIcon> icon_;
 
     // The resource id used to fetch the string with this feature's name. Used
     // in quicksettings.
@@ -162,7 +162,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
     // available in the quicksettings menu.
     const bool toggleable_in_quicksettings_;
 
-    const raw_ptr<AccessibilityController, ExperimentalAsh> owner_;
+    const raw_ptr<AccessibilityController> owner_;
   };
 
   // Helper struct to store information about a11y dialog -- pref name, resource
@@ -699,7 +699,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   bool dictation_keyboard_dialog_showing_for_testing_ = false;
 
   // Client interface in chrome browser.
-  raw_ptr<AccessibilityControllerClient, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<AccessibilityControllerClient> client_ = nullptr;
 
   // Features are indexed by A11yFeatureType cast to int.
   std::unique_ptr<Feature> features_[kA11yFeatureTypeCount];
@@ -714,7 +714,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   SelectToSpeakState select_to_speak_state_ =
       SelectToSpeakState::kSelectToSpeakStateInactive;
   std::unique_ptr<SelectToSpeakEventHandler> select_to_speak_event_handler_;
-  raw_ptr<SelectToSpeakEventHandlerDelegate, ExperimentalAsh>
+  raw_ptr<SelectToSpeakEventHandlerDelegate>
       select_to_speak_event_handler_delegate_ = nullptr;
   std::unique_ptr<SelectToSpeakMenuBubbleController>
       select_to_speak_bubble_controller_;
@@ -723,8 +723,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   std::vector<int> switch_access_keys_to_capture_;
   std::unique_ptr<SwitchAccessMenuBubbleController>
       switch_access_bubble_controller_;
-  raw_ptr<AccessibilityEventRewriter, ExperimentalAsh>
-      accessibility_event_rewriter_ = nullptr;
+  raw_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_ = nullptr;
   bool no_switch_access_disable_confirmation_dialog_for_testing_ = false;
   bool switch_access_disable_dialog_showing_ = false;
   bool skip_switch_access_notification_ = false;
@@ -767,7 +766,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
 
   // The pref service of the currently active user or the signin profile before
   // user logs in. Can be null in ash_unittests.
-  raw_ptr<PrefService, ExperimentalAsh> active_user_prefs_ = nullptr;
+  raw_ptr<PrefService> active_user_prefs_ = nullptr;
 
   // This has to be the first one to be destroyed so we don't get updates about
   // any prefs during destruction.

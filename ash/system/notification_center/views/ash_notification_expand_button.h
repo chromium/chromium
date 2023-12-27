@@ -78,8 +78,8 @@ class AshNotificationExpandButton : public views::Button {
   void UpdateTooltip();
 
   // Owned by views hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh> label_;
-  raw_ptr<views::ImageView, ExperimentalAsh> image_;
+  raw_ptr<views::Label> label_;
+  raw_ptr<views::ImageView> image_;
 
   // Cached icons used to display the chevron in the button.
   gfx::ImageSkia expanded_image_;

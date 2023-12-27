@@ -163,7 +163,7 @@ class WindowAnimationsCallback : public ui::LayerAnimationObserver {
   }
 
   base::OnceClosure callback_;
-  raw_ptr<ui::LayerAnimator, ExperimentalAsh>
+  raw_ptr<ui::LayerAnimator>
       animator_;  // Owned by the layer that is animating.
   base::CallbackListSubscription subscription_;
 };

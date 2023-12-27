@@ -47,7 +47,7 @@ class ASH_EXPORT VideoActivityNotifier : public VideoDetector::Observer,
   // true.
   void MaybeNotifyPowerManager();
 
-  raw_ptr<VideoDetector, ExperimentalAsh> detector_;  // not owned
+  raw_ptr<VideoDetector> detector_;  // not owned
 
   // Most-recently-observed video state.
   VideoDetector::State video_state_;

@@ -129,7 +129,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     void ShowDialog();
 
    private:
-    const raw_ptr<LoginAuthUserView, DanglingUntriaged | ExperimentalAsh> view_;
+    const raw_ptr<LoginAuthUserView, DanglingUntriaged> view_;
   };
 
   using OnAuthCallback =
@@ -315,34 +315,27 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // Controls which input field is currently being shown.
   InputFieldMode input_field_mode_ = InputFieldMode::NONE;
 
-  raw_ptr<LoginUserView, ExperimentalAsh> user_view_ = nullptr;
-  raw_ptr<LoginPasswordView, ExperimentalAsh> password_view_ = nullptr;
-  raw_ptr<LoginPinInputView, ExperimentalAsh> pin_input_view_ = nullptr;
-  raw_ptr<PillButton, ExperimentalAsh> pin_password_toggle_ = nullptr;
-  raw_ptr<LoginPinView, ExperimentalAsh> pin_view_ = nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> online_sign_in_button_ = nullptr;
-  raw_ptr<DisabledAuthMessageView, ExperimentalAsh> disabled_auth_message_ =
-      nullptr;
-  raw_ptr<LoginAuthFactorsView, ExperimentalAsh> auth_factors_view_ = nullptr;
-  raw_ptr<FingerprintAuthFactorModel, ExperimentalAsh>
-      fingerprint_auth_factor_model_ = nullptr;
-  raw_ptr<SmartLockAuthFactorModel, ExperimentalAsh>
-      smart_lock_auth_factor_model_ = nullptr;
-  raw_ptr<ChallengeResponseView, ExperimentalAsh> challenge_response_view_ =
-      nullptr;
-  raw_ptr<LockedTpmMessageView, ExperimentalAsh> locked_tpm_message_view_ =
-      nullptr;
+  raw_ptr<LoginUserView> user_view_ = nullptr;
+  raw_ptr<LoginPasswordView> password_view_ = nullptr;
+  raw_ptr<LoginPinInputView> pin_input_view_ = nullptr;
+  raw_ptr<PillButton> pin_password_toggle_ = nullptr;
+  raw_ptr<LoginPinView> pin_view_ = nullptr;
+  raw_ptr<views::LabelButton> online_sign_in_button_ = nullptr;
+  raw_ptr<DisabledAuthMessageView> disabled_auth_message_ = nullptr;
+  raw_ptr<LoginAuthFactorsView> auth_factors_view_ = nullptr;
+  raw_ptr<FingerprintAuthFactorModel> fingerprint_auth_factor_model_ = nullptr;
+  raw_ptr<SmartLockAuthFactorModel> smart_lock_auth_factor_model_ = nullptr;
+  raw_ptr<ChallengeResponseView> challenge_response_view_ = nullptr;
+  raw_ptr<LockedTpmMessageView> locked_tpm_message_view_ = nullptr;
 
   // Padding below the user view. Grows when there isn't an input field
   // or smart card login.
-  raw_ptr<NonAccessibleView, ExperimentalAsh> padding_below_user_view_ =
-      nullptr;
+  raw_ptr<NonAccessibleView> padding_below_user_view_ = nullptr;
   // Displays padding between:
   // 1. Password field and pin keyboard
   // 2. Password field and fingerprint view, when pin is not available.
   // Preferred size will change base on current auth method.
-  raw_ptr<NonAccessibleView, ExperimentalAsh> padding_below_password_view_ =
-      nullptr;
+  raw_ptr<NonAccessibleView> padding_below_password_view_ = nullptr;
 
   // Bubble used for displaying the user remove account dialog. Its parent is
   // the top level view, either LockContentsView or LockDebugView. This allows

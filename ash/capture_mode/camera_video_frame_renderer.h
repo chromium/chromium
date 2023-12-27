@@ -125,7 +125,7 @@ class CameraVideoFrameRenderer
 
   // The currently observed `BeginFrameSource` which will notify us with
   // `OnBeginFrameDerivedImpl()`.
-  raw_ptr<viz::BeginFrameSource, ExperimentalAsh> begin_frame_source_ = nullptr;
+  raw_ptr<viz::BeginFrameSource> begin_frame_source_ = nullptr;
 
   // A callback used for tests to be called after `frame` has been rendered.
   base::OnceCallback<void(scoped_refptr<media::VideoFrame> frame)>

@@ -31,7 +31,7 @@ class ClipboardHistoryMainButton : public views::Button {
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
   // The parent view.
-  const raw_ptr<ClipboardHistoryItemView, ExperimentalAsh> container_;
+  const raw_ptr<ClipboardHistoryItemView> container_;
 };
 
 }  // namespace ash

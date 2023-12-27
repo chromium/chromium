@@ -150,8 +150,7 @@ class ArcResizeLockManagerTest : public CompatModeTestBase {
   TestArcResizeLockManager arc_resize_lock_manager_;
 
   // Owned by |arc_resize_lock_manager_|.
-  raw_ptr<TestCompatModeButtonController, ExperimentalAsh>
-      test_compat_mode_button_controller_;
+  raw_ptr<TestCompatModeButtonController> test_compat_mode_button_controller_;
 };
 
 TEST_F(ArcResizeLockManagerTest, ConstructDestruct) {}

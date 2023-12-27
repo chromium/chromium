@@ -82,7 +82,7 @@ class ASH_EXPORT VpnList : public TrayNetworkStateObserver {
   // called.
   void Update();
 
-  raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
+  raw_ptr<TrayNetworkStateModel> model_;
 
   // Cache of VPN providers, including the built-in OpenVPN/L2TP provider and
   // other providers added by extensions in the primary user's profile.

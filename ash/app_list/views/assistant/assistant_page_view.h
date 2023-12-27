@@ -84,11 +84,10 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
   void InitLayout();
   void UpdateBackground(bool in_tablet_mode);
 
-  const raw_ptr<AssistantViewDelegate, ExperimentalAsh>
-      assistant_view_delegate_;
+  const raw_ptr<AssistantViewDelegate> assistant_view_delegate_;
 
   // Owned by the view hierarchy.
-  raw_ptr<AssistantMainView, ExperimentalAsh> assistant_main_view_ = nullptr;
+  raw_ptr<AssistantMainView> assistant_main_view_ = nullptr;
 
   int min_height_dip_;
 

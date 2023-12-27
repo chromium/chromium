@@ -698,7 +698,7 @@ class ClipboardHistoryControllerWithTextfieldTest
   }
 
   std::unique_ptr<views::Widget> textfield_widget_;
-  raw_ptr<views::Textfield, ExperimentalAsh> textfield_;
+  raw_ptr<views::Textfield> textfield_;
 };
 
 TEST_F(ClipboardHistoryControllerWithTextfieldTest, PasteClipboardItemById) {

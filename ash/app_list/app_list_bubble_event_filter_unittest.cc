@@ -59,7 +59,7 @@ class AppListBubbleEventFilterTest : public AshTestBase,
 
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<views::Widget> view_holder_widget_;
-  raw_ptr<views::View, ExperimentalAsh> view_ = nullptr;
+  raw_ptr<views::View> view_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(MouseOrTouch,

@@ -79,7 +79,7 @@ class ProximityAuthWebUIHandler
   base::Value::List GetRemoteDevicesList();
 
   // The delegate used to fetch dependencies. Must outlive this instance.
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
 
   // True if we get a message from the loaded WebContents to know that it is
   // initialized, and we can inject JavaScript.

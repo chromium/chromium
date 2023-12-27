@@ -44,9 +44,8 @@ class ASH_EXPORT AppStreamLauncherItem : public views::View {
  private:
   // Owned by views hierarchy.
   // TODO(b/259426750) refactor PhoneHubRecentAppButton to a more generic name.
-  raw_ptr<PhoneHubRecentAppButton, ExperimentalAsh> recent_app_button_ =
-      nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<PhoneHubRecentAppButton> recent_app_button_ = nullptr;
+  raw_ptr<views::LabelButton> label_ = nullptr;
 };
 
 }  // namespace ash

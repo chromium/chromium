@@ -84,7 +84,7 @@ class OverflowGradientBackground : public views::Background {
   }
 
  private:
-  raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  raw_ptr<Shelf> shelf_;
 };
 
 int PaddingBetweenTrayItems(const bool is_in_primary_tray_set) {

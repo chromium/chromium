@@ -335,7 +335,7 @@ class SplitViewController::DividerSnapAnimation
       tracker_->Cancel();
   }
 
-  raw_ptr<SplitViewController, ExperimentalAsh> split_view_controller_;
+  raw_ptr<SplitViewController> split_view_controller_;
   int starting_position_;
   int ending_position_;
   std::optional<ui::ThroughputTracker> tracker_;
@@ -469,7 +469,7 @@ class SplitViewController::ToBeSnappedWindowsObserver
     return to_be_snapped_windows_.end();
   }
 
-  const raw_ptr<SplitViewController, ExperimentalAsh> split_view_controller_;
+  const raw_ptr<SplitViewController> split_view_controller_;
 
   // Maps the snap position to the to-be-snapped window with its corresponding
   // snap action source.

@@ -246,9 +246,8 @@ class TestArcSessionObserver : public ArcSession::Observer {
   }
 
  private:
-  const raw_ptr<ArcSession, ExperimentalAsh> arc_session_;  // Not owned.
-  const raw_ptr<base::RunLoop, ExperimentalAsh> run_loop_ =
-      nullptr;  // Not owned.
+  const raw_ptr<ArcSession> arc_session_;            // Not owned.
+  const raw_ptr<base::RunLoop> run_loop_ = nullptr;  // Not owned.
   std::optional<OnSessionStoppedArgs> on_session_stopped_args_;
 };
 

@@ -88,19 +88,19 @@ class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView {
 
   // The topmost `IconButton` in the toolbar's collection, which stays visible
   // in both the expanded and collapsed toolbar states.
-  raw_ptr<IconButton, ExperimentalAsh> gamepad_button_ = nullptr;
+  raw_ptr<IconButton> gamepad_button_ = nullptr;
 
   // Game Controls toggle button for enabling or disabling the feature.
-  raw_ptr<IconButton, ExperimentalAsh> game_controls_button_ = nullptr;
+  raw_ptr<IconButton> game_controls_button_ = nullptr;
 
   // Record game button to start recording the game window, skipping the
   // countdown timer and preset screen capture options.
-  raw_ptr<IconButton, ExperimentalAsh> record_game_button_ = nullptr;
+  raw_ptr<IconButton> record_game_button_ = nullptr;
 
   // The current state indicating if the toolbar view is expanded or collapsed.
   bool is_expanded_ = true;
 
-  const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
+  const raw_ptr<GameDashboardContext> context_;
 
   // Handles all dragging logic for the toolbar.
   std::unique_ptr<ToolbarDragHandler> drag_handler_;

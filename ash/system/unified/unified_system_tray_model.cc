@@ -45,7 +45,7 @@ class UnifiedSystemTrayModel::DBusObserver
   void KeyboardBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
 
-  const raw_ptr<UnifiedSystemTrayModel, ExperimentalAsh> owner_;
+  const raw_ptr<UnifiedSystemTrayModel> owner_;
 
   base::WeakPtrFactory<DBusObserver> weak_ptr_factory_{this};
 };

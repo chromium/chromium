@@ -98,7 +98,7 @@ class WindowPropertyObserver : public aura::WindowObserver {
     properties_changed_.push_back(key);
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
   std::vector<raw_ptr<const void, VectorExperimental>> properties_changed_;
 };
 

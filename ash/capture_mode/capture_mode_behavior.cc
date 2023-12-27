@@ -286,7 +286,7 @@ class GameDashboardBehavior : public CaptureModeBehavior,
   int GetCaptureBarWidth() const override { return kGameCaptureBarWidth; }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> pre_selected_window_ = nullptr;
+  raw_ptr<aura::Window> pre_selected_window_ = nullptr;
   base::WeakPtrFactory<GameDashboardBehavior> weak_ptr_factory_{this};
 };
 

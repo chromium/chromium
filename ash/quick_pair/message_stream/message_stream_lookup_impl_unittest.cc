@@ -103,7 +103,7 @@ class MessageStreamFakeBluetoothDevice
   bool dont_invoke_callback_ = false;
   bool error_ = false;
   std::string error_message_;
-  raw_ptr<FakeBluetoothAdapter, ExperimentalAsh> fake_adapter_;
+  raw_ptr<FakeBluetoothAdapter> fake_adapter_;
   scoped_refptr<FakeBluetoothSocket> fake_socket_ =
       base::MakeRefCounted<FakeBluetoothSocket>();
 };
@@ -203,11 +203,9 @@ class MessageStreamLookupImplTest : public testing::Test,
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
-  raw_ptr<MessageStream, DanglingUntriaged | ExperimentalAsh> message_stream_ =
-      nullptr;
+  raw_ptr<MessageStream, DanglingUntriaged> message_stream_ = nullptr;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
-  raw_ptr<MessageStreamFakeBluetoothDevice, DanglingUntriaged | ExperimentalAsh>
-      device_;
+  raw_ptr<MessageStreamFakeBluetoothDevice, DanglingUntriaged> device_;
   std::unique_ptr<MessageStreamLookup> message_stream_lookup_;
 };
 

@@ -157,8 +157,8 @@ class FakeFastPairPairerFactory
   FakeFastPairPairer* fake_fast_pair_pairer() { return fake_fast_pair_pairer_; }
 
  protected:
-  raw_ptr<FakeFastPairPairer, DanglingUntriaged | ExperimentalAsh>
-      fake_fast_pair_pairer_ = nullptr;
+  raw_ptr<FakeFastPairPairer, DanglingUntriaged> fake_fast_pair_pairer_ =
+      nullptr;
 };
 
 class FakeFastPairGattServiceClientImplFactory
@@ -186,8 +186,7 @@ class FakeFastPairGattServiceClientImplFactory
     return fake_fast_pair_gatt_service_client;
   }
 
-  raw_ptr<ash::quick_pair::FakeFastPairGattServiceClient,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::quick_pair::FakeFastPairGattServiceClient, DanglingUntriaged>
       fake_fast_pair_gatt_service_client_ = nullptr;
 };
 
@@ -328,13 +327,12 @@ class PairerBrokerImplTest : public AshTestBase, public PairerBroker::Observer {
 
   base::HistogramTester histogram_tester_;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
-  raw_ptr<device::MockBluetoothDevice, ExperimentalAsh>
-      mock_bluetooth_device_ptr_ = nullptr;
+  raw_ptr<device::MockBluetoothDevice> mock_bluetooth_device_ptr_ = nullptr;
   std::unique_ptr<FakeFastPairPairerFactory> fast_pair_pairer_factory_;
 
   std::unique_ptr<PairerBrokerImpl> pairer_broker_;
-  raw_ptr<FakeFastPairHandshake, DanglingUntriaged | ExperimentalAsh>
-      fake_fast_pair_handshake_ = nullptr;
+  raw_ptr<FakeFastPairHandshake, DanglingUntriaged> fake_fast_pair_handshake_ =
+      nullptr;
   std::unique_ptr<FastPairGattServiceClient> gatt_service_client_;
   FakeFastPairGattServiceClientImplFactory fast_pair_gatt_service_factory_;
   std::unique_ptr<FakeFastPairDataEncryptor> fake_fast_pair_data_encryptor_;

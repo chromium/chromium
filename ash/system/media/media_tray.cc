@@ -147,8 +147,8 @@ class GlobalMediaControlsTitleView : public views::View {
   views::Button* pin_button() { return pin_button_; }
 
  private:
-  raw_ptr<views::ImageButton, ExperimentalAsh> pin_button_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
+  raw_ptr<views::ImageButton> pin_button_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
 };
 
 BEGIN_METADATA(GlobalMediaControlsTitleView)

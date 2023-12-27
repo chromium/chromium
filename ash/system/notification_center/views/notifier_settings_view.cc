@@ -141,7 +141,7 @@ class NotifierButtonWrapperView : public views::View {
   std::unique_ptr<views::Painter> focus_painter_;
 
   // NotifierButton to wrap.
-  raw_ptr<views::View, ExperimentalAsh> contents_;
+  raw_ptr<views::View> contents_;
 };
 
 BEGIN_METADATA(NotifierButtonWrapperView)
@@ -295,7 +295,7 @@ class EmptyNotifierView : public views::View {
         ContentLayerType::kTextColorPrimary));
   }
 
-  raw_ptr<views::Label, ExperimentalAsh> label_;
+  raw_ptr<views::Label> label_;
 };
 
 BEGIN_METADATA(EmptyNotifierView)

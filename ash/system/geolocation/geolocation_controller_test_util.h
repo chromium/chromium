@@ -55,7 +55,7 @@ class GeopositionResponsesWaiter : public GeolocationController::Observer {
   void OnGeopositionChanged(bool possible_change_in_timezone) override;
 
  private:
-  const raw_ptr<GeolocationController, ExperimentalAsh> controller_;
+  const raw_ptr<GeolocationController> controller_;
   base::RunLoop run_loop_;
 };
 

@@ -49,7 +49,7 @@ class ArcNetHostImplTest : public testing::Test {
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<user_prefs::TestBrowserContextWithPrefs> context_;
-  const raw_ptr<ArcNetHostImpl, ExperimentalAsh> service_;
+  const raw_ptr<ArcNetHostImpl> service_;
 };
 
 TEST_F(ArcNetHostImplTest, SetAlwaysOnVpn_SetPackage) {

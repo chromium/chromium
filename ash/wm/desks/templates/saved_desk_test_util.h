@@ -59,7 +59,7 @@ class SavedDeskPresenterTestApi {
   void MaybeWaitForModel();
 
  private:
-  const raw_ptr<SavedDeskPresenter, ExperimentalAsh> presenter_;
+  const raw_ptr<SavedDeskPresenter> presenter_;
 };
 
 // Wrapper for `SavedDeskLibraryView` that exposes internal state to test
@@ -80,8 +80,7 @@ class SavedDeskLibraryViewTestApi {
   void WaitForAnimationDone();
 
  private:
-  raw_ptr<SavedDeskLibraryView, DanglingUntriaged | ExperimentalAsh>
-      library_view_;
+  raw_ptr<SavedDeskLibraryView, DanglingUntriaged> library_view_;
 };
 
 // Wrapper for `SavedDeskGridView` that exposes internal state to test
@@ -96,7 +95,7 @@ class SavedDeskGridViewTestApi {
   void WaitForItemMoveAnimationDone();
 
  private:
-  raw_ptr<SavedDeskGridView, ExperimentalAsh> grid_view_;
+  raw_ptr<SavedDeskGridView> grid_view_;
 };
 
 // Represents the visual state of a saved desk item - whether it is currently
@@ -132,7 +131,7 @@ class SavedDeskItemViewTestApi {
   SavedDeskItemHoverState GetHoverState() const;
 
  private:
-  raw_ptr<const SavedDeskItemView, ExperimentalAsh> item_view_;
+  raw_ptr<const SavedDeskItemView> item_view_;
 };
 
 // Wrapper for `SavedDeskIconView` that exposes internal state to test
@@ -154,7 +153,7 @@ class SavedDeskIconViewTestApi {
   }
 
  private:
-  raw_ptr<const SavedDeskIconView, ExperimentalAsh> saved_desk_icon_view_;
+  raw_ptr<const SavedDeskIconView> saved_desk_icon_view_;
 };
 
 // Test API for `SavedDeskController`.
@@ -172,7 +171,7 @@ class SavedDeskControllerTestApi {
   void ResetAutoLaunch();
 
  private:
-  raw_ptr<SavedDeskController, ExperimentalAsh> saved_desk_controller_;
+  raw_ptr<SavedDeskController> saved_desk_controller_;
 };
 
 // Returns all saved desk item views from the desk library on the given

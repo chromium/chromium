@@ -248,12 +248,10 @@ class ASH_EXPORT CalendarViewController {
   std::optional<base::Time> selected_date_;
 
   // The currently selected CalendarDateCellView
-  raw_ptr<CalendarDateCellView, ExperimentalAsh> selected_date_cell_view_ =
-      nullptr;
+  raw_ptr<CalendarDateCellView> selected_date_cell_view_ = nullptr;
 
   // The CalendarDateCellView which represents today.
-  raw_ptr<CalendarDateCellView, ExperimentalAsh> todays_date_cell_view_ =
-      nullptr;
+  raw_ptr<CalendarDateCellView> todays_date_cell_view_ = nullptr;
 
   // The midnight of the currently selected date adjusted to the local timezone.
   base::Time selected_date_midnight_;

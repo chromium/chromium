@@ -34,7 +34,7 @@ class ASH_EXPORT NetworkFeatureTile : public FeatureTile {
   // views::Button:
   void OnThemeChanged() override;
 
-  const raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate, DanglingUntriaged> delegate_;
 };
 
 }  // namespace ash

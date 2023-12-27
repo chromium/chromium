@@ -338,7 +338,7 @@ class ASH_EXPORT CaptureModeCameraController
 
   // Owned by CaptureModeController and guaranteed to be not null and to outlive
   // `this`.
-  const raw_ptr<CaptureModeDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<CaptureModeDelegate> delegate_;
 
   // The remote end to the video source provider that exists in the video
   // capture service.
@@ -362,7 +362,7 @@ class ASH_EXPORT CaptureModeCameraController
 
   // The camera preview widget and its contents view.
   views::UniqueWidgetPtr camera_preview_widget_;
-  raw_ptr<CameraPreviewView, ExperimentalAsh> camera_preview_view_ = nullptr;
+  raw_ptr<CameraPreviewView> camera_preview_view_ = nullptr;
 
   // A timer used to give a `selected_camera_` that got disconnected a grace
   // period, so if it reconnects again within this period, its ID is kept around

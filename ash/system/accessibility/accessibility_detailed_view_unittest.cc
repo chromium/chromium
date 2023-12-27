@@ -601,11 +601,11 @@ class AccessibilityDetailedViewTest : public AshTestBase,
     }
   }
 
-  raw_ptr<AccessibilityController, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<AccessibilityController> controller_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  raw_ptr<AccessibilityDetailedView, DanglingUntriaged | ExperimentalAsh>
-      detailed_menu_ = nullptr;
+  raw_ptr<AccessibilityDetailedView, DanglingUntriaged> detailed_menu_ =
+      nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

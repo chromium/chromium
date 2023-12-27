@@ -137,7 +137,7 @@ class AsyncWindowStateChangeObserver : public WindowStateObserver,
     window_->RemoveObserver(this);
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 
   base::OnceCallback<void(WindowState*)> on_post_window_state_changed_;
 };

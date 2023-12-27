@@ -31,13 +31,10 @@ class ASH_EXPORT BluetoothDeviceListItemMultipleBatteryView
       const bluetooth_config::mojom::DeviceBatteryInfoPtr& battery_info);
 
  private:
-  raw_ptr<BluetoothDeviceListItemBatteryView,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<BluetoothDeviceListItemBatteryView, DanglingUntriaged>
       left_bud_battery_view_ = nullptr;
-  raw_ptr<BluetoothDeviceListItemBatteryView, ExperimentalAsh>
-      case_battery_view_ = nullptr;
-  raw_ptr<BluetoothDeviceListItemBatteryView, ExperimentalAsh>
-      right_bud_battery_view_ = nullptr;
+  raw_ptr<BluetoothDeviceListItemBatteryView> case_battery_view_ = nullptr;
+  raw_ptr<BluetoothDeviceListItemBatteryView> right_bud_battery_view_ = nullptr;
 };
 
 }  // namespace ash

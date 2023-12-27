@@ -33,9 +33,8 @@ struct ASH_EXPORT ShellInitParams {
   ~ShellInitParams();
 
   std::unique_ptr<ShellDelegate> delegate;
-  raw_ptr<ui::ContextFactory, ExperimentalAsh> context_factory =
-      nullptr;                                                  // Non-owning.
-  raw_ptr<PrefService, ExperimentalAsh> local_state = nullptr;  // Non-owning.
+  raw_ptr<ui::ContextFactory> context_factory = nullptr;  // Non-owning.
+  raw_ptr<PrefService> local_state = nullptr;             // Non-owning.
 
   // Factory for creating the virtual keyboard UI. Must be non-null.
   std::unique_ptr<keyboard::KeyboardUIFactory> keyboard_ui_factory;

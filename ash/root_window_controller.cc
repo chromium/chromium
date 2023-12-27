@@ -506,7 +506,7 @@ class FillLayoutManager : public aura::LayoutManager {
     }
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> container_;
+  raw_ptr<aura::Window> container_;
 };
 
 }  // namespace

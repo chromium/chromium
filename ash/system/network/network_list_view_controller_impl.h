@@ -211,7 +211,7 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // Whether to add eSim entry or not.
   bool ShouldAddESimEntry() const;
 
-  raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
+  raw_ptr<TrayNetworkStateModel> model_;
 
   mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
       remote_cros_bluetooth_config_;
@@ -239,11 +239,10 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // for: #addr-of
   RAW_PTR_EXCLUSION views::ImageView* connection_warning_icon_ = nullptr;
   // Owned by `connection_warning_`.
-  raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh>
-      connection_warning_label_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged> connection_warning_label_ = nullptr;
 
-  raw_ptr<NetworkListWifiHeaderView, DanglingUntriaged | ExperimentalAsh>
-      wifi_header_view_ = nullptr;
+  raw_ptr<NetworkListWifiHeaderView, DanglingUntriaged> wifi_header_view_ =
+      nullptr;
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #addr-of
   RAW_PTR_EXCLUSION TrayInfoLabel* wifi_status_message_ = nullptr;
@@ -285,7 +284,7 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // managed.
   bool is_vpn_managed_ = false;
 
-  raw_ptr<NetworkDetailedNetworkView, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NetworkDetailedNetworkView, DanglingUntriaged>
       network_detailed_network_view_;
   NetworkIdToViewMap network_id_to_view_map_;
 

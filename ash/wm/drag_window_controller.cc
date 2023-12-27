@@ -150,7 +150,7 @@ class DragWindowController::DragWindowDetails {
   }
 
   // The root window of |widget_|.
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window> root_window_;
 
   // Contains a WindowMirrorView which is a copy of the original window.
   std::unique_ptr<views::Widget> widget_;

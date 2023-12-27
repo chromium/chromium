@@ -126,8 +126,7 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
       notification_icons_controller_;
 
   // Owned by the views hierarchy.
-  raw_ptr<PrivacyIndicatorsTrayItemView, ExperimentalAsh>
-      privacy_indicators_view_ = nullptr;
+  raw_ptr<PrivacyIndicatorsTrayItemView> privacy_indicators_view_ = nullptr;
 
   std::unique_ptr<NotificationCenterBubble> bubble_;
 

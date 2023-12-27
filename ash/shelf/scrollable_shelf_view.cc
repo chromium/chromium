@@ -146,7 +146,7 @@ class ScrollableShelfView::ScrollableShelfArrowView
   void ScrollRectToVisible(const gfx::Rect& rect) override {}
 
  private:
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const raw_ptr<Shelf> shelf_;
 };
 
 BEGIN_METADATA(ScrollableShelfView, ScrollableShelfArrowView, ScrollArrowView)
@@ -209,8 +209,7 @@ class ScrollableShelfContainerView : public ShelfContainerView,
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
 
-  raw_ptr<ScrollableShelfView, ExperimentalAsh> scrollable_shelf_view_ =
-      nullptr;
+  raw_ptr<ScrollableShelfView> scrollable_shelf_view_ = nullptr;
 };
 
 void ScrollableShelfContainerView::TranslateShelfView(
@@ -317,8 +316,7 @@ class ScrollableShelfFocusSearch : public views::FocusSearch {
   }
 
  private:
-  raw_ptr<ScrollableShelfView, ExperimentalAsh> scrollable_shelf_view_ =
-      nullptr;
+  raw_ptr<ScrollableShelfView> scrollable_shelf_view_ = nullptr;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

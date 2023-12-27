@@ -123,7 +123,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     // corresponding tray has been cleaned up.
     base::WeakPtr<Delegate> delegate = nullptr;
     gfx::NativeWindow parent_window = gfx::NativeWindow();
-    raw_ptr<View, ExperimentalAsh> anchor_view = nullptr;
+    raw_ptr<View> anchor_view = nullptr;
     AnchorMode anchor_mode = AnchorMode::kView;
     // Only used if anchor_mode == AnchorMode::kRect.
     gfx::Rect anchor_rect;
@@ -303,11 +303,11 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
    private:
     // TrayBubbleView to which key events are going to be rerouted. Not owned.
-    raw_ptr<TrayBubbleView, ExperimentalAsh> tray_bubble_view_;
+    raw_ptr<TrayBubbleView> tray_bubble_view_;
   };
 
   InitParams params_;
-  raw_ptr<views::BoxLayout, DanglingUntriaged | ExperimentalAsh> layout_;
+  raw_ptr<views::BoxLayout, DanglingUntriaged> layout_;
   base::WeakPtr<Delegate> delegate_;
   int preferred_width_;
   bool is_gesture_dragging_;

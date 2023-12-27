@@ -96,9 +96,9 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
     void GridChanged();
 
     message_center::NotifierId notifier_id_;
-    raw_ptr<views::ImageView, ExperimentalAsh> icon_view_ = nullptr;
-    raw_ptr<views::Label, ExperimentalAsh> name_view_ = nullptr;
-    raw_ptr<views::Checkbox, ExperimentalAsh> checkbox_ = nullptr;
+    raw_ptr<views::ImageView> icon_view_ = nullptr;
+    raw_ptr<views::Label> name_view_ = nullptr;
+    raw_ptr<views::Checkbox> checkbox_ = nullptr;
   };
 
   // Overridden from views::View:
@@ -119,15 +119,15 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
   void QuietModeTogglePressed();
   void NotifierButtonPressed(NotifierButton* button);
 
-  raw_ptr<views::ToggleButton, ExperimentalAsh> app_badging_toggle_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> quiet_mode_icon_ = nullptr;
-  raw_ptr<views::ToggleButton, ExperimentalAsh> quiet_mode_toggle_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> header_view_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> notification_settings_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> top_label_ = nullptr;
-  raw_ptr<views::ScrollBar, ExperimentalAsh> scroll_bar_ = nullptr;
-  raw_ptr<views::ScrollView, ExperimentalAsh> scroller_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> no_notifiers_view_ = nullptr;
+  raw_ptr<views::ToggleButton> app_badging_toggle_ = nullptr;
+  raw_ptr<views::ImageView> quiet_mode_icon_ = nullptr;
+  raw_ptr<views::ToggleButton> quiet_mode_toggle_ = nullptr;
+  raw_ptr<views::View> header_view_ = nullptr;
+  raw_ptr<views::Label> notification_settings_label_ = nullptr;
+  raw_ptr<views::Label> top_label_ = nullptr;
+  raw_ptr<views::ScrollBar> scroll_bar_ = nullptr;
+  raw_ptr<views::ScrollView> scroller_ = nullptr;
+  raw_ptr<views::View> no_notifiers_view_ = nullptr;
   // TODO(crbug/1194632): remove |buttons_| and all related views.
   std::set<NotifierButton*> buttons_;
 };

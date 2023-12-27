@@ -64,7 +64,7 @@ class FloatingMenuButton : public views::ImageButton {
  private:
   void UpdateImage();
 
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
   // True if the button is currently toggled.
   bool toggled_ = false;
   int size_ = kTrayItemSize;

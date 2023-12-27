@@ -72,8 +72,7 @@ class PageFlipWaiter : public ScrollableShelfView::TestObserver {
     run_loop_->Quit();
   }
 
-  raw_ptr<ScrollableShelfView, ExperimentalAsh> scrollable_shelf_view_ =
-      nullptr;
+  raw_ptr<ScrollableShelfView> scrollable_shelf_view_ = nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
@@ -104,7 +103,7 @@ class InkDropAnimationWaiter : public views::InkDropObserver {
     }
   }
 
-  raw_ptr<views::Button, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<views::Button> button_ = nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

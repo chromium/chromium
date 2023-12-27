@@ -171,7 +171,7 @@ class ScopedStickyKeyboardEnabler {
   }
 
  private:
-  raw_ptr<AccessibilityController, ExperimentalAsh> accessibility_controller_;
+  raw_ptr<AccessibilityController> accessibility_controller_;
   const bool enabled_;
 };
 
@@ -406,7 +406,7 @@ class DontClobberRestoreBoundsWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 };
 
 // Creates a window, maximized the window and from within the maximized
@@ -1199,7 +1199,7 @@ class FocusDuringUnminimizeWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
   ui::WindowShowState show_state_;
 };
 
@@ -1635,7 +1635,7 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
 
  private:
   // The default container.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> default_container_;
+  raw_ptr<aura::Window, DanglingUntriaged> default_container_;
 };
 
 constexpr std::optional<Sound> kNoSoundKey = std::nullopt;
@@ -2083,8 +2083,7 @@ class WorkspaceLayoutManagerKeyboardTest : public AshTestBase {
  private:
   gfx::Insets restore_work_area_insets_;
   gfx::Rect keyboard_bounds_;
-  raw_ptr<WorkspaceLayoutManager, DanglingUntriaged | ExperimentalAsh>
-      layout_manager_;
+  raw_ptr<WorkspaceLayoutManager, DanglingUntriaged> layout_manager_;
 };
 
 // Tests that when a child window gains focus the top level window containing it

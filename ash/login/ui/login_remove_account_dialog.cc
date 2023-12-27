@@ -70,7 +70,7 @@ class TrappedFocusSearch : public views::FocusSearch {
   }
 
  private:
-  const raw_ptr<views::View, ExperimentalAsh> trapped_focus_;
+  const raw_ptr<views::View> trapped_focus_;
 };
 
 }  // namespace
@@ -114,7 +114,7 @@ class RemoveUserButton : public PillButton {
     }
   }
 
-  raw_ptr<LoginRemoveAccountDialog, ExperimentalAsh> bubble_;
+  raw_ptr<LoginRemoveAccountDialog> bubble_;
 };
 
 BEGIN_METADATA(RemoveUserButton)

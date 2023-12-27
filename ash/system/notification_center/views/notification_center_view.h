@@ -95,12 +95,12 @@ class ASH_EXPORT NotificationCenterView : public views::View,
   // Returns the current animation value after tweening.
   double GetAnimationValue() const;
 
-  const raw_ptr<StackedNotificationBar, ExperimentalAsh> notification_bar_;
-  raw_ptr<views::ScrollBar, ExperimentalAsh> scroll_bar_;
-  const raw_ptr<views::ScrollView, ExperimentalAsh> scroller_;
-  const raw_ptr<NotificationListView, ExperimentalAsh> notification_list_view_;
+  const raw_ptr<StackedNotificationBar> notification_bar_;
+  raw_ptr<views::ScrollBar> scroll_bar_;
+  const raw_ptr<views::ScrollView> scroller_;
+  const raw_ptr<NotificationListView> notification_list_view_;
 
-  raw_ptr<views::BoxLayout, ExperimentalAsh> layout_manager_ = nullptr;
+  raw_ptr<views::BoxLayout> layout_manager_ = nullptr;
 
   base::CallbackListSubscription on_contents_scrolled_subscription_;
 };

@@ -38,7 +38,7 @@ class ASH_EXPORT DualRoleNotification {
   // Creates the notification using the updated status.
   std::unique_ptr<message_center::Notification> CreateNotification();
 
-  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
+  raw_ptr<message_center::MessageCenter> message_center_;
   std::unique_ptr<PowerStatus::PowerSource> dual_role_source_;
   std::unique_ptr<PowerStatus::PowerSource> dual_role_sink_;
   size_t num_dual_role_sinks_;

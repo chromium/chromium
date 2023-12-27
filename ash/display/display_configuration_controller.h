@@ -122,10 +122,8 @@ class ASH_EXPORT DisplayConfigurationController
   ScreenRotationAnimator* GetScreenRotationAnimatorForDisplay(
       int64_t display_id);
 
-  raw_ptr<display::DisplayManager, ExperimentalAsh>
-      display_manager_;  // weak ptr
-  raw_ptr<WindowTreeHostManager, ExperimentalAsh>
-      window_tree_host_manager_;  // weak ptr
+  raw_ptr<display::DisplayManager> display_manager_;         // weak ptr
+  raw_ptr<WindowTreeHostManager> window_tree_host_manager_;  // weak ptr
   std::unique_ptr<DisplayAnimator> display_animator_;
   std::unique_ptr<DisplayChangeLimiter> limiter_;
 

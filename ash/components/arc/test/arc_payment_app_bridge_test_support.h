@@ -38,9 +38,8 @@ class ArcPaymentAppBridgeTestSupport {
     ScopedSetInstance& operator=(const ScopedSetInstance& other) = delete;
 
    private:
-    raw_ptr<ArcServiceManager, ExperimentalAsh> manager_;
-    raw_ptr<chromeos::payments::mojom::PaymentAppInstance, ExperimentalAsh>
-        instance_;
+    raw_ptr<ArcServiceManager> manager_;
+    raw_ptr<chromeos::payments::mojom::PaymentAppInstance> instance_;
   };
 
   ArcPaymentAppBridgeTestSupport();

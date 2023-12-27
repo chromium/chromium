@@ -180,7 +180,7 @@ class WindowCycleListTestApi {
   }
 
  private:
-  const raw_ptr<const WindowCycleList, ExperimentalAsh> cycle_list_;
+  const raw_ptr<const WindowCycleList> cycle_list_;
 };
 
 using aura::Window;
@@ -2019,8 +2019,7 @@ class ModeSelectionWindowCycleControllerTest
   }
 
  private:
-  raw_ptr<ui::test::EventGenerator, DanglingUntriaged | ExperimentalAsh>
-      generator_;
+  raw_ptr<ui::test::EventGenerator, DanglingUntriaged> generator_;
 };
 
 // Tests that when user taps tab slider buttons, the active mode should
@@ -3300,17 +3299,14 @@ class MultiUserWindowCycleControllerTest
   }
 
  private:
-  raw_ptr<ui::test::EventGenerator, DanglingUntriaged | ExperimentalAsh>
-      generator_;
+  raw_ptr<ui::test::EventGenerator, DanglingUntriaged> generator_;
 
   std::unique_ptr<ShelfViewTestAPI> shelf_view_test_;
 
   std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
 
-  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged | ExperimentalAsh>
-      user_1_prefs_ = nullptr;
-  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged | ExperimentalAsh>
-      user_2_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged> user_1_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged> user_2_prefs_ = nullptr;
 };
 
 // Tests that when the active user prefs' |prefs::kAltTabPerDesk| is updated,

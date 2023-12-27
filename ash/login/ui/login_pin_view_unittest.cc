@@ -50,7 +50,7 @@ class LoginPinViewTest : public LoginTestBase {
   void OnPinBackspace() { ++backspace_; }
   void OnPinSubmit() { ++submit_; }
 
-  raw_ptr<LoginPinView, DanglingUntriaged | ExperimentalAsh> view_ =
+  raw_ptr<LoginPinView, DanglingUntriaged> view_ =
       nullptr;  // Owned by test widget view hierarchy.
   std::optional<int> value_;
   // Number of times the backspace event has been fired.

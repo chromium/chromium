@@ -41,10 +41,10 @@ class ASH_EXPORT IMEFeaturePodController : public FeaturePodControllerBase,
   void OnIMERefresh() override;
   void OnIMEMenuActivationChanged(bool is_active) override;
 
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
+  const raw_ptr<UnifiedSystemTrayController> tray_controller_;
 
   // Owned by the views hierarchy.
-  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
+  raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;
 
   base::WeakPtrFactory<IMEFeaturePodController> weak_factory_{this};
 };

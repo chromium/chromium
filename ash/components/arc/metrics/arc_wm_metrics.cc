@@ -149,7 +149,7 @@ class ArcWmMetrics::WindowStateChangeObserver
     }
   }
 
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  const raw_ptr<aura::Window> window_;
   const ui::WindowShowState old_window_show_state_;
 
   // Tracks the elapsed time from the window operation happens until the window
@@ -235,7 +235,7 @@ class ArcWmMetrics::WindowRotationObserver : public aura::WindowObserver {
         /*maximum=*/base::Seconds(2), 100);
   }
 
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  const raw_ptr<aura::Window> window_;
 
   // Tracks the elapsed time from the display rotation happens until the window
   // bounds is changed.

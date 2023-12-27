@@ -136,7 +136,7 @@ class ASH_EXPORT WindowCycleEventFilter : public ui::EventHandler {
   // However, the focus ring should not move if the user is scrolling. Store
   // |tapped_window_| on tap events and determine whether this is a tap or
   // scroll with subsequent events.
-  raw_ptr<aura::Window, ExperimentalAsh> tapped_window_ = nullptr;
+  raw_ptr<aura::Window> tapped_window_ = nullptr;
 
   // Tracks whether the user is touch scrolling the window cycle list.
   bool touch_scrolling_ = false;

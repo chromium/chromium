@@ -144,7 +144,7 @@ class SandboxedWebUiAppTestBase::TestCodeInjector
   }
 
  private:
-  const raw_ptr<SandboxedWebUiAppTestBase, ExperimentalAsh> owner_;
+  const raw_ptr<SandboxedWebUiAppTestBase> owner_;
 };
 
 SandboxedWebUiAppTestBase::SandboxedWebUiAppTestBase(

@@ -317,8 +317,7 @@ class CalendarViewTest : public AshTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   // Owned by `widget_`.
-  raw_ptr<CalendarView, DanglingUntriaged | ExperimentalAsh> calendar_view_ =
-      nullptr;
+  raw_ptr<CalendarView, DanglingUntriaged> calendar_view_ = nullptr;
   std::unique_ptr<CalendarEventListView> event_list_view_;
   static base::Time fake_time_;
 };
@@ -778,7 +777,7 @@ class DateCellFocusChangeListener : public views::FocusChangeListener {
   int steps_taken_ = 0;
 
   // Unowned.
-  const raw_ptr<views::FocusManager, ExperimentalAsh> focus_manager_;
+  const raw_ptr<views::FocusManager> focus_manager_;
   // The string being looked for.
   const std::u16string looking_for_;
   // The number of steps it is acceptable to have made before finding the
@@ -1547,10 +1546,9 @@ class CalendarViewAnimationTest : public AshTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   // Owned by `widget_`.
-  raw_ptr<CalendarView, DanglingUntriaged | ExperimentalAsh> calendar_view_ =
-      nullptr;
+  raw_ptr<CalendarView, DanglingUntriaged> calendar_view_ = nullptr;
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;
-  raw_ptr<CalendarModel, DanglingUntriaged | ExperimentalAsh> calendar_model_;
+  raw_ptr<CalendarModel, DanglingUntriaged> calendar_model_;
   std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
 };
 

@@ -56,9 +56,9 @@ class ArcMemoryPressureBridge
   // reclaimed - An estimate of the number of bytes freed.
   void OnHostMemoryPressureComplete(uint32_t killed, uint64_t reclaimed);
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
-  const raw_ptr<ArcMetricsService, ExperimentalAsh> arc_metrics_service_;
+  const raw_ptr<ArcMetricsService> arc_metrics_service_;
 
   // Set between OnMemoryPressure and OnHostMemoryPressureComplete, so we can
   // throttle calls into ARCVM if it is unresponsive.

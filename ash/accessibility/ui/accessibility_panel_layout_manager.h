@@ -82,7 +82,7 @@ class ASH_EXPORT AccessibilityPanelLayoutManager
   void UpdateWorkAreaForPanelHeight();
 
   // The panel being managed (e.g. the ChromeVoxPanel's native aura window).
-  raw_ptr<aura::Window, ExperimentalAsh> panel_window_ = nullptr;
+  raw_ptr<aura::Window> panel_window_ = nullptr;
 
   // Window bounds when not in fullscreen
   gfx::Rect panel_bounds_ = gfx::Rect(0, 0, 0, 0);

@@ -125,7 +125,7 @@ class ToggleBubbleButton : public IconButton {
 
  private:
   // Parent view of this button. Owned by the views hierarchy.
-  const raw_ptr<VideoConferenceTray, ExperimentalAsh> tray_;
+  const raw_ptr<VideoConferenceTray> tray_;
 };
 
 BEGIN_METADATA(ToggleBubbleButton)

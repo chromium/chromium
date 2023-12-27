@@ -49,10 +49,10 @@ class LegendEntry : public views::View {
 
  private:
   const SkColor color_;
-  const raw_ref<const Graph, ExperimentalAsh> graph_;
+  const raw_ref<const Graph> graph_;
   size_t value_index_ = 0;
   Legend::Formatter formatter_;
-  raw_ptr<views::Label, ExperimentalAsh> value_ = nullptr;
+  raw_ptr<views::Label> value_ = nullptr;
 };
 
 BEGIN_METADATA(LegendEntry, views::View)

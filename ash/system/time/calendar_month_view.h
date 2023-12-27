@@ -122,8 +122,7 @@ class CalendarDateCellView : public CalendarViewController::Observer,
   base::TimeDelta time_difference_;
 
   // Owned by UnifiedCalendarViewController.
-  const raw_ptr<CalendarViewController, ExperimentalAsh>
-      calendar_view_controller_;
+  const raw_ptr<CalendarViewController> calendar_view_controller_;
 
   base::ScopedObservation<CalendarViewController,
                           CalendarViewController::Observer>
@@ -187,8 +186,7 @@ class ASH_EXPORT CalendarMonthView : public views::View,
   void FetchEvents(const base::Time& month);
 
   // Owned by `CalendarView`.
-  const raw_ptr<CalendarViewController, ExperimentalAsh>
-      calendar_view_controller_;
+  const raw_ptr<CalendarViewController> calendar_view_controller_;
 
   // If today's cell is in this view.
   bool has_today_ = false;
@@ -207,7 +205,7 @@ class ASH_EXPORT CalendarMonthView : public views::View,
 
   // Raw pointer to the (singleton) CalendarModel, to avoid a bunch of
   // daisy-chained calls to get the std::unique_ptr<>.
-  const raw_ptr<CalendarModel, ExperimentalAsh> calendar_model_;
+  const raw_ptr<CalendarModel> calendar_model_;
 
   base::ScopedObservation<CalendarModel, CalendarModel::Observer>
       scoped_calendar_model_observer_{this};

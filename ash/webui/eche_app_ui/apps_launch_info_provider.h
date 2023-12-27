@@ -32,8 +32,7 @@ class AppsLaunchInfoProvider {
   mojom::AppStreamLaunchEntryPoint entry_point() { return entry_point_; }
 
  private:
-  raw_ptr<EcheConnectionStatusHandler, ExperimentalAsh>
-      eche_connection_status_handler_;
+  raw_ptr<EcheConnectionStatusHandler> eche_connection_status_handler_;
   mojom::AppStreamLaunchEntryPoint entry_point_ =
       mojom::AppStreamLaunchEntryPoint::UNKNOWN;
   mojom::ConnectionStatus last_connection_ =

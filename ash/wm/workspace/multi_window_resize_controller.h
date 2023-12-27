@@ -105,10 +105,10 @@ class ASH_EXPORT MultiWindowResizeController
     bool is_valid() const { return window1 && window2; }
 
     // The left/top window to resize.
-    raw_ptr<aura::Window, ExperimentalAsh> window1 = nullptr;
+    raw_ptr<aura::Window> window1 = nullptr;
 
     // Other window to resize.
-    raw_ptr<aura::Window, ExperimentalAsh> window2 = nullptr;
+    raw_ptr<aura::Window> window2 = nullptr;
 
     // Direction
     Direction direction;

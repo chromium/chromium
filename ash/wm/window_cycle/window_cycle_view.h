@@ -156,7 +156,7 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   WindowMiniViewBase* GetCycleViewForWindow(aura::Window* window) const;
 
   // The root window that `this` resides on.
-  const raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  const raw_ptr<aura::Window> root_window_;
 
   // True if the `this` is built for same app cycling.
   const bool same_app_only_;
@@ -166,32 +166,30 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   std::vector<raw_ptr<WindowMiniViewBase, VectorExperimental>> cycle_views_;
 
   // A container that hosts and lays out all the `WindowMiniViewBase`s.
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> mirror_container_ =
-      nullptr;
+  raw_ptr<views::View, DanglingUntriaged> mirror_container_ = nullptr;
 
   // Tells users that there are no app windows on the active desk. It only shows
   // when there're more than 1 desk.
-  raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh>
-      no_recent_items_label_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged> no_recent_items_label_ = nullptr;
 
   // The `tab_slider_` only shows when there're more than 1 desk. It contains
   // `all_desks_tab_slider_button_` and `current_desk_tab_slider_button_` which
   // user can tab through or toggle between.
-  raw_ptr<TabSlider, DanglingUntriaged | ExperimentalAsh> tab_slider_ = nullptr;
-  raw_ptr<LabelSliderButton, DanglingUntriaged | ExperimentalAsh>
-      all_desks_tab_slider_button_ = nullptr;
-  raw_ptr<LabelSliderButton, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TabSlider, DanglingUntriaged> tab_slider_ = nullptr;
+  raw_ptr<LabelSliderButton, DanglingUntriaged> all_desks_tab_slider_button_ =
+      nullptr;
+  raw_ptr<LabelSliderButton, DanglingUntriaged>
       current_desk_tab_slider_button_ = nullptr;
 
   // The |target_window_| is the window that has the focus ring. When the user
   // completes cycling the |target_window_| is activated.
-  raw_ptr<aura::Window, ExperimentalAsh> target_window_ = nullptr;
+  raw_ptr<aura::Window> target_window_ = nullptr;
 
   // The |current_window_| is the window that the window cycle list uses to
   // determine the layout and positioning of the list's items. If this window's
   // preview can equally divide the list it is centered, otherwise it is
   // off-center.
-  raw_ptr<aura::Window, ExperimentalAsh> current_window_ = nullptr;
+  raw_ptr<aura::Window> current_window_ = nullptr;
 
   // Used when the widget bounds update should be deferred during the cycle
   // view's scaling animation..

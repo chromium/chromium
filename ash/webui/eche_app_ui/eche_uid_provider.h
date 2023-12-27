@@ -50,7 +50,7 @@ class EcheUidProvider : public mojom::UidGenerator {
 
   mojo::Receiver<mojom::UidGenerator> uid_receiver_{this};
   std::string uid_{};
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace eche_app

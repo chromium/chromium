@@ -94,7 +94,7 @@ class ASH_EXPORT CalendarEventListItemView : public views::Button {
   friend class CalendarViewEventListViewTest;
 
   // Unowned.
-  const raw_ptr<CalendarViewController, DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<CalendarViewController, DanglingUntriaged>
       calendar_view_controller_;
 
   const SelectedDateParams selected_date_params_;

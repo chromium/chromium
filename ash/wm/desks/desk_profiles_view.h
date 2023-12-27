@@ -47,8 +47,8 @@ class DeskProfilesButton : public views::ImageButton, public Desk::Observer {
   void CreateMenu(const ui::LocatedEvent& event);
 
   // The associated desk.
-  raw_ptr<Desk, ExperimentalAsh> desk_;  // Not owned.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<Desk> desk_;  // Not owned.
+  raw_ptr<views::ImageView> icon_ = nullptr;
   gfx::ImageSkia icon_image_;
 
   // The context menu, which will be set as the controller to show the list of

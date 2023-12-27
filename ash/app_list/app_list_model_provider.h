@@ -84,12 +84,11 @@ class ASH_EXPORT AppListModelProvider {
   SearchModel default_search_model_;
   QuickAppAccessModel default_quick_app_access_model_;
 
-  raw_ptr<AppListModel, DanglingUntriaged | ExperimentalAsh> model_ =
-      &default_model_;
-  raw_ptr<SearchModel, DanglingUntriaged | ExperimentalAsh> search_model_ =
+  raw_ptr<AppListModel, DanglingUntriaged> model_ = &default_model_;
+  raw_ptr<SearchModel, DanglingUntriaged> search_model_ =
       &default_search_model_;
-  raw_ptr<QuickAppAccessModel, DanglingUntriaged | ExperimentalAsh>
-      quick_app_access_model_ = &default_quick_app_access_model_;
+  raw_ptr<QuickAppAccessModel, DanglingUntriaged> quick_app_access_model_ =
+      &default_quick_app_access_model_;
 
   base::ObserverList<Observer> observers_;
 };

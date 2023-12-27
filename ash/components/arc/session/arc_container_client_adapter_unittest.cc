@@ -102,7 +102,7 @@ TEST_F(ArcContainerClientAdapterTest,
     }
 
    private:
-    const raw_ptr<Observer, ExperimentalAsh> child_observer_;
+    const raw_ptr<Observer> child_observer_;
     std::unique_ptr<ArcClientAdapter> nested_client_adapter_;
     bool stopped_called_ = false;
   };

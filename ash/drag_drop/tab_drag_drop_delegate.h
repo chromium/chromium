@@ -104,8 +104,8 @@ class ASH_EXPORT TabDragDropDelegate : public DragDropCaptureDelegate,
   // https://crbug.com/1316070
   bool ShouldPreventSnapToTheEdge(const gfx::Point& location_in_screen);
 
-  const raw_ptr<aura::Window, ExperimentalAsh> root_window_;
-  raw_ptr<aura::Window, ExperimentalAsh> source_window_;
+  const raw_ptr<aura::Window> root_window_;
+  raw_ptr<aura::Window> source_window_;
   const gfx::Point start_location_in_screen_;
 
   std::unique_ptr<SplitViewDragIndicators> split_view_drag_indicators_;

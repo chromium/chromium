@@ -58,9 +58,8 @@ class ShelfTooltipManagerTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<ShelfView, DanglingUntriaged | ExperimentalAsh> shelf_view_;
-  raw_ptr<ShelfTooltipManager, DanglingUntriaged | ExperimentalAsh>
-      tooltip_manager_;
+  raw_ptr<ShelfView, DanglingUntriaged> shelf_view_;
+  raw_ptr<ShelfTooltipManager, DanglingUntriaged> tooltip_manager_;
   std::unique_ptr<ShelfViewTestAPI> test_api_;
 };
 

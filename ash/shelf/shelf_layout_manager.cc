@@ -411,8 +411,7 @@ class HotseatEventHandler : public ui::EventHandler,
  private:
   // Whether events should get forwarded to ShelfLayoutManager.
   bool should_forward_event_ = false;
-  const raw_ptr<ShelfLayoutManager, ExperimentalAsh>
-      shelf_layout_manager_;  // unowned.
+  const raw_ptr<ShelfLayoutManager> shelf_layout_manager_;  // unowned.
 };
 
 }  // namespace

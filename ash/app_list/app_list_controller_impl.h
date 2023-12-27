@@ -432,7 +432,7 @@ class ASH_EXPORT AppListControllerImpl
   // gesture is reversed).
   HomeLauncherTransitionState home_launcher_transition_state_ = kFinished;
 
-  raw_ptr<AppListClient, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<AppListClient> client_ = nullptr;
 
   // Tracks the most recent show source for the app list.
   std::optional<AppListShowSource> last_open_source_;
@@ -488,7 +488,7 @@ class ASH_EXPORT AppListControllerImpl
   // last calculated.
   // This window changing it's visibility to false is used as a signal that the
   // home launcher visibility should be recalculated.
-  raw_ptr<aura::Window, ExperimentalAsh> tracked_app_window_ = nullptr;
+  raw_ptr<aura::Window> tracked_app_window_ = nullptr;
 
   // A callback that can be registered by a test to wait for the app list state
   // transition animation to finish.

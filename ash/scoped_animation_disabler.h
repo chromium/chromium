@@ -25,7 +25,7 @@ class ASH_EXPORT ScopedAnimationDisabler {
   ~ScopedAnimationDisabler();
 
  private:
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  const raw_ptr<aura::Window> window_;
   bool needs_disable_ = false;
 };
 

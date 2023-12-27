@@ -1217,7 +1217,7 @@ class KeyboardSettingsPrefConversionTest
 
  protected:
   std::string device_key_;
-  raw_ptr<const mojom::KeyboardSettings, ExperimentalAsh> settings_;
+  raw_ptr<const mojom::KeyboardSettings> settings_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

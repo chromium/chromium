@@ -164,8 +164,7 @@ class WindowBoundsTracker : public aura::WindowObserver,
 
   // The window that is being moved between displays through the shortcut
   // `kMoveActiveWindowBetweenDisplays`.
-  raw_ptr<aura::Window, ExperimentalAsh> moving_window_between_displays_ =
-      nullptr;
+  raw_ptr<aura::Window> moving_window_between_displays_ = nullptr;
 
   // True if restoring a window back to its host display on display
   // reconnection. Will be used to see whether remapping or restoring should be

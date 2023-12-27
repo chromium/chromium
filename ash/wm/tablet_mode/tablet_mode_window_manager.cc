@@ -190,8 +190,8 @@ class ScopedObserveWindowAnimation {
   }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
-  raw_ptr<TabletModeWindowManager, ExperimentalAsh> manager_;
+  raw_ptr<aura::Window> window_;
+  raw_ptr<TabletModeWindowManager> manager_;
   bool exiting_tablet_mode_;
 };
 

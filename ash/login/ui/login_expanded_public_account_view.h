@@ -62,7 +62,7 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
     std::vector<LocaleItem> GetLocales();
 
    private:
-    const raw_ptr<LoginExpandedPublicAccountView, ExperimentalAsh> view_;
+    const raw_ptr<LoginExpandedPublicAccountView> view_;
   };
 
   using OnPublicSessionViewDismissed = base::RepeatingClosure;
@@ -101,18 +101,16 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
   void UseLandscapeLayout();
   void UsePortraitLayout();
 
-  raw_ptr<views::BoxLayout, ExperimentalAsh> layout_ = nullptr;
-  raw_ptr<LoginUserView, ExperimentalAsh> user_view_ = nullptr;
-  raw_ptr<MonitoringWarningView, ExperimentalAsh> monitoring_warning_view_ =
-      nullptr;
-  raw_ptr<views::View, ExperimentalAsh> left_pane_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> separator_ = nullptr;
-  raw_ptr<RightPaneView, ExperimentalAsh> right_pane_ = nullptr;
-  raw_ptr<ArrowButtonView, ExperimentalAsh> submit_button_ = nullptr;
+  raw_ptr<views::BoxLayout> layout_ = nullptr;
+  raw_ptr<LoginUserView> user_view_ = nullptr;
+  raw_ptr<MonitoringWarningView> monitoring_warning_view_ = nullptr;
+  raw_ptr<views::View> left_pane_ = nullptr;
+  raw_ptr<views::View> separator_ = nullptr;
+  raw_ptr<RightPaneView> right_pane_ = nullptr;
+  raw_ptr<ArrowButtonView> submit_button_ = nullptr;
 
   OnPublicSessionViewDismissed on_dismissed_;
-  raw_ptr<PublicAccountMonitoringInfoDialog, ExperimentalAsh>
-      learn_more_dialog_ = nullptr;
+  raw_ptr<PublicAccountMonitoringInfoDialog> learn_more_dialog_ = nullptr;
   std::unique_ptr<ui::EventHandler> event_handler_;
   std::unique_ptr<SystemShadow> shadow_;
 

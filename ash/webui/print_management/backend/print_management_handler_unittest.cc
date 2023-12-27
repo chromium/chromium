@@ -51,8 +51,7 @@ class PrintManagementHandlerTest : public testing::Test {
   PrintManagementHandler* handler() { return handler_.get(); }
 
  private:
-  raw_ptr<FakePrintManagementDelegate, DanglingUntriaged | ExperimentalAsh>
-      delegate_;
+  raw_ptr<FakePrintManagementDelegate, DanglingUntriaged> delegate_;
   std::unique_ptr<PrintManagementHandler> handler_;
 };
 

@@ -39,9 +39,7 @@ class RootWindowDeskSwitchAnimatorTestApi {
   void SetOnEndingScreenshotTakenCallback(base::OnceClosure callback);
 
  private:
-  const raw_ptr<RootWindowDeskSwitchAnimator,
-                DanglingUntriaged | ExperimentalAsh>
-      animator_;
+  const raw_ptr<RootWindowDeskSwitchAnimator, DanglingUntriaged> animator_;
 };
 
 }  // namespace ash

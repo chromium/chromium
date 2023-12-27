@@ -137,7 +137,7 @@ class LoginBubbleHandler : public ui::EventHandler {
     }
   }
 
-  raw_ptr<LoginBaseBubbleView, ExperimentalAsh> bubble_;
+  raw_ptr<LoginBaseBubbleView> bubble_;
 };
 
 LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view)

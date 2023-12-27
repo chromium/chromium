@@ -141,8 +141,7 @@ class ASH_EXPORT KeyboardControllerImpl
   void SetEnableFlagFromCommandLine();
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  raw_ptr<SessionControllerImpl, ExperimentalAsh>
-      session_controller_;  // unowned
+  raw_ptr<SessionControllerImpl> session_controller_;  // unowned
   std::unique_ptr<keyboard::KeyboardUIController> keyboard_ui_controller_;
   std::unique_ptr<VirtualKeyboardController> virtual_keyboard_controller_;
   base::ObserverList<KeyboardControllerObserver>::Unchecked observers_;

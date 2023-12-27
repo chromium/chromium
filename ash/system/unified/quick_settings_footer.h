@@ -118,11 +118,11 @@ class ASH_EXPORT QuickSettingsFooter : public views::View {
   views::View* CreateEndContainer();
 
   // Owned.
-  raw_ptr<IconButton, ExperimentalAsh> settings_button_ = nullptr;
+  raw_ptr<IconButton> settings_button_ = nullptr;
 
   // Owned by views hierarchy.
-  raw_ptr<PowerButton, ExperimentalAsh> power_button_ = nullptr;
-  raw_ptr<PillButton, ExperimentalAsh> sign_out_button_ = nullptr;
+  raw_ptr<PowerButton> power_button_ = nullptr;
+  raw_ptr<PillButton> sign_out_button_ = nullptr;
 
   // The registrar used to watch prefs changes.
   PrefChangeRegistrar local_state_pref_change_registrar_;

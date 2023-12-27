@@ -32,7 +32,7 @@ class ASH_EXPORT LoginPublicAccountUserView : public NonAccessibleView {
     views::View* arrow_button() const;
 
    private:
-    const raw_ptr<LoginPublicAccountUserView, ExperimentalAsh> view_;
+    const raw_ptr<LoginPublicAccountUserView> view_;
   };
 
   using OnPublicAccountTapped = base::RepeatingClosure;
@@ -85,10 +85,10 @@ class ASH_EXPORT LoginPublicAccountUserView : public NonAccessibleView {
   // Used to show an arrow button for public session when hovered.
   std::unique_ptr<HoverNotifier> hover_notifier_;
 
-  raw_ptr<ArrowButtonView, ExperimentalAsh> arrow_button_ = nullptr;
+  raw_ptr<ArrowButtonView> arrow_button_ = nullptr;
   bool ignore_hover_ = false;
   bool auth_enabled_ = false;
-  raw_ptr<LoginUserView, ExperimentalAsh> user_view_ = nullptr;
+  raw_ptr<LoginUserView> user_view_ = nullptr;
 };
 
 }  // namespace ash

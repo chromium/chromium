@@ -99,18 +99,17 @@ class ASH_EXPORT AssistantDialogPlate
 
   InputModality input_modality() const;
 
-  const raw_ptr<AssistantViewDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<AssistantViewDelegate> delegate_;
 
   // The following views are all owned by the view hierarchy
-  raw_ptr<views::ImageView, ExperimentalAsh> molecule_icon_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> input_modality_layout_container_ =
-      nullptr;
-  raw_ptr<views::View, ExperimentalAsh> keyboard_layout_container_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> voice_layout_container_ = nullptr;
-  raw_ptr<views::ImageButton, ExperimentalAsh> keyboard_input_toggle_ = nullptr;
-  raw_ptr<views::ImageButton, ExperimentalAsh> voice_input_toggle_ = nullptr;
-  raw_ptr<MicView, ExperimentalAsh> animated_voice_input_toggle_ = nullptr;
-  raw_ptr<views::Textfield, ExperimentalAsh> textfield_ = nullptr;
+  raw_ptr<views::ImageView> molecule_icon_ = nullptr;
+  raw_ptr<views::View> input_modality_layout_container_ = nullptr;
+  raw_ptr<views::View> keyboard_layout_container_ = nullptr;
+  raw_ptr<views::View> voice_layout_container_ = nullptr;
+  raw_ptr<views::ImageButton> keyboard_input_toggle_ = nullptr;
+  raw_ptr<views::ImageButton> voice_input_toggle_ = nullptr;
+  raw_ptr<MicView> animated_voice_input_toggle_ = nullptr;
+  raw_ptr<views::Textfield> textfield_ = nullptr;
 
   std::unique_ptr<ui::CallbackLayerAnimationObserver> animation_observer_;
   std::unique_ptr<AssistantQueryHistory::Iterator> query_history_iterator_;

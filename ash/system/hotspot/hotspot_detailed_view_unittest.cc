@@ -154,8 +154,8 @@ class HotspotDetailedViewTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
   FakeHotspotDetailedViewDelegate hotspot_detailed_view_delegate_;
   FakeDetailedViewDelegate detailed_view_delegate_;
-  raw_ptr<HotspotDetailedView, DanglingUntriaged | ExperimentalAsh>
-      hotspot_detailed_view_ = nullptr;
+  raw_ptr<HotspotDetailedView, DanglingUntriaged> hotspot_detailed_view_ =
+      nullptr;
 };
 
 TEST_F(HotspotDetailedViewTest, PressingSettingsButtonOpensSettings) {

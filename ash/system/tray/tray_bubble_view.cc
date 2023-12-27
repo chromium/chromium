@@ -133,7 +133,7 @@ class BottomAlignedBoxLayout : public views::BoxLayout {
     }
   }
 
-  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_;
+  raw_ptr<TrayBubbleView> bubble_view_;
 };
 
 }  // namespace

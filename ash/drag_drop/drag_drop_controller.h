@@ -188,7 +188,7 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   std::unique_ptr<DragDropCaptureDelegate> touch_drag_drop_delegate_;
 
   // Window that is currently under the drag cursor.
-  raw_ptr<aura::Window, ExperimentalAsh> drag_window_ = nullptr;
+  raw_ptr<aura::Window> drag_window_ = nullptr;
 
   // Starting and final bounds for the drag image for the drag cancel animation.
   gfx::Rect drag_image_initial_bounds_for_cancel_animation_;
@@ -198,7 +198,7 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   std::unique_ptr<gfx::AnimationDelegate> cancel_animation_notifier_;
 
   // Window that started the drag.
-  raw_ptr<aura::Window, ExperimentalAsh> drag_source_window_ = nullptr;
+  raw_ptr<aura::Window> drag_source_window_ = nullptr;
 
   // A closure that allows a test to implement the actions within
   // drag and drop event loop.
@@ -211,8 +211,8 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   base::OnceClosure quit_closure_;
 
   // If non-null, a drag is active which required a capture window.
-  raw_ptr<DragDropCaptureDelegate, DanglingUntriaged | ExperimentalAsh>
-      capture_delegate_ = nullptr;
+  raw_ptr<DragDropCaptureDelegate, DanglingUntriaged> capture_delegate_ =
+      nullptr;
 
   ui::mojom::DragEventSource current_drag_event_source_ =
       ui::mojom::DragEventSource::kMouse;
@@ -231,7 +231,7 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   base::ObserverList<aura::client::DragDropClientObserver>::Unchecked
       observers_;
 
-  raw_ptr<ToplevelWindowDragDelegate, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ToplevelWindowDragDelegate, DanglingUntriaged>
       toplevel_window_drag_delegate_ = nullptr;
 
   // Weak ptr for async callbacks to be invalidated if a new drag starts.

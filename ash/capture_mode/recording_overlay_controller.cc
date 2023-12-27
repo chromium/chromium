@@ -156,7 +156,7 @@ class OverlayTargeter : public aura::WindowTargeter {
   }
 
  private:
-  const raw_ptr<aura::Window, ExperimentalAsh> overlay_window_;
+  const raw_ptr<aura::Window> overlay_window_;
 };
 
 }  // namespace

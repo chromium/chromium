@@ -27,7 +27,7 @@ class Data {
   ~Data() { *delete_setter_ = true; }
 
  private:
-  raw_ptr<bool, ExperimentalAsh> delete_setter_;
+  raw_ptr<bool> delete_setter_;
 };
 
 }  // namespace

@@ -94,7 +94,7 @@ class LogoViewImpl : public LogoView,
 
   StateAnimator state_animator_;
 
-  raw_ptr<ui::Compositor, ExperimentalAsh> animating_compositor_ = nullptr;
+  raw_ptr<ui::Compositor> animating_compositor_ = nullptr;
 
   float dots_scale_ = 1.0f;
 

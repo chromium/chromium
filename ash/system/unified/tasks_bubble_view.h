@@ -124,14 +124,13 @@ class ASH_EXPORT TasksBubbleView : public GlanceablesTasksViewBase,
   bool first_task_list_shown_ = false;
 
   // Owned by views hierarchy.
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_header_view_ = nullptr;
-  raw_ptr<Combobox, ExperimentalAsh> task_list_combo_box_view_ = nullptr;
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> button_container_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> task_items_container_view_ = nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> add_new_task_button_ = nullptr;
-  raw_ptr<GlanceablesListFooterView, ExperimentalAsh> list_footer_view_ =
-      nullptr;
-  raw_ptr<GlanceablesProgressBarView, ExperimentalAsh> progress_bar_ = nullptr;
+  raw_ptr<views::FlexLayoutView> tasks_header_view_ = nullptr;
+  raw_ptr<Combobox> task_list_combo_box_view_ = nullptr;
+  raw_ptr<views::FlexLayoutView> button_container_ = nullptr;
+  raw_ptr<views::View> task_items_container_view_ = nullptr;
+  raw_ptr<views::LabelButton> add_new_task_button_ = nullptr;
+  raw_ptr<GlanceablesListFooterView> list_footer_view_ = nullptr;
+  raw_ptr<GlanceablesProgressBarView> progress_bar_ = nullptr;
 
   // Records the time when the bubble was about to request a task list. Used for
   // metrics.

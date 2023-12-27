@@ -65,7 +65,7 @@ class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
   void UpdateIconOnColorChanges();
 
   // Owned by TrayContainer for its lifetime.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
 
   ScopedSessionObserver session_observer_{this};
 };

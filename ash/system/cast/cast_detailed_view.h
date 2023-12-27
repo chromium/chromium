@@ -96,12 +96,10 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
       sink_extra_views_map_;
 
   // Special list item that, if clicked, launches the access code casting dialog
-  raw_ptr<HoverHighlightView, ExperimentalAsh> add_access_code_device_ =
-      nullptr;
+  raw_ptr<HoverHighlightView> add_access_code_device_ = nullptr;
 
   // View shown when no cast devices are available.
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> zero_state_view_ =
-      nullptr;
+  raw_ptr<views::View, DanglingUntriaged> zero_state_view_ = nullptr;
 
   base::WeakPtrFactory<CastDetailedView> weak_factory_{this};
 };

@@ -399,7 +399,7 @@ class TestWallpaperControllerObserver : public WallpaperControllerObserver {
   }
 
  private:
-  raw_ptr<WallpaperController, ExperimentalAsh> controller_;
+  raw_ptr<WallpaperController> controller_;
 
   base::RepeatingClosure resize_callback_;
   base::RepeatingClosure colors_calculated_callback_;
@@ -888,10 +888,9 @@ class WallpaperControllerTestBase : public AshTestBase {
     return base::Time();
   }
 
-  raw_ptr<WallpaperControllerImpl, DanglingUntriaged | ExperimentalAsh>
-      controller_;
-  raw_ptr<WallpaperPrefManager, DanglingUntriaged | ExperimentalAsh>
-      pref_manager_ = nullptr;  // owned by controller
+  raw_ptr<WallpaperControllerImpl, DanglingUntriaged> controller_;
+  raw_ptr<WallpaperPrefManager, DanglingUntriaged> pref_manager_ =
+      nullptr;  // owned by controller
 
   base::ScopedTempDir user_data_dir_;
   base::ScopedTempDir online_wallpaper_dir_;

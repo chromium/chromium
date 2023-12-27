@@ -154,7 +154,7 @@ class BoundsAnimatorDisabler {
   // The previous animation duration.
   base::TimeDelta old_duration_;
   // The bounds animator which gets used.
-  raw_ptr<views::BoundsAnimator, ExperimentalAsh> bounds_animator_;
+  raw_ptr<views::BoundsAnimator> bounds_animator_;
 };
 
 void ReportMoveAnimationSmoothness(int smoothness) {
@@ -257,7 +257,7 @@ class ShelfView::ViewOpacityResetter : public views::ViewObserver {
   }
 
  private:
-  raw_ptr<views::View, ExperimentalAsh> view_;
+  raw_ptr<views::View> view_;
   base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
       this};
 };
@@ -276,7 +276,7 @@ class ShelfView::FadeInAnimationDelegate
     shelf_view_->OnFadeInAnimationEnded();
   }
 
-  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_ = nullptr;
+  raw_ptr<ShelfView> shelf_view_ = nullptr;
 };
 
 // AnimationDelegate used when deleting an item. This steadily decreased the
@@ -307,7 +307,7 @@ class ShelfView::FadeOutAnimationDelegate : public gfx::AnimationDelegate {
   void AnimationCanceled(const Animation* animation) override {}
 
  private:
-  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_;
+  raw_ptr<ShelfView> shelf_view_;
   std::unique_ptr<views::View> view_;
 };
 
@@ -334,8 +334,8 @@ class ShelfView::StartFadeAnimationDelegate : public gfx::AnimationDelegate {
   }
 
  private:
-  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_;
-  raw_ptr<views::View, ExperimentalAsh> view_;
+  raw_ptr<ShelfView> shelf_view_;
+  raw_ptr<views::View> view_;
 };
 
 // static

@@ -235,7 +235,7 @@ class FastPairPresenterImplTest : public AshTestBase {
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
   std::unique_ptr<MockQuickPairBrowserDelegate> browser_delegate_;
   signin::IdentityTestEnvironment identity_test_env_;
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   DiscoveryAction discovery_action_;
   DiscoveryAction secondary_discovery_action_;
   PairingFailedAction pairing_failed_action_;

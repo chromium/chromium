@@ -52,10 +52,8 @@ class SplitViewHighlightViewTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<SplitViewHighlightView, DanglingUntriaged | ExperimentalAsh>
-      left_highlight_;
-  raw_ptr<SplitViewHighlightView, DanglingUntriaged | ExperimentalAsh>
-      right_highlight_;
+  raw_ptr<SplitViewHighlightView, DanglingUntriaged> left_highlight_;
+  raw_ptr<SplitViewHighlightView, DanglingUntriaged> right_highlight_;
   std::unique_ptr<views::Widget> widget_;
 
  private:

@@ -43,7 +43,7 @@ class ShelfWindowWatcherItemDelegate : public ShelfItemDelegate {
   void Close() override;
 
   // The window associated with this item. Not owned.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 };
 
 }  // namespace ash

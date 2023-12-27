@@ -131,7 +131,7 @@ class ASH_EXPORT GameDashboardMainMenuView
   AnchoredNudge* GetGameControlsSetupNudgeForTesting();
 
   // Allows this class to access `GameDashboardContext` owned functions/objects.
-  const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
+  const raw_ptr<GameDashboardContext> context_;
 
   // Shortcut Tiles:
   // Toolbar button to toggle the `GameDashboardToolbarView`.

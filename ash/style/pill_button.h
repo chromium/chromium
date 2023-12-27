@@ -221,7 +221,7 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   int GetHorizontalSpacingWithIcon() const;
 
   Type type_;
-  const raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_;
+  const raw_ptr<const gfx::VectorIcon> icon_;
 
   // Horizontal spacing of this button. `kPillButtonHorizontalSpacing` will be
   // set as the default value.

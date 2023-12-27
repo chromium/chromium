@@ -75,7 +75,7 @@ class FakeAuthFactorModel : public AuthFactorModel {
 
   AuthFactorType type_;
   AuthFactorState state_ = AuthFactorState::kReady;
-  raw_ptr<AuthIconView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<AuthIconView> icon_ = nullptr;
   bool do_handle_tap_or_click_called_ = false;
   bool should_announce_label_ = false;
   int do_handle_error_timeout_num_calls_ = 0;
@@ -103,7 +103,7 @@ class ScopedAXEventObserver : public views::AXEventObserver {
     }
   }
 
-  raw_ptr<views::View, ExperimentalAsh> view_;
+  raw_ptr<views::View> view_;
   ax::mojom::Event event_type_;
 };
 
@@ -210,9 +210,8 @@ class LoginAuthFactorsViewUnittest : public LoginTestBase {
     EXPECT_FALSE(view_->GetFocusManager()->GetFocusedView());
   }
 
-  raw_ptr<views::View, ExperimentalAsh> container_ = nullptr;
-  raw_ptr<LoginAuthFactorsView, ExperimentalAsh> view_ =
-      nullptr;  // Owned by container.
+  raw_ptr<views::View> container_ = nullptr;
+  raw_ptr<LoginAuthFactorsView> view_ = nullptr;  // Owned by container.
   std::vector<raw_ptr<FakeAuthFactorModel, VectorExperimental>> auth_factors_;
   bool click_to_enter_called_ = false;
   bool auth_factor_is_hiding_password_ = false;

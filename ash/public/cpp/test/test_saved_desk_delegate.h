@@ -74,9 +74,8 @@ class ASH_PUBLIC_EXPORT TestSavedDeskDelegate : public SavedDeskDelegate {
   bool IsAppAvailable(const std::string& app_id) const override;
 
  private:
-  raw_ptr<desks_storage::DeskModel, ExperimentalAsh> desk_model_ = nullptr;
-  raw_ptr<desks_storage::AdminTemplateService,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<desks_storage::DeskModel> desk_model_ = nullptr;
+  raw_ptr<desks_storage::AdminTemplateService, DanglingUntriaged>
       admin_template_service_ = nullptr;
   std::vector<std::string> unavailable_app_ids_;
 };

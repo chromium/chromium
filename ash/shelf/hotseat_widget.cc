@@ -144,7 +144,7 @@ class HotseatStateTransitionAnimation : public ui::LayerAnimationElement {
 
   gfx::Tween::Type tween_type_ = gfx::Tween::LINEAR;
 
-  raw_ptr<HotseatWidget, ExperimentalAsh> hotseat_widget_ = nullptr;
+  raw_ptr<HotseatWidget> hotseat_widget_ = nullptr;
 };
 
 // Animation implemented specifically for the transition between the home
@@ -395,7 +395,7 @@ class HotseatWindowTargeter : public aura::WindowTargeter {
 
  private:
   // Unowned and guaranteed to be not null for the duration of |this|.
-  const raw_ptr<HotseatWidget, ExperimentalAsh> hotseat_widget_;
+  const raw_ptr<HotseatWidget> hotseat_widget_;
 };
 
 }  // namespace
@@ -477,14 +477,12 @@ class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
   }
 
  private:
-  raw_ptr<FocusCycler, DanglingUntriaged | ExperimentalAsh> focus_cycler_ =
-      nullptr;
+  raw_ptr<FocusCycler, DanglingUntriaged> focus_cycler_ = nullptr;
   // A background layer that may be visible depending on HotseatState.
-  raw_ptr<views::View, ExperimentalAsh> translucent_background_ = nullptr;
-  raw_ptr<ScrollableShelfView, DanglingUntriaged | ExperimentalAsh>
-      scrollable_shelf_view_ = nullptr;  // unowned.
-  raw_ptr<HotseatWidget, ExperimentalAsh> hotseat_widget_ =
-      nullptr;  // unowned.
+  raw_ptr<views::View> translucent_background_ = nullptr;
+  raw_ptr<ScrollableShelfView, DanglingUntriaged> scrollable_shelf_view_ =
+      nullptr;                                       // unowned.
+  raw_ptr<HotseatWidget> hotseat_widget_ = nullptr;  // unowned.
   // Blur is disabled during animations to improve performance.
   int blur_lock_ = 0;
 

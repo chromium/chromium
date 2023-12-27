@@ -196,7 +196,7 @@ class AppListItemListTest : public testing::Test {
 
   AppListItemListWithUpdater item_updater_;
   TestObserver observer_;
-  raw_ptr<AppListItemList, ExperimentalAsh> item_list_ = nullptr;
+  raw_ptr<AppListItemList> item_list_ = nullptr;
 };
 
 TEST_F(AppListItemListTest, FindItemIndex) {

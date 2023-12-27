@@ -119,7 +119,7 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
   }
 
   // Owned by views hierarchy.
-  const raw_ptr<PowerButton, ExperimentalAsh> power_button_;
+  const raw_ptr<PowerButton> power_button_;
 };
 
 // Returns whether the user's email address should be shown in the power menu.
@@ -334,10 +334,10 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // The root menu item view of `context_menu_model_`. Cached for testing.
-  raw_ptr<views::MenuItemView, ExperimentalAsh> root_menu_item_view_ = nullptr;
+  raw_ptr<views::MenuItemView> root_menu_item_view_ = nullptr;
 
   // Owned by views hierarchy.
-  raw_ptr<PowerButton, ExperimentalAsh> power_button_ = nullptr;
+  raw_ptr<PowerButton> power_button_ = nullptr;
 };
 
 PowerButtonContainer::PowerButtonContainer(PressedCallback callback)

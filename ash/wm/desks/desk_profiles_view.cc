@@ -129,11 +129,11 @@ class DeskProfilesMenuModelAdapter : public views::MenuModelAdapter {
     return item_view;
   }
   // The list of logged in profiles.
-  const raw_ptr<ProfilesList, ExperimentalAsh> profiles_;
+  const raw_ptr<ProfilesList> profiles_;
 
   // The menu runner that is responsible to run the menu.
   // The avatar button.
-  raw_ptr<DeskProfilesButton, ExperimentalAsh> button_;
+  raw_ptr<DeskProfilesButton> button_;
 
   // The event type which was used to show the menu.
   const ui::MenuSourceType source_type_;
@@ -217,7 +217,7 @@ class DeskProfilesButton::MenuController : public ui::SimpleMenuModel::Delegate,
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // Owned by views hierarchy.
-  raw_ptr<DeskProfilesButton, ExperimentalAsh> profile_button_ = nullptr;
+  raw_ptr<DeskProfilesButton> profile_button_ = nullptr;
 
   base::WeakPtrFactory<DeskProfilesButton::MenuController> weak_ptr_factory_{
       this};

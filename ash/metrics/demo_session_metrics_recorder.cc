@@ -266,7 +266,7 @@ class DemoSessionMetricsRecorder::ActiveAppArcPackageNameObserver
   }
 
  private:
-  raw_ptr<DemoSessionMetricsRecorder, ExperimentalAsh> metrics_recorder_;
+  raw_ptr<DemoSessionMetricsRecorder> metrics_recorder_;
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       scoped_observations_{this};
 };
@@ -315,7 +315,7 @@ class DemoSessionMetricsRecorder::UniqueAppsLaunchedArcPackageNameObserver
   }
 
  private:
-  raw_ptr<DemoSessionMetricsRecorder, ExperimentalAsh> metrics_recorder_;
+  raw_ptr<DemoSessionMetricsRecorder> metrics_recorder_;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       scoped_observation_{this};
 };

@@ -107,15 +107,13 @@ class ASH_EXPORT NotificationGroupingController
   bool adding_parent_grouped_notification_ = false;
 
   // Owner of this class.
-  const raw_ptr<NotificationCenterTray, DanglingUntriaged | ExperimentalAsh>
-      notification_tray_;
+  const raw_ptr<NotificationCenterTray, DanglingUntriaged> notification_tray_;
 
   // A data structure that holds all grouped notifications along with their
   // associations with their parent notifications. This pointer is assigned to a
   // static global instance that is shared across all instances of
   // `NotificationGroupingController`.
-  const raw_ptr<GroupedNotificationList, ExperimentalAsh>
-      grouped_notification_list_;
+  const raw_ptr<GroupedNotificationList> grouped_notification_list_;
 
   base::ScopedObservation<message_center::MessageCenter, MessageCenterObserver>
       observer_{this};

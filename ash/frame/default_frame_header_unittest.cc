@@ -190,7 +190,7 @@ class FramePaintWaiter : public ui::CompositorObserver {
 
  private:
   base::RunLoop run_loop_;
-  raw_ptr<FrameHeader, ExperimentalAsh> frame_header_ = nullptr;
+  raw_ptr<FrameHeader> frame_header_ = nullptr;
 };
 
 TEST_F(DefaultFrameHeaderTest, DeleteDuringAnimation) {

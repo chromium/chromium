@@ -45,7 +45,7 @@ class DeskButtonBase : public views::LabelButton, public OverviewFocusableView {
   virtual void UpdateFocusState();
 
   // Owned by the views hierarchy.
-  const raw_ptr<DeskBarViewBase, ExperimentalAsh> bar_view_;
+  const raw_ptr<DeskBarViewBase> bar_view_;
 
  private:
   base::RepeatingClosure pressed_callback_;

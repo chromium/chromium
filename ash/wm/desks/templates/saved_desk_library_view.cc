@@ -179,7 +179,7 @@ class SavedDeskLibraryWindowTargeter : public aura::WindowTargeter {
   }
 
  private:
-  const raw_ptr<SavedDeskLibraryView, ExperimentalAsh> owner_;
+  const raw_ptr<SavedDeskLibraryView> owner_;
 };
 
 // -----------------------------------------------------------------------------
@@ -207,7 +207,7 @@ class SavedDeskLibraryEventHandler : public ui::EventHandler {
   void OnKeyEvent(ui::KeyEvent* event) override { owner_->OnKeyEvent(event); }
 
  private:
-  const raw_ptr<SavedDeskLibraryView, ExperimentalAsh> owner_;
+  const raw_ptr<SavedDeskLibraryView> owner_;
 };
 
 // -----------------------------------------------------------------------------

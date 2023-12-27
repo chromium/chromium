@@ -135,7 +135,7 @@ class ShelfViewTestAPI {
   bool HasPendingPromiseAppRemoval(const std::string& promise_app_id) const;
 
  private:
-  raw_ptr<ShelfView, DanglingUntriaged | ExperimentalAsh> shelf_view_;
+  raw_ptr<ShelfView, DanglingUntriaged> shelf_view_;
   int id_ = 0;
 };
 

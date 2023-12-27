@@ -27,7 +27,7 @@ class ArcCameraBridgeTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
   user_prefs::TestBrowserContextWithPrefs context_;
-  const raw_ptr<ArcCameraBridge, ExperimentalAsh> bridge_;
+  const raw_ptr<ArcCameraBridge> bridge_;
 };
 
 TEST_F(ArcCameraBridgeTest, ConstructDestruct) {

@@ -61,7 +61,7 @@ struct NotificationParams {
   std::u16string message;
   std::string notifier_name;
   GURL url;
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon;
+  raw_ptr<const gfx::VectorIcon> icon;
 };
 
 NotificationParams GetNonStylusNotificationParams(const std::string& map_key,

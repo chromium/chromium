@@ -65,7 +65,7 @@ class BoundsAnimatorWaiter : public views::BoundsAnimatorObserver {
       run_loop_->Quit();
   }
 
-  const raw_ref<views::BoundsAnimator, ExperimentalAsh> animator_;
+  const raw_ref<views::BoundsAnimator> animator_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

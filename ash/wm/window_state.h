@@ -485,7 +485,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
     void OnWindowDestroying(aura::Window* window) override;
 
    private:
-    raw_ptr<aura::Window, ExperimentalAsh> window_;
+    raw_ptr<aura::Window> window_;
     BoundsChangeAnimationType previous_bounds_animation_type_;
   };
 
@@ -607,7 +607,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   bool has_ever_been_dragged_to_maximized_ = false;
 
   // The owner of this window settings.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
   std::unique_ptr<WindowStateDelegate> delegate_;
 
   bool bounds_changed_by_user_ = false;

@@ -1206,7 +1206,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   FileSystemStatusRewriter file_system_status_rewriter_for_testing_;
 
   // The delegate is owned by ArcSessionRunner.
-  raw_ptr<DemoModeDelegate, ExperimentalAsh> demo_mode_delegate_ = nullptr;
+  raw_ptr<DemoModeDelegate> demo_mode_delegate_ = nullptr;
 
   // For callbacks.
   base::WeakPtrFactory<ArcVmClientAdapter> weak_factory_{this};

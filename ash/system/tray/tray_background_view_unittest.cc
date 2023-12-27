@@ -203,10 +203,9 @@ class TrayBackgroundViewTest : public AshTestBase,
   }
 
  private:
-  raw_ptr<TestTrayBackgroundView, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TestTrayBackgroundView, DanglingUntriaged>
       test_tray_background_view_ = nullptr;
-  raw_ptr<PersistentBubbleTestTrayBackgroundView,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<PersistentBubbleTestTrayBackgroundView, DanglingUntriaged>
       persistent_bubble_test_tray_background_view_ = nullptr;
   int num_animations_scheduled_ = 0;
 };

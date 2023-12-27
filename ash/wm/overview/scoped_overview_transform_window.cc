@@ -158,7 +158,7 @@ class ScopedOverviewTransformWindow::LayerCachingAndFilteringObserver
   }
 
  private:
-  raw_ptr<ui::Layer, ExperimentalAsh> layer_;
+  raw_ptr<ui::Layer> layer_;
 };
 
 ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(

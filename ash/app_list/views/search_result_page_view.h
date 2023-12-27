@@ -99,7 +99,7 @@ class ASH_EXPORT SearchResultPageView : public AppListPage {
   int GetCornerRadiusForSearchResultsState(SearchResultsState state);
 
   // Search result container used for productivity launcher.
-  raw_ptr<AppListSearchView, ExperimentalAsh> search_view_ = nullptr;
+  raw_ptr<AppListSearchView> search_view_ = nullptr;
 
   // The currently shown search results state. Used with productivity launcher.
   SearchResultsState current_search_results_state_ =

@@ -49,7 +49,7 @@ class ASH_PUBLIC_EXPORT ShelfModel {
     }
 
    private:
-    raw_ptr<ShelfModel, ExperimentalAsh> model_ = nullptr;
+    raw_ptr<ShelfModel> model_ = nullptr;
   };
 
   // Some classes in ash have the ability to insert an item into the ShelfModel,
@@ -238,8 +238,7 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   ShelfItems items_;
 
   // This pointer must outlive this class.
-  raw_ptr<ShelfItemFactory, DanglingUntriaged | ExperimentalAsh>
-      shelf_item_factory_ = nullptr;
+  raw_ptr<ShelfItemFactory, DanglingUntriaged> shelf_item_factory_ = nullptr;
 
   // The shelf ID of the currently active shelf item, or an empty ID if
   // nothing is active.

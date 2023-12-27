@@ -338,15 +338,15 @@ class LockStateControllerTest : public PowerButtonTestBase {
   std::unique_ptr<ShutdownController::ScopedResetterForTest>
       shutdown_controller_resetter_;
   std::unique_ptr<TestShutdownController> test_shutdown_controller_;
-  raw_ptr<TestSessionStateAnimator, DanglingUntriaged | ExperimentalAsh>
-      test_animator_ = nullptr;  // not owned
+  raw_ptr<TestSessionStateAnimator, DanglingUntriaged> test_animator_ =
+      nullptr;  // not owned
 
  private:
   // Histogram value verifier.
   base::HistogramTester histograms_;
 
   // To access the pref kLoginShutdownTimestampPrefName
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 };
 
 // Test the show menu and shutdown flow for non-Chrome-OS hardware that doesn't

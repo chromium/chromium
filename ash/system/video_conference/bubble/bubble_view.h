@@ -47,7 +47,7 @@ class ASH_EXPORT BubbleView : public TrayBubbleView {
 
  private:
   // Unowned by `BubbleView`.
-  raw_ptr<VideoConferenceTrayController, ExperimentalAsh> controller_;
+  raw_ptr<VideoConferenceTrayController> controller_;
 
   const raw_ref<const MediaApps> media_apps_;
 

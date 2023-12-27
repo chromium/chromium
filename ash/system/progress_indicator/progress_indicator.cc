@@ -243,7 +243,7 @@ class DefaultProgressIndicatorAnimationRegistry
 
   // The progress indicator for which to manage animations and a subscription
   // to receive notification of progress change events.
-  raw_ptr<ProgressIndicator, ExperimentalAsh> progress_indicator_ = nullptr;
+  raw_ptr<ProgressIndicator> progress_indicator_ = nullptr;
   base::CallbackListSubscription progress_changed_subscription_;
 
   // Instantiate `previous_progress_` to completion to avoid starting a pulse

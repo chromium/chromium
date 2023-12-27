@@ -85,14 +85,12 @@ class AppsAccessManagerImpl
 
   FeatureStatus current_feature_status_;
   ConnectionStatus current_connection_status_;
-  raw_ptr<EcheConnector, ExperimentalAsh> eche_connector_;
-  raw_ptr<EcheMessageReceiver, ExperimentalAsh> message_receiver_;
-  raw_ptr<FeatureStatusProvider, ExperimentalAsh> feature_status_provider_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      multidevice_setup_client_;
-  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
-      connection_manager_;
+  raw_ptr<EcheConnector> eche_connector_;
+  raw_ptr<EcheMessageReceiver> message_receiver_;
+  raw_ptr<FeatureStatusProvider> feature_status_provider_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
+  raw_ptr<secure_channel::ConnectionManager> connection_manager_;
   bool initialized_ = false;
   proto::AppStreamingPolicy current_app_policy_state_ =
       proto::AppStreamingPolicy::APP_POLICY_UNKNOWN;

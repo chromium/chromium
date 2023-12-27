@@ -180,7 +180,7 @@ class ASH_EXPORT AutoclickController
   int mouse_event_flags_ = ui::EF_NONE;
   // The target window is observed by AutoclickController for the duration
   // of a autoclick gesture.
-  raw_ptr<aura::Window, ExperimentalAsh> tap_down_target_ = nullptr;
+  raw_ptr<aura::Window> tap_down_target_ = nullptr;
   // The most recent mouse location.
   gfx::Point last_mouse_location_{-kDefaultAutoclickMovementThreshold,
                                   -kDefaultAutoclickMovementThreshold};

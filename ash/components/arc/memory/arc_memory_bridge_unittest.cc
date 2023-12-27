@@ -44,7 +44,7 @@ class ArcMemoryBridgeTest : public testing::Test {
   ArcServiceManager arc_service_manager_;
   FakeMemoryInstance memory_instance_;
   user_prefs::TestBrowserContextWithPrefs context_;
-  raw_ptr<ArcMemoryBridge, ExperimentalAsh> bridge_ = nullptr;
+  raw_ptr<ArcMemoryBridge> bridge_ = nullptr;
 };
 
 TEST_F(ArcMemoryBridgeTest, ConstructDestruct) {

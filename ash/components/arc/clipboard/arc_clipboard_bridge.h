@@ -46,7 +46,7 @@ class ArcClipboardBridge : public KeyedService,
   static void EnsureFactoryBuilt();
 
  private:
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   bool event_originated_at_instance_;

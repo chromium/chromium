@@ -155,8 +155,7 @@ class TestImageClient {
   }
 
  private:
-  const raw_ptr<const HoldingSpaceImage, DanglingUntriaged | ExperimentalAsh>
-      image_;
+  const raw_ptr<const HoldingSpaceImage, DanglingUntriaged> image_;
   base::CallbackListSubscription image_subscription_;
   size_t image_change_count_ = 0;
 };

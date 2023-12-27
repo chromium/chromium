@@ -194,8 +194,7 @@ class FastPairPairerImpl : public FastPairPairer,
   base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>
       account_key_failure_callback_;
   base::OnceCallback<void(scoped_refptr<Device>)> pairing_procedure_complete_;
-  raw_ptr<FastPairHandshake, DanglingUntriaged | ExperimentalAsh>
-      fast_pair_handshake_ = nullptr;
+  raw_ptr<FastPairHandshake, DanglingUntriaged> fast_pair_handshake_ = nullptr;
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>
       adapter_observation_{this};

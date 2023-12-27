@@ -219,27 +219,23 @@ class ASH_EXPORT AppListBubbleAppsPage
   // Pressed callback for `toggle_continue_section_button_`.
   void OnToggleContinueSection();
 
-  raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_ = nullptr;
-  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
-  raw_ptr<RoundedScrollBar, ExperimentalAsh> scroll_bar_ = nullptr;
+  raw_ptr<AppListViewDelegate> view_delegate_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
+  raw_ptr<RoundedScrollBar> scroll_bar_ = nullptr;
 
   // Wraps both the continue label and the toggle continue section button.
-  raw_ptr<views::View, ExperimentalAsh> continue_label_container_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> continue_label_ = nullptr;
-  raw_ptr<IconButton, ExperimentalAsh> toggle_continue_section_button_ =
-      nullptr;
+  raw_ptr<views::View> continue_label_container_ = nullptr;
+  raw_ptr<views::Label> continue_label_ = nullptr;
+  raw_ptr<IconButton> toggle_continue_section_button_ = nullptr;
 
-  raw_ptr<ContinueSectionView, ExperimentalAsh> continue_section_ = nullptr;
-  raw_ptr<RecentAppsView, ExperimentalAsh> recent_apps_ = nullptr;
-  raw_ptr<views::Separator, ExperimentalAsh> separator_ = nullptr;
-  raw_ptr<AppListToastContainerView, ExperimentalAsh> toast_container_ =
-      nullptr;
-  raw_ptr<ScrollableAppsGridView, ExperimentalAsh> scrollable_apps_grid_view_ =
-      nullptr;
+  raw_ptr<ContinueSectionView> continue_section_ = nullptr;
+  raw_ptr<RecentAppsView> recent_apps_ = nullptr;
+  raw_ptr<views::Separator> separator_ = nullptr;
+  raw_ptr<AppListToastContainerView> toast_container_ = nullptr;
+  raw_ptr<ScrollableAppsGridView> scrollable_apps_grid_view_ = nullptr;
 
   // The search box owned by AppListBubbleView.
-  raw_ptr<SearchBoxView, DanglingUntriaged | ExperimentalAsh> search_box_ =
-      nullptr;
+  raw_ptr<SearchBoxView, DanglingUntriaged> search_box_ = nullptr;
 
   std::unique_ptr<AppListKeyboardController> app_list_keyboard_controller_;
   std::unique_ptr<AppListNudgeController> app_list_nudge_controller_;

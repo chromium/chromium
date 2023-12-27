@@ -42,10 +42,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantQueryView : public views::View {
   void SetText(const std::string& high_confidence_text,
                const std::string& low_confidence_text = std::string());
 
-  raw_ptr<views::Label, ExperimentalAsh>
-      high_confidence_label_;  // Owned by view hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh>
-      low_confidence_label_;  // Owned by view hierarchy.
+  raw_ptr<views::Label> high_confidence_label_;  // Owned by view hierarchy.
+  raw_ptr<views::Label> low_confidence_label_;   // Owned by view hierarchy.
 };
 
 }  // namespace ash

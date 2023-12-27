@@ -211,7 +211,7 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   // Returns the time for an animation.
   base::TimeDelta GetAdjustedAnimationTime(base::TimeDelta default_time) const;
 
-  raw_ptr<MultiUserWindowManagerDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<MultiUserWindowManagerDelegate> delegate_;
 
   // A lookup to see to which user the given window belongs to, where and if it
   // should get shown.

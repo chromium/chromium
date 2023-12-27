@@ -178,8 +178,8 @@ class FastPairScannerImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   scoped_refptr<FastPairScanner> scanner_;
-  raw_ptr<device::MockBluetoothLowEnergyScanSession, ExperimentalAsh>
-      mock_scan_session_ = nullptr;
+  raw_ptr<device::MockBluetoothLowEnergyScanSession> mock_scan_session_ =
+      nullptr;
   std::unique_ptr<FastPairScannerObserver> scanner_observer_;
   base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate_;
   base::WeakPtrFactory<FastPairScannerImplTest> weak_ptr_factory_{this};

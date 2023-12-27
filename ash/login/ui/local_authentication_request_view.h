@@ -66,7 +66,7 @@ class ASH_EXPORT LocalAuthenticationRequestView
     LocalAuthenticationRequestViewState state() const;
 
    private:
-    raw_ptr<LocalAuthenticationRequestView, ExperimentalAsh> view_;
+    raw_ptr<LocalAuthenticationRequestView> view_;
   };
 
   // Creates local authentication request view that will enable the user to
@@ -128,17 +128,17 @@ class ASH_EXPORT LocalAuthenticationRequestView
   gfx::Size GetLocalAuthenticationRequestViewSize() const;
 
   // Unowned pointer to the delegate. The delegate should outlive this instance.
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Strings as on view construction to enable restoring the original state.
   std::u16string default_title_;
   std::u16string default_description_;
 
   // Correspononding labels and other UI elements.
-  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> description_label_ = nullptr;
-  raw_ptr<LoginButton, ExperimentalAsh> close_button_ = nullptr;
-  raw_ptr<LoginPasswordView, ExperimentalAsh> login_password_view_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<views::Label> description_label_ = nullptr;
+  raw_ptr<LoginButton> close_button_ = nullptr;
+  raw_ptr<LoginPasswordView> login_password_view_ = nullptr;
   std::unique_ptr<SystemShadow> shadow_;
 
   // Current local authentication state.

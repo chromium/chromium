@@ -41,8 +41,7 @@ class LocaleDetailedViewTest : public AshTestBase {
 
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  raw_ptr<LocaleDetailedView, DanglingUntriaged | ExperimentalAsh>
-      detailed_view_ = nullptr;
+  raw_ptr<LocaleDetailedView, DanglingUntriaged> detailed_view_ = nullptr;
 };
 
 TEST_F(LocaleDetailedViewTest, CreatesRoundedContainer) {

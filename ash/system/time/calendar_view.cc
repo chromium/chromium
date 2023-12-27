@@ -373,7 +373,7 @@ class CalendarView::MonthHeaderLabelView : public views::View {
   std::u16string month_name_;
 
   // The month label in the view.
-  const raw_ptr<views::Label, ExperimentalAsh> month_label_ = nullptr;
+  const raw_ptr<views::Label> month_label_ = nullptr;
 };
 
 BEGIN_METADATA(CalendarView, MonthHeaderLabelView, views::View)

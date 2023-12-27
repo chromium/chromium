@@ -76,8 +76,7 @@ class ClipboardNudgeControllerTest : public AshTestBase {
   }
 
   // Owned by ClipboardHistoryController.
-  raw_ptr<ClipboardNudgeController, DanglingUntriaged | ExperimentalAsh>
-      nudge_controller_;
+  raw_ptr<ClipboardNudgeController, DanglingUntriaged> nudge_controller_;
 
   void ShowNudgeForType(ClipboardNudgeType nudge_type) {
     switch (nudge_type) {

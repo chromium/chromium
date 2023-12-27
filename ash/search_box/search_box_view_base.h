@@ -241,26 +241,23 @@ class SearchBoxViewBase : public views::View,
 
   // Owned by views hierarchy.
   raw_ptr<views::BoxLayoutView> main_container_;
-  raw_ptr<views::BoxLayoutView, ExperimentalAsh> content_container_;
-  raw_ptr<SearchIconImageView, ExperimentalAsh> search_icon_ = nullptr;
-  raw_ptr<SearchBoxImageButton, ExperimentalAsh> assistant_button_ = nullptr;
-  raw_ptr<SearchBoxImageButton, ExperimentalAsh> close_button_ = nullptr;
-  raw_ptr<SearchBoxImageButton, ExperimentalAsh> filter_button_ = nullptr;
-  raw_ptr<views::BoxLayoutView, ExperimentalAsh> assistant_button_container_ =
-      nullptr;
-  raw_ptr<views::BoxLayoutView, ExperimentalAsh>
-      filter_and_close_button_container_ = nullptr;
-  raw_ptr<views::BoxLayoutView, ExperimentalAsh> text_container_ = nullptr;
+  raw_ptr<views::BoxLayoutView> content_container_;
+  raw_ptr<SearchIconImageView> search_icon_ = nullptr;
+  raw_ptr<SearchBoxImageButton> assistant_button_ = nullptr;
+  raw_ptr<SearchBoxImageButton> close_button_ = nullptr;
+  raw_ptr<SearchBoxImageButton> filter_button_ = nullptr;
+  raw_ptr<views::BoxLayoutView> assistant_button_container_ = nullptr;
+  raw_ptr<views::BoxLayoutView> filter_and_close_button_container_ = nullptr;
+  raw_ptr<views::BoxLayoutView> text_container_ = nullptr;
 
-  raw_ptr<views::Textfield, ExperimentalAsh> search_box_;
-  raw_ptr<views::BoxLayoutView, ExperimentalAsh> ghost_text_container_ =
-      nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> separator_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> autocomplete_ghost_text_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> category_separator_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> category_ghost_text_ = nullptr;
+  raw_ptr<views::Textfield> search_box_;
+  raw_ptr<views::BoxLayoutView> ghost_text_container_ = nullptr;
+  raw_ptr<views::Label> separator_label_ = nullptr;
+  raw_ptr<views::Label> autocomplete_ghost_text_ = nullptr;
+  raw_ptr<views::Label> category_separator_label_ = nullptr;
+  raw_ptr<views::Label> category_ghost_text_ = nullptr;
 
-  raw_ptr<views::View, ExperimentalAsh> search_box_button_container_ = nullptr;
+  raw_ptr<views::View> search_box_button_container_ = nullptr;
 
   views::ViewTracker iph_view_tracker_;
 

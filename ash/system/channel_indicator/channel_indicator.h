@@ -78,7 +78,7 @@ class ASH_EXPORT ChannelIndicatorView : public TrayItemView,
   // replaced, owned by `views::View`. `FillLayout` wants to size child views to
   // fit the parent's bounds, but children of `ChannelIndicatorView` need to
   // have specific sizes and insets regardless of the parent's bounds.
-  raw_ptr<views::BoxLayout, ExperimentalAsh> box_layout_;
+  raw_ptr<views::BoxLayout> box_layout_;
 
   ScopedSessionObserver session_observer_;
 

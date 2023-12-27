@@ -64,8 +64,7 @@ class TabletModeMultitaskMenuController : public ui::EventHandler {
   bool reserved_for_gesture_sent_ = false;
 
   // The target window that the menu was created on. Unused.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh>
-      target_window_for_test_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> target_window_for_test_ = nullptr;
 
   // Creates a draggable bar when app windows are activated.
   std::unique_ptr<TabletModeMultitaskCueController> multitask_cue_controller_;

@@ -300,7 +300,7 @@ class FakeInputDataEventWatcher : public InputDataEventWatcher {
 
  private:
   base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher_;
-  const raw_ref<watchers_t, ExperimentalAsh> watchers_;
+  const raw_ref<watchers_t> watchers_;
 };
 
 // Utility to construct FakeInputDataEventWatcher for InputDataProvider.
@@ -323,7 +323,7 @@ class FakeInputDataEventWatcherFactory : public EventWatcherFactory {
   }
 
  private:
-  const raw_ref<watchers_t, ExperimentalAsh> watchers_;
+  const raw_ref<watchers_t> watchers_;
 };
 
 // A mock observer that records device change events emitted from an
@@ -694,13 +694,13 @@ class TestInputDataProvider : public InputDataProvider {
   // The widget represents the tab that input diagnostics would normally be
   // shown in. This is allocated outside this class so it won't
   // be destroyed early. (See next item.)
-  raw_ptr<views::Widget, ExperimentalAsh> attached_widget_;
+  raw_ptr<views::Widget> attached_widget_;
   // Keep a list of watchers for each evdev in the provider. This is a
   // reference to an instance outside of this class, as the lifetime of the
   // list needs to exceed the destruction of this test class, and can only be
   // cleaned up once all watchers have been destroyed by the base
   // InputDataProvider, which occurs after our destruction.
-  const raw_ref<watchers_t, ExperimentalAsh> watchers_;
+  const raw_ref<watchers_t> watchers_;
 };
 
 class InputDataProviderTest : public AshTestBase {

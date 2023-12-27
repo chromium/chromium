@@ -272,7 +272,7 @@ class SearchBoxTextfield : public views::Textfield {
   }
 
  private:
-  const raw_ptr<SearchBoxViewBase, ExperimentalAsh> search_box_view_;
+  const raw_ptr<SearchBoxViewBase> search_box_view_;
 };
 
 // TODO (kylixrd): Enable the following once tast-tests are fixed. Metadata

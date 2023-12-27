@@ -106,7 +106,7 @@ class ASH_EXPORT ShellTestApi {
   bool IsHUDShown();
 
  private:
-  raw_ptr<Shell, ExperimentalAsh> shell_;  // not owned
+  raw_ptr<Shell> shell_;  // not owned
 };
 
 }  // namespace ash

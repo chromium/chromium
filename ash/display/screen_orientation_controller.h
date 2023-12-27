@@ -175,7 +175,7 @@ class ASH_EXPORT ScreenOrientationController
         chromeos::OrientationType::kAny;
     // Tracks the requesting window's root window and is updated whenever it
     // changes.
-    raw_ptr<aura::Window, ExperimentalAsh> root_window = nullptr;
+    raw_ptr<aura::Window> root_window = nullptr;
     LockCompletionBehavior lock_completion_behavior =
         LockCompletionBehavior::None;
   };

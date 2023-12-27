@@ -94,8 +94,8 @@ class TrayContainer : public views::View {
   // phase, and will be applied in the layout update phase.
   std::unique_ptr<views::BoxLayout> layout_manager_;
 
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
-  const raw_ptr<TrayBackgroundView, ExperimentalAsh> tray_background_view_;
+  const raw_ptr<Shelf> shelf_;
+  const raw_ptr<TrayBackgroundView> tray_background_view_;
 
   int main_axis_margin_ = 0;
   int cross_axis_margin_ = 0;

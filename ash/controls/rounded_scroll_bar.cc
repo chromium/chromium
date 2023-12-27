@@ -144,7 +144,7 @@ class RoundedScrollBar::Thumb : public views::BaseScrollBarThumb {
   }
 
  private:
-  const raw_ptr<RoundedScrollBar, ExperimentalAsh> scroll_bar_;
+  const raw_ptr<RoundedScrollBar> scroll_bar_;
   views::Button::ButtonState current_state_ = views::Button::STATE_NORMAL;
 };
 

@@ -48,7 +48,7 @@ class ASH_EXPORT LoginUserView : public views::View,
     bool is_opaque() const;
 
    private:
-    const raw_ptr<LoginUserView, DanglingUntriaged | ExperimentalAsh> view_;
+    const raw_ptr<LoginUserView, DanglingUntriaged> view_;
   };
 
   using OnTap = base::RepeatingClosure;
@@ -129,10 +129,10 @@ class ASH_EXPORT LoginUserView : public views::View,
   std::unique_ptr<HoverNotifier> hover_notifier_;
 
   LoginDisplayStyle display_style_;
-  raw_ptr<UserImage, ExperimentalAsh> user_image_ = nullptr;
-  raw_ptr<UserLabel, ExperimentalAsh> user_label_ = nullptr;
-  raw_ptr<LoginButton, ExperimentalAsh> dropdown_ = nullptr;
-  raw_ptr<TapButton, ExperimentalAsh> tap_button_ = nullptr;
+  raw_ptr<UserImage> user_image_ = nullptr;
+  raw_ptr<UserLabel> user_label_ = nullptr;
+  raw_ptr<LoginButton> dropdown_ = nullptr;
+  raw_ptr<TapButton> tap_button_ = nullptr;
 
   // True iff the view is currently opaque (ie, opacity = 1).
   bool is_opaque_ = false;

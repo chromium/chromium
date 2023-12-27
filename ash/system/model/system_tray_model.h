@@ -100,11 +100,10 @@ class ASH_EXPORT SystemTrayModel : public SystemTray {
   std::unique_ptr<CalendarModel> calendar_model_;
 
   // Client interface in chrome browser. May be null in tests.
-  raw_ptr<SystemTrayClient, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<SystemTrayClient> client_ = nullptr;
 
   // Unowned.
-  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_ =
-      nullptr;
+  raw_ptr<phonehub::PhoneHubManager> phone_hub_manager_ = nullptr;
 };
 
 }  // namespace ash

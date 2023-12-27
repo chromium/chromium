@@ -74,7 +74,7 @@ class KSVSeparatorImageView : public views::ImageView {
     SetImageSize(gfx::Size(kIconSize, kIconSize));
   }
 
-  raw_ptr<ash::ColorProvider, ExperimentalAsh> color_provider_;  // Not owned.
+  raw_ptr<ash::ColorProvider> color_provider_;  // Not owned.
 };
 
 // Creates the separator view between bubble views of modifiers and key.

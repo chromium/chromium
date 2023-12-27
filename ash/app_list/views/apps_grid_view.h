@@ -577,7 +577,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   // reparent drag while being handled in the root app list grid (the drag item
   // will be added to target item list only when the drag ends).
   // Subclasses need non-const access.
-  raw_ptr<AppListItemView, ExperimentalAsh> drag_view_ = nullptr;
+  raw_ptr<AppListItemView> drag_view_ = nullptr;
 
   // If set, a callback called when the dragged item starts moving during a drag
   // (i.e. when the drag icon proxy gets created).
@@ -615,8 +615,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   // non-folder.
   bool extra_page_opened_ = false;
 
-  raw_ptr<GhostImageView, ExperimentalAsh> current_ghost_view_ = nullptr;
-  raw_ptr<GhostImageView, ExperimentalAsh> last_ghost_view_ = nullptr;
+  raw_ptr<GhostImageView> current_ghost_view_ = nullptr;
+  raw_ptr<GhostImageView> last_ghost_view_ = nullptr;
 
  private:
   friend class test::AppsGridViewTestApi;
@@ -975,37 +975,32 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   class ScopedModelUpdate;
 
-  raw_ptr<AppListModel, ExperimentalAsh> model_ =
-      nullptr;  // Owned by AppListView.
-  raw_ptr<AppListItemList, ExperimentalAsh> item_list_ = nullptr;  // Not owned.
+  raw_ptr<AppListModel> model_ = nullptr;         // Owned by AppListView.
+  raw_ptr<AppListItemList> item_list_ = nullptr;  // Not owned.
 
   // This can be nullptr. Only grid views inside folders have a folder delegate.
-  raw_ptr<AppsGridViewFolderDelegate, ExperimentalAsh> folder_delegate_ =
-      nullptr;
+  raw_ptr<AppsGridViewFolderDelegate> folder_delegate_ = nullptr;
 
   // Used to request showing a folder UI for a folder item view.
   // May be nullptr if the AppsGridView is never expected to request a folder to
   // be shown. For example, it will be nullptr for folder items grids (which do
   // not support nested folder items).
-  const raw_ptr<AppListFolderController, ExperimentalAsh> folder_controller_;
+  const raw_ptr<AppListFolderController> folder_controller_;
 
-  const raw_ptr<AppListA11yAnnouncer, DanglingUntriaged | ExperimentalAsh>
-      a11y_announcer_;
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> app_list_view_delegate_;
+  const raw_ptr<AppListA11yAnnouncer, DanglingUntriaged> a11y_announcer_;
+  const raw_ptr<AppListViewDelegate> app_list_view_delegate_;
 
   // May be nullptr if this apps grid doesn't have custom focus handling, for
   // example, a folder apps grid.
-  const raw_ptr<AppListKeyboardController, DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<AppListKeyboardController, DanglingUntriaged>
       keyboard_controller_;
 
   // Keeps the individual AppListItemView. Owned by views hierarchy.
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> items_container_ =
-      nullptr;
+  raw_ptr<views::View, DanglingUntriaged> items_container_ = nullptr;
 
   // The `AppListConfig` currently used for sizing app list item views within
   // the grid.
-  raw_ptr<const AppListConfig, DanglingUntriaged | ExperimentalAsh>
-      app_list_config_ = nullptr;
+  raw_ptr<const AppListConfig, DanglingUntriaged> app_list_config_ = nullptr;
 
   // The max number of columns the grid can have.
   int max_cols_ = 0;
@@ -1018,12 +1013,12 @@ class ASH_EXPORT AppsGridView : public views::View,
   // List of pulsing block views.
   views::ViewModelT<PulsingBlockView> pulsing_blocks_model_;
 
-  raw_ptr<AppListItemView, ExperimentalAsh> selected_view_ = nullptr;
+  raw_ptr<AppListItemView> selected_view_ = nullptr;
 
   // Set while the AppsGridView is handling drag operation for an app list item.
   // It's set to the drag item that is being dragged in the UI. If `drag_view_`
   // is set, it should have the same value as `drag_view_->item()`.
-  raw_ptr<AppListItem, ExperimentalAsh> drag_item_ = nullptr;
+  raw_ptr<AppListItem> drag_item_ = nullptr;
 
   // The index of the drag_view_ when the drag starts.
   GridIndex drag_view_init_index_;
@@ -1070,8 +1065,7 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // An application target drag and drop host which accepts dnd operations.
   // Usually the shelf (e.g. ShelfView or ScrollableShelfView).
-  raw_ptr<ApplicationDragAndDropHost, ExperimentalAsh> drag_and_drop_host_ =
-      nullptr;
+  raw_ptr<ApplicationDragAndDropHost> drag_and_drop_host_ = nullptr;
 
   // The drag operation is currently inside the dnd host and events get
   // forwarded.
@@ -1133,8 +1127,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   std::optional<AppListItemView*> reordering_folder_view_;
 
   // A view which is hidden for testing purposes.
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh>
-      hidden_view_for_test_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> hidden_view_for_test_ = nullptr;
 
   std::unique_ptr<AppsGridContextMenu> context_menu_;
 

@@ -26,7 +26,7 @@ class ShellTabHandler : public ui::EventHandler {
   void OnKeyEvent(ui::KeyEvent* key_event) override;
 
  private:
-  const raw_ptr<Shell, ExperimentalAsh> shell_;
+  const raw_ptr<Shell> shell_;
 };
 
 }  // namespace ash

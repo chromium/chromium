@@ -29,7 +29,7 @@ class HUDHeaderView : public views::View {
   HUDTabStrip* tab_strip() { return tab_strip_; }
 
  private:
-  raw_ptr<HUDTabStrip, ExperimentalAsh> tab_strip_ = nullptr;  // not owned
+  raw_ptr<HUDTabStrip> tab_strip_ = nullptr;  // not owned
 };
 
 }  // namespace hud_display

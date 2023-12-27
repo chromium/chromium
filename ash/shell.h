@@ -1101,11 +1101,11 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<OverviewController> overview_controller_;
   std::unique_ptr<GameDashboardController> game_dashboard_controller_;
   // Owned by |focus_controller_|.
-  raw_ptr<AshFocusRules, ExperimentalAsh> focus_rules_ = nullptr;
+  raw_ptr<AshFocusRules> focus_rules_ = nullptr;
   std::unique_ptr<::wm::ShadowController> shadow_controller_;
   std::unique_ptr<::wm::VisibilityController> visibility_controller_;
   std::unique_ptr<::wm::WindowModalityController> window_modality_controller_;
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
   std::unique_ptr<views::corewm::TooltipController> tooltip_controller_;
   std::unique_ptr<PowerButtonController> power_button_controller_;
   std::unique_ptr<LockStateController> lock_state_controller_;
@@ -1201,8 +1201,7 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   // |native_cursor_manager_| is owned by |cursor_manager_|, but we keep a
   // pointer to vend to test code.
-  raw_ptr<NativeCursorManagerAsh, DanglingUntriaged | ExperimentalAsh>
-      native_cursor_manager_;
+  raw_ptr<NativeCursorManagerAsh, DanglingUntriaged> native_cursor_manager_;
 
   // Cursor may be hidden on certain key events in Chrome OS, whereas we never
   // hide the cursor on Windows.

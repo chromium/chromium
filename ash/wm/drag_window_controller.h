@@ -63,7 +63,7 @@ class ASH_EXPORT DragWindowController {
   void RequestLayerPaintForTest();
 
   // The original window.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 
   // Indicates touch dragging, as opposed to mouse dragging.
   const bool is_touch_dragging_;

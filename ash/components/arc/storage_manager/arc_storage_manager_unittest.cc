@@ -42,7 +42,7 @@ class ArcStorageManagerTest : public testing::Test {
   ArcServiceManager arc_service_manager_;
   FakeStorageManagerInstance storage_manager_instance_;
   user_prefs::TestBrowserContextWithPrefs context_;
-  const raw_ptr<ArcStorageManager, ExperimentalAsh> bridge_;
+  const raw_ptr<ArcStorageManager> bridge_;
 };
 
 TEST_F(ArcStorageManagerTest, ConstructDestruct) {}

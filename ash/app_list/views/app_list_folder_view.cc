@@ -212,9 +212,9 @@ class BackgroundAnimation : public AppListFolderView::Animation,
   const bool show_;
   bool is_animating_ = false;
 
-  const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;
-  const raw_ptr<views::View, ExperimentalAsh> animating_view_;
-  const raw_ptr<SystemShadow, ExperimentalAsh> shadow_;
+  const raw_ptr<AppListFolderView> folder_view_;
+  const raw_ptr<views::View> animating_view_;
+  const raw_ptr<SystemShadow> shadow_;
 
   // Observes the rect clip change of background view.
   base::ScopedObservation<views::View, views::ViewObserver>
@@ -264,9 +264,9 @@ class FolderItemTitleAnimation : public AppListFolderView::Animation {
 
   const bool show_;
 
-  const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;  // Not owned.
+  const raw_ptr<AppListFolderView> folder_view_;  // Not owned.
 
-  const raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> folder_title_;
+  const raw_ptr<views::View, DanglingUntriaged> folder_title_;
 
   base::OnceClosure completion_callback_;
 
@@ -474,15 +474,15 @@ class TopIconAnimation : public AppListFolderView::Animation,
   // True if opening the folder.
   const bool show_;
 
-  const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;  // Not owned.
+  const raw_ptr<AppListFolderView> folder_view_;  // Not owned.
 
   // The scroll view that contains the apps grid.
-  const raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_;
+  const raw_ptr<views::ScrollView> scroll_view_;
 
   // The app list item view with which the folder view is associated.
   // NOTE: Users of `TopIconAnimation` should ensure the animation does
   // not outlive the `folder_item_view_`.
-  const raw_ptr<AppListItemView, ExperimentalAsh> folder_item_view_;
+  const raw_ptr<AppListItemView> folder_item_view_;
 
   std::vector<raw_ptr<TopIconAnimationView, VectorExperimental>>
       top_icon_views_;
@@ -575,7 +575,7 @@ class ContentsContainerAnimation : public AppListFolderView::Animation,
   // True if an item in the folder is being reparented to root grid view.
   const bool hide_for_reparent_;
 
-  const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;
+  const raw_ptr<AppListFolderView> folder_view_;
 
   bool is_animation_running_ = false;
 
@@ -608,7 +608,7 @@ class ScrollViewWithMaxHeight : public views::ScrollView {
   }
 
  private:
-  const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;
+  const raw_ptr<AppListFolderView> folder_view_;
 };
 
 BEGIN_METADATA(ScrollViewWithMaxHeight)

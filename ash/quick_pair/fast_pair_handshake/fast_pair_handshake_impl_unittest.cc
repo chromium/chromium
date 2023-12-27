@@ -64,7 +64,7 @@ class FakeFastPairGattServiceClientImplFactory
     return fake_fast_pair_gatt_service_client;
   }
 
-  raw_ptr<FakeFastPairGattServiceClient, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeFastPairGattServiceClient, DanglingUntriaged>
       fake_fast_pair_gatt_service_client_ = nullptr;
 };
 
@@ -92,8 +92,8 @@ class FastPairFakeDataEncryptorImplFactory
   void SetFailedRetrieval() { successful_retrieval_ = false; }
 
  private:
-  raw_ptr<FakeFastPairDataEncryptor, DanglingUntriaged | ExperimentalAsh>
-      data_encryptor_ = nullptr;
+  raw_ptr<FakeFastPairDataEncryptor, DanglingUntriaged> data_encryptor_ =
+      nullptr;
   bool successful_retrieval_ = true;
 };
 

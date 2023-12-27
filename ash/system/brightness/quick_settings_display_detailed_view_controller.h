@@ -37,7 +37,7 @@ class ASH_EXPORT QuickSettingsDisplayDetailedViewController
 
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
+  const raw_ptr<UnifiedSystemTrayController> tray_controller_;
 };
 
 }  // namespace ash

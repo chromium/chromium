@@ -46,12 +46,11 @@ class ASH_EXPORT CastFeaturePodController
   // Updates the feature tile.
   void UpdateFeatureTile();
 
-  const raw_ptr<UnifiedSystemTrayController,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<UnifiedSystemTrayController, DanglingUntriaged>
       tray_controller_;
 
   // Owned by views hierarchy.
-  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
+  raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;
 
   base::WeakPtrFactory<CastFeaturePodController> weak_factory_{this};
 };

@@ -165,10 +165,9 @@ class PhoneHubAshNotificationView : public AshNotificationView {
 
  private:
   // Owned by view hierarchy.
-  raw_ptr<views::View, ExperimentalAsh> action_buttons_row_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> reply_button_ = nullptr;
-  raw_ptr<message_center::NotificationInputContainer, ExperimentalAsh>
-      inline_reply_ = nullptr;
+  raw_ptr<views::View> action_buttons_row_ = nullptr;
+  raw_ptr<views::View> reply_button_ = nullptr;
+  raw_ptr<message_center::NotificationInputContainer> inline_reply_ = nullptr;
 
   // Timer that fires to enable reply button after a brief period of time.
   base::OneShotTimer enable_reply_timer_;
@@ -274,8 +273,7 @@ class PhoneHubNotificationController::NotificationDelegate
   enum OngoingCallButton { BUTTON_HANGUP };
 
   // The parent controller, which owns this object.
-  raw_ptr<PhoneHubNotificationController, ExperimentalAsh> controller_ =
-      nullptr;
+  raw_ptr<PhoneHubNotificationController> controller_ = nullptr;
 
   // The notification ID tracked by PhoneHub.
   const int64_t phone_hub_id_;

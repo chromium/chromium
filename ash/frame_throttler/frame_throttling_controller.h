@@ -164,8 +164,7 @@ class ASH_EXPORT FrameThrottlingController final
 
   void ResetThrottleCandidates(ThrottleCandidates* candidates);
 
-  const raw_ptr<viz::HostFrameSinkManager, ExperimentalAsh>
-      host_frame_sink_manager_;
+  const raw_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
   base::ObserverList<FrameThrottlingObserver> arc_observers_;
 
   // Maps aura::WindowTreeHost* to a set of FrameSinkIds to be throttled.

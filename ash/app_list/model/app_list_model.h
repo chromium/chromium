@@ -182,7 +182,7 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
                            const syncer::StringOrdinal& new_position);
 
   // Used to initiate updates on app list items from the ash side.
-  const raw_ptr<AppListModelDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<AppListModelDelegate> delegate_;
 
   std::unique_ptr<AppListItemList> top_level_item_list_;
 

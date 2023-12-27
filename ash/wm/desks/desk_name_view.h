@@ -33,7 +33,7 @@ class ASH_EXPORT DeskNameView : public DeskTextfield {
 
  private:
   // The mini view that associated with this name view.
-  const raw_ptr<DeskMiniView, ExperimentalAsh> mini_view_;
+  const raw_ptr<DeskMiniView> mini_view_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, DeskNameView, DeskTextfield)

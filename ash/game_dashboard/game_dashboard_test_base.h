@@ -65,7 +65,7 @@ class IsGameWindowPropertyObserver : public aura::WindowObserver {
 
  private:
   bool received_on_property_change_ = false;
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 };
 
 }  // namespace ash

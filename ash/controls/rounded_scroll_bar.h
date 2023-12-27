@@ -72,7 +72,7 @@ class ASH_EXPORT RoundedScrollBar : public views::ScrollBar {
   void OnThumbBoundsChanged();
 
   // Equivalent to GetThumb() but typed as the inner class `Thumb`.
-  const raw_ptr<Thumb, ExperimentalAsh> thumb_;
+  const raw_ptr<Thumb> thumb_;
 
   // Insets for the scroll track.
   gfx::Insets insets_;

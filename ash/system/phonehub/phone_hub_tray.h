@@ -178,14 +178,13 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   bool is_icon_clicked_when_nudge_visible_ = false;
 
   // Icon of the tray. Unowned.
-  raw_ptr<views::ImageButton, ExperimentalAsh> icon_;
+  raw_ptr<views::ImageButton> icon_;
 
   // Icon for Eche. Unowned.
-  raw_ptr<views::ImageButton, ExperimentalAsh> eche_icon_ = nullptr;
+  raw_ptr<views::ImageButton> eche_icon_ = nullptr;
 
   // The loading indicator, showing a throbber animation on top of the icon.
-  raw_ptr<EcheIconLoadingIndicatorView, ExperimentalAsh>
-      eche_loading_indicator_ = nullptr;
+  raw_ptr<EcheIconLoadingIndicatorView> eche_loading_indicator_ = nullptr;
 
   // This callback is called when the Eche icon is activated.
   base::RepeatingCallback<void()> eche_icon_callback_ = base::DoNothing();
@@ -202,15 +201,13 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   // The header status view on top of the bubble.
   // IMPORTANT: This is not owned, always access through GetPhoneStatusView
-  raw_ptr<views::View, ExperimentalAsh> phone_status_view_dont_use_ = nullptr;
+  raw_ptr<views::View> phone_status_view_dont_use_ = nullptr;
 
   // The main content view of the bubble, which changes depending on the state.
   // Unowned.
-  raw_ptr<PhoneHubContentView, DanglingUntriaged | ExperimentalAsh>
-      content_view_ = nullptr;
+  raw_ptr<PhoneHubContentView, DanglingUntriaged> content_view_ = nullptr;
 
-  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_ =
-      nullptr;
+  raw_ptr<phonehub::PhoneHubManager> phone_hub_manager_ = nullptr;
 
   base::Time last_unlocked_timestamp_;
 

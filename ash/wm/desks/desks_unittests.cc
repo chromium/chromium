@@ -2782,12 +2782,9 @@ class DesksEditableNamesTest : public DesksTest {
   }
 
  private:
-  raw_ptr<DesksController, DanglingUntriaged | ExperimentalAsh> controller_ =
-      nullptr;
-  raw_ptr<OverviewGrid, DanglingUntriaged | ExperimentalAsh> overview_grid_ =
-      nullptr;
-  raw_ptr<const DeskBarViewBase, DanglingUntriaged | ExperimentalAsh>
-      desks_bar_view_ = nullptr;
+  raw_ptr<DesksController, DanglingUntriaged> controller_ = nullptr;
+  raw_ptr<OverviewGrid, DanglingUntriaged> overview_grid_ = nullptr;
+  raw_ptr<const DeskBarViewBase, DanglingUntriaged> desks_bar_view_ = nullptr;
 };
 
 TEST_P(DesksEditableNamesTest, DefaultNameChangeAborted) {
@@ -3648,7 +3645,7 @@ TEST_P(TabletModeDesksTest, HotSeatStateAfterMovingAWindowToAnotherDesk) {
   EXPECT_EQ(HotseatState::kExtended, hotseat_widget->state());
 
   const struct {
-    raw_ptr<aura::Window, ExperimentalAsh> window;
+    raw_ptr<aura::Window> window;
     const char* trace_message;
   } kTestTable[] = {{win0.get(), "Minimized window"},
                     {win1.get(), "Normal window"}};
@@ -4975,10 +4972,8 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
  private:
   std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
 
-  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged | ExperimentalAsh>
-      user_1_prefs_ = nullptr;
-  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged | ExperimentalAsh>
-      user_2_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged> user_1_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged> user_2_prefs_ = nullptr;
 };
 
 TEST_F(DesksMultiUserTest, SwitchUsersBackAndForth) {
@@ -7756,7 +7751,7 @@ class LayerAnimationWaiter : public ui::LayerAnimationObserver {
     }
   }
 
-  raw_ptr<ui::LayerAnimator, ExperimentalAsh> animator_;
+  raw_ptr<ui::LayerAnimator> animator_;
   base::RunLoop run_loop_;
 };
 

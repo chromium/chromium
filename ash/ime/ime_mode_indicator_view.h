@@ -50,7 +50,7 @@ class ASH_EXPORT ImeModeIndicatorView : public views::BubbleDialogDelegateView {
 
  private:
   gfx::Rect cursor_bounds_;
-  raw_ptr<views::Label, ExperimentalAsh> label_view_;
+  raw_ptr<views::Label> label_view_;
   base::OneShotTimer timer_;
 };
 

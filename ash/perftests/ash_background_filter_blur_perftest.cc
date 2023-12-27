@@ -49,9 +49,9 @@ class AshBackgroundFilterBlurPerfTest : public AshTestBase {
   std::unique_ptr<ui::Layer> blur_layer_;
 
  private:
-  raw_ptr<ui::Layer, ExperimentalAsh> root_layer_ = nullptr;
+  raw_ptr<ui::Layer> root_layer_ = nullptr;
 
-  raw_ptr<ui::Compositor, ExperimentalAsh> compositor_ = nullptr;
+  raw_ptr<ui::Compositor> compositor_ = nullptr;
 
   base::LapTimer timer_;
 };

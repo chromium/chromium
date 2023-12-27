@@ -339,10 +339,10 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
 
   base::RepeatingClosure on_start_tap_;
   State state_ = State::kInitial;
-  raw_ptr<ArrowButtonView, ExperimentalAsh> arrow_button_ = nullptr;
-  raw_ptr<NonAccessibleView, ExperimentalAsh> arrow_to_icon_spacer_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<ArrowButtonView> arrow_button_ = nullptr;
+  raw_ptr<NonAccessibleView> arrow_to_icon_spacer_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
   base::OneShotTimer reset_state_timer_;
 };
 

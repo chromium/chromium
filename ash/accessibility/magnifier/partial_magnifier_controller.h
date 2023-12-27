@@ -64,8 +64,7 @@ class ASH_EXPORT PartialMagnifierController : public ui::EventHandler {
   bool is_enabled_ = false;
   bool is_active_ = false;
 
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh>
-      current_root_window_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> current_root_window_ = nullptr;
 
   std::unique_ptr<MagnifierGlass> magnifier_glass_;
 };

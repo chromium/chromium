@@ -464,11 +464,11 @@ class CaptureModeSession::ParentContainerObserver
             capture_mode_session_->weak_ptr_factory_.GetWeakPtr()));
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> parent_container_;
+  raw_ptr<aura::Window> parent_container_;
 
   // Pointer to current capture session. Not nullptr during this lifecycle.
   // Capture session owns `this`.
-  const raw_ptr<CaptureModeSession, ExperimentalAsh> capture_mode_session_;
+  const raw_ptr<CaptureModeSession> capture_mode_session_;
 };
 
 // -----------------------------------------------------------------------------

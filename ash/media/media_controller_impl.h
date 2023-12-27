@@ -158,7 +158,7 @@ class ASH_EXPORT MediaControllerImpl
   mojo::Receiver<media_session::mojom::MediaControllerObserver>
       media_controller_observer_receiver_{this};
 
-  raw_ptr<MediaClient, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<MediaClient> client_ = nullptr;
 
   base::ObserverList<MediaCaptureObserver>::Unchecked observers_;
 };

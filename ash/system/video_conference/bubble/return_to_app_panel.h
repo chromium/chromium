@@ -102,11 +102,11 @@ class ASH_EXPORT ReturnToAppButton : public ReturnToAppButtonBase {
   // The pointers below are owned by the views hierarchy.
 
   // This panel is the parent view of this button.
-  const raw_ptr<ReturnToAppPanel, ExperimentalAsh> panel_;
+  const raw_ptr<ReturnToAppPanel> panel_;
 
   // The indicator showing if the panel is in expanded or collapsed state. Only
   // available if the button is in the top row.
-  raw_ptr<views::ImageView, ExperimentalAsh> expand_indicator_ = nullptr;
+  raw_ptr<views::ImageView> expand_indicator_ = nullptr;
 };
 
 // The "return to app" panel that resides in the video conference bubble. The
@@ -197,12 +197,12 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
 
   // The container of the panel, which contains all the views and is used for
   // setting padding and background painting. Owned by the views hierarchy.
-  raw_ptr<ReturnToAppContainer, ExperimentalAsh> container_view_ = nullptr;
+  raw_ptr<ReturnToAppContainer> container_view_ = nullptr;
 
   // The view at the top of the panel, summarizing the information of all media
   // apps. This pointer will be null when there's one or fewer media apps. Owned
   // by the views hierarchy.
-  raw_ptr<ReturnToAppButton, ExperimentalAsh> summary_row_view_ = nullptr;
+  raw_ptr<ReturnToAppButton> summary_row_view_ = nullptr;
 
   // Keep track the maximum number of capturing that an individual media app
   // has. This number is used to make sure the icons in `ReturnToAppButton` are

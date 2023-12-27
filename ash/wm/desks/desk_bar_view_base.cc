@@ -407,7 +407,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
   }
 
  private:
-  raw_ptr<DeskBarViewBase, ExperimentalAsh> bar_view_;
+  raw_ptr<DeskBarViewBase> bar_view_;
 
   // Width of the scroll view. It is the contents' preferred width if it exceeds
   // the desk bar view's width or just the desk bar view's width if not.
@@ -465,7 +465,7 @@ class DeskBarHoverObserver : public ui::EventObserver {
   }
 
  private:
-  raw_ptr<DeskBarViewBase, ExperimentalAsh> owner_;
+  raw_ptr<DeskBarViewBase> owner_;
 
   std::unique_ptr<views::EventMonitor> event_monitor_;
 };

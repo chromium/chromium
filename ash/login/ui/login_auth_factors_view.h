@@ -52,7 +52,7 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
     AuthIconView* checkmark_icon();
 
    private:
-    const raw_ptr<LoginAuthFactorsView, ExperimentalAsh> view_;
+    const raw_ptr<LoginAuthFactorsView> view_;
   };
 
   LoginAuthFactorsView(base::RepeatingClosure on_click_to_enter_callback,
@@ -128,29 +128,29 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
   // Child views, owned by the Views hierarchy
 
   // A container laying added icons horizontally.
-  raw_ptr<views::View, ExperimentalAsh> auth_factor_icon_row_;
+  raw_ptr<views::View> auth_factor_icon_row_;
 
   // An animated label.
-  raw_ptr<AnimatedAuthFactorsLabelWrapper, ExperimentalAsh> label_wrapper_;
+  raw_ptr<AnimatedAuthFactorsLabelWrapper> label_wrapper_;
 
   // A container laying arrow button and its corresponding animation view on top
   // of each other.
-  raw_ptr<views::View, ExperimentalAsh> arrow_icon_container_;
+  raw_ptr<views::View> arrow_icon_container_;
 
   // A box layout container for arrow button and its label.
-  raw_ptr<views::View, ExperimentalAsh> arrow_button_container_;
+  raw_ptr<views::View> arrow_button_container_;
 
   // A button with an arrow icon. Only visible when an auth factor is in the
   // kClickRequired state.
-  raw_ptr<ArrowButtonView, ExperimentalAsh> arrow_button_;
+  raw_ptr<ArrowButtonView> arrow_button_;
 
   // A view with nudge animation expanding from arrow icon to encourage user to
   // tap. Only visible when an auth factor is in the kClickRequired state.
-  raw_ptr<AuthIconView, ExperimentalAsh> arrow_nudge_animation_;
+  raw_ptr<AuthIconView> arrow_nudge_animation_;
 
   // A green checkmark icon (or animation) shown when an auth factor reaches
   // the kAuthenticated state, just before the login/lock screen is dismissed.
-  raw_ptr<AuthIconView, ExperimentalAsh> checkmark_icon_;
+  raw_ptr<AuthIconView> checkmark_icon_;
 
   /////////////////////////////////////////////////////////////////////////////
 

@@ -80,7 +80,7 @@ class SavedDeskIconView : public views::View {
   size_t sorting_key_;
 
   // Owned by the views hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh> count_label_ = nullptr;
+  raw_ptr<views::Label> count_label_ = nullptr;
 
  private:
   friend class SavedDeskIconViewTestApi;
@@ -141,7 +141,7 @@ class SavedDeskRegularIconView : public SavedDeskIconView {
   // this will be an app id.
   std::string icon_identifier_;
 
-  raw_ptr<RoundedImageView, ExperimentalAsh> icon_view_ = nullptr;
+  raw_ptr<RoundedImageView> icon_view_ = nullptr;
 
   // Callback from the icon container that updates the icon order and overflow
   // icon.

@@ -82,19 +82,17 @@ class HUDSettingsView : public AshTracingManager::Observer,
   std::vector<std::unique_ptr<HUDCheckboxHandler>> checkbox_handlers_;
 
   // Container for "Create Ui Dev Tools" button or "DevTools running" label.
-  raw_ptr<views::LabelButton, ExperimentalAsh> ui_dev_tools_control_button_ =
-      nullptr;
+  raw_ptr<views::LabelButton> ui_dev_tools_control_button_ = nullptr;
 
   // Conrainer for "Show cursor position: button or "Cursor Position: " label.
-  raw_ptr<views::LabelButton, ExperimentalAsh> cursor_position_display_button_ =
-      nullptr;
+  raw_ptr<views::LabelButton> cursor_position_display_button_ = nullptr;
 
   // Switches whether `cursor_position_display_button_` is showing cursor
   // position or not.
   bool showing_cursor_position_ = false;
 
-  raw_ptr<HUDActionButton, ExperimentalAsh> tracing_control_button_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> tracing_status_message_ = nullptr;
+  raw_ptr<HUDActionButton> tracing_control_button_ = nullptr;
+  raw_ptr<views::Label> tracing_status_message_ = nullptr;
 
   base::WeakPtrFactory<HUDSettingsView> weak_factory_{this};
 };

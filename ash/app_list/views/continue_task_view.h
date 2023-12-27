@@ -112,11 +112,11 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   // The index of this view within a |SearchResultContainerView| that holds it.
   std::optional<int> index_in_container_;
 
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
-  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> subtitle_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<SearchResult, ExperimentalAsh> result_ =
+  const raw_ptr<AppListViewDelegate> view_delegate_;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::Label> subtitle_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<SearchResult> result_ =
       nullptr;  // Owned by SearchModel::SearchResults.
 
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;

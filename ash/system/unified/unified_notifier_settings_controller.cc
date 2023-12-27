@@ -51,7 +51,7 @@ class UnifiedNotifierSettingsView
   }
 
  private:
-  const raw_ptr<NotifierSettingsView, ExperimentalAsh> settings_view_;
+  const raw_ptr<NotifierSettingsView> settings_view_;
 };
 
 }  // namespace

@@ -328,7 +328,7 @@ class CameraPreviewTargeter : public aura::WindowTargeter {
   }
 
  private:
-  const raw_ptr<aura::Window, ExperimentalAsh> camera_preview_window_;
+  const raw_ptr<aura::Window> camera_preview_window_;
 };
 
 capture_mode_util::AnimationParams BuildCameraVisibilityAnimationParams(

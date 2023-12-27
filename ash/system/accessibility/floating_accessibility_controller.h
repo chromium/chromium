@@ -70,10 +70,9 @@ class ASH_EXPORT FloatingAccessibilityController
   // LocaleChangeObserver:
   void OnLocaleChanged() override;
 
-  raw_ptr<FloatingAccessibilityView, ExperimentalAsh> menu_view_ = nullptr;
-  raw_ptr<FloatingAccessibilityBubbleView, ExperimentalAsh> bubble_view_ =
-      nullptr;
-  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
+  raw_ptr<FloatingAccessibilityView> menu_view_ = nullptr;
+  raw_ptr<FloatingAccessibilityBubbleView> bubble_view_ = nullptr;
+  raw_ptr<views::Widget> bubble_widget_ = nullptr;
 
   bool detailed_view_shown_ = false;
 
@@ -88,8 +87,7 @@ class ASH_EXPORT FloatingAccessibilityController
 
   display::ScopedDisplayObserver display_observer_{this};
 
-  const raw_ptr<AccessibilityController, ExperimentalAsh>
-      accessibility_controller_;  // Owns us.
+  const raw_ptr<AccessibilityController> accessibility_controller_;  // Owns us.
 };
 
 }  // namespace ash

@@ -184,7 +184,7 @@ void MirrorLayerTree(
 
     // Define what to use for layer ordering.
     struct LayerOrderData {
-      raw_ptr<ui::Layer, ExperimentalAsh> layer;
+      raw_ptr<ui::Layer> layer;
       // z-order in target desk.
       size_t primary_key;
       // z-order in active desk.

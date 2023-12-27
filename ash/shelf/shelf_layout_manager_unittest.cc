@@ -2959,8 +2959,7 @@ class ShelfLayoutManagerDragDropTest
   }
 
  private:
-  raw_ptr<ui::test::EventGenerator, DanglingUntriaged | ExperimentalAsh>
-      generator_;
+  raw_ptr<ui::test::EventGenerator, DanglingUntriaged> generator_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -3140,7 +3139,7 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, DraggedMRUWindow) {
   const struct TestCase {
     // The shelf widget whose bounds are used as the base for gesture start and
     // end locations.
-    raw_ptr<const views::Widget, ExperimentalAsh> widget;
+    raw_ptr<const views::Widget> widget;
     // Whether the widget bounds are completely in the left part of the split
     // view.
     const bool left_in_split_view;

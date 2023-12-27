@@ -173,10 +173,10 @@ class ASH_EXPORT ScopedOverviewTransformWindow
 
   // A weak pointer to the overview item that owns |this|. Guaranteed to be not
   // null for the lifetime of |this|.
-  raw_ptr<OverviewItem, ExperimentalAsh> overview_item_;
+  raw_ptr<OverviewItem> overview_item_;
 
   // A weak pointer to the real window in the overview.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 
   // The original opacity of the window before entering overview mode.
   float original_opacity_;

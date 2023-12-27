@@ -72,7 +72,7 @@ class SearchResultActionButton : public IconButton {
  private:
   int GetButtonRadius() const;
 
-  raw_ptr<SearchResultActionsView, ExperimentalAsh> parent_;
+  raw_ptr<SearchResultActionsView> parent_;
   bool to_be_activate_by_long_press_ = false;
 };
 

@@ -97,9 +97,8 @@ class OnboardingMainView : public PhoneHubInterstitialView {
         parent_view_->IsOnboardingViewStartedFromNudge());
   }
 
-  raw_ptr<phonehub::OnboardingUiTracker, ExperimentalAsh>
-      onboarding_ui_tracker_ = nullptr;
-  raw_ptr<OnboardingView, ExperimentalAsh> parent_view_ = nullptr;
+  raw_ptr<phonehub::OnboardingUiTracker> onboarding_ui_tracker_ = nullptr;
+  raw_ptr<OnboardingView> parent_view_ = nullptr;
   const OnboardingView::OnboardingFlow onboarding_flow_;
 };
 

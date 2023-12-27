@@ -65,15 +65,14 @@ class APP_MENU_EXPORT NotificationMenuController
   const std::string app_id_;
 
   // The top level MenuItemView. Owned by |AppMenuModelAdapter::menu_runner_|.
-  const raw_ptr<views::MenuItemView, ExperimentalAsh> root_menu_;
+  const raw_ptr<views::MenuItemView> root_menu_;
 
   // Manages showing the menu. Owned by the view requesting a menu.
-  const raw_ptr<AppMenuModelAdapter, ExperimentalAsh> app_menu_model_adapter_;
+  const raw_ptr<AppMenuModelAdapter> app_menu_model_adapter_;
 
   // The view which shows all active notifications for |app_id_|. Owned by the
   // views hierarchy.
-  raw_ptr<NotificationMenuView, ExperimentalAsh> notification_menu_view_ =
-      nullptr;
+  raw_ptr<NotificationMenuView> notification_menu_view_ = nullptr;
 
   base::ScopedObservation<message_center::MessageCenter,
                           message_center::MessageCenterObserver>

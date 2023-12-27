@@ -50,11 +50,9 @@ class SplitViewDividerView : public views::View,
   void OnResizeStatusChanged();
 
   // TODO(b/314018158): Replace with `LayoutDividerController`.
-  raw_ptr<SplitViewController, DanglingUntriaged | ExperimentalAsh>
-      split_view_controller_;
-  raw_ptr<SplitViewDividerHandlerView, ExperimentalAsh> divider_handler_view_ =
-      nullptr;
-  raw_ptr<SplitViewDivider, DanglingUntriaged | ExperimentalAsh> divider_;
+  raw_ptr<SplitViewController, DanglingUntriaged> split_view_controller_;
+  raw_ptr<SplitViewDividerHandlerView> divider_handler_view_ = nullptr;
+  raw_ptr<SplitViewDivider, DanglingUntriaged> divider_;
 
   // Securely updates the cursor.
   CursorSetter cursor_setter_;

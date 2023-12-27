@@ -42,7 +42,7 @@ class ASH_EXPORT ShelfContainerView : public views::View {
 
  protected:
   // Owned by views hierarchy.
-  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_ = nullptr;
+  raw_ptr<ShelfView> shelf_view_ = nullptr;
 };
 
 }  // namespace ash

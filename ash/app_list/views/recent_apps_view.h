@@ -88,14 +88,13 @@ class ASH_EXPORT RecentAppsView : public AppListModelObserver,
   // Calculates how much padding is assigned to the AppListItemView.
   int CalculateTilePadding() const;
 
-  const raw_ptr<AppListKeyboardController, DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<AppListKeyboardController, DanglingUntriaged>
       keyboard_controller_;
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
-  raw_ptr<const AppListConfig, DanglingUntriaged | ExperimentalAsh>
-      app_list_config_ = nullptr;
-  raw_ptr<views::BoxLayout, ExperimentalAsh> layout_ = nullptr;
-  raw_ptr<AppListModel, ExperimentalAsh> model_ = nullptr;
-  raw_ptr<SearchModel, ExperimentalAsh> search_model_ = nullptr;
+  const raw_ptr<AppListViewDelegate> view_delegate_;
+  raw_ptr<const AppListConfig, DanglingUntriaged> app_list_config_ = nullptr;
+  raw_ptr<views::BoxLayout> layout_ = nullptr;
+  raw_ptr<AppListModel> model_ = nullptr;
+  raw_ptr<SearchModel> search_model_ = nullptr;
 
   // The grid delegate for each AppListItemView.
   class GridDelegateImpl;

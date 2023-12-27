@@ -578,7 +578,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     color_dict->Remove(old_info.location);
   }
 
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
   std::unique_ptr<WallpaperProfileHelper> profile_helper_;
 
   // Cache of wallpapers for ephemeral users.

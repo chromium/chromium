@@ -87,8 +87,7 @@ class ASH_EXPORT DisplayPrefs : public SessionObserver {
   void LoadDisplayPreferences();
 
  private:
-  raw_ptr<PrefService, ExperimentalAsh>
-      local_state_;  // Non-owned and must out-live this.
+  raw_ptr<PrefService> local_state_;  // Non-owned and must out-live this.
   bool store_requested_ = false;
 };
 

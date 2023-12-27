@@ -185,7 +185,7 @@ class DragImageItemView : public views::View {
     return drag_drop::GetDragImageShadowDetails(kDragImageItemViewCornerRadius);
   }
 
-  const raw_ptr<const ui::ColorProvider, ExperimentalAsh> color_provider_;
+  const raw_ptr<const ui::ColorProvider> color_provider_;
 };
 
 BEGIN_METADATA(DragImageItemView, views::View)
@@ -353,7 +353,7 @@ class DragImageOverflowBadge : public views::View {
     label->SetText(base::UTF8ToUTF16(base::NumberToString(count)));
   }
 
-  const raw_ptr<const ui::ColorProvider, ExperimentalAsh> color_provider_;
+  const raw_ptr<const ui::ColorProvider> color_provider_;
 };
 
 BEGIN_METADATA(DragImageOverflowBadge, views::View)
@@ -502,9 +502,9 @@ class DragImageView : public views::View {
     layout->SetChildViewIgnoredByLayout(drag_image_overflow_badge_, true);
   }
 
-  const raw_ptr<const ui::ColorProvider, ExperimentalAsh> color_provider_;
-  raw_ptr<views::View, ExperimentalAsh> first_drag_image_item_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> drag_image_overflow_badge_ = nullptr;
+  const raw_ptr<const ui::ColorProvider> color_provider_;
+  raw_ptr<views::View> first_drag_image_item_view_ = nullptr;
+  raw_ptr<views::View> drag_image_overflow_badge_ = nullptr;
 };
 
 BEGIN_METADATA(DragImageView, views::View)

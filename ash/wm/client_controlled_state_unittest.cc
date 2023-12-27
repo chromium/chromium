@@ -256,15 +256,13 @@ class ClientControlledStateTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<ClientControlledState, DanglingUntriaged | ExperimentalAsh> state_ =
-      nullptr;
-  raw_ptr<TestClientControlledStateDelegate,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ClientControlledState, DanglingUntriaged> state_ = nullptr;
+  raw_ptr<TestClientControlledStateDelegate, DanglingUntriaged>
       state_delegate_ = nullptr;
-  raw_ptr<TestWidgetDelegate, DanglingUntriaged | ExperimentalAsh>
-      widget_delegate_ = nullptr;  // owned by itself.
-  raw_ptr<FakeWindowStateDelegate, DanglingUntriaged | ExperimentalAsh>
-      window_state_delegate_ = nullptr;
+  raw_ptr<TestWidgetDelegate, DanglingUntriaged> widget_delegate_ =
+      nullptr;  // owned by itself.
+  raw_ptr<FakeWindowStateDelegate, DanglingUntriaged> window_state_delegate_ =
+      nullptr;
   std::unique_ptr<views::Widget> widget_;
 };
 

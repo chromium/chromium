@@ -158,7 +158,7 @@ class ArcMetricsServiceTest : public testing::Test {
 
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<user_prefs::TestBrowserContextWithPrefs> context_;
-  raw_ptr<ArcMetricsService, DanglingUntriaged | ExperimentalAsh> service_;
+  raw_ptr<ArcMetricsService, DanglingUntriaged> service_;
 
   std::unique_ptr<aura::Window> fake_arc_window_;
   std::unique_ptr<aura::Window> fake_non_arc_window_;

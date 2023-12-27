@@ -45,13 +45,12 @@ class ASH_EXPORT QuickActionsView : public views::View {
   std::vector<std::unique_ptr<QuickActionControllerBase>>
       quick_action_controllers_;
 
-  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_ =
-      nullptr;
+  raw_ptr<phonehub::PhoneHubManager> phone_hub_manager_ = nullptr;
 
   // QuickActionItem for unit testing. Owned by this view.
-  raw_ptr<QuickActionItem, ExperimentalAsh> enable_hotspot_ = nullptr;
-  raw_ptr<QuickActionItem, ExperimentalAsh> silence_phone_ = nullptr;
-  raw_ptr<QuickActionItem, ExperimentalAsh> locate_phone_ = nullptr;
+  raw_ptr<QuickActionItem> enable_hotspot_ = nullptr;
+  raw_ptr<QuickActionItem> silence_phone_ = nullptr;
+  raw_ptr<QuickActionItem> locate_phone_ = nullptr;
 };
 
 }  // namespace ash

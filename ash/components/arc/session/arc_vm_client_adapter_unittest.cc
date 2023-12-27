@@ -867,7 +867,7 @@ TEST_F(ArcVmClientAdapterTest, DoesNotGetArcInstanceStoppedOnNestedInstance) {
     }
 
     base::RepeatingCallback<base::RunLoop*()> const run_loop_factory_;
-    const raw_ptr<Observer, ExperimentalAsh> child_observer_;
+    const raw_ptr<Observer> child_observer_;
     std::unique_ptr<ArcClientAdapter> nested_adapter_;
     FakeDemoModeDelegate demo_mode_delegate_;
     bool stopped_called_ = false;

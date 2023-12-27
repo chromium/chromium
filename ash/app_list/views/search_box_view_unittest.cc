@@ -259,14 +259,13 @@ class SearchBoxViewTest : public views::test::WidgetTest,
 
   base::test::ScopedFeatureList scoped_feature_list_;
   AshColorProvider ash_color_provider_;
-  raw_ptr<AppListSearchView, DanglingUntriaged | ExperimentalAsh> search_view_ =
-      nullptr;
+  raw_ptr<AppListSearchView, DanglingUntriaged> search_view_ = nullptr;
   AppListTestViewDelegate view_delegate_;
-  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> widget_ = nullptr;
-  raw_ptr<AppListView, ExperimentalAsh> app_list_view_ = nullptr;
-  raw_ptr<SearchBoxView, DanglingUntriaged | ExperimentalAsh> view_ =
+  raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<AppListView> app_list_view_ = nullptr;
+  raw_ptr<SearchBoxView, DanglingUntriaged> view_ =
       nullptr;  // Owned by views hierarchy.
-  raw_ptr<KeyPressCounterView, ExperimentalAsh> counter_view_ =
+  raw_ptr<KeyPressCounterView> counter_view_ =
       nullptr;  // Owned by views hierarchy.
   int last_result_id_ = 0;
 };

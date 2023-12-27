@@ -186,14 +186,13 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   // A Shell pre-target handler that notifies PaletteTray of stylus events.
   std::unique_ptr<ui::EventHandler> stylus_event_handler_;
 
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;  // Not owned.
-  raw_ptr<PrefService, ExperimentalAsh> active_user_pref_service_ =
-      nullptr;  // Not owned.
+  raw_ptr<PrefService> local_state_ = nullptr;               // Not owned.
+  raw_ptr<PrefService> active_user_pref_service_ = nullptr;  // Not owned.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_local_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_user_;
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
 
   // Cached palette pref value.
   bool is_palette_enabled_ = true;

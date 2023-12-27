@@ -118,7 +118,7 @@ class OverviewStatesObserver : public OverviewObserver {
 
  private:
   bool overview_animate_when_exiting_ = true;
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window> root_window_;
 };
 
 // The test BubbleDialogDelegateView for bubbles.
@@ -181,7 +181,7 @@ class TestTextInputClient : public ui::DummyTextInputClient {
 
  private:
   // The window to which the text client attaches to.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
   // The bounds of the caret.
   gfx::Rect caret_bounds_;
 };

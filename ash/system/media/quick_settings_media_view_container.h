@@ -41,7 +41,7 @@ class QuickSettingsMediaViewContainer : public views::View {
   gfx::Size CalculatePreferredSize() const override;
 
  private:
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
+  const raw_ptr<UnifiedSystemTrayController> controller_;
 
   bool show_media_view_ = false;
 };

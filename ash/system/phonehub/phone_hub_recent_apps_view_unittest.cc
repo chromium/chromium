@@ -128,7 +128,7 @@ class RecentAppButtonsViewTest : public AshTestBase {
   phonehub::FakeRecentAppsInteractionHandler
       fake_recent_apps_interaction_handler_;
   phonehub::FakePhoneHubManager fake_phone_hub_manager_;
-  raw_ptr<PhoneConnectedView, ExperimentalAsh> connected_view_;
+  raw_ptr<PhoneConnectedView> connected_view_;
 };
 
 TEST_F(RecentAppButtonsViewTest, TaskViewVisibility) {

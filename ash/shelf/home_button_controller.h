@@ -80,10 +80,10 @@ class HomeButtonController : public AppListControllerObserver,
   void InitializeAssistantOverlay();
 
   // The button that owns this controller.
-  const raw_ptr<HomeButton, ExperimentalAsh> button_;
+  const raw_ptr<HomeButton> button_;
 
   // Owned by the button's view hierarchy.
-  raw_ptr<AssistantOverlay, ExperimentalAsh> assistant_overlay_ = nullptr;
+  raw_ptr<AssistantOverlay> assistant_overlay_ = nullptr;
   std::unique_ptr<base::OneShotTimer> assistant_animation_delay_timer_;
 
   display::ScopedDisplayObserver display_observer_{this};

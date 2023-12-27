@@ -52,7 +52,7 @@ class LaserPointerController::ScopedLockedHiddenCursor {
   }
 
  private:
-  const raw_ptr<wm::CursorManager, ExperimentalAsh> cursor_manager_;
+  const raw_ptr<wm::CursorManager> cursor_manager_;
 };
 
 LaserPointerController::LaserPointerController() {

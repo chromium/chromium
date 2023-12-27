@@ -112,7 +112,7 @@ class FlexCodeInput : public AccessCodeInput {
  private:
   void OnAccessibleNameChanged(const std::u16string& new_name) override;
 
-  raw_ptr<SystemTextfield, ExperimentalAsh> code_field_;
+  raw_ptr<SystemTextfield> code_field_;
 
   // To be called when access input code changes (character is inserted, deleted
   // or updated). Passes true when code non-empty.
@@ -177,7 +177,7 @@ class FixedLengthCodeInput : public AccessCodeInput {
     }
 
    private:
-    raw_ptr<FixedLengthCodeInput, ExperimentalAsh> fixed_length_code_input_;
+    raw_ptr<FixedLengthCodeInput> fixed_length_code_input_;
   };
 
   // Builds the view for an access code that consists out of |length| digits.

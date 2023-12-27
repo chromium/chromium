@@ -139,7 +139,7 @@ class Header : public views::Button {
   }
 
   // Owned by view hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> chevron_ = nullptr;
+  raw_ptr<views::ImageView> chevron_ = nullptr;
 
   // The user can expand and collapse the suggestions section by activating the
   // section header. This registrar is associated with the active user pref

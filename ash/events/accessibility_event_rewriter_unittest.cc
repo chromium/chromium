@@ -169,7 +169,7 @@ class ChromeVoxAccessibilityEventRewriterTest
   // A test accessibility event delegate; simulates ChromeVox and Switch Access.
   ChromeVoxTestDelegate delegate_;
   // Generates ui::Events from simulated user input.
-  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_ = nullptr;
+  raw_ptr<ui::test::EventGenerator> generator_ = nullptr;
   // Records events delivered to the next event rewriter after spoken feedback.
   ui::test::TestEventRewriter event_recorder_;
 
@@ -675,9 +675,9 @@ class SwitchAccessAccessibilityEventRewriterTest
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
 
  protected:
-  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_ = nullptr;
+  raw_ptr<ui::test::EventGenerator> generator_ = nullptr;
   EventCapturer event_capturer_;
-  raw_ptr<AccessibilityController, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<AccessibilityController> controller_ = nullptr;
   std::unique_ptr<SwitchAccessTestDelegate> delegate_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
@@ -997,9 +997,9 @@ class MagnifierAccessibilityEventRewriterTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_ = nullptr;
+  raw_ptr<ui::test::EventGenerator> generator_ = nullptr;
   EventCapturer event_capturer_;
-  raw_ptr<AccessibilityController, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<AccessibilityController> controller_ = nullptr;
   std::unique_ptr<MagnifierTestDelegate> delegate_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;

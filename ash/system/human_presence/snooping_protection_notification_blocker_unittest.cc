@@ -253,10 +253,10 @@ class SnoopingProtectionNotificationBlockerTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<SnoopingProtectionController, DanglingUntriaged | ExperimentalAsh>
-      controller_ = nullptr;
-  raw_ptr<message_center::MessageCenter, DanglingUntriaged | ExperimentalAsh>
-      message_center_ = nullptr;
+  raw_ptr<SnoopingProtectionController, DanglingUntriaged> controller_ =
+      nullptr;
+  raw_ptr<message_center::MessageCenter, DanglingUntriaged> message_center_ =
+      nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

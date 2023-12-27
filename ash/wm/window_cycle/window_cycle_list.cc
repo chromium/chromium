@@ -77,7 +77,7 @@ class CustomWindowTargeter : public aura::WindowTargeter {
   }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> tab_cycler_;
+  raw_ptr<aura::Window> tab_cycler_;
 };
 
 gfx::Point ConvertEventToScreen(const ui::LocatedEvent* event) {

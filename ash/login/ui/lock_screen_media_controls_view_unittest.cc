@@ -99,7 +99,7 @@ class AnimationWaiter : public ui::LayerAnimationObserver,
   void Wait() { run_loop_.Run(); }
 
  private:
-  raw_ptr<ui::Layer, ExperimentalAsh> layer_;
+  raw_ptr<ui::Layer> layer_;
   base::RunLoop run_loop_;
 };
 
@@ -279,8 +279,8 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
     return media_controls_view_->GetArtworkClipPath();
   }
 
-  raw_ptr<LockScreenMediaControlsView, DanglingUntriaged | ExperimentalAsh>
-      media_controls_view_ = nullptr;
+  raw_ptr<LockScreenMediaControlsView, DanglingUntriaged> media_controls_view_ =
+      nullptr;
   std::unique_ptr<AnimationWaiter> animation_waiter_;
   base::test::ScopedPowerMonitorTestSource test_power_monitor_source_;
 
@@ -292,8 +292,7 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
 
   base::test::ScopedFeatureList feature_list;
 
-  raw_ptr<LockContentsView, DanglingUntriaged | ExperimentalAsh>
-      lock_contents_view_ = nullptr;
+  raw_ptr<LockContentsView, DanglingUntriaged> lock_contents_view_ = nullptr;
   std::unique_ptr<TestMediaController> media_controller_;
   std::set<MediaSessionAction> actions_;
 };

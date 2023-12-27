@@ -41,7 +41,7 @@ class ASH_EXPORT GuestSessionConfirmationDialog {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGuestSessionConfirmationDialogId);
   static GuestSessionConfirmationDialog* g_dialog_;
 
-  raw_ptr<ui::DialogModel, ExperimentalAsh> dialog_model_ = nullptr;
+  raw_ptr<ui::DialogModel> dialog_model_ = nullptr;
   bool should_logout_ = false;
 
   base::WeakPtrFactory<GuestSessionConfirmationDialog> weak_ptr_factory_{this};

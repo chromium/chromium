@@ -58,13 +58,11 @@ class ASH_EXPORT NotificationCenterBubble : public ScreenLayoutObserver {
   void OnDisplayConfigurationChanged() override;
 
   // The owner of this class.
-  const raw_ptr<NotificationCenterTray, ExperimentalAsh>
-      notification_center_tray_;
+  const raw_ptr<NotificationCenterTray> notification_center_tray_;
 
   // The main view responsible for showing all notification content in this
   // bubble. Owned by `TrayBubbleView`.
-  raw_ptr<NotificationCenterView, ExperimentalAsh> notification_center_view_ =
-      nullptr;
+  raw_ptr<NotificationCenterView> notification_center_view_ = nullptr;
 
   std::unique_ptr<TrayBubbleView> bubble_view_;
   std::unique_ptr<TrayBubbleWrapper> bubble_wrapper_;

@@ -91,9 +91,9 @@ class ArcSystemUIBridge : public KeyedService,
 
   // The most recent seed sent to ARC.
   std::optional<const ash::ColorPaletteSeed> previous_seed_;
-  raw_ptr<ash::ColorPaletteController, ExperimentalAsh>
-      color_palette_controller_ = nullptr;  // Owned by Shell.
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  raw_ptr<ash::ColorPaletteController> color_palette_controller_ =
+      nullptr;  // Owned by Shell.
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 };
 

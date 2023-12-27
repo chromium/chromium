@@ -46,8 +46,8 @@ class SwitchAccessMenuButton : public views::Button {
   std::string action_name_;
 
   // Owned by the views hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> image_view_;
-  raw_ptr<views::Label, ExperimentalAsh> label_;
+  raw_ptr<views::ImageView> image_view_;
+  raw_ptr<views::Label> label_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, SwitchAccessMenuButton, views::Button)

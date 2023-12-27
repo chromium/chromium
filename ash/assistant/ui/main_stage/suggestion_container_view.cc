@@ -98,7 +98,7 @@ class SuggestionChipAnimator : public ElementAnimator {
         0.f, kChipFadeOutDuration, gfx::Tween::Type::FAST_OUT_SLOW_IN));
   }
 
-  const raw_ptr<const SuggestionContainerView, ExperimentalAsh>
+  const raw_ptr<const SuggestionContainerView>
       parent_;  // |parent_| owns |this|.
 };
 

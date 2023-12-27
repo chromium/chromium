@@ -113,7 +113,7 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
   }
 
  private:
-  raw_ptr<NotificationCounterView, ExperimentalAsh> notification_counter_view_;
+  raw_ptr<NotificationCounterView> notification_counter_view_;
   size_t count_;
 };
 

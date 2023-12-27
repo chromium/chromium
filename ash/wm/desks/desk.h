@@ -84,7 +84,7 @@ class ASH_EXPORT Desk {
   // used to support per-desk z-orders for all-desk windows. Entries are stored
   // in ascending `order`.
   struct AllDeskWindowStackingData {
-    raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window = nullptr;
+    raw_ptr<aura::Window, DanglingUntriaged> window = nullptr;
     // The z-order of the window.
     // Note: this is reversed from how child windows are ordered in
     // `aura::Window`, so an entry with `order == 0` means topmost.
@@ -381,7 +381,7 @@ class ASH_EXPORT Desk {
 
   // Used to track the last active root when the desk is being deactivated.
   // Should be null if the current desk is active.
-  raw_ptr<aura::Window, ExperimentalAsh> last_active_root_ = nullptr;
+  raw_ptr<aura::Window> last_active_root_ = nullptr;
 
   // Tracks whether |this| has been interacted with this week. This value is
   // reset by the DesksController.

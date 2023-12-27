@@ -657,8 +657,7 @@ class TransitionAnimationWaiter
     run_loop_->Quit();
   }
 
-  raw_ptr<HotseatTransitionAnimator, ExperimentalAsh>
-      hotseat_transition_animator_ = nullptr;
+  raw_ptr<HotseatTransitionAnimator> hotseat_transition_animator_ = nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
@@ -1135,10 +1134,8 @@ class ShelfWidgetViewsVisibilityTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<ShelfWidget, DanglingUntriaged | ExperimentalAsh>
-      primary_shelf_widget_ = nullptr;
-  raw_ptr<ShelfWidget, DanglingUntriaged | ExperimentalAsh>
-      secondary_shelf_widget_ = nullptr;
+  raw_ptr<ShelfWidget, DanglingUntriaged> primary_shelf_widget_ = nullptr;
+  raw_ptr<ShelfWidget, DanglingUntriaged> secondary_shelf_widget_ = nullptr;
 };
 
 TEST_F(ShelfWidgetViewsVisibilityTest, LoginViewsLockViews) {

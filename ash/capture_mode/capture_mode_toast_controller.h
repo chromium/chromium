@@ -81,12 +81,11 @@ class ASH_EXPORT CaptureModeToastController {
 
   // The session that owns `this`. Guaranteed to be not null for the lifetime of
   // `this`.
-  const raw_ptr<CaptureModeSession, ExperimentalAsh> capture_session_;
+  const raw_ptr<CaptureModeSession> capture_session_;
 
   // The capture toast widget and its contents view.
   views::UniqueWidgetPtr capture_toast_widget_;
-  raw_ptr<SystemToastStyle, DanglingUntriaged | ExperimentalAsh>
-      toast_contents_view_ = nullptr;
+  raw_ptr<SystemToastStyle, DanglingUntriaged> toast_contents_view_ = nullptr;
 
   // Stores the toast type of the `capture_toast_widget_` after it's created.
   std::optional<CaptureToastType> current_toast_type_;

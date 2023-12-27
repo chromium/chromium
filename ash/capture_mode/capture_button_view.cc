@@ -62,7 +62,7 @@ constexpr gfx::Insets kFocusRingPathInsets(
 // selected.
 struct CaptureButtonState {
   const int label_id;
-  const raw_ref<const gfx::VectorIcon, ExperimentalAsh> vector_icon;
+  const raw_ref<const gfx::VectorIcon> vector_icon;
 };
 
 // Based on the current state of capture mode, returns the state with which the
@@ -71,19 +71,19 @@ CaptureButtonState GetCaptureButtonState() {
   const auto* const controller = CaptureModeController::Get();
   if (controller->type() == CaptureModeType::kImage) {
     return CaptureButtonState{IDS_ASH_SCREEN_CAPTURE_LABEL_IMAGE_CAPTURE,
-                              ToRawRef<ExperimentalAsh>(kCaptureModeImageIcon)};
+                              ToRawRef(kCaptureModeImageIcon)};
   }
 
   if (controller->recording_type() == RecordingType::kWebM) {
     return CaptureButtonState{IDS_ASH_SCREEN_CAPTURE_LABEL_VIDEO_RECORD,
-                              ToRawRef<ExperimentalAsh>(kCaptureModeVideoIcon)};
+                              ToRawRef(kCaptureModeVideoIcon)};
   }
 
   DCHECK(features::IsGifRecordingEnabled());
   DCHECK_EQ(controller->recording_type(), RecordingType::kGif);
 
   return CaptureButtonState{IDS_ASH_SCREEN_CAPTURE_LABEL_GIF_RECORD,
-                            ToRawRef<ExperimentalAsh>(kCaptureGifIcon)};
+                            ToRawRef(kCaptureGifIcon)};
 }
 
 }  // namespace

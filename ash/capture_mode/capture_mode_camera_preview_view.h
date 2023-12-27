@@ -57,8 +57,7 @@ class CameraPreviewResizeButton
   void PseudoBlur() override;
 
  private:
-  const raw_ptr<CameraPreviewView, ExperimentalAsh>
-      camera_preview_view_;  // not owned.
+  const raw_ptr<CameraPreviewView> camera_preview_view_;  // not owned.
 };
 
 // A view that acts as the contents view of the camera preview widget. It will
@@ -172,8 +171,7 @@ class CameraPreviewView
   // window.
   void BlurA11yFocus();
 
-  const raw_ptr<CaptureModeCameraController, ExperimentalAsh>
-      camera_controller_;
+  const raw_ptr<CaptureModeCameraController> camera_controller_;
 
   // The ID of the camera for which this preview was created.
   const CameraId camera_id_;
@@ -183,9 +181,9 @@ class CameraPreviewView
 
   // The view that hosts the native window `host_window()` of the
   // `camera_video_renderer_` into this view's hierarchy.
-  const raw_ptr<views::NativeViewHost, ExperimentalAsh> camera_video_host_view_;
+  const raw_ptr<views::NativeViewHost> camera_video_host_view_;
 
-  const raw_ptr<CameraPreviewResizeButton, ExperimentalAsh> resize_button_;
+  const raw_ptr<CameraPreviewResizeButton> resize_button_;
 
   // Started when the mouse exits the camera preview or after the latest tap
   // inside the camera preview. Runs RefreshResizeButtonVisibility() to fade out

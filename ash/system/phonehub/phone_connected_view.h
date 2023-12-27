@@ -47,8 +47,8 @@ class PhoneConnectedView : public PhoneHubContentView {
 
   void OnAppStreamErrorDialogButtonClicked(const ui::Event& event);
 
-  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_;
-  raw_ptr<QuickActionsView, ExperimentalAsh> quick_actions_view_;
+  raw_ptr<phonehub::PhoneHubManager> phone_hub_manager_;
+  raw_ptr<QuickActionsView> quick_actions_view_;
   std::unique_ptr<AppStreamConnectionErrorDialog> app_stream_error_dialog_;
 };
 

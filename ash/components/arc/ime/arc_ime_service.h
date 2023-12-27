@@ -219,7 +219,7 @@ class ArcImeService : public KeyedService,
   std::u16string text_in_range_;
   gfx::Range selection_range_;
 
-  raw_ptr<aura::Window, ExperimentalAsh> focused_arc_window_ = nullptr;
+  raw_ptr<aura::Window> focused_arc_window_ = nullptr;
 
   std::unique_ptr<KeyEventResultReceiver> receiver_;
 };

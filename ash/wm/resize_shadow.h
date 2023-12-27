@@ -97,7 +97,7 @@ class ResizeShadow : public ui::ColorProviderSourceObserver {
 
   // The window associated with this shadow. Guaranteed to be alive for the
   // lifetime of `this`.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 
   // The layer to which the shadow is drawn. The layer is stacked beneath the
   // layer of |window_|.

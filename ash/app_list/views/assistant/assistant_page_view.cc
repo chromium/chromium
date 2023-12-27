@@ -137,7 +137,7 @@ class AssistantPageViewLayout : public views::LayoutManagerBase {
   }
 
  private:
-  const raw_ptr<AssistantPageView, ExperimentalAsh> assistant_page_view_;
+  const raw_ptr<AssistantPageView> assistant_page_view_;
 };
 
 }  // namespace

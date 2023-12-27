@@ -98,7 +98,7 @@ class ResizeLoopWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
   bool in_resize_loop_ = false;
 };
 

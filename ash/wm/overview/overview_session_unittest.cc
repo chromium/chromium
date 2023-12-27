@@ -167,7 +167,7 @@ class TweenTester : public ui::LayerAnimationObserver {
 
  private:
   gfx::Tween::Type tween_type_ = gfx::Tween::LINEAR;
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
   bool will_animate_ = false;
 };
 

@@ -6015,7 +6015,7 @@ class EventTargetCatcher : public ui::EventHandler {
   }
 
  private:
-  raw_ptr<ui::EventTarget, ExperimentalAsh> last_event_target_ = nullptr;
+  raw_ptr<ui::EventTarget> last_event_target_ = nullptr;
 };
 
 }  // namespace

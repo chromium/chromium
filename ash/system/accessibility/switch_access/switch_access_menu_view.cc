@@ -27,7 +27,7 @@ namespace {
 constexpr int kMaxColumns = 3;
 
 struct ButtonInfo {
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon;
+  raw_ptr<const gfx::VectorIcon> icon;
   int label_id;
 };
 

@@ -134,9 +134,9 @@ class WindowScaleAnimation::AnimationObserver
  private:
   // Pointers to the window and the parent scale animation. Guaranteed to
   // outlive `this`.
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  const raw_ptr<aura::Window> window_;
 
-  const raw_ptr<WindowScaleAnimation, ExperimentalAsh> window_scale_animation_;
+  const raw_ptr<WindowScaleAnimation> window_scale_animation_;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};

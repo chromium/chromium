@@ -96,10 +96,10 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
   void UpdateTotalPages();
 
   // Owned by `UnifiedSystemTrayBubble`.
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
+  const raw_ptr<UnifiedSystemTrayController> controller_;
 
   // Owned by `UnifiedSystemTrayModel`.
-  const raw_ptr<PaginationModel, ExperimentalAsh> pagination_model_;
+  const raw_ptr<PaginationModel> pagination_model_;
 
   // List of pages that contain `RowContainer` elements.
   // Owned by views hierarchy.

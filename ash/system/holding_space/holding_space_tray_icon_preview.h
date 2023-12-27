@@ -130,11 +130,11 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   SkColor GetColor(ui::ColorId color_id) const;
 
   // The shelf whose holding space tray icon this preview belongs.
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const raw_ptr<Shelf> shelf_;
 
   // The view that contains all preview layers belonging to the holding space
   // icon.
-  const raw_ptr<views::View, ExperimentalAsh> container_;
+  const raw_ptr<views::View> container_;
 
   // Owns the `ui::Layer` which paints the image representation of the
   // associated holding space item.

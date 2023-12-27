@@ -166,7 +166,7 @@ class ASH_EXPORT ResultSelectionController {
 
   // Container views to be traversed by this controller.
   // Owned by |SearchResultPageView|.
-  raw_ptr<const ResultSelectionModel, ExperimentalAsh> result_selection_model_;
+  raw_ptr<const ResultSelectionModel> result_selection_model_;
 
   // Returns true if the container at the given |index| within
   // |result_selection_model_| responds true to
@@ -178,8 +178,7 @@ class ASH_EXPORT ResultSelectionController {
   base::RepeatingClosure selection_change_callback_;
 
   // The currently selected result view.
-  raw_ptr<SearchResultBaseView, DanglingUntriaged | ExperimentalAsh>
-      selected_result_ = nullptr;
+  raw_ptr<SearchResultBaseView, DanglingUntriaged> selected_result_ = nullptr;
 
   // The currently selected result ID.
   std::string selected_result_id_;

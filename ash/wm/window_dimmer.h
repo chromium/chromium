@@ -96,11 +96,11 @@ class ASH_EXPORT WindowDimmer : public wm::ActivationDelegate,
   // `dim_color_type_`.
   void UpdateDimColor();
 
-  raw_ptr<aura::Window, ExperimentalAsh> parent_;
+  raw_ptr<aura::Window> parent_;
   // See class description for details on ownership.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_;
+  raw_ptr<aura::Window, DanglingUntriaged> window_;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;  // Not owned.
+  raw_ptr<Delegate> delegate_;  // Not owned.
 
   // Used to get the color for the dimming `window_`'s layer. It's updated
   // through `SetDimColor`. It will be reset when SetDimOpacity() is called.

@@ -60,7 +60,7 @@ class ASH_EXPORT LockScreenActionBackgroundView
   base::OnceClosure animation_end_callback_;
   views::InkDropState animating_to_state_;
 
-  raw_ptr<NoteBackground, ExperimentalAsh> background_ = nullptr;
+  raw_ptr<NoteBackground> background_ = nullptr;
 };
 
 }  // namespace ash

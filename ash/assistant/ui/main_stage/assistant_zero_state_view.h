@@ -62,11 +62,11 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantZeroStateView
   void UpdateLayout();
 
   // Owned by AssistantController.
-  const raw_ptr<AssistantViewDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<AssistantViewDelegate> delegate_;
 
   // Owned by view hierarchy;
-  raw_ptr<AssistantOnboardingView, ExperimentalAsh> onboarding_view_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> greeting_label_ = nullptr;
+  raw_ptr<AssistantOnboardingView> onboarding_view_ = nullptr;
+  raw_ptr<views::Label> greeting_label_ = nullptr;
   raw_ptr<views::View> spacer_ = nullptr;
   raw_ptr<LauncherSearchIphView> iph_view_ = nullptr;
 

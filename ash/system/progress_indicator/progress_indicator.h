@@ -135,8 +135,7 @@ class ASH_EXPORT ProgressIndicator : public ui::LayerOwner,
   // `animation_key_`. When an animation exists, it will be painted in lieu of
   // the determinate progress indication that would otherwise be painted for the
   // cached `progress_`.
-  const raw_ptr<ProgressIndicatorAnimationRegistry,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<ProgressIndicatorAnimationRegistry, DanglingUntriaged>
       animation_registry_;
 
   // The key for which to look up animations in the `animation_registry_`.

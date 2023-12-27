@@ -132,8 +132,8 @@ class ASH_EXPORT SplitViewDragIndicators {
   class SplitViewDragIndicatorsView;
 
   // The root content view of |widget_|.
-  raw_ptr<SplitViewDragIndicatorsView, DanglingUntriaged | ExperimentalAsh>
-      indicators_view_ = nullptr;
+  raw_ptr<SplitViewDragIndicatorsView, DanglingUntriaged> indicators_view_ =
+      nullptr;
 
   WindowDraggingState current_window_dragging_state_ =
       WindowDraggingState::kNoDrag;

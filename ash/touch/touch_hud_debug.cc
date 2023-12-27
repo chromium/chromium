@@ -248,7 +248,7 @@ class TouchHudCanvas : public views::View {
 
   cc::PaintFlags flags_;
 
-  const raw_ref<const TouchLog, DanglingUntriaged | ExperimentalAsh> touch_log_;
+  const raw_ref<const TouchLog, DanglingUntriaged> touch_log_;
   SkPath paths_[kMaxPaths];
   SkColor colors_[kMaxPaths];
 

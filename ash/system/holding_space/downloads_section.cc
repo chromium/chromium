@@ -112,7 +112,7 @@ class Header : public views::Button {
   }
 
   // Owned by view hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> chevron_ = nullptr;
+  raw_ptr<views::ImageView> chevron_ = nullptr;
 };
 
 BEGIN_METADATA(Header, views::Button)

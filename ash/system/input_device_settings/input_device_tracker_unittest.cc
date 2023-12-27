@@ -99,7 +99,7 @@ class InputDeviceTrackerTest
  protected:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<InputDeviceTracker> tracker_;
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
 
   InputDeviceCategory category_;
   base::StringPiece pref_path_;

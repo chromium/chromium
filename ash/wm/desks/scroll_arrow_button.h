@@ -47,7 +47,7 @@ class ASH_EXPORT ScrollArrowButton : public views::Button {
   // The subscription of button state change callback.
   base::CallbackListSubscription state_change_subscription_;
   const bool is_left_arrow_;
-  const raw_ptr<DeskBarViewBase, ExperimentalAsh> bar_view_;  // Not owned.
+  const raw_ptr<DeskBarViewBase> bar_view_;  // Not owned.
   // If the button is kept pressed, trigger scroll every one second.
   base::RepeatingTimer timer_;
 };

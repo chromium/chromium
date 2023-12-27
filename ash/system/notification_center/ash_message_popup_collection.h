@@ -216,11 +216,11 @@ class ASH_EXPORT AshMessagePopupCollection
 
   std::optional<display::ScopedDisplayObserver> display_observer_;
 
-  raw_ptr<display::Screen, ExperimentalAsh> screen_;
+  raw_ptr<display::Screen> screen_;
   gfx::Rect work_area_;
 
   // Outlives this class.
-  raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  raw_ptr<Shelf> shelf_;
 
   std::set<views::Widget*> tracked_widgets_;
 
@@ -238,8 +238,7 @@ class ASH_EXPORT AshMessagePopupCollection
 
   // Keeps track the last pop up added, used by throughout tracker. We only
   // record smoothness when this variable is in scope.
-  raw_ptr<message_center::MessagePopupView, ExperimentalAsh>
-      last_pop_up_added_ = nullptr;
+  raw_ptr<message_center::MessagePopupView> last_pop_up_added_ = nullptr;
 };
 
 }  // namespace ash

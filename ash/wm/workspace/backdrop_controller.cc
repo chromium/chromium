@@ -113,7 +113,7 @@ class ScopedWindowVisibilityAnimationTypeResetter {
       const ScopedWindowVisibilityAnimationTypeResetter&) = delete;
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 };
 
 // -----------------------------------------------------------------------------
@@ -199,8 +199,8 @@ class BackdropController::WindowAnimationWaiter
   }
 
  private:
-  raw_ptr<BackdropController, ExperimentalAsh> owner_;
-  raw_ptr<aura::Window, ExperimentalAsh> animating_window_;
+  raw_ptr<BackdropController> owner_;
+  raw_ptr<aura::Window> animating_window_;
 };
 
 // -----------------------------------------------------------------------------

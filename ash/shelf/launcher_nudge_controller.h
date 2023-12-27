@@ -105,7 +105,7 @@ class ASH_EXPORT LauncherNudgeController : public SessionObserver,
   // Returns the current time. The clock may be overridden for testing.
   base::Time GetNow() const;
 
-  raw_ptr<const base::Clock, ExperimentalAsh> clock_for_test_ = nullptr;
+  raw_ptr<const base::Clock> clock_for_test_ = nullptr;
 
   // The timer that keeps track of when should the nudge be shown next time.
   std::unique_ptr<base::WallClockTimer> show_nudge_timer_;

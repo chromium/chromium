@@ -124,61 +124,48 @@ class ASH_EXPORT AccessibilityDetailedView
   bool IsSodaFeatureInTray(SodaFeature feature);
   void SetSodaFeatureSubtext(SodaFeature feature, std::u16string message);
 
-  raw_ptr<HoverHighlightView, ExperimentalAsh> spoken_feedback_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> select_to_speak_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> dictation_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> facegaze_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> color_correction_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> high_contrast_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> screen_magnifier_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> docked_magnifier_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> large_cursor_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> autoclick_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> virtual_keyboard_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> switch_access_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> live_caption_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> mono_audio_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> caret_highlight_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> highlight_mouse_cursor_view_ =
-      nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> highlight_keyboard_focus_view_ =
-      nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> sticky_keys_view_ = nullptr;
+  raw_ptr<HoverHighlightView> spoken_feedback_view_ = nullptr;
+  raw_ptr<HoverHighlightView> select_to_speak_view_ = nullptr;
+  raw_ptr<HoverHighlightView> dictation_view_ = nullptr;
+  raw_ptr<HoverHighlightView> facegaze_view_ = nullptr;
+  raw_ptr<HoverHighlightView> color_correction_view_ = nullptr;
+  raw_ptr<HoverHighlightView> high_contrast_view_ = nullptr;
+  raw_ptr<HoverHighlightView> screen_magnifier_view_ = nullptr;
+  raw_ptr<HoverHighlightView> docked_magnifier_view_ = nullptr;
+  raw_ptr<HoverHighlightView> large_cursor_view_ = nullptr;
+  raw_ptr<HoverHighlightView> autoclick_view_ = nullptr;
+  raw_ptr<HoverHighlightView> virtual_keyboard_view_ = nullptr;
+  raw_ptr<HoverHighlightView> switch_access_view_ = nullptr;
+  raw_ptr<HoverHighlightView> live_caption_view_ = nullptr;
+  raw_ptr<HoverHighlightView> mono_audio_view_ = nullptr;
+  raw_ptr<HoverHighlightView> caret_highlight_view_ = nullptr;
+  raw_ptr<HoverHighlightView> highlight_mouse_cursor_view_ = nullptr;
+  raw_ptr<HoverHighlightView> highlight_keyboard_focus_view_ = nullptr;
+  raw_ptr<HoverHighlightView> sticky_keys_view_ = nullptr;
 
   // Views that appear in the top section listing enabled items. Created if the
   // feature is enabled, otherwise nullptr. Owned by views hierarchy.
-  raw_ptr<HoverHighlightView, ExperimentalAsh> spoken_feedback_top_view_ =
-      nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> select_to_speak_top_view_ =
-      nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> dictation_top_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> facegaze_top_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> color_correction_top_view_ =
-      nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> high_contrast_top_view_ =
-      nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> screen_magnifier_top_view_ =
-      nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> docked_magnifier_top_view_ =
-      nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> large_cursor_top_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> autoclick_top_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> virtual_keyboard_top_view_ =
-      nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> switch_access_top_view_ =
-      nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> live_caption_top_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> mono_audio_top_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> caret_highlight_top_view_ =
-      nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh>
-      highlight_mouse_cursor_top_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh>
-      highlight_keyboard_focus_top_view_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> sticky_keys_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> spoken_feedback_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> select_to_speak_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> dictation_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> facegaze_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> color_correction_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> high_contrast_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> screen_magnifier_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> docked_magnifier_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> large_cursor_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> autoclick_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> virtual_keyboard_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> switch_access_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> live_caption_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> mono_audio_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> caret_highlight_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> highlight_mouse_cursor_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> highlight_keyboard_focus_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> sticky_keys_top_view_ = nullptr;
 
-  raw_ptr<views::Button, ExperimentalAsh> help_view_ = nullptr;
-  raw_ptr<views::Button, ExperimentalAsh> settings_view_ = nullptr;
+  raw_ptr<views::Button> help_view_ = nullptr;
+  raw_ptr<views::Button> settings_view_ = nullptr;
 
   LoginStatus login_;
 };

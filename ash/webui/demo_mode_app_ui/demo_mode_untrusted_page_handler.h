@@ -38,7 +38,7 @@ class DemoModeUntrustedPageHandler
 
   mojo::Receiver<mojom::demo_mode::UntrustedPageHandler> receiver_;
 
-  raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  raw_ptr<views::Widget> widget_;
 
   raw_ptr<DemoModeAppUntrustedUI> demo_mode_app_untrusted_ui_;
 };

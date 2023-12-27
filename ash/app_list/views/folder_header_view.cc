@@ -248,7 +248,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
   }
 
   // The parent FolderHeaderView, owns this.
-  const raw_ptr<FolderHeaderView, ExperimentalAsh> folder_header_view_;
+  const raw_ptr<FolderHeaderView> folder_header_view_;
 
   // Name of the folder when FolderNameView is focused, used to track folder
   // rename metric.

@@ -40,8 +40,7 @@ class ASH_EXPORT CaptureModeFeaturePodController
   void OnIconPressed() override;
 
  private:
-  const raw_ptr<UnifiedSystemTrayController,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<UnifiedSystemTrayController, DanglingUntriaged>
       tray_controller_;
 
   base::WeakPtrFactory<CaptureModeFeaturePodController> weak_ptr_factory_{this};

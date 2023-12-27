@@ -63,7 +63,7 @@ class NightLightFeaturePodControllerTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<UnifiedSystemTray, DanglingUntriaged | ExperimentalAsh> system_tray_;
+  raw_ptr<UnifiedSystemTray, DanglingUntriaged> system_tray_;
   std::unique_ptr<NightLightFeaturePodController> controller_;
   std::unique_ptr<FeatureTile> tile_;
 };

@@ -37,8 +37,8 @@ class ASH_EXPORT ChannelIndicatorQuickSettingsView : public views::View {
 
  private:
   // Refs maintained for unit test introspection methods.
-  raw_ptr<views::View, ExperimentalAsh> version_button_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> feedback_button_ = nullptr;
+  raw_ptr<views::View> version_button_ = nullptr;
+  raw_ptr<views::View> feedback_button_ = nullptr;
 };
 
 }  // namespace ash

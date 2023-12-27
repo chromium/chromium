@@ -151,12 +151,12 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   // Record repeated shows metric when the timer is stop.
   void RecordRepeatedShows();
 
-  raw_ptr<views::BoxLayout, ExperimentalAsh> layout_manager_ = nullptr;
+  raw_ptr<views::BoxLayout> layout_manager_ = nullptr;
 
   // Owned by the views hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> camera_icon_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> microphone_icon_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> screen_share_icon_ = nullptr;
+  raw_ptr<views::ImageView> camera_icon_ = nullptr;
+  raw_ptr<views::ImageView> microphone_icon_ = nullptr;
+  raw_ptr<views::ImageView> screen_share_icon_ = nullptr;
 
   // Keep track of the current screen sharing state.
   bool is_screen_sharing_ = false;

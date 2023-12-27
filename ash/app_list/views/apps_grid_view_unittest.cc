@@ -187,7 +187,7 @@ class PageFlipWaiter : public PaginationModelObserver {
   }
 
   std::unique_ptr<base::RunLoop> ui_run_loop_;
-  raw_ptr<PaginationModel, ExperimentalAsh> model_ = nullptr;
+  raw_ptr<PaginationModel> model_ = nullptr;
   bool wait_ = false;
   std::string selected_pages_;
 };
@@ -214,7 +214,7 @@ class WindowDeletionWaiter : aura::WindowObserver {
   }
 
   base::RunLoop run_loop_;
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_;
+  raw_ptr<aura::Window, DanglingUntriaged> window_;
 };
 
 // Find the window with type WINDOW_TYPE_MENU and returns the firstly found one.
@@ -255,7 +255,7 @@ class PostPageFlipTask : public PaginationModelObserver {
   void TransitionChanged() override {}
   void TransitionEnded() override {}
 
-  raw_ptr<PaginationModel, ExperimentalAsh> model_;
+  raw_ptr<PaginationModel> model_;
   base::OnceClosure task_;
 };
 
@@ -278,7 +278,7 @@ class BoundsChangeCounter : public views::ViewObserver {
   int bounds_change_count() const { return bounds_change_count_; }
 
  private:
-  const raw_ptr<views::View, ExperimentalAsh> observed_view_;
+  const raw_ptr<views::View> observed_view_;
   int bounds_change_count_ = 0;
 };
 
@@ -766,19 +766,15 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
 
   // May be a PagedAppsGridView in tablet mode or a ScrollableAppsGridView in
   // clamshell mode.
-  raw_ptr<AppsGridView, DanglingUntriaged | ExperimentalAsh> apps_grid_view_ =
-      nullptr;
+  raw_ptr<AppsGridView, DanglingUntriaged> apps_grid_view_ = nullptr;
 
   // May be owned by different parent views depending on tablet mode.
-  raw_ptr<AppListFolderView, DanglingUntriaged | ExperimentalAsh>
-      app_list_folder_view_ = nullptr;
-  raw_ptr<SearchBoxView, DanglingUntriaged | ExperimentalAsh> search_box_view_ =
-      nullptr;
+  raw_ptr<AppListFolderView, DanglingUntriaged> app_list_folder_view_ = nullptr;
+  raw_ptr<SearchBoxView, DanglingUntriaged> search_box_view_ = nullptr;
 
   // These views exist in tablet mode.
-  raw_ptr<PagedAppsGridView, DanglingUntriaged | ExperimentalAsh>
-      paged_apps_grid_view_ = nullptr;
-  raw_ptr<AppListView, DanglingUntriaged | ExperimentalAsh> app_list_view_ =
+  raw_ptr<PagedAppsGridView, DanglingUntriaged> paged_apps_grid_view_ = nullptr;
+  raw_ptr<AppListView, DanglingUntriaged> app_list_view_ =
       nullptr;  // Owned by native widget.
 
   std::unique_ptr<AppsGridViewTestApi> test_api_;

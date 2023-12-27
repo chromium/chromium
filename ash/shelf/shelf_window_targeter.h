@@ -57,7 +57,7 @@ class ShelfWindowTargeter : public ::wm::EasyResizeWindowTargeter,
   // and the current shelf alighment.
   void UpdateInsets();
 
-  raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  raw_ptr<Shelf> shelf_;
 
   // The size of the insets above the shelf for mouse events for the current
   // shelf visibility.

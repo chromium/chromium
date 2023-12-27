@@ -188,18 +188,18 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
   // Updates UI with model. Returns the number of visible results.
   virtual int DoUpdate() = 0;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   size_t num_results_ = 0;
 
   // If true, left/right key events will traverse this container
   bool horizontally_traversable_ = false;
 
-  raw_ptr<SearchModel::SearchResults, ExperimentalAsh> results_ =
+  raw_ptr<SearchModel::SearchResults> results_ =
       nullptr;  // Owned by SearchModel.
 
   // view delegate for notifications.
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
+  const raw_ptr<AppListViewDelegate> view_delegate_;
 
   // Whether the container is observing search result model, and updating when
   // results in the model change.

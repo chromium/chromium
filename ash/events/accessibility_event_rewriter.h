@@ -102,8 +102,7 @@ class ASH_EXPORT AccessibilityEventRewriter
 
   // The delegate used to send events to the ChromeVox and Switch Access
   // extensions.
-  raw_ptr<AccessibilityEventRewriterDelegate, ExperimentalAsh> delegate_ =
-      nullptr;
+  raw_ptr<AccessibilityEventRewriterDelegate> delegate_ = nullptr;
 
   // Whether to send mouse events to accessibility component extensions.
   bool send_mouse_events_ = false;
@@ -120,8 +119,7 @@ class ASH_EXPORT AccessibilityEventRewriter
 
   // Used to rewrite events in special cases such as function keys for ChromeVox
   // taylored behavior.
-  const raw_ptr<ui::EventRewriterAsh, DanglingUntriaged | ExperimentalAsh>
-      event_rewriter_ash_;
+  const raw_ptr<ui::EventRewriterAsh, DanglingUntriaged> event_rewriter_ash_;
 
   // Suspends key handling for Switch Access during key assignment in web ui.
   bool suspend_switch_access_key_handling_ = false;

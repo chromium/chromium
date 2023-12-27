@@ -48,7 +48,7 @@ class ASH_EXPORT NoteActionLaunchButton : public NonAccessibleView {
     const views::View* BackgroundView() const;
 
    private:
-    raw_ptr<NoteActionLaunchButton, ExperimentalAsh> launch_button_;
+    raw_ptr<NoteActionLaunchButton> launch_button_;
   };
 
   explicit NoteActionLaunchButton(
@@ -67,10 +67,10 @@ class ASH_EXPORT NoteActionLaunchButton : public NonAccessibleView {
   class ActionButton;
 
   // The background bubble view.
-  raw_ptr<BackgroundView, ExperimentalAsh> background_ = nullptr;
+  raw_ptr<BackgroundView> background_ = nullptr;
 
   // The actionable image button view.
-  raw_ptr<ActionButton, ExperimentalAsh> action_button_ = nullptr;
+  raw_ptr<ActionButton> action_button_ = nullptr;
 };
 
 }  // namespace ash

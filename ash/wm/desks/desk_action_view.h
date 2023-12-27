@@ -59,8 +59,8 @@ class ASH_EXPORT DeskActionView : public views::BoxLayoutView,
   void OnViewFocused(views::View* observed) override;
   void OnViewBlurred(views::View* observed) override;
 
-  raw_ptr<CloseButton, ExperimentalAsh> combine_desks_button_;
-  raw_ptr<CloseButton, ExperimentalAsh> close_all_button_;
+  raw_ptr<CloseButton> combine_desks_button_;
+  raw_ptr<CloseButton> close_all_button_;
 
   // Maintains blurred rounded rect background without clipping. Useful when
   // generating a focus ring that will partially extend outside of the view.

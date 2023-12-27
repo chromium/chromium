@@ -93,7 +93,7 @@ class ASH_EXPORT AcceleratorControllerImpl
                                      const std::string& side);
 
    private:
-    raw_ptr<AcceleratorControllerImpl, DanglingUntriaged | ExperimentalAsh>
+    raw_ptr<AcceleratorControllerImpl, DanglingUntriaged>
         controller_;  // Not owned.
   };
 
@@ -237,8 +237,7 @@ class ASH_EXPORT AcceleratorControllerImpl
       shift_disable_state_machine_;
 
   // Manages all accelerator mappings.
-  raw_ptr<AshAcceleratorConfiguration, ExperimentalAsh>
-      accelerator_configuration_;
+  raw_ptr<AshAcceleratorConfiguration> accelerator_configuration_;
 
   // Handles the exit accelerator which requires a double press to exit and
   // shows a popup with an explanation.

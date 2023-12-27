@@ -77,7 +77,7 @@ class ScreenPinningController::PinnedContainerChildWindowObserver
   }
 
  private:
-  raw_ptr<ScreenPinningController, ExperimentalAsh> controller_;
+  raw_ptr<ScreenPinningController> controller_;
 };
 
 // Adapter to translate OnWindowAdded/OnWillRemoveWindow for the container
@@ -103,7 +103,7 @@ class ScreenPinningController::PinnedContainerWindowObserver
   }
 
  private:
-  raw_ptr<ScreenPinningController, ExperimentalAsh> controller_;
+  raw_ptr<ScreenPinningController> controller_;
 };
 
 // Adapter to fire OnSystemModalContainerWindowStackingChanged().
@@ -124,7 +124,7 @@ class ScreenPinningController::SystemModalContainerChildWindowObserver
   }
 
  private:
-  raw_ptr<ScreenPinningController, ExperimentalAsh> controller_;
+  raw_ptr<ScreenPinningController> controller_;
 };
 
 // Adapter to translate OnWindowAdded/OnWillRemoveWindow for the
@@ -153,7 +153,7 @@ class ScreenPinningController::SystemModalContainerWindowObserver
   }
 
  private:
-  raw_ptr<ScreenPinningController, ExperimentalAsh> controller_;
+  raw_ptr<ScreenPinningController> controller_;
 };
 
 ScreenPinningController::ScreenPinningController()

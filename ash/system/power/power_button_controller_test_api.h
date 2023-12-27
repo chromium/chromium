@@ -89,8 +89,7 @@ class PowerButtonControllerTestApi {
   bool ShowMenuAnimationDone() const;
 
  private:
-  raw_ptr<PowerButtonController, DanglingUntriaged | ExperimentalAsh>
-      controller_;  // Not owned.
+  raw_ptr<PowerButtonController, DanglingUntriaged> controller_;  // Not owned.
 };
 
 }  // namespace ash

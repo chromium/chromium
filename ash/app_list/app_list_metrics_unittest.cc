@@ -174,8 +174,7 @@ class AppListMetricsTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<SearchModel, DanglingUntriaged | ExperimentalAsh> search_model_ =
-      nullptr;
+  raw_ptr<SearchModel, DanglingUntriaged> search_model_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> shelf_test_api_;
 };
 

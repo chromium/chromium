@@ -36,7 +36,7 @@ class DisplayConfigurationControllerTestApi {
       std::unique_ptr<ScreenRotationAnimator> animator);
 
  private:
-  raw_ptr<DisplayConfigurationController, ExperimentalAsh> controller_;
+  raw_ptr<DisplayConfigurationController> controller_;
 };
 
 }  // namespace ash

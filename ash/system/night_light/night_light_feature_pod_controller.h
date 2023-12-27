@@ -53,11 +53,10 @@ class ASH_EXPORT NightLightFeaturePodController
   // Updates the toggle state, sub label, and icon tooltip of the `tile_`.
   void UpdateTile();
 
-  const raw_ptr<UnifiedSystemTrayController,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<UnifiedSystemTrayController, DanglingUntriaged>
       tray_controller_;
   // Owned by the views hierarchy.
-  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
+  raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;
 
   base::WeakPtrFactory<NightLightFeaturePodController> weak_factory_{this};
 };

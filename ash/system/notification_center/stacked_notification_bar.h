@@ -96,13 +96,12 @@ class StackedNotificationBar : public views::View,
   int pinned_notification_count_ = 0;
   int stacked_notification_count_ = 0;
 
-  const raw_ptr<NotificationCenterView, ExperimentalAsh>
-      notification_center_view_;
-  raw_ptr<views::View, ExperimentalAsh> notification_icons_container_;
-  const raw_ptr<views::Label, ExperimentalAsh> count_label_;
-  const raw_ptr<views::View, ExperimentalAsh> spacer_;
-  const raw_ptr<views::Button, ExperimentalAsh> clear_all_button_;
-  const raw_ptr<views::BoxLayout, ExperimentalAsh> layout_manager_;
+  const raw_ptr<NotificationCenterView> notification_center_view_;
+  raw_ptr<views::View> notification_icons_container_;
+  const raw_ptr<views::Label> count_label_;
+  const raw_ptr<views::View> spacer_;
+  const raw_ptr<views::Button> clear_all_button_;
+  const raw_ptr<views::BoxLayout> layout_manager_;
 
   base::WeakPtrFactory<StackedNotificationBar> weak_ptr_factory_{this};
 };

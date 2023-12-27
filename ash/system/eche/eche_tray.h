@@ -288,7 +288,7 @@ class ASH_EXPORT EcheTray
     void OnKeyEvent(ui::KeyEvent* event) override;
 
    private:
-    const raw_ptr<EcheTray, ExperimentalAsh> eche_tray_;
+    const raw_ptr<EcheTray> eche_tray_;
   };
 
   // Calculates and returns the size of the Exo bubble based on the screen size
@@ -349,14 +349,14 @@ class ASH_EXPORT EcheTray
   GURL url_;
 
   // Icon of the tray. Unowned.
-  const raw_ptr<views::ImageView, ExperimentalAsh> icon_;
+  const raw_ptr<views::ImageView> icon_;
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;
 
   // The webview shown in the bubble that contains the Eche SWA.
   // owned by `bubble_`
-  raw_ptr<AshWebView, ExperimentalAsh> web_view_ = nullptr;
+  raw_ptr<AshWebView> web_view_ = nullptr;
 
   // Webview used to create a prewarming channel, before we have a video to
   // attach to.
@@ -366,7 +366,7 @@ class ASH_EXPORT EcheTray
   bool has_reported_initializer_result_ = false;
   bool has_retried_initializer_ = false;
 
-  raw_ptr<eche_app::EcheConnectionStatusHandler, ExperimentalAsh>
+  raw_ptr<eche_app::EcheConnectionStatusHandler>
       eche_connection_status_handler_ = nullptr;
 
   GracefulCloseCallback graceful_close_callback_;
@@ -376,11 +376,10 @@ class ASH_EXPORT EcheTray
   // The unload timer to force close EcheTray in case unload error.
   std::unique_ptr<base::DelayTimer> unload_timer_;
 
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> header_view_ =
-      nullptr;
-  raw_ptr<views::Button, ExperimentalAsh> close_button_ = nullptr;
-  raw_ptr<views::Button, ExperimentalAsh> minimize_button_ = nullptr;
-  raw_ptr<views::Button, ExperimentalAsh> arrow_back_button_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> header_view_ = nullptr;
+  raw_ptr<views::Button> close_button_ = nullptr;
+  raw_ptr<views::Button> minimize_button_ = nullptr;
+  raw_ptr<views::Button> arrow_back_button_ = nullptr;
   std::unique_ptr<EventInterceptor> event_interceptor_;
 
   // The time a stream is initializing. Used to record the elapsed time from

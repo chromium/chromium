@@ -1312,8 +1312,7 @@ class NightLightCrtcTest : public NightLightTest {
  private:
   std::unique_ptr<display::test::ActionLogger> logger_;
   // Not owned.
-  raw_ptr<display::test::TestNativeDisplayDelegate,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<display::test::TestNativeDisplayDelegate, DanglingUntriaged>
       native_display_delegate_;
   std::unique_ptr<display::DisplayChangeObserver> display_change_observer_;
   std::unique_ptr<display::DisplayConfigurator::TestApi> test_api_;
@@ -1829,10 +1828,8 @@ class AmbientEQTest : public NightLightTest {
   std::unique_ptr<display::test::ActionLogger> logger_;
 
   // Not owned.
-  raw_ptr<NightLightControllerImpl, DanglingUntriaged | ExperimentalAsh>
-      controller_;
-  raw_ptr<display::test::TestNativeDisplayDelegate,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NightLightControllerImpl, DanglingUntriaged> controller_;
+  raw_ptr<display::test::TestNativeDisplayDelegate, DanglingUntriaged>
       native_display_delegate_;
   std::unique_ptr<display::DisplayChangeObserver> display_change_observer_;
   std::unique_ptr<display::DisplayConfigurator::TestApi> test_api_;

@@ -144,7 +144,7 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
   }
 
  private:
-  const raw_ptr<ArcImeService, ExperimentalAsh> ime_service_;
+  const raw_ptr<ArcImeService> ime_service_;
 };
 
 // Singleton factory for ArcImeService.

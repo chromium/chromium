@@ -48,7 +48,7 @@ class PowerButtonPixelTest : public NoSessionAshTestBase {
 
  private:
   // Owned by view hierarchy.
-  raw_ptr<PowerButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<PowerButton> button_ = nullptr;
 };
 
 // TODO(http://b/291573477): Re-enable this test.

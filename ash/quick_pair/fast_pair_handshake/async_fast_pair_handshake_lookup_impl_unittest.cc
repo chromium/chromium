@@ -82,8 +82,8 @@ class FastPairFakeDataEncryptorImplFactory
   void SetFailedRetrieval() { successful_retrieval_ = false; }
 
  private:
-  raw_ptr<FakeFastPairDataEncryptor, DanglingUntriaged | ExperimentalAsh>
-      data_encryptor_ = nullptr;
+  raw_ptr<FakeFastPairDataEncryptor, DanglingUntriaged> data_encryptor_ =
+      nullptr;
   bool successful_retrieval_ = true;
 };
 

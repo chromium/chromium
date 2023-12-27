@@ -65,8 +65,8 @@ class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
  private:
   friend class DictationBubbleControllerTest;
 
-  raw_ptr<TopRowView, ExperimentalAsh> top_row_view_ = nullptr;
-  raw_ptr<DictationHintView, ExperimentalAsh> hint_view_ = nullptr;
+  raw_ptr<TopRowView> top_row_view_ = nullptr;
+  raw_ptr<DictationHintView> hint_view_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
@@ -98,8 +98,7 @@ class ASH_EXPORT DictationHintView : public views::View {
 
   // Labels containing hints for users of Dictation. A max of five hints can be
   // shown at any given time.
-  std::vector<raw_ptr<views::Label, ExperimentalAsh>> labels_{kMaxLabelHints,
-                                                              nullptr};
+  std::vector<raw_ptr<views::Label>> labels_{kMaxLabelHints, nullptr};
 };
 
 }  // namespace ash

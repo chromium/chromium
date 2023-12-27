@@ -51,11 +51,11 @@ class ASH_EXPORT AmbientInfoView : public views::View,
   void InitLayout();
 
   // Owned by |AmbientController| and should always outlive |this|.
-  raw_ptr<AmbientViewDelegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<AmbientViewDelegate> delegate_ = nullptr;
 
-  raw_ptr<GlanceableInfoView, ExperimentalAsh> glanceable_info_view_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> details_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> related_details_label_ = nullptr;
+  raw_ptr<GlanceableInfoView> glanceable_info_view_ = nullptr;
+  raw_ptr<views::Label> details_label_ = nullptr;
+  raw_ptr<views::Label> related_details_label_ = nullptr;
 };
 
 }  // namespace ash

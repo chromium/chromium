@@ -75,17 +75,15 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
   std::vector<std::unique_ptr<ui::EventRewriter>> rewriters_;
 
   // Owned by |rewriters_|.
-  raw_ptr<AccessibilityEventRewriter, ExperimentalAsh>
-      accessibility_event_rewriter_ = nullptr;
-  raw_ptr<PeripheralCustomizationEventRewriter, ExperimentalAsh>
+  raw_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_ = nullptr;
+  raw_ptr<PeripheralCustomizationEventRewriter>
       peripheral_customization_event_rewriter_ = nullptr;
-  raw_ptr<PrerewrittenEventForwarder, ExperimentalAsh>
-      prerewritten_event_forwarder_ = nullptr;
-  raw_ptr<KeyboardDrivenEventRewriter, ExperimentalAsh>
-      keyboard_driven_event_rewriter_ = nullptr;
-  raw_ptr<ui::EventRewriterAsh, ExperimentalAsh> event_rewriter_ash_ = nullptr;
-  raw_ptr<ui::EventRewriterAsh::Delegate, ExperimentalAsh>
-      event_rewriter_ash_delegate_ = nullptr;
+  raw_ptr<PrerewrittenEventForwarder> prerewritten_event_forwarder_ = nullptr;
+  raw_ptr<KeyboardDrivenEventRewriter> keyboard_driven_event_rewriter_ =
+      nullptr;
+  raw_ptr<ui::EventRewriterAsh> event_rewriter_ash_ = nullptr;
+  raw_ptr<ui::EventRewriterAsh::Delegate> event_rewriter_ash_delegate_ =
+      nullptr;
 };
 
 }  // namespace ash

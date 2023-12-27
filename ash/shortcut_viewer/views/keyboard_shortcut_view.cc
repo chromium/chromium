@@ -104,8 +104,7 @@ class KSVNoResultsImageView : public views::ImageView {
   }
 
  private:
-  const raw_ptr<ash::DarkLightModeControllerImpl, ExperimentalAsh>
-      dark_light_mode_controller_;
+  const raw_ptr<ash::DarkLightModeControllerImpl> dark_light_mode_controller_;
 };
 
 BEGIN_METADATA(KSVNoResultsImageView)

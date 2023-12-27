@@ -270,7 +270,7 @@ class ShutdownAnimationMetricsTrackerObserver : public OverviewObserver,
   }
 
  private:
-  raw_ptr<ui::Compositor, ExperimentalAsh> compositor_;
+  raw_ptr<ui::Compositor> compositor_;
   OverviewExitMetricsTracker metrics_tracker_;
 };
 

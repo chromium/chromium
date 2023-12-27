@@ -104,8 +104,7 @@ class KeyboardModifierMetricsRecorderTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<KeyboardModifierMetricsRecorder, DanglingUntriaged | ExperimentalAsh>
-      recorder_;
+  raw_ptr<KeyboardModifierMetricsRecorder, DanglingUntriaged> recorder_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -129,7 +128,7 @@ class KeyboardModifierMetricsRecorderPrefChangedTest
   }
 
  protected:
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
 
   KeyboardModifierMetricsRecorderTestData data_;
   ui::mojom::ModifierKey modifier_key_from_;

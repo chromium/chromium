@@ -61,10 +61,10 @@ class CalendarHeaderView : public views::View {
   friend class CalendarViewTest;
 
   // The main header which shows the month name.
-  const raw_ptr<views::Label, ExperimentalAsh> header_;
+  const raw_ptr<views::Label> header_;
 
   // The year header which follows the `header_`.
-  const raw_ptr<views::Label, ExperimentalAsh> header_year_;
+  const raw_ptr<views::Label> header_year_;
 };
 
 // This view displays a scrollable calendar.
@@ -170,11 +170,10 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
       void OnTouchEvent(ui::TouchEvent* event) override;
 
      private:
-      raw_ptr<ScrollContentsView, ExperimentalAsh> content_view_;
+      raw_ptr<ScrollContentsView> content_view_;
     };
 
-    const raw_ptr<CalendarViewController, DanglingUntriaged | ExperimentalAsh>
-        controller_;
+    const raw_ptr<CalendarViewController, DanglingUntriaged> controller_;
     StylusEventHandler stylus_event_handler_;
 
     // Since we only record metrics once when we scroll through a particular
@@ -424,46 +423,36 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
 
   // The content of the `scroll_view_`, which carries months and month labels.
   // Owned by `CalendarView`.
-  raw_ptr<ScrollContentsView, ExperimentalAsh> content_view_ = nullptr;
+  raw_ptr<ScrollContentsView> content_view_ = nullptr;
 
   // The container view for the top-most title row. Owned by `CalendarView`.
-  raw_ptr<TriView, ExperimentalAsh> tri_view_ = nullptr;
+  raw_ptr<TriView> tri_view_ = nullptr;
 
   // The following is owned by `CalendarView`.
-  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> current_label_ =
-      nullptr;
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> previous_label_ =
-      nullptr;
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> next_label_ =
-      nullptr;
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> next_next_label_ =
-      nullptr;
-  raw_ptr<CalendarMonthView, DanglingUntriaged | ExperimentalAsh>
-      previous_month_ = nullptr;
-  raw_ptr<CalendarMonthView, DanglingUntriaged | ExperimentalAsh>
-      current_month_ = nullptr;
-  raw_ptr<CalendarMonthView, DanglingUntriaged | ExperimentalAsh> next_month_ =
-      nullptr;
-  raw_ptr<CalendarMonthView, DanglingUntriaged | ExperimentalAsh>
-      next_next_month_ = nullptr;
-  raw_ptr<CalendarHeaderView, ExperimentalAsh> header_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> current_label_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> previous_label_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> next_label_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> next_next_label_ = nullptr;
+  raw_ptr<CalendarMonthView, DanglingUntriaged> previous_month_ = nullptr;
+  raw_ptr<CalendarMonthView, DanglingUntriaged> current_month_ = nullptr;
+  raw_ptr<CalendarMonthView, DanglingUntriaged> next_month_ = nullptr;
+  raw_ptr<CalendarMonthView, DanglingUntriaged> next_next_month_ = nullptr;
+  raw_ptr<CalendarHeaderView> header_ = nullptr;
   // Temporary header, used for animations.
-  raw_ptr<CalendarHeaderView, ExperimentalAsh> temp_header_ = nullptr;
-  raw_ptr<views::Button, ExperimentalAsh> reset_to_today_button_ = nullptr;
-  raw_ptr<views::Button, ExperimentalAsh> settings_button_ = nullptr;
-  raw_ptr<IconButton, ExperimentalAsh> managed_button_ = nullptr;
-  raw_ptr<IconButton, ExperimentalAsh> up_button_ = nullptr;
-  raw_ptr<IconButton, ExperimentalAsh> down_button_ = nullptr;
-  raw_ptr<GlanceablesProgressBarView, ExperimentalAsh> progress_bar_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> calendar_sliding_surface_ = nullptr;
-  raw_ptr<CalendarEventListView, DanglingUntriaged | ExperimentalAsh>
-      event_list_view_ = nullptr;
+  raw_ptr<CalendarHeaderView> temp_header_ = nullptr;
+  raw_ptr<views::Button> reset_to_today_button_ = nullptr;
+  raw_ptr<views::Button> settings_button_ = nullptr;
+  raw_ptr<IconButton> managed_button_ = nullptr;
+  raw_ptr<IconButton> up_button_ = nullptr;
+  raw_ptr<IconButton> down_button_ = nullptr;
+  raw_ptr<GlanceablesProgressBarView> progress_bar_ = nullptr;
+  raw_ptr<views::View> calendar_sliding_surface_ = nullptr;
+  raw_ptr<CalendarEventListView, DanglingUntriaged> event_list_view_ = nullptr;
   // Owned by CalendarView.
-  raw_ptr<CalendarUpNextView, DanglingUntriaged | ExperimentalAsh>
-      up_next_view_ = nullptr;
+  raw_ptr<CalendarUpNextView, DanglingUntriaged> up_next_view_ = nullptr;
   std::map<base::Time, CalendarModel::FetchingStatus> on_screen_month_;
-  raw_ptr<CalendarModel, ExperimentalAsh> calendar_model_ =
+  raw_ptr<CalendarModel> calendar_model_ =
       Shell::Get()->system_tray_model()->calendar_model();
 
   // If it `is_resetting_scroll_`, we don't calculate the scroll position and we

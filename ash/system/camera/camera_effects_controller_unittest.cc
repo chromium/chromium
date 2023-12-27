@@ -204,7 +204,7 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
 
   std::vector<BackgroundImageInfo> background_image_info_;
 
-  raw_ptr<CameraEffectsController, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<CameraEffectsController, DanglingUntriaged>
       camera_effects_controller_ = nullptr;
 
   std::unique_ptr<FakeVideoConferenceTrayController> controller_;

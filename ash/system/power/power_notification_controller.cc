@@ -54,7 +54,7 @@ class UsbNotificationDelegate : public message_center::NotificationDelegate {
  private:
   ~UsbNotificationDelegate() override = default;
 
-  const raw_ptr<PowerNotificationController, ExperimentalAsh> controller_;
+  const raw_ptr<PowerNotificationController> controller_;
 };
 
 std::string GetNotificationStateString(

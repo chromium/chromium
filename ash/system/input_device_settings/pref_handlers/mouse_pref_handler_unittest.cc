@@ -1093,7 +1093,7 @@ class MouseSettingsPrefConversionTest
 
  protected:
   std::string device_key_;
-  raw_ptr<const mojom::MouseSettings, ExperimentalAsh> settings_;
+  raw_ptr<const mojom::MouseSettings> settings_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

@@ -47,8 +47,7 @@ class ASH_EXPORT DisplayDetailedView : public TrayDetailedView {
 
   std::unique_ptr<UnifiedBrightnessSliderController>
       brightness_slider_controller_;
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh>
-      unified_system_tray_controller_;
+  const raw_ptr<UnifiedSystemTrayController> unified_system_tray_controller_;
 
   // The vector of `FeaturePodControllerBase`. This is needed to store the
   // controllers of both tiles so that the controllers exist while the page is
@@ -57,7 +56,7 @@ class ASH_EXPORT DisplayDetailedView : public TrayDetailedView {
       feature_tile_controllers_;
 
   // Owned by the views hierarchy.
-  raw_ptr<views::Button, ExperimentalAsh> settings_button_ = nullptr;
+  raw_ptr<views::Button> settings_button_ = nullptr;
 
   base::WeakPtrFactory<DisplayDetailedView> weak_factory_{this};
 };

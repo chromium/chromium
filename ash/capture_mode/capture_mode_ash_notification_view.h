@@ -68,8 +68,7 @@ class ASH_EXPORT CaptureModeAshNotificationView : public AshNotificationView {
   // image capture, or a superimposed "play" icon on top of the video thumbnail
   // image.
   // Owned by the view hierarchy.
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> extra_view_ =
-      nullptr;
+  raw_ptr<views::View, DanglingUntriaged> extra_view_ = nullptr;
 };
 
 }  // namespace ash

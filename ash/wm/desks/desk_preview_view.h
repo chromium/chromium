@@ -136,23 +136,22 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
  private:
   friend class DesksTestApi;
 
-  const raw_ptr<DeskMiniView, LeakedDanglingUntriaged | ExperimentalAsh>
-      mini_view_;
+  const raw_ptr<DeskMiniView, LeakedDanglingUntriaged> mini_view_;
 
   // A view that paints the wallpaper in the mini_view. It avoids the dimming
   // and blur overview mode adds to the original wallpaper. Owned by the views
   // hierarchy.
   using DeskWallpaperPreview = WallpaperBaseView;
-  raw_ptr<DeskWallpaperPreview, ExperimentalAsh> wallpaper_preview_;
+  raw_ptr<DeskWallpaperPreview> wallpaper_preview_;
 
   // A view whose layer will act as the parent of desk's mirrored contents layer
   // tree. Owned by the views hierarchy.
-  raw_ptr<views::View, ExperimentalAsh> desk_mirrored_contents_view_;
+  raw_ptr<views::View> desk_mirrored_contents_view_;
 
   // An overlay that becomes visible on top of the
   // `desk_mirrored_contents_view_` when the `mini_view_`'s
   // `DeskActionContextMenu` is active. Owned by the views hierarchy.
-  raw_ptr<views::View, ExperimentalAsh> highlight_overlay_ = nullptr;
+  raw_ptr<views::View> highlight_overlay_ = nullptr;
 
   // Owns the layer tree of the desk's contents mirrored layers.
   std::unique_ptr<ui::LayerTreeOwner> desk_mirrored_contents_layer_tree_owner_;

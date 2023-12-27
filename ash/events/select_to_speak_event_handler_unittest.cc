@@ -143,9 +143,9 @@ class SelectToSpeakEventHandlerTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_ = nullptr;
+  raw_ptr<ui::test::EventGenerator> generator_ = nullptr;
   EventCapturer event_capturer_;
-  raw_ptr<AccessibilityController, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<AccessibilityController> controller_ = nullptr;
   std::unique_ptr<TestDelegate> delegate_;
 };
 

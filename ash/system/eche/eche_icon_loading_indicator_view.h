@@ -50,7 +50,7 @@ class ASH_EXPORT EcheIconLoadingIndicatorView : public views::View,
  private:
   std::optional<base::TimeTicks> throbber_start_time_;
 
-  raw_ptr<views::View, ExperimentalAsh> parent_ = nullptr;  // Unowned.
+  raw_ptr<views::View> parent_ = nullptr;  // Unowned.
 
   base::ScopedObservation<views::View, views::ViewObserver> observed_session_{
       this};

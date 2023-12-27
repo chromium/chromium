@@ -101,7 +101,7 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
   // `this`.
   raw_ptr<EventHandlerDelegate> event_handler_delegate_;
 
-  raw_ptr<CloseButton, ExperimentalAsh> close_button_;
+  raw_ptr<CloseButton> close_button_;
 };
 
 }  // namespace ash

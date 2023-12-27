@@ -86,12 +86,11 @@ class QuickSettingsHeaderTest : public NoSessionAshTestBase {
     return header_->GetSupervisedButtonLabelForTest();
   }
 
-  raw_ptr<TestShellDelegate, DanglingUntriaged | ExperimentalAsh>
-      test_shell_delegate_ = nullptr;
+  raw_ptr<TestShellDelegate, DanglingUntriaged> test_shell_delegate_ = nullptr;
   scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<QuickSettingsHeader, ExperimentalAsh> header_ = nullptr;
+  raw_ptr<QuickSettingsHeader> header_ = nullptr;
 };
 
 TEST_F(QuickSettingsHeaderTest, HiddenOnStable) {

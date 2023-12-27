@@ -100,7 +100,7 @@ class ASH_EXPORT AppListPage : public views::View {
   gfx::Rect GetDefaultContentsBounds() const;
 
  private:
-  raw_ptr<ContentsView, ExperimentalAsh> contents_view_;
+  raw_ptr<ContentsView> contents_view_;
 };
 
 }  // namespace ash

@@ -125,11 +125,11 @@ class CaptureModeMenuHeader
   views::View* GetView() override { return this; }
 
  private:
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_;
-  raw_ptr<views::Label, ExperimentalAsh> label_view_;
+  raw_ptr<views::ImageView> icon_view_;
+  raw_ptr<views::Label> label_view_;
   // `nullptr` if the menu group is not for a setting that is managed by a
   // policy.
-  raw_ptr<views::ImageView, ExperimentalAsh> managed_icon_view_;
+  raw_ptr<views::ImageView> managed_icon_view_;
 };
 
 BEGIN_METADATA(CaptureModeMenuHeader, views::View)
@@ -173,7 +173,7 @@ class CaptureModeMenuItem
   views::View* GetView() override { return this; }
 
  private:
-  raw_ptr<views::Label, ExperimentalAsh> label_view_;
+  raw_ptr<views::Label> label_view_;
 };
 
 BEGIN_METADATA(CaptureModeMenuItem, views::Button)
@@ -333,11 +333,11 @@ class CaptureModeOption
   }
 
   // An optional icon for the option. Non-null if present.
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> option_icon_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> option_icon_view_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> option_icon_ = nullptr;
+  raw_ptr<views::ImageView> option_icon_view_ = nullptr;
 
-  raw_ptr<views::Label, ExperimentalAsh> label_view_;
-  raw_ptr<views::ImageView, ExperimentalAsh> checked_icon_view_;
+  raw_ptr<views::Label> label_view_;
+  raw_ptr<views::ImageView> checked_icon_view_;
   const int id_;
 };
 

@@ -42,7 +42,7 @@ class ASH_EXPORT SystemNudgeLabel : public views::View {
   void OnThemeChanged() override;
 
  private:
-  const raw_ptr<views::StyledLabel, ExperimentalAsh> styled_label_;
+  const raw_ptr<views::StyledLabel> styled_label_;
   base::flat_map<size_t, views::StyledLabel::RangeStyleInfo>
       custom_view_styles_by_offset_;
   int font_size_delta_ = 0;

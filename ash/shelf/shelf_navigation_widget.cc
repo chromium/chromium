@@ -114,7 +114,7 @@ class AnimationObserverToHideView : public ui::ImplicitAnimationObserver {
   }
 
  private:
-  const raw_ptr<views::View, LeakedDanglingUntriaged | ExperimentalAsh> view_;
+  const raw_ptr<views::View, LeakedDanglingUntriaged> view_;
 };
 
 // Tracks the animation smoothness of a view's bounds animation using
@@ -281,13 +281,13 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
  private:
   void RefreshAccessibilityWidgetNextPreviousFocus(ShelfWidget* shelf);
 
-  raw_ptr<BackButton, ExperimentalAsh> back_button_ = nullptr;
-  raw_ptr<HomeButton, ExperimentalAsh> home_button_ = nullptr;
+  raw_ptr<BackButton> back_button_ = nullptr;
+  raw_ptr<HomeButton> home_button_ = nullptr;
   // When true, the default focus of the navigation widget is the last
   // focusable child.
   bool default_last_focusable_child_ = false;
 
-  raw_ptr<Shelf, ExperimentalAsh> shelf_ = nullptr;
+  raw_ptr<Shelf> shelf_ = nullptr;
 };
 
 ShelfNavigationWidget::Delegate::Delegate(Shelf* shelf, ShelfView* shelf_view)

@@ -107,10 +107,10 @@ class ASH_EXPORT SystemNudge : public ShelfObserver, public ShellObserver {
 
   views::UniqueWidgetPtr widget_;
 
-  raw_ptr<SystemNudgeView, DanglingUntriaged | ExperimentalAsh> nudge_view_ =
+  raw_ptr<SystemNudgeView, DanglingUntriaged> nudge_view_ =
       nullptr;  // not_owned
 
-  const raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  const raw_ptr<aura::Window> root_window_;
 
   SystemNudgeParams params_;
 

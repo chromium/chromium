@@ -167,7 +167,7 @@ class CalendarUpNextViewTest : public AshTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<CalendarUpNextView, ExperimentalAsh> up_next_view_;
+  raw_ptr<CalendarUpNextView> up_next_view_;
   std::unique_ptr<CalendarViewController> controller_;
 };
 

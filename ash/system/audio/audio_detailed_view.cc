@@ -159,8 +159,7 @@ class DeviceNameContainerHighlightPathGenerator
   }
 
   // Owned by views hierarchy.
-  const raw_ptr<QuickSettingsSlider, DanglingUntriaged | ExperimentalAsh>
-      slider_;
+  const raw_ptr<QuickSettingsSlider, DanglingUntriaged> slider_;
 };
 
 std::vector<std::string> GetNamesOfAppsAccessingMic(

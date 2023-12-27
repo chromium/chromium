@@ -43,10 +43,10 @@ class ASH_EXPORT ShelfButton : public views::Button {
 
  private:
   // The shelf instance that this button belongs to. Unowned.
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const raw_ptr<Shelf> shelf_;
 
   // A class to which this button delegates handling some of its events.
-  const raw_ptr<ShelfButtonDelegate, ExperimentalAsh> shelf_button_delegate_;
+  const raw_ptr<ShelfButtonDelegate> shelf_button_delegate_;
 };
 
 }  // namespace ash

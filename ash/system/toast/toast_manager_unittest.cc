@@ -199,8 +199,7 @@ class ToastManagerImplTest : public AshTestBase,
   }
 
  private:
-  raw_ptr<ToastManagerImpl, DanglingUntriaged | ExperimentalAsh> manager_ =
-      nullptr;
+  raw_ptr<ToastManagerImpl, DanglingUntriaged> manager_ = nullptr;
   unsigned int serial_ = 0;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

@@ -180,11 +180,11 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
   // If `show` is false, fade out the copy and destroy it after the animation.
   void ResetOtherWindow(std::optional<bool> show);
 
-  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
+  raw_ptr<aura::Window> window_ = nullptr;
   // The `other_window_` refers to the window other than `window_` that is
   // visible while `window_` is being dragged. This happens when there is a
   // floated window.
-  raw_ptr<aura::Window, ExperimentalAsh> other_window_ = nullptr;
+  raw_ptr<aura::Window> other_window_ = nullptr;
   std::unique_ptr<ui::LayerTreeOwner> other_window_copy_;
   gfx::PointF initial_location_in_screen_;
   gfx::PointF previous_location_in_screen_;

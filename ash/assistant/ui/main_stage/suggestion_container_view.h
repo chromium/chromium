@@ -80,14 +80,13 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionContainerView
 
   void OnButtonPressed(SuggestionChipView* chip_view);
 
-  raw_ptr<views::BoxLayout, ExperimentalAsh>
-      layout_manager_;  // Owned by view hierarchy.
+  raw_ptr<views::BoxLayout> layout_manager_;  // Owned by view hierarchy.
 
   // Whether or not we have committed a query during this Assistant session.
   bool has_committed_query_ = false;
 
   // The suggestion chip that was pressed by the user. May be |nullptr|.
-  raw_ptr<const SuggestionChipView, ExperimentalAsh> selected_chip_ = nullptr;
+  raw_ptr<const SuggestionChipView> selected_chip_ = nullptr;
 };
 
 }  // namespace ash

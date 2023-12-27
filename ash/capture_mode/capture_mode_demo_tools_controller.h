@@ -114,10 +114,9 @@ class CaptureModeDemoToolsController : public ui::InputMethodObserver {
   void OnTouchDragged(const ui::PointerId& pointer_id,
                       const gfx::PointF& event_location_in_window);
 
-  const raw_ptr<VideoRecordingWatcher, ExperimentalAsh>
-      video_recording_watcher_;
+  const raw_ptr<VideoRecordingWatcher> video_recording_watcher_;
   views::UniqueWidgetPtr key_combo_widget_;
-  raw_ptr<KeyComboView, ExperimentalAsh> key_combo_view_ = nullptr;
+  raw_ptr<KeyComboView> key_combo_view_ = nullptr;
 
   // The state of the modifier keys i.e. Shift/Ctrl/Alt/Launcher keys.
   int modifiers_ = 0;

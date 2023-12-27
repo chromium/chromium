@@ -119,7 +119,7 @@ class FocusChangeListenerStub : public views::FocusChangeListener {
 
  private:
   std::vector<raw_ptr<views::View, VectorExperimental>> focused_views_;
-  raw_ptr<views::FocusManager, ExperimentalAsh> focus_manager_;
+  raw_ptr<views::FocusManager> focus_manager_;
 };
 
 // |ViewObserver| that simply remembers whether the given view was drawn
@@ -151,7 +151,7 @@ class VisibilityObserver : public views::ViewObserver {
       was_drawn_ = true;
   }
 
-  const raw_ptr<views::View, ExperimentalAsh> observed_view_;
+  const raw_ptr<views::View> observed_view_;
   bool was_drawn_ = false;
 };
 

@@ -79,33 +79,30 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   // initialization and when the `calendar_view_` height changes.
   void ClipScrollViewHeight(int screen_max_height) const;
 
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const raw_ptr<Shelf> shelf_;
 
   // Whether the bubble view has been initialized.
   bool initialized_ = false;
 
   // A scrollable view which contains the individual glanceables.
-  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
   // Container view for the tasks and classroom glanceables. Owned by this view.
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh>
-      time_management_container_view_ = nullptr;
+  raw_ptr<views::FlexLayoutView> time_management_container_view_ = nullptr;
 
   // Child bubble view for the tasks glanceable. Owned by this view.
-  raw_ptr<GlanceablesTasksViewBase, ExperimentalAsh> tasks_bubble_view_ =
-      nullptr;
+  raw_ptr<GlanceablesTasksViewBase> tasks_bubble_view_ = nullptr;
 
   // Child bubble view for the student classrooms glanceable. Owned by
   // this view.
-  raw_ptr<ClassroomBubbleStudentView, ExperimentalAsh>
-      classroom_bubble_student_view_ = nullptr;
+  raw_ptr<ClassroomBubbleStudentView> classroom_bubble_student_view_ = nullptr;
 
   // The parent container of `calendar_view_`. Only exists if the glanceables
   // calendar flag is on.
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> calendar_container_ = nullptr;
+  raw_ptr<views::FlexLayoutView> calendar_container_ = nullptr;
 
   // Child bubble view for the calendar glanceable. Owned by this view.
-  raw_ptr<CalendarView, ExperimentalAsh> calendar_view_ = nullptr;
+  raw_ptr<CalendarView> calendar_view_ = nullptr;
 
   base::CallbackListSubscription on_contents_scrolled_subscription_;
 

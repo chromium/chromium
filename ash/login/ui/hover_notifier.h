@@ -33,7 +33,7 @@ class HoverNotifier : public ui::EventHandler {
 
  private:
   bool had_hover_ = false;
-  raw_ptr<views::View, ExperimentalAsh> target_view_ = nullptr;
+  raw_ptr<views::View> target_view_ = nullptr;
   OnHover on_hover_;
 };
 

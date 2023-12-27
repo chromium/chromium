@@ -47,8 +47,7 @@ class ScopedBubbleViewActivator {
   ~ScopedBubbleViewActivator() { bubble_view_->SetCanActivate(false); }
 
  private:
-  raw_ptr<ash::FloatingAccessibilityBubbleView, ExperimentalAsh> bubble_view_ =
-      nullptr;
+  raw_ptr<ash::FloatingAccessibilityBubbleView> bubble_view_ = nullptr;
 };
 
 }  // namespace

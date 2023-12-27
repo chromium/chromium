@@ -189,9 +189,8 @@ class RetroactivePairingDetectorImpl final
   // so we can determine if we need to instantiate the objects.
   bool retroactive_pairing_detector_instatiated_ = false;
 
-  raw_ptr<PairerBroker, ExperimentalAsh> pairer_broker_ = nullptr;
-  raw_ptr<MessageStreamLookup, ExperimentalAsh> message_stream_lookup_ =
-      nullptr;
+  raw_ptr<PairerBroker> pairer_broker_ = nullptr;
+  raw_ptr<MessageStreamLookup> message_stream_lookup_ = nullptr;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   base::ObserverList<RetroactivePairingDetector::Observer> observers_;
 

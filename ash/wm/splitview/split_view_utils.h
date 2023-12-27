@@ -102,7 +102,7 @@ class ASH_EXPORT WindowTransformAnimationObserver
   void OnWindowDestroying(aura::Window* window) override;
 
  private:
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  const raw_ptr<aura::Window> window_;
 
   WindowTransformAnimationObserver(const WindowTransformAnimationObserver&) =
       delete;

@@ -95,9 +95,9 @@ class GameDashboardButton : public views::Button {
   void SetTitle(const std::u16string& title_text);
 
   // Owned by views hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> gamepad_icon_view_;
-  raw_ptr<views::Label, ExperimentalAsh> title_view_;
-  raw_ptr<views::ImageView, ExperimentalAsh> arrow_icon_view_;
+  raw_ptr<views::ImageView> gamepad_icon_view_;
+  raw_ptr<views::Label> title_view_;
+  raw_ptr<views::ImageView> arrow_icon_view_;
 
   // If true, the game window is being recorded, otherwise false.
   bool is_recording_ = false;

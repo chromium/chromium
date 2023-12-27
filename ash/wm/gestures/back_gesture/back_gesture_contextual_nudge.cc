@@ -293,10 +293,9 @@ class BackGestureContextualNudge::ContextualNudgeView
       }
     }
 
-    raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+    raw_ptr<views::Label> label_ = nullptr;
     int current_animation_times_ = 0;
-    raw_ptr<ContextualNudgeView, ExperimentalAsh> nudge_view_ =
-        nullptr;  // Not owned.
+    raw_ptr<ContextualNudgeView> nudge_view_ = nullptr;  // Not owned.
   };
 
   // Showing contextual nudge from off screen to its start position.
@@ -360,7 +359,7 @@ class BackGestureContextualNudge::ContextualNudgeView
   }
 
   // Created by ContextualNudgeView. Owned by views hierarchy.
-  raw_ptr<SuggestionView, ExperimentalAsh> suggestion_view_ = nullptr;
+  raw_ptr<SuggestionView> suggestion_view_ = nullptr;
 
   // Timer to start show the sliding in animation.
   base::OneShotTimer show_timer_;

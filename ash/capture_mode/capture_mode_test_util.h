@@ -209,7 +209,7 @@ class ViewVisibilityChangeWaiter : public views::ViewObserver {
                                views::View* starting_view) override;
 
  private:
-  const raw_ptr<views::View, ExperimentalAsh> view_;
+  const raw_ptr<views::View> view_;
   base::RunLoop wait_loop_;
 };
 

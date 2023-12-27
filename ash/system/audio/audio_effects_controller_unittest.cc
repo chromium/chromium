@@ -194,8 +194,8 @@ class AudioEffectsControllerTest : public NoSessionAshTestBase {
   base::HistogramTester histogram_tester_;
 
  private:
-  raw_ptr<AudioEffectsController, DanglingUntriaged | ExperimentalAsh>
-      audio_effects_controller_ = nullptr;
+  raw_ptr<AudioEffectsController, DanglingUntriaged> audio_effects_controller_ =
+      nullptr;
   std::unique_ptr<FakeVideoConferenceTrayController> tray_controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

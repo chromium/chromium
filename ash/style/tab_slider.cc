@@ -91,7 +91,7 @@ class TabSlider::SelectorView : public views::View {
   // Indicates if there is a movement animation.
   const bool has_animation_;
   // Now owned.
-  raw_ptr<TabSliderButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<TabSliderButton> button_ = nullptr;
 };
 
 BEGIN_METADATA(TabSlider, SelectorView, views::View)

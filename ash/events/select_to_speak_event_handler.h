@@ -112,7 +112,7 @@ class ASH_EXPORT SelectToSpeakEventHandler : public ui::EventHandler {
   std::set<ui::KeyboardCode> keys_currently_down_;
 
   // The delegate used to send key events to the Select-to-Speak extension.
-  raw_ptr<SelectToSpeakEventHandlerDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<SelectToSpeakEventHandlerDelegate> delegate_;
 };
 
 }  // namespace ash

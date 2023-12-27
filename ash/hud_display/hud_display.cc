@@ -93,7 +93,7 @@ class HTClientView : public views::ClientView {
   HUDDisplayView* GetHUDDisplayViewForTesting() { return hud_display_; }
 
  private:
-  raw_ptr<HUDDisplayView, ExperimentalAsh> hud_display_;
+  raw_ptr<HUDDisplayView> hud_display_;
 };
 
 BEGIN_METADATA(HTClientView, views::ClientView)

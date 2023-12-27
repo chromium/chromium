@@ -43,14 +43,14 @@ class ASH_EXPORT FocusModeCountdownView : public views::FlexLayoutView {
 
   // The main timer label, displays the amount of time left in the focus
   // session.
-  raw_ptr<views::Label, ExperimentalAsh> time_remaining_label_ = nullptr;
+  raw_ptr<views::Label> time_remaining_label_ = nullptr;
 
   // The timer on the left of the bar, displays the amount of time that has
   // already passed during the focus session.
-  raw_ptr<views::Label, ExperimentalAsh> time_elapsed_label_ = nullptr;
+  raw_ptr<views::Label> time_elapsed_label_ = nullptr;
 
   // The timer on the right of the bar, displays the total session duration.
-  raw_ptr<views::Label, ExperimentalAsh> time_total_label_ = nullptr;
+  raw_ptr<views::Label> time_total_label_ = nullptr;
 
   // The timer progress bar.
   raw_ptr<views::ProgressBar> progress_bar_ = nullptr;

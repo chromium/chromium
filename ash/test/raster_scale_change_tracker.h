@@ -28,7 +28,7 @@ class RasterScaleChangeTracker : public aura::WindowObserver {
   std::vector<float> TakeRasterScaleChanges();
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
   std::vector<float> raster_scales_;
 
   void Shutdown();

@@ -158,7 +158,7 @@ class ASH_EXPORT DemoSessionMetricsRecorder
   base::flat_set<std::string> unique_apps_launched_;
 
   // Used for subscribing to window activation events.
-  raw_ptr<wm::ActivationClient, ExperimentalAsh> activation_client_ = nullptr;
+  raw_ptr<wm::ActivationClient> activation_client_ = nullptr;
 
   // How many periods have elapsed since the last user activity.
   int periods_since_activity_ = 0;

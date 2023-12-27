@@ -50,9 +50,9 @@ class UserItemButton : public views::Button {
 
  private:
   const int user_index_;
-  const raw_ptr<views::ImageView, ExperimentalAsh> capture_icon_;
-  const raw_ptr<views::Label, ExperimentalAsh> name_;
-  const raw_ptr<views::Label, ExperimentalAsh> email_;
+  const raw_ptr<views::ImageView> capture_icon_;
+  const raw_ptr<views::Label> name_;
+  const raw_ptr<views::Label> email_;
 };
 
 // A detailed view of user chooser.

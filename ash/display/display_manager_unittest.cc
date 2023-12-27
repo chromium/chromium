@@ -2271,8 +2271,8 @@ class CloseDisplayHandler : public ui::EventHandler {
   }
 
  private:
-  raw_ptr<AshTestBase, ExperimentalAsh> test_base_;
-  raw_ptr<aura::Window, ExperimentalAsh> root_;
+  raw_ptr<AshTestBase> test_base_;
+  raw_ptr<aura::Window> root_;
 };
 
 }  // namespace
