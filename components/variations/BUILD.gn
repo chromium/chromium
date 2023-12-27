@@ -52,6 +52,8 @@ component("variations") {
     "fake_crash.h",
     "hashing.cc",
     "hashing.h",
+    "limited_entropy_mode_gate.cc",
+    "limited_entropy_mode_gate.h",
     "metrics.cc",
     "metrics.h",
     "platform_field_trials.h",

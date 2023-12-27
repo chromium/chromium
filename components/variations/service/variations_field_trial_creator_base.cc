@@ -35,6 +35,7 @@
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
+#include "components/variations/limited_entropy_mode_gate.h"
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/variations_seed.pb.h"
@@ -161,6 +162,16 @@ void MaybeExtendVariationsSafeMode(
       /*is_extended_safe_mode=*/true);
 }
 
+// Returns true iff the given seed contains a layer with LIMITED entropy mode.
+bool ContainsLimitedEntropyLayer(const VariationsSeed& seed) {
+  for (const Layer& layer_proto : seed.layers()) {
+    if (layer_proto.entropy_mode() == Layer::LIMITED) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 BASE_FEATURE(kForceFieldTrialSetupCrashForTesting,
@@ -188,13 +199,15 @@ Study::Channel ConvertProductChannelToStudyChannel(
 VariationsFieldTrialCreatorBase::VariationsFieldTrialCreatorBase(
     VariationsServiceClient* client,
     std::unique_ptr<VariationsSeedStore> seed_store,
-    base::OnceCallback<std::string(PrefService*)> locale_cb)
+    base::OnceCallback<std::string(PrefService*)> locale_cb,
+    LimitedEntropySyntheticTrial* limited_entropy_synthetic_trial)
     : client_(client),
       seed_store_(std::move(seed_store)),
       create_trials_from_seed_called_(false),
       application_locale_(std::move(locale_cb).Run(seed_store_->local_state())),
       has_platform_override_(false),
-      platform_override_(Study::PLATFORM_WINDOWS) {}
+      platform_override_(Study::PLATFORM_WINDOWS),
+      limited_entropy_synthetic_trial_(limited_entropy_synthetic_trial) {}
 
 VariationsFieldTrialCreatorBase::~VariationsFieldTrialCreatorBase() = default;
 
@@ -645,6 +658,14 @@ bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
   RecordVariationsSeedUsage(run_in_safe_mode ? SeedUsage::kSafeSeedUsed
                                              : SeedUsage::kRegularSeedUsed);
 
+  // Register group membership for the limited entropy synthetic trial if the
+  // required parameters are non null, and a LIMITED entropy layer is in the
+  // seed.
+  if (IsLimitedEntropyModeEnabled() && limited_entropy_synthetic_trial_ &&
+      ContainsLimitedEntropyLayer(seed)) {
+    client_->RegisterLimitedEntropySyntheticTrial(
+        limited_entropy_synthetic_trial_->GetGroupName());
+  }
   // Note that passing base::Unretained(this) below is safe because the callback
   // is executed synchronously. It is not possible to pass UIStringOverrider
   // directly to VariationsSeedProcessor (which is in components/variations and

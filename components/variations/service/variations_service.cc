@@ -351,7 +351,8 @@ VariationsService::VariationsService(
               MaybeImportFirstRunSeed(client_.get(), local_state),
               /*signature_verification_enabled=*/true,
               std::make_unique<VariationsSafeSeedStoreLocalState>(local_state)),
-          ui_string_overrider) {
+          ui_string_overrider,
+          &limited_entropy_synthetic_trial_) {
   DCHECK(client_);
   DCHECK(resource_request_allowed_notifier_);
 

@@ -36,7 +36,9 @@
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/seed_response.h"
 #include "components/variations/service/buildflags.h"
+#include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/safe_seed_manager.h"
+#include "components/variations/service/variations_service_client.h"
 #include "components/variations/variations_seed_store.h"
 #include "components/version_info/channel.h"
 
@@ -110,10 +112,16 @@ class VariationsFieldTrialCreatorBase {
   // Caller is responsible for ensuring that the VariationsServiceClient passed
   // to the constructor stays valid for the lifetime of this object.
   // |locale_cb| computes the locale, given a PrefService for local_state.
+  //
+  // The client will be registered to the limited entropy synthetic trial iff
+  // |limited_entropy_synthetic_trial| is not null. Caller is responsible for
+  // ensuring |limited_entropy_synthetic_trial| stays valid for the lifetime of
+  // this object.
   VariationsFieldTrialCreatorBase(
       VariationsServiceClient* client,
       std::unique_ptr<VariationsSeedStore> seed_store,
-      base::OnceCallback<std::string(PrefService*)> locale_cb);
+      base::OnceCallback<std::string(PrefService*)> locale_cb,
+      LimitedEntropySyntheticTrial* limited_entropy_synthetic_trial);
 
   VariationsFieldTrialCreatorBase(const VariationsFieldTrialCreatorBase&) =
       delete;
@@ -298,6 +306,9 @@ class VariationsFieldTrialCreatorBase {
   // Caches the UI strings which need to be overridden in the resource bundle.
   // These strings are cached before the resource bundle is initialized.
   std::unordered_map<int, std::u16string> overridden_strings_map_;
+
+  // Configurations related to the limited entropy synthetic trial.
+  raw_ptr<LimitedEntropySyntheticTrial> limited_entropy_synthetic_trial_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
