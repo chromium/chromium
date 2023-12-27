@@ -4007,6 +4007,7 @@ test("ash_unittests") {
     "//components/desks_storage",
     "//components/desks_storage:test_support",
     "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
     "//components/global_media_controls",
     "//components/language/core/browser:browser",
     "//components/live_caption:constants",

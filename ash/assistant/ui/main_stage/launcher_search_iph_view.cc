@@ -16,6 +16,7 @@
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
@@ -44,6 +45,8 @@ namespace {
 
 using QueryType = assistant::LauncherSearchIphQueryType;
 
+std::u16string g_chip_text_for_testing;
+
 constexpr char kLauncherSearchIphQueryTypeHistogramPrefix[] =
     "Assistant.LauncherSearchIphQueryType.";
 constexpr char kLauncherSearchIphQueryFromSearchBox[] = "SearchBox";
@@ -52,7 +55,8 @@ constexpr char kLauncherSearchIphQueryFromAssistantPage[] = "AssistantPage";
 constexpr int kMainLayoutBetweenChildSpacing = 16;
 constexpr int kActionContainerBetweenChildSpacing = 8;
 
-constexpr int kNumberOfQueryChips = 3;
+constexpr int kNumberOfQueryChipsSearchBox = 3;
+constexpr int kNumberOfQueryChipsAssistantPage = 4;
 
 constexpr gfx::RoundedCornersF kBackgroundRadiiClamshellLTR = {16, 4, 16, 16};
 
@@ -71,14 +75,19 @@ constexpr gfx::Insets kInnerBackgroundInsetsTablet = gfx::Insets::VH(16, 16);
 
 constexpr int kBackgroundRadiusTablet = 16;
 
-std::vector<QueryType> GetQueryChips() {
+std::vector<QueryType> GetRandomizedQueryChips(
+    LauncherSearchIphView::UiLocation location) {
   std::vector<QueryType> chips = {
       QueryType::kWeather,         QueryType::kUnitConversion1,
       QueryType::kUnitConversion2, QueryType::kTranslation,
       QueryType::kDefinition,      QueryType::kCalculation};
-  CHECK_GE(static_cast<int>(chips.size()), kNumberOfQueryChips);
+
+  int num_of_chips = location == LauncherSearchIphView::UiLocation::kSearchBox
+                         ? kNumberOfQueryChipsSearchBox
+                         : kNumberOfQueryChipsAssistantPage;
+  CHECK_GE(static_cast<int>(chips.size()), num_of_chips);
   base::RandomShuffle(chips.begin(), chips.end());
-  chips.resize(kNumberOfQueryChips);
+  chips.resize(num_of_chips);
   return chips;
 }
 
@@ -100,11 +109,20 @@ int GetQueryTextId(QueryType type) {
 }
 
 std::u16string GetQueryText(QueryType type) {
+  if (!g_chip_text_for_testing.empty()) {
+    return g_chip_text_for_testing;
+  }
+
   int id = GetQueryTextId(type);
   return l10n_util::GetStringUTF16(id);
 }
 
 }  // namespace
+
+// static
+void LauncherSearchIphView::SetChipTextForTesting(const std::u16string& text) {
+  g_chip_text_for_testing = text;
+}
 
 LauncherSearchIphView::LauncherSearchIphView(
     Delegate* delegate,
@@ -112,6 +130,7 @@ LauncherSearchIphView::LauncherSearchIphView(
     std::unique_ptr<ScopedIphSession> scoped_iph_session,
     UiLocation location)
     : delegate_(delegate),
+      is_in_tablet_mode_(is_in_tablet_mode),
       scoped_iph_session_(std::move(scoped_iph_session)),
       location_(location) {
   SetID(ViewId::kSelf);
@@ -167,23 +186,7 @@ LauncherSearchIphView::LauncherSearchIphView(
   actions_container->SetBetweenChildSpacing(
       kActionContainerBetweenChildSpacing);
 
-  CreateQueryChips(actions_container);
-
-  if (location_ == UiLocation::kSearchBox) {
-    views::View* spacer =
-        actions_container->AddChildView(std::make_unique<views::View>());
-    actions_container->SetFlexForView(spacer, 1);
-
-    ash::PillButton* assistant_button =
-        actions_container->AddChildView(std::make_unique<ash::PillButton>(
-            base::BindRepeating(&LauncherSearchIphView::OpenAssistantPage,
-                                weak_ptr_factory_.GetWeakPtr()),
-            l10n_util::GetStringUTF16(
-                IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_ASSISTANT)));
-    assistant_button->SetID(ViewId::kAssistant);
-    assistant_button->SetPillButtonType(
-        PillButton::Type::kDefaultLargeWithoutIcon);
-  }
+  CreateChips(actions_container);
 
   if (is_in_tablet_mode || location_ == UiLocation::kAssistantPage) {
     box_layout_view->SetBackground(views::CreateThemedRoundedRectBackground(
@@ -201,13 +204,26 @@ LauncherSearchIphView::~LauncherSearchIphView() = default;
 
 void LauncherSearchIphView::VisibilityChanged(views::View* starting_from,
                                               bool is_visible) {
-  if (is_visible) {
+  if (is_visible && location_ == UiLocation::kAssistantPage) {
+    // Only shuffle when the IPH is in AssistantPage.
+    // When the IPH is in SearchBox, the chips will be recreated every time.
     ShuffleChipsQuery();
+
+    SetChipsVisibility();
 
     // Label size should be changed. The `PreferredSizeChanged()` in label is
     // not bubbled up to this view, so we need to explicitly call it here.
     PreferredSizeChanged();
   }
+}
+
+void LauncherSearchIphView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  if (location_ == UiLocation::kAssistantPage) {
+    // Will set visibility of chips in VisibilityChanged().
+    return;
+  }
+
+  SetChipsVisibility();
 }
 
 void LauncherSearchIphView::NotifyAssistantButtonPressedEvent() {
@@ -218,6 +234,10 @@ void LauncherSearchIphView::NotifyAssistantButtonPressedEvent() {
 
 std::vector<raw_ptr<ChipView>> LauncherSearchIphView::GetChipsForTesting() {
   return chips_;
+}
+
+views::View* LauncherSearchIphView::GetAssistantButtonForTesting() {
+  return assistant_button_;
 }
 
 void LauncherSearchIphView::RunLauncherSearchQuery(QueryType query_type) {
@@ -239,9 +259,12 @@ void LauncherSearchIphView::OpenAssistantPage() {
   delegate_->OpenAssistantPage();
 }
 
-void LauncherSearchIphView::CreateQueryChips(views::View* actions_container) {
+void LauncherSearchIphView::CreateChips(
+    views::BoxLayoutView* actions_container) {
+  CHECK(chips_.empty());
+
   int query_chip_view_id = ViewId::kChipStart;
-  for (auto query_type : GetQueryChips()) {
+  for (auto query_type : GetRandomizedQueryChips(location_)) {
     ChipView* chip = actions_container->AddChildView(
         std::make_unique<ChipView>(ChipView::Type::kLarge));
     chip->SetText(GetQueryText(query_type));
@@ -252,17 +275,76 @@ void LauncherSearchIphView::CreateQueryChips(views::View* actions_container) {
     query_chip_view_id++;
     chips_.emplace_back(chip);
   }
+
+  // If the IPH is in the search box, will add an assistant button.
+  if (location_ == UiLocation::kSearchBox) {
+    views::View* spacer =
+        actions_container->AddChildView(std::make_unique<views::View>());
+    actions_container->SetFlexForView(spacer, 1);
+
+    assistant_button_ =
+        actions_container->AddChildView(std::make_unique<ash::PillButton>(
+            base::BindRepeating(&LauncherSearchIphView::OpenAssistantPage,
+                                weak_ptr_factory_.GetWeakPtr()),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_ASSISTANT)));
+    assistant_button_->SetID(ViewId::kAssistant);
+    assistant_button_->SetPillButtonType(
+        PillButton::Type::kDefaultLargeWithoutIcon);
+  }
 }
 
 void LauncherSearchIphView::ShuffleChipsQuery() {
   size_t chip_index = 0;
-  for (auto query_type : GetQueryChips()) {
+  for (auto query_type : GetRandomizedQueryChips(location_)) {
     CHECK_LT(chip_index, chips_.size());
     auto chip = chips_[chip_index++];
     chip->SetText(GetQueryText(query_type));
     chip->SetCallback(
         base::BindRepeating(&LauncherSearchIphView::RunLauncherSearchQuery,
                             weak_ptr_factory_.GetWeakPtr(), query_type));
+  }
+}
+
+void LauncherSearchIphView::SetChipsVisibility() {
+  const int iph_width = GetContentsBounds().width();
+  if (iph_width == 0) {
+    return;
+  }
+
+  // Check the PreferredSize of all chips. If the width is wider than the
+  // available width, do not show the last a few query chips but at least show
+  // one chip.
+  int running_width = 0;
+  for (auto chip : chips_) {
+    running_width += chip->GetPreferredSize().width();
+    running_width += kActionContainerBetweenChildSpacing;
+  }
+
+  const auto iph_insets = is_in_tablet_mode_ ? kInnerBackgroundInsetsTablet
+                                             : kInnerBackgroundInsetsClamshell;
+  const int available_width = iph_width - iph_insets.width();
+
+  int assistant_button_width = 0;
+  if (location_ == UiLocation::kSearchBox) {
+    assistant_button_width = assistant_button_->GetPreferredSize().width();
+
+    // Add additional spacing before the `assistant_button_`.
+    // The multiplier `2` is an arbitrary number.
+    running_width += 2 * kActionContainerBetweenChildSpacing;
+    running_width += assistant_button_width;
+  } else {
+    // Subtract the last spacing.
+    running_width -= kActionContainerBetweenChildSpacing;
+  }
+
+  // At least show one chip.
+  chips_[0]->SetVisible(true);
+
+  // Show remaining chips if they fit.
+  for (size_t index = chips_.size() - 1; index > 0; index--) {
+    chips_[index]->SetVisible(running_width <= available_width);
+    running_width -= chips_[index]->GetPreferredSize().width();
   }
 }
 
