@@ -41,6 +41,35 @@ public class TabUiFeatureUtilities {
                     ANIMATION_START_TIMEOUT_MS_PARAM,
                     300);
 
+    // Field trail params for tab drag and drop.
+    private static final String DISABLE_STRIP_TO_CONTENT_DD_PARAM = "disable_strip_to_content_dd";
+    private static final String DISABLE_STRIP_TO_STRIP_DD_PARAM = "disable_strip_to_strip_dd";
+    private static final String DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD_PARAM =
+            "disable_strip_to_strip_diff_model_dd";
+    private static final String DISABLE_DRAG_TO_NEW_INSTANCE_DD_PARAM =
+            "disable_drag_to_new_instance";
+
+    public static final BooleanCachedFieldTrialParameter DISABLE_STRIP_TO_CONTENT_DD =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
+                    DISABLE_STRIP_TO_CONTENT_DD_PARAM,
+                    false);
+    public static final BooleanCachedFieldTrialParameter DISABLE_STRIP_TO_STRIP_DD =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
+                    DISABLE_STRIP_TO_STRIP_DD_PARAM,
+                    false);
+    public static final BooleanCachedFieldTrialParameter DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
+                    DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD_PARAM,
+                    false);
+    public static final BooleanCachedFieldTrialParameter DISABLE_DRAG_TO_NEW_INSTANCE_DD =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
+                    DISABLE_DRAG_TO_NEW_INSTANCE_DD_PARAM,
+                    false);
+
     // Cached and fixed values.
     private static boolean sTabListEditorLongPressEntryEnabled;
     private static Boolean sIsTabToGtsAnimationEnabled;

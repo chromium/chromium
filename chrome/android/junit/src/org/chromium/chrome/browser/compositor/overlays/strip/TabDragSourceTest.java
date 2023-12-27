@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -307,6 +308,8 @@ public class TabDragSourceTest {
      * G] error cases:
      *  G.1] invalid mimetype.
      *  G.2] invalid clip data.
+     *  G.3] drop into different model is disabled.
+     *  G.4] drop into destination strip is disabled.
      *  </pre>
      */
     private static final String ONDRAG_TEST_CASES = "";
@@ -585,6 +588,38 @@ public class TabDragSourceTest {
         // Verify - Move to new window not invoked.
         verify(mSourceMultiInstanceManager, atLeastOnce()).getCurrentInstanceId();
         verifyNoMoreInteractions(mSourceMultiInstanceManager);
+    }
+
+    /** Test for {@link #ONDRAG_TEST_CASES} - Scenario G.3 */
+    @Test
+    public void test_onDrag_dropIntoDifferentModelDisabled() {
+        TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD.setForTesting(true);
+
+        // Destination tab model is incognito.
+        when(mTabModel.isIncognito()).thenReturn(true);
+        TabModel standardModelDestination = mock(TabModel.class);
+        when(mTabModelSelector.getModel(false)).thenReturn(standardModelDestination);
+
+        invokeDropInDestinationStrip();
+
+        // Verify - Tab is not moved to destination window.
+        verify(mDestMultiInstanceManager, times(0))
+                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt());
+    }
+
+    /** Test for {@link #ONDRAG_TEST_CASES} - Scenario G.4 */
+    @Test
+    public void test_onDrag_stripToStripDisabled() {
+        TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DD.setForTesting(true);
+        // Start tab drag action.
+        mSourceInstance.startTabDragAction(
+                mTabsToolbarView, mTabBeingDragged, new PointF(POS_X, mPosY));
+
+        boolean res =
+                mDestInstance.onDrag(
+                        mTabsToolbarView,
+                        mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY));
+        assertFalse("onDrag should return false.", res);
     }
 
     private void invokeDropInDestinationStrip() {

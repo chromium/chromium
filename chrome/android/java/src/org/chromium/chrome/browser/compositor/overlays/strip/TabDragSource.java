@@ -242,7 +242,9 @@ public class TabDragSource implements View.OnDragListener {
                 == null) {
             return false;
         }
-        if (!isDragSource()) return true;
+        // Return false when dropping onto strip is disabled to not receive further events until
+        // dragEnd.
+        if (!isDragSource()) return !TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DD.getValue();
         mStartScreenPos = new PointF(xPx, yPx);
         mLastXDp = xPx * mPxToDp;
         mLastYDp = yPx * mPxToDp;
@@ -278,6 +280,12 @@ public class TabDragSource implements View.OnDragListener {
             return true;
         }
 
+        Tab tabBeingDragged = DragDropGlobalState.getInstance().tabBeingDragged;
+        if (!doesBelongToCurrentModel(tabBeingDragged)
+                && TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD.getValue()) {
+            // Disallow dropping into another model when param enabled.
+            return false;
+        }
         // If the event is received by a non source chrome window then accept the drop
         // in the destination chrome window.
         for (int i = 0; i < clipData.getItemCount(); i++) {
@@ -285,15 +293,13 @@ public class TabDragSource implements View.OnDragListener {
             // Ignore the drop if the dropped tab id does not match the id of tab being
             // dragged. Return the original payload drop for next in line to receive the
             // drop to handle.
-            Tab tabBeingDragged = DragDropGlobalState.getInstance().tabBeingDragged;
             if (tabBeingDragged == null
                     || sourceTabId != tabBeingDragged.getId()
                     || mTabModelSelector == null) {
                 Log.w(TAG, "DnD: Received an invalid tab drop.");
                 return false;
             }
-            int tabPositionIndex =
-                    getTabPositionIndex(xPx * mPxToDp, tabBeingDragged.isIncognito());
+            int tabPositionIndex = getTabPositionIndex(xPx * mPxToDp, tabBeingDragged);
             mMultiInstanceManager.moveTabToWindow(getActivity(), tabBeingDragged, tabPositionIndex);
         }
         return true;
@@ -301,6 +307,8 @@ public class TabDragSource implements View.OnDragListener {
 
     private boolean onDragEnd(
             View view, float xPx, float yPx, boolean dropHandled, boolean didExitToolbar) {
+        // No-op for destination strip. Note: If we add updates for target strip, also check for
+        // !TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DD.getValue()
         if (!isDragSource()) return false;
         // If tab was dragged and dropped out of source toolbar but the drop was not handled, move
         // to a new window.
@@ -356,12 +364,12 @@ public class TabDragSource implements View.OnDragListener {
         return ChromeDropDataAndroid.extractTabId(item.getText().toString());
     }
 
-    private int getTabPositionIndex(float dropXDp, boolean isDraggedTabIncognito) {
+    private int getTabPositionIndex(float dropXDp, Tab tabBeingDragged) {
         StripLayoutHelper activeStripHelper = mStripLayoutHelperSupplier.get();
         // If dragged tab and drop target strip don't belong to same model,
         // drop tab at corresponding model at end of strip.
-        if (mTabModelSelector.getCurrentModel().isIncognito() != isDraggedTabIncognito) {
-            TabModel model = mTabModelSelector.getModel(isDraggedTabIncognito);
+        if (!doesBelongToCurrentModel(tabBeingDragged)) {
+            TabModel model = mTabModelSelector.getModel(tabBeingDragged.isIncognito());
             return model.getCount();
         }
         // Based on the location of the drop determine the position index where the tab will be
@@ -385,6 +393,10 @@ public class TabDragSource implements View.OnDragListener {
             }
         }
         return tabPositionIndex;
+    }
+
+    private boolean doesBelongToCurrentModel(Tab tabBeingDragged) {
+        return mTabModelSelector.getCurrentModel().isIncognito() == tabBeingDragged.isIncognito();
     }
 
     private Activity getActivity() {
