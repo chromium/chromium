@@ -122,6 +122,11 @@ views::LabelButton* AnchoredNudge::GetSecondButton() {
 gfx::Rect AnchoredNudge::GetBubbleBounds() {
   auto* root_window = GetWidget()->GetNativeWindow();
 
+  // This can happen during destruction.
+  if (!root_window) {
+    return gfx::Rect();
+  }
+
   gfx::Rect work_area_bounds =
       WorkAreaInsets::ForWindow(root_window)->user_work_area_bounds();
 
@@ -166,6 +171,8 @@ void AnchoredNudge::AddedToWidget() {
   GetDialogClientView()->RemoveAccelerator(
       ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 
+  // Widget needs a native window in order to observe its shelf.
+  CHECK(GetWidget()->GetNativeWindow());
   auto* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
 
   if (anchored_to_shelf_) {
@@ -226,7 +233,7 @@ void AnchoredNudge::OnHotseatStateChanged(HotseatState old_state,
 
 void AnchoredNudge::OnShelfAlignmentChanged(aura::Window* root_window,
                                             ShelfAlignment old_alignment) {
-  if (!GetWidget()) {
+  if (!GetWidget() || !GetWidget()->GetNativeWindow()) {
     return;
   }
 
@@ -259,7 +266,7 @@ void AnchoredNudge::SetArrowFromShelf(Shelf* shelf) {
 }
 
 void AnchoredNudge::SetDefaultAnchorRect() {
-  if (!GetWidget()) {
+  if (!GetWidget() || !GetWidget()->GetNativeWindow()) {
     return;
   }
 
