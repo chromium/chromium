@@ -55,7 +55,10 @@ class DownloadManagerMediator : public web::DownloadTaskObserver {
   base::FilePath GetDownloadPath();
 
   // Asynchronously starts download operation.
-  void StartDowloading();
+  void StartDownloading();
+
+  // Converts web::DownloadTask::State to DownloadManagerState.
+  DownloadManagerState GetDownloadManagerState() const;
 
  private:
   // Updates consumer from web::DownloadTask.
@@ -67,9 +70,6 @@ class DownloadManagerMediator : public web::DownloadTaskObserver {
 
   // Checks if the move has been completed.
   void MoveComplete(bool move_completed);
-
-  // Converts web::DownloadTask::State to DownloadManagerState.
-  DownloadManagerState GetDownloadManagerState() const;
 
   // Converts DownloadTask progress [0;100] to float progress [0.0f;1.0f].
   float GetDownloadManagerProgress() const;

@@ -61,7 +61,7 @@ base::FilePath DownloadManagerMediator::GetDownloadPath() {
   return download_path_;
 }
 
-void DownloadManagerMediator::StartDowloading() {
+void DownloadManagerMediator::StartDownloading() {
   base::FilePath download_dir;
   if (!GetTempDownloadsDirectory(&download_dir)) {
     [consumer_ setState:kDownloadManagerStateFailed];

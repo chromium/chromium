@@ -152,8 +152,8 @@
 
 #pragma mark - DownloadManagerTabHelperDelegate
 
-- (void)downloadManagerTabHelper:(nonnull DownloadManagerTabHelper*)tabHelper
-               didCreateDownload:(nonnull web::DownloadTask*)download
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+               didCreateDownload:(web::DownloadTask*)download
                webStateIsVisible:(BOOL)webStateIsVisible {
   base::UmaHistogramEnumeration("Download.IOSDownloadFileUI",
                                 DownloadFileUI::DownloadFileStarted,
@@ -181,9 +181,9 @@
   }
 }
 
-- (void)downloadManagerTabHelper:(nonnull DownloadManagerTabHelper*)tabHelper
-         decidePolicyForDownload:(nonnull web::DownloadTask*)download
-               completionHandler:(nonnull void (^)(NewDownloadPolicy))handler {
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+         decidePolicyForDownload:(web::DownloadTask*)download
+               completionHandler:(void (^)(NewDownloadPolicy))handler {
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<ConfirmDownloadReplacingRequest>();
 
@@ -211,21 +211,29 @@
       ->AddRequest(std::move(request));
 }
 
-- (void)downloadManagerTabHelper:(nonnull DownloadManagerTabHelper*)tabHelper
-                 didHideDownload:(nonnull web::DownloadTask*)download {
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+                 didHideDownload:(web::DownloadTask*)download {
   DCHECK_EQ(_downloadTask, download);
   self.animatesPresentation = NO;
   [self stop];
   self.animatesPresentation = YES;
 }
 
-- (void)downloadManagerTabHelper:(nonnull DownloadManagerTabHelper*)tabHelper
-                 didShowDownload:(nonnull web::DownloadTask*)download {
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+                 didShowDownload:(web::DownloadTask*)download {
   DCHECK_NE(_downloadTask, download);
   _downloadTask = download;
   self.animatesPresentation = NO;
   [self start];
   self.animatesPresentation = YES;
+}
+
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+     didAddDownloadToSaveToDrive:(web::DownloadTask*)download {
+  DCHECK_EQ(_downloadTask, download);
+  base::RecordAction(
+      base::UserMetricsAction("IOSDownloadStartDownloadToDrive"));
+  _mediator.StartDownloading();
 }
 
 #pragma mark - ContainedPresenterDelegate
@@ -241,7 +249,7 @@
 #pragma mark - DownloadManagerViewControllerDelegate
 
 - (void)downloadManagerViewControllerDidClose:(UIViewController*)controller {
-  if (_downloadTask->GetState() != web::DownloadTask::State::kInProgress) {
+  if (_mediator.GetDownloadManagerState() != kDownloadManagerStateInProgress) {
     base::UmaHistogramEnumeration("Download.IOSDownloadFileResult",
                                   DownloadFileResult::NotStarted,
                                   DownloadFileResult::Count);
@@ -286,7 +294,7 @@
     base::RecordAction(base::UserMetricsAction("IOSDownloadStartDownload"));
     _unopenedDownloads.Add(_downloadTask);
   }
-  _mediator.StartDowloading();
+  _mediator.StartDownloading();
 }
 
 - (void)downloadManagerViewControllerDidStartDownloadToDrive:

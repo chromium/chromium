@@ -13445,6 +13445,15 @@ should be able to be added at any place in this file.
   <description>User started the download in Download Manager.</description>
 </action>
 
+<action name="IOSDownloadStartDownloadToDrive">
+  <owner>qpubert@google.com</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <description>
+    User started the download in Download Manager, with Drive as destination for
+    their download.
+  </description>
+</action>
+
 <action name="IOSDownloadTryCloseWhenInProgress">
   <owner>ewannpv@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>

@@ -43,7 +43,7 @@ class DownloadManagerTabHelper
   void SetDelegate(id<DownloadManagerTabHelperDelegate> delegate);
 
   // Starts the current download task and remember to save it to Drive.
-  void StartDownloadTaskAndSaveToDrive(id<SystemIdentity> selected_identity);
+  void OnDownloadAddedToSaveToDrive(web::DownloadTask* task);
 
  protected:
   // Allow subclassing from DownloadManagerTabHelper for testing purposes.

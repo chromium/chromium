@@ -61,9 +61,11 @@ void DownloadManagerTabHelper::SetDelegate(
   delegate_ = delegate;
 }
 
-void DownloadManagerTabHelper::StartDownloadTaskAndSaveToDrive(
-    id<SystemIdentity> selected_identity) {
-  // TODO(crbug.com/1495353): Start the download task through `delegate_`.
+void DownloadManagerTabHelper::OnDownloadAddedToSaveToDrive(
+    web::DownloadTask* task) {
+  DCHECK_EQ(task, task_.get());
+  [delegate_ downloadManagerTabHelper:this
+          didAddDownloadToSaveToDrive:task_.get()];
 }
 
 #pragma mark - web::WebStateObserver
