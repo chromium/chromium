@@ -90,6 +90,16 @@ const std::array<FieldType, 7> kStructuredDataTypes = {
 // similarly.
 FieldType GetStorableTypeCollapsingGroups(FieldType type) {
   FieldType storable_type = AutofillType(type).GetStorableType();
+  // TODO(crbug.com/1459990): Clean up and update documentation (including where
+  // this is called) when feature is launched.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillGranularFillingAvailable) &&
+      (storable_type == ADDRESS_HOME_LINE1 ||
+       storable_type == ADDRESS_HOME_LINE2 ||
+       storable_type == ADDRESS_HOME_STREET_ADDRESS)) {
+    return ADDRESS_HOME_LINE1;
+  }
+
   if (GroupTypeOfFieldType(storable_type) == FieldTypeGroup::kName) {
     return NAME_FULL;
   }
@@ -106,50 +116,85 @@ FieldType GetStorableTypeCollapsingGroups(FieldType type) {
 // example, if the profile is going to fill ADDRESS_HOME_ZIP, it should
 // prioritize showing that over ADDRESS_HOME_STATE in the suggestion sublabel.
 int SpecificityForType(FieldType type) {
-  switch (type) {
-    case ADDRESS_HOME_LINE1:
-      return 1;
+  // TODO(crbug.com/1459990): Clean up after launch.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillGranularFillingAvailable)) {
+    switch (type) {
+      case ADDRESS_HOME_LINE1:
+        return 1;
 
-    case ADDRESS_HOME_LINE2:
-      return 2;
+      case ADDRESS_HOME_LINE2:
+        return 2;
 
-    case EMAIL_ADDRESS:
-      return 3;
+      case EMAIL_ADDRESS:
+        return 3;
 
-    case PHONE_HOME_WHOLE_NUMBER:
-      return 4;
+      case PHONE_HOME_WHOLE_NUMBER:
+        return 4;
 
-    case NAME_FULL:
-      return 5;
+      case NAME_FULL:
+        return 5;
 
-    case ADDRESS_HOME_ZIP:
-      return 6;
+      case ADDRESS_HOME_ZIP:
+        return 6;
 
-    case ADDRESS_HOME_SORTING_CODE:
-      return 7;
+      case ADDRESS_HOME_SORTING_CODE:
+        return 7;
 
-    case COMPANY_NAME:
-      return 8;
+      case COMPANY_NAME:
+        return 8;
 
-    case ADDRESS_HOME_CITY:
-      return 9;
+      case ADDRESS_HOME_CITY:
+        return 9;
 
-    case ADDRESS_HOME_STATE:
-      return 10;
+      case ADDRESS_HOME_STATE:
+        return 10;
 
-    case ADDRESS_HOME_COUNTRY:
-      return 11;
+      case ADDRESS_HOME_COUNTRY:
+        return 11;
 
-    default:
-      break;
+      default:
+        break;
+    }
+  } else {
+    switch (type) {
+      case ADDRESS_HOME_LINE1:
+        return 1;
+
+      case NAME_FULL:
+        return 2;
+
+      case EMAIL_ADDRESS:
+        return 3;
+
+      case PHONE_HOME_WHOLE_NUMBER:
+        return 4;
+
+      case ADDRESS_HOME_ZIP:
+        return 5;
+
+      case ADDRESS_HOME_SORTING_CODE:
+        return 6;
+
+      case COMPANY_NAME:
+        return 7;
+
+      case ADDRESS_HOME_CITY:
+        return 8;
+
+      case ADDRESS_HOME_STATE:
+        return 9;
+
+      case ADDRESS_HOME_COUNTRY:
+        return 10;
+
+      default:
+        break;
+    }
   }
 
   // The priority of other types is arbitrary, but deterministic.
   return 100 + type;
-}
-
-bool CompareSpecificity(FieldType type1, FieldType type2) {
-  return SpecificityForType(type1) < SpecificityForType(type2);
 }
 
 // Fills `distinguishing_fields` with a list of fields to use when creating
@@ -204,9 +249,10 @@ void GetFieldsForDistinguishingProfiles(
     if (seen_fields.insert(suggested_type).second)
       distinguishing_fields->push_back(suggested_type);
   }
-
   std::sort(distinguishing_fields->begin(), distinguishing_fields->end(),
-            CompareSpecificity);
+            [](FieldType type1, FieldType type2) {
+              return SpecificityForType(type1) < SpecificityForType(type2);
+            });
 
   // Special case: If one of the excluded fields is a partial name (e.g.
   // `NAME_FIRST`) or phone number (e.g `PHONE_HOME_CITY_CODE`) and the
@@ -894,8 +940,10 @@ void AutofillProfile::CreateDifferentiatingLabels(
     const std::string& app_locale,
     std::vector<std::u16string>* labels) {
   const size_t kMinimalFieldsShown = 2;
-  CreateInferredLabels(profiles, std::nullopt, {}, kMinimalFieldsShown,
-                       app_locale, labels);
+  CreateInferredLabels(profiles, /*suggested_fields=*/std::nullopt,
+                       /*triggering_field_type=*/std::nullopt,
+                       /*excluded_fields=*/{}, kMinimalFieldsShown, app_locale,
+                       labels);
   DCHECK_EQ(profiles.size(), labels->size());
 }
 
@@ -903,7 +951,8 @@ void AutofillProfile::CreateDifferentiatingLabels(
 void AutofillProfile::CreateInferredLabels(
     const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
         profiles,
-    const std::optional<FieldTypeSet>& suggested_fields,
+    const std::optional<FieldTypeSet> suggested_fields,
+    std::optional<FieldType> triggering_field_type,
     FieldTypeSet excluded_fields,
     size_t minimal_fields_shown,
     const std::string& app_locale,
@@ -917,22 +966,35 @@ void AutofillProfile::CreateInferredLabels(
       suggested_fields ? &suggested_fields_types : nullptr, excluded_fields,
       &fields_to_use);
 
+  // TODO(crbug.com/1459990): Clean up after launch.
+  CHECK(base::FeatureList::IsEnabled(
+            features::kAutofillGranularFillingAvailable) ||
+        !triggering_field_type);
   // Construct the default label for each profile. Also construct a map that
-  // associates each label with the profiles that have this label. This map is
-  // then used to detect which labels need further differentiating fields.
-  std::map<std::u16string, std::list<size_t>> labels_to_profiles;
+  // associates each (main_text, label) pair with the profiles that have this
+  // info. This map is then used to detect which labels need further
+  // differentiating fields.
+  // Note that the actual displayed main text might slightly differ due to
+  // formatting, but it is not needed to format the text for differentiating the
+  // labels.
+  std::map<std::pair<std::u16string, std::u16string>, std::list<size_t>>
+      labels_to_profiles;
   for (size_t i = 0; i < profiles.size(); ++i) {
     std::u16string label = profiles[i]->ConstructInferredLabel(
         fields_to_use.data(), fields_to_use.size(), minimal_fields_shown,
         app_locale);
-    labels_to_profiles[label].push_back(i);
+    std::u16string main_text =
+        triggering_field_type
+            ? profiles[i]->GetInfo(*triggering_field_type, app_locale)
+            : u"";
+    labels_to_profiles[{main_text, label}].push_back(i);
   }
 
   labels->resize(profiles.size());
   for (auto& it : labels_to_profiles) {
     if (it.second.size() == 1) {
       // This label is unique, so use it without any further ado.
-      std::u16string label = it.first;
+      std::u16string label = it.first.second;
       size_t profile_index = it.second.front();
       (*labels)[profile_index] = label;
     } else {

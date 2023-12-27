@@ -799,11 +799,20 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
     differentiating_labels =
         GetProfileSuggestionLabelForNonAddressField(profiles, app_locale);
   } else {
-    AutofillProfile::CreateInferredLabels(
-        profiles, field_types,
-        GetFieldTypesToExcludeFromDifferentiatingLabelsGeneration(
-            trigger_field_type, last_targeted_fields),
-        1, app_locale, &differentiating_labels);
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillGranularFillingAvailable)) {
+      AutofillProfile::CreateInferredLabels(
+          profiles, /*suggested_fields=*/std::nullopt, trigger_field_type,
+          GetFieldTypesToExcludeFromDifferentiatingLabelsGeneration(
+              trigger_field_type, last_targeted_fields),
+          /*minimal_fields_shown=*/1, app_locale, &differentiating_labels);
+    } else {
+      AutofillProfile::CreateInferredLabels(
+          profiles, field_types, /*triggering_field_type=*/std::nullopt,
+          GetFieldTypesToExcludeFromDifferentiatingLabelsGeneration(
+              trigger_field_type, last_targeted_fields),
+          /*minimal_fields_shown=*/1, app_locale, &differentiating_labels);
+    }
   }
   return differentiating_labels;
 }
@@ -822,6 +831,14 @@ CreateSuggestionLabelsWithGranularFillingDetails(
     std::optional<FieldTypeSet> last_targeted_fields,
     FieldType trigger_field_type,
     const std::string& app_locale) {
+  AutofillFillingMethod filling_method = GetFillingMethodFromTargetedFields(
+      last_targeted_fields.value_or(kAllFieldTypes));
+  // Field-by-field filling suggestions should not have labels because they are
+  // guaranteed to be unique, see `DeduplicatedProfilesForSuggestions()`.
+  if (filling_method == AutofillFillingMethod::kFieldByFieldFilling) {
+    return std::vector<std::vector<Suggestion::Text>>(profiles.size());
+  }
+
   const std::vector<std::vector<std::u16string>>
       suggestions_granular_filling_labels = GetGranularFillingLabels(
           profiles, last_targeted_fields, trigger_field_type, app_locale);

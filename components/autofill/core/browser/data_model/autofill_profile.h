@@ -201,16 +201,25 @@ class AutofillProfile : public AutofillDataModel {
       std::vector<std::u16string>* labels);
 
   // Creates inferred labels for `profiles`, according to the rules above and
-  // stores them in `labels`. If `suggested_fields` is not nullopt, the
-  // resulting label fields are drawn from it minus those in
-  // `excluded_fields`. Otherwise, the label fields are drawn from a default
-  // set, and `excluded_fields` are ignored; by convention, it should be
-  // an empty set when `suggested_fields` is nullopt. Each label includes at
-  // least `minimal_fields_shown` fields, if possible.
+  // stores them in `labels`. The inferred labels both provide a way to
+  // identify a profile and also make sure to differentiate them if
+  // necessary. Therefore this method first adds label information to allow
+  // users to recognize a profile (like their full name) and a possible second
+  // label if this leads to two profiles having the same label, for example if
+  // there are two profiles with the same full name, it might add their email
+  // data to differentiate them. In this context the `triggering_field_type` is
+  // used to help deciding whether the differentiate label is needed. If the
+  // profile value for `triggering_field_type` is unique (and therefore the
+  // `Suggestion::main_text`), no differentiating label will be added. If
+  // `suggested_fields` is not nullopt, the resulting label fields are drawn
+  // from it minus those in `excluded_fields`. Otherwise, the label fields are
+  // drawn from a default set. Each label includes at least
+  // `minimal_fields_shown` fields, if possible.
   static void CreateInferredLabels(
       const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
           profiles,
-      const std::optional<FieldTypeSet>& suggested_fields,
+      const std::optional<FieldTypeSet> suggested_fields,
+      std::optional<FieldType> triggering_field_type,
       FieldTypeSet excluded_fields,
       size_t minimal_fields_shown,
       const std::string& app_locale,

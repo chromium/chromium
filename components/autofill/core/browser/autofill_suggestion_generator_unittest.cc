@@ -761,6 +761,80 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(u"12345678910", suggestions[0].main_text.value);
 }
 
+// TODO(crbug.com/1459990): Move AutofillChildrenSuggestionGeneratorTest.
+// CreateSuggestionsFromProfiles_GroupFillingLabels_* tests under this fixture.
+// Text fixture for label generation related tests. Parameterized by triggering
+// field type since how we build labels depends highly on it.
+class AutofillLabelSuggestionGeneratorTest
+    : public AutofillSuggestionGeneratorTest,
+      public testing::WithParamInterface<FieldType> {
+ public:
+  FieldType GetTriggeringFieldType() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillGranularFillingAvailable};
+};
+
+INSTANTIATE_TEST_SUITE_P(AutofillSuggestionGeneratorTest,
+                         AutofillLabelSuggestionGeneratorTest,
+                         ::testing::ValuesIn({NAME_FULL, ADDRESS_HOME_ZIP,
+                                              ADDRESS_HOME_STREET_ADDRESS}));
+
+// Suggestions for `ADDRESS_HOME_LINE1` should have `NAME_FULL` as the label.
+// Suggestions for name or address fields which do not include
+// `ADDRESS_HOME_LINE1` should have `ADDRESS_HOME_LINE1` as the label.
+TEST_P(
+    AutofillLabelSuggestionGeneratorTest,
+    CreateSuggestionsFromProfiles_FullFormFilling_SuggestionsHaveCorrectLabels) {
+  FieldType trigerring_field_type = GetTriggeringFieldType();
+  AutofillProfile profile = test::GetFullProfile();
+
+  EXPECT_THAT(suggestion_generator()->CreateSuggestionsFromProfiles(
+                  {&profile},
+                  {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP},
+                  /*last_targeted_fields=*/absl::nullopt, trigerring_field_type,
+                  /*trigger_field_max_length=*/0),
+              ElementsAre(AllOf(testing::Field(
+                  &Suggestion::labels,
+                  std::vector<std::vector<Suggestion::Text>>{{Suggestion::Text(
+                      trigerring_field_type == ADDRESS_HOME_STREET_ADDRESS
+                          ? profile.GetRawInfo(NAME_FULL)
+                          : profile.GetRawInfo(ADDRESS_HOME_LINE1))}}))));
+}
+
+TEST_P(
+    AutofillLabelSuggestionGeneratorTest,
+    CreateSuggestionsFromProfiles_FullFormFilling_SuggestionsNeedMoreLabelsForDifferentiation) {
+  FieldType trigerring_field_type = GetTriggeringFieldType();
+  AutofillProfile profile1 = test::GetFullProfile();
+  AutofillProfile profile2 = test::GetFullProfile();
+  profile1.SetRawInfo(EMAIL_ADDRESS, u"hoa@gmail.com");
+  profile2.SetRawInfo(EMAIL_ADDRESS, u"pham@gmail.com");
+
+  // The only difference between the two profiles is the email address.
+  // That's why the email address is part of the differentating label.
+  const std::u16string full_form_filling_label =
+      (trigerring_field_type == ADDRESS_HOME_STREET_ADDRESS
+           ? profile1.GetRawInfo(NAME_FULL)
+           : profile1.GetRawInfo(ADDRESS_HOME_LINE1)) +
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
+  EXPECT_THAT(
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile1, &profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
+          /*last_targeted_fields=*/absl::nullopt, trigerring_field_type,
+          /*trigger_field_max_length=*/0),
+      ElementsAre(
+          AllOf(testing::Field(
+              &Suggestion::labels,
+              std::vector<std::vector<Suggestion::Text>>{{Suggestion::Text(
+                  full_form_filling_label + u"hoa@gmail.com")}})),
+          AllOf(testing::Field(
+              &Suggestion::labels,
+              std::vector<std::vector<Suggestion::Text>>{{Suggestion::Text(
+                  full_form_filling_label + u"pham@gmail.com")}}))));
+}
+
 class AutofillChildrenSuggestionGeneratorTest
     : public AutofillSuggestionGeneratorTest {
  public:
@@ -807,8 +881,8 @@ class AutofillChildrenSuggestionGeneratorTest
 };
 
 // Test that only "Fill full address" is added when the target field is
-// ADDRESS_HOME_LINE1 and no other suggestion exist with the same
-// `Suggestion::main_text` and granular filling label.
+// `ADDRESS_HOME_LINE1` and no other suggestion exist with the same
+// `Suggestion::main_text` and `ADDRESS_HOME_LINE1`.
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_GroupFillingLabels_AddOnlyFillAddress) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
@@ -816,7 +890,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
       /*last_targeted_fields=*/
       GetAddressFieldsForGroupFilling(),
       /*trigger_field_type=*/ADDRESS_HOME_LINE1,
-      /*field_types=*/{NAME_FIRST});
+      /*field_types=*/{ADDRESS_HOME_LINE1});
 
   ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].labels,
@@ -824,53 +898,50 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
                 {{Suggestion::Text(u"Fill full address")}}));
 }
 
-// Test that the differentiating label is added when the `Suggestion::main_text`
-// and granular filling label are not unique across suggestions.
+// Test that a differentiating label is added when the `Suggestion::main_text`
+// and detailing label are not unique across suggestions.
 TEST_F(
     AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_GroupFillingLabels_AddFillAddressAndDifferentiatingLabel) {
   AutofillProfile profile_1 = test::GetFullProfile();
-  profile_1.SetRawInfo(ADDRESS_HOME_ZIP, u"1234");
+  profile_1.SetRawInfo(NAME_FULL, u"John Doe");
 
   AutofillProfile profile_2 = test::GetFullProfile();
-  profile_2.SetRawInfo(ADDRESS_HOME_ZIP, u"4321");
+  profile_2.SetRawInfo(NAME_FULL, u"John Lemon");
 
   // `profile_1` and `profile_2` have the same `ADDRESS_HOME_LINE1`, which
-  // will lead to the necessity of a differentiating label (`ADDRESS_HOME_ZIP`).
+  // will lead to the necessity of a differentiating label (`NAME_FULL`).
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile_1, &profile_2}, {ADDRESS_HOME_LINE1, ADDRESS_HOME_ZIP},
+          {&profile_1, &profile_2}, {ADDRESS_HOME_LINE1},
           GetAddressFieldsForGroupFilling(), ADDRESS_HOME_LINE1,
           /*trigger_field_max_length=*/0);
 
   ASSERT_EQ(suggestions.size(), 2u);
   EXPECT_EQ(suggestions[0].labels,
             std::vector<std::vector<Suggestion::Text>>(
-                {{Suggestion::Text(u"Fill full address - 1234")}}));
+                {{Suggestion::Text(u"Fill full address - John Doe")}}));
 }
 
 // Test similar to the one above. However also makes sure that
-// `ADDRESS_HOME_LINE1` value is added to the granullar filling labels list if
-// the targeting field does not contain street address related information
-// (ADDRESS_LINE1, ADDRESS_LINE2, ADRRESS_STREET_NAME and ADDRESS_HOME_ADDRESS).
+// `ADDRESS_HOME_LINE1` value is added to the label if
+// the target field does not contain street address related information
+// (ADDRESS_LINE1, ADDRESS_LINE2 and ADRRESS_STREET_NAME).
 TEST_F(
     AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_GroupFillingLabels_AddFillAddressAddressLine1AndDifferentiatingLabel) {
   AutofillProfile profile_1 = test::GetFullProfile();
-  profile_1.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"42");
+  profile_1.SetRawInfo(EMAIL_ADDRESS, u"a@gmail.com");
 
   AutofillProfile profile_2 = test::GetFullProfile();
-  profile_2.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"23");
+  profile_2.SetRawInfo(EMAIL_ADDRESS, u"b@gmail.com");
 
   // `profile_1` and `profile_2` have the same `ADDRESS_HOME_ZIP`, which
   // will lead to the necessity of a differentiating label
-  // (`ADDRESS_HOME_HOUSE_NUMBER`). Note that even though `ADDRESS_HOME_LINE1`
-  // is part of the `field_types`, it is not added as a differentiating label
-  // because it is already part of the granular filling labels.
+  // (`EMAIL_ADDRESS`).
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile_1, &profile_2},
-          {ADDRESS_HOME_LINE1, ADDRESS_HOME_HOUSE_NUMBER, ADDRESS_HOME_ZIP},
+          {&profile_1, &profile_2}, {ADDRESS_HOME_ZIP},
           GetAddressFieldsForGroupFilling(), ADDRESS_HOME_ZIP,
           /*trigger_field_max_length=*/0);
 
@@ -881,11 +952,11 @@ TEST_F(
           {{Suggestion::Text(
                 u"Fill full address - " +
                 profile_1.GetInfo(ADDRESS_HOME_LINE1, app_locale()) + u", "),
-            Suggestion::Text(u"42")}}));
+            Suggestion::Text(u"John H. Doe, a@gmail.com")}}));
 }
 
-// When there is no differentiating label, we add only the granular filling
-// label, either "Fill full name" or "Fill full address".
+// When there is no need to detailing or differentiating label, we add only the
+// granular filling label, either "Fill full name" or "Fill full address".
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_GroupFillingLabels_AddOnlyFillName) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
@@ -899,8 +970,8 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
                 {{Suggestion::Text(u"Fill full name")}}));
 }
 
-// Test that the differentiating label is added when the suggestion main text
-// and granular filling label are not unique across suggestions.
+// Test that a differentiating label is added when the suggestion main text
+// and detailing label are not unique across suggestions.
 TEST_F(
     AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_GroupFillingLabels_AddFillNameAndDifferentiatingLabel) {
@@ -914,14 +985,14 @@ TEST_F(
   // the necessity of a differentiating label (`NAME_FULL`).
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile_1, &profile_2}, {NAME_FIRST, NAME_MIDDLE},
+          {&profile_1, &profile_2}, {NAME_FIRST},
           GetFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FIRST,
           /*trigger_field_max_length=*/0);
 
   ASSERT_EQ(suggestions.size(), 2u);
   EXPECT_EQ(suggestions[0].labels,
-            std::vector<std::vector<Suggestion::Text>>(
-                {{Suggestion::Text(u"Fill full name - Cersei Lannister")}}));
+            std::vector<std::vector<Suggestion::Text>>({{Suggestion::Text(
+                u"Fill full name - Cersei Lannister, 666 Erebus St.")}}));
 }
 
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
