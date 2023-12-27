@@ -115,6 +115,9 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
       FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile);
   base::HistogramTester tester;
 
+  DriveFileSuggestionProvider* file_suggestion_provider =
+      static_cast<DriveFileSuggestionProvider*>(
+          service->drive_file_suggestion_provider_for_test());
   // Verify in the scenario that all suggested file paths are invalid.
   {
     // Ensure that `observer` exists before updating the suggest cache. Because
@@ -122,8 +125,7 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
     MockObserver observer(service);
 
     // Update the item suggest cache with a non-existed file id.
-    service->drive_file_suggestion_provider_for_test()
-        ->item_suggest_cache_for_test()
+    file_suggestion_provider->item_suggest_cache_for_test()
         ->UpdateCacheWithJsonForTest(CreateItemSuggestUpdateJsonString(
             {{non_existed_id, "display text 1", "prediction reason 1"}},
             "suggestion id 0"));
@@ -147,8 +149,7 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
         {{"abc123", "display text 1", "prediction reason 1"},
          {non_existed_id, "display text 2", "prediction reason 2"}},
         "suggestion id 1");
-    service->drive_file_suggestion_provider_for_test()
-        ->item_suggest_cache_for_test()
+    file_suggestion_provider->item_suggest_cache_for_test()
         ->UpdateCacheWithJsonForTest(json_string);
 
     observer.WaitUntilFetchingSuggestData();
@@ -171,8 +172,7 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
         {{"abc123", "display text 1", "prediction reason 1"},
          {"qwertyqwerty", "display text 2", "prediction reason 2"}},
         "suggestion id 2");
-    service->drive_file_suggestion_provider_for_test()
-        ->item_suggest_cache_for_test()
+    file_suggestion_provider->item_suggest_cache_for_test()
         ->UpdateCacheWithJsonForTest(json_string);
 
     observer.WaitUntilFetchingSuggestData();

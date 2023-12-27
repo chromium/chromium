@@ -1,0 +1,512 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/file_suggest/drive_recent_file_suggestion_provider.h"
+
+#include "ash/public/cpp/app_list/app_list_features.h"
+#include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
+#include "base/time/time.h"
+#include "base/time/time_override.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/file_manager/mount_test_util.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_test_util.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "components/drive/file_errors.h"
+#include "components/sync_preferences/pref_service_syncable.h"
+#include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+
+constexpr char kEmail[] = "test-user@example.com";
+constexpr char16_t kEmail16[] = u"test-user@example.com";
+
+struct QueryItemInfo {
+  base::FilePath path;
+  base::Time last_modified_time;
+};
+
+std::vector<drivefs::mojom::QueryItemPtr> CreateQueryItems(
+    const std::vector<QueryItemInfo>& items) {
+  std::vector<drivefs::mojom::QueryItemPtr> results;
+  for (const auto& item : items) {
+    auto result = drivefs::mojom::QueryItem::New();
+    result->path = item.path;
+    result->metadata = drivefs::mojom::FileMetadata::New();
+    result->metadata->modification_time = item.last_modified_time;
+    result->metadata->capabilities = drivefs::mojom::Capabilities::New();
+
+    results.push_back(std::move(result));
+  }
+  return results;
+}
+
+base::Time GetReferenceTime() {
+  base::Time time;
+  EXPECT_TRUE(base::Time::FromString("Tue, 5 Dec 2023 11:00:00", &time));
+  return time;
+}
+
+}  // namespace
+
+namespace ash {
+
+class FakeSearchQuery : public drivefs::mojom::SearchQuery {
+ public:
+  explicit FakeSearchQuery(std::vector<drivefs::mojom::QueryItemPtr> results)
+      : results_(std::move(results)) {}
+
+  FakeSearchQuery(const FakeSearchQuery&) = delete;
+  FakeSearchQuery& operator=(const FakeSearchQuery&) = delete;
+  ~FakeSearchQuery() override = default;
+
+  void GetNextPage(GetNextPageCallback callback) override {
+    if (should_fail_) {
+      std::move(callback).Run(drive::FILE_ERROR_FAILED, {});
+      return;
+    }
+    if (next_page_called_) {
+      std::move(callback).Run(drive::FILE_ERROR_OK, {});
+      return;
+    }
+    next_page_called_ = true;
+    std::move(callback).Run(drive::FILE_ERROR_OK, std::move(results_));
+  }
+
+  void SetToFail() { should_fail_ = true; }
+
+ private:
+  std::vector<drivefs::mojom::QueryItemPtr> results_;
+  bool next_page_called_ = false;
+  bool should_fail_ = false;
+};
+
+class DriveRecentFileSuggestionProviderTest : public ::testing::Test {
+ public:
+  DriveRecentFileSuggestionProviderTest() = default;
+  DriveRecentFileSuggestionProviderTest(
+      const DriveRecentFileSuggestionProviderTest&) = delete;
+  DriveRecentFileSuggestionProviderTest& operator=(
+      const DriveRecentFileSuggestionProviderTest&) = delete;
+  ~DriveRecentFileSuggestionProviderTest() override = default;
+
+  // ::testing::Test:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    ash::CrosDisksClient::InitializeFake();
+
+    disk_mount_manager_ = new disks::FakeDiskMountManager();
+    disks::DiskMountManager::InitializeForTesting(disk_mount_manager_);
+
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+
+    TestingProfile::TestingFactories factories;
+    factories.push_back(
+        {drive::DriveIntegrationServiceFactory::GetInstance(),
+         base::BindRepeating(&DriveRecentFileSuggestionProviderTest::
+                                 BuildTestDriveIntegrationService,
+                             base::Unretained(this))});
+    profile_ =
+        profile_manager_->CreateTestingProfile(kEmail, /*prefs=*/{}, kEmail16,
+                                               /*avatar_id=*/0, factories);
+
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), "12345");
+    fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+        account_id, /*is_affiliated=*/false, user_manager::USER_TYPE_REGULAR,
+        profile_.get());
+    fake_user_manager_->LoginUser(account_id, true);
+
+    WaitUntilFileSuggestServiceReady(
+        FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_));
+  }
+
+  void TearDown() override {
+    integration_service_ = nullptr;
+    fake_drivefs_helper_.reset();
+    profile_ = nullptr;
+    profile_manager_.reset();
+    disk_mount_manager_ = nullptr;
+    disks::DiskMountManager::Shutdown();
+    CrosDisksClient::Shutdown();
+  }
+
+  std::unique_ptr<KeyedService> BuildTestDriveIntegrationService(
+      content::BrowserContext* context) {
+    const std::string mount_point_name = "drivefs";
+    const base::FilePath mount_point_path =
+        temp_dir_.GetPath().Append("drivefs");
+
+    disk_mount_manager_->RegisterMountPointForNetworkStorageScheme(
+        "drivefs", mount_point_path.value());
+    fake_drivefs_helper_ = std::make_unique<drive::FakeDriveFsHelper>(
+        Profile::FromBrowserContext(context), mount_point_path);
+    auto service = std::make_unique<drive::DriveIntegrationService>(
+        Profile::FromBrowserContext(context), mount_point_name,
+        base::FilePath(),
+        fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
+    integration_service_ = service.get();
+    return service;
+  }
+
+  void SetUpInvalidDriveMountPoint() {
+    ASSERT_TRUE(!integration_service_);
+
+    disk_mount_manager_->RegisterMountPointForNetworkStorageScheme("drivefs",
+                                                                   "<invalid>");
+  }
+
+  Profile* profile() { return profile_; }
+
+  drivefs::FakeDriveFs* fake_drivefs() {
+    return &fake_drivefs_helper_->fake_drivefs();
+  }
+
+  base::FilePath GetDriveRoot() const {
+    return fake_drivefs_helper_->mount_path();
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
+
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
+
+  raw_ptr<disks::FakeDiskMountManager> disk_mount_manager_ = nullptr;
+
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
+  raw_ptr<drive::DriveIntegrationService> integration_service_ = nullptr;
+
+  base::test::ScopedFeatureList scoped_feature_list_{
+      app_list_features::kContinueSectionWithRecents};
+};
+
+TEST_F(DriveRecentFileSuggestionProviderTest, DriveDisabled) {
+  drive::DriveIntegrationServiceFactory::GetInstance()
+      ->GetForProfile(profile())
+      ->SetEnabled(false);
+
+  EXPECT_CALL(*fake_drivefs(), StartSearchQuery).Times(0);
+
+  auto* const suggest_service =
+      FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile());
+
+  base::RunLoop result_waiter;
+  suggest_service->GetSuggestFileData(
+      FileSuggestionType::kDriveFile,
+      base::BindOnce(base::BindLambdaForTesting(
+          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+            EXPECT_FALSE(data);
+            result_waiter.Quit();
+          })));
+  result_waiter.Run();
+}
+
+TEST_F(DriveRecentFileSuggestionProviderTest, DriveNotMounted) {
+  SetUpInvalidDriveMountPoint();
+
+  drive::DriveIntegrationServiceFactory::GetInstance()
+      ->GetForProfile(profile())
+      ->SetEnabled(true);
+
+  EXPECT_CALL(*fake_drivefs(), StartSearchQuery).Times(0);
+
+  auto* const suggest_service =
+      FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile());
+
+  base::RunLoop result_waiter;
+  suggest_service->GetSuggestFileData(
+      FileSuggestionType::kDriveFile,
+      base::BindOnce(base::BindLambdaForTesting(
+          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+            EXPECT_FALSE(data);
+            result_waiter.Quit();
+          })));
+  result_waiter.Run();
+}
+
+TEST_F(DriveRecentFileSuggestionProviderTest, SearchRecentlyModifiedFiles) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
+
+  drive::DriveIntegrationServiceFactory::GetInstance()
+      ->GetForProfile(profile())
+      ->SetEnabled(true);
+  file_manager::test_util::WaitUntilDriveMountPointIsAdded(profile());
+
+  EXPECT_CALL(*fake_drivefs(), StartSearchQuery)
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortField::kLastModified,
+                  query_params->sort_field);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+        auto search_query = std::make_unique<FakeSearchQuery>(CreateQueryItems(
+            {{.path = base::FilePath("/Item 1"),
+              .last_modified_time = GetReferenceTime()},
+             {.path = base::FilePath("/Item 2"),
+              .last_modified_time = GetReferenceTime() - base::Days(1)},
+             {.path = base::FilePath("/Item 3"),
+              .last_modified_time = GetReferenceTime() - base::Days(3)}}));
+        mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                    std::move(receiver));
+      });
+
+  auto* const suggest_service =
+      FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile());
+
+  base::RunLoop result_waiter;
+  suggest_service->GetSuggestFileData(
+      FileSuggestionType::kDriveFile,
+      base::BindOnce(base::BindLambdaForTesting(
+          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+            ASSERT_TRUE(data);
+            ASSERT_EQ(3u, data->size());
+
+            const auto& suggestion_1 = data.value()[0];
+            EXPECT_EQ(FileSuggestionType::kDriveFile, suggestion_1.type);
+            EXPECT_EQ(GetDriveRoot().Append("Item 1"), suggestion_1.file_path);
+            EXPECT_EQ(u"[Needs i18n] Modified today",
+                      suggestion_1.prediction_reason.value_or(u"null"));
+
+            const auto& suggestion_2 = data.value()[1];
+            EXPECT_EQ(FileSuggestionType::kDriveFile, suggestion_2.type);
+            EXPECT_EQ(GetDriveRoot().Append("Item 2"), suggestion_2.file_path);
+            EXPECT_EQ(u"[Needs i18n] Modified yesterday",
+                      suggestion_2.prediction_reason.value_or(u"null"));
+
+            const auto& suggestion_3 = data.value()[2];
+            EXPECT_EQ(FileSuggestionType::kDriveFile, suggestion_3.type);
+            EXPECT_EQ(GetDriveRoot().Append("Item 3"), suggestion_3.file_path);
+            EXPECT_EQ(u"[Needs i18n] Modified Dec 2, 2023",
+                      suggestion_3.prediction_reason.value_or(u"null"));
+
+            result_waiter.Quit();
+          })));
+  result_waiter.Run();
+}
+
+TEST_F(DriveRecentFileSuggestionProviderTest, DriveFailedSearch) {
+  drive::DriveIntegrationServiceFactory::GetInstance()
+      ->GetForProfile(profile())
+      ->SetEnabled(true);
+  file_manager::test_util::WaitUntilDriveMountPointIsAdded(profile());
+
+  EXPECT_CALL(*fake_drivefs(), StartSearchQuery)
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortField::kLastModified,
+                  query_params->sort_field);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+
+        auto search_query = std::make_unique<FakeSearchQuery>(
+            std::vector<drivefs::mojom::QueryItemPtr>());
+        search_query->SetToFail();
+        mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                    std::move(receiver));
+      });
+
+  auto* const suggest_service =
+      FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile());
+
+  base::RunLoop result_waiter;
+  suggest_service->GetSuggestFileData(
+      FileSuggestionType::kDriveFile,
+      base::BindOnce(base::BindLambdaForTesting(
+          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+            EXPECT_FALSE(data);
+            result_waiter.Quit();
+          })));
+  result_waiter.Run();
+}
+
+TEST_F(DriveRecentFileSuggestionProviderTest, SequentialSearches) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
+
+  drive::DriveIntegrationServiceFactory::GetInstance()
+      ->GetForProfile(profile())
+      ->SetEnabled(true);
+  file_manager::test_util::WaitUntilDriveMountPointIsAdded(profile());
+
+  EXPECT_CALL(*fake_drivefs(), StartSearchQuery)
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortField::kLastModified,
+                  query_params->sort_field);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+        auto search_query = std::make_unique<FakeSearchQuery>(CreateQueryItems(
+            {{.path = base::FilePath("/Item 1"),
+              .last_modified_time = GetReferenceTime()},
+             {.path = base::FilePath("/Item 2"),
+              .last_modified_time = GetReferenceTime() - base::Days(1)},
+             {.path = base::FilePath("/Item 3"),
+              .last_modified_time = GetReferenceTime() - base::Days(3)}}));
+        mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                    std::move(receiver));
+      })
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortField::kLastModified,
+                  query_params->sort_field);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+        auto search_query = std::make_unique<FakeSearchQuery>(CreateQueryItems(
+            {{.path = base::FilePath("/Item 1"),
+              .last_modified_time = GetReferenceTime() - base::Days(1)}}));
+        mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                    std::move(receiver));
+      });
+
+  auto* const suggest_service =
+      FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile());
+
+  base::RunLoop result_waiter_1;
+  suggest_service->GetSuggestFileData(
+      FileSuggestionType::kDriveFile,
+      base::BindOnce(base::BindLambdaForTesting(
+          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+            ASSERT_TRUE(data);
+            ASSERT_EQ(3u, data->size());
+
+            const auto& suggestion_1 = data.value()[0];
+            EXPECT_EQ(FileSuggestionType::kDriveFile, suggestion_1.type);
+            EXPECT_EQ(GetDriveRoot().Append("Item 1"), suggestion_1.file_path);
+            EXPECT_EQ(u"[Needs i18n] Modified today",
+                      suggestion_1.prediction_reason.value_or(u"null"));
+
+            const auto& suggestion_2 = data.value()[1];
+            EXPECT_EQ(FileSuggestionType::kDriveFile, suggestion_2.type);
+            EXPECT_EQ(GetDriveRoot().Append("Item 2"), suggestion_2.file_path);
+            EXPECT_EQ(u"[Needs i18n] Modified yesterday",
+                      suggestion_2.prediction_reason.value_or(u"null"));
+
+            const auto& suggestion_3 = data.value()[2];
+            EXPECT_EQ(FileSuggestionType::kDriveFile, suggestion_3.type);
+            EXPECT_EQ(GetDriveRoot().Append("Item 3"), suggestion_3.file_path);
+            EXPECT_EQ(u"[Needs i18n] Modified Dec 2, 2023",
+                      suggestion_3.prediction_reason.value_or(u"null"));
+
+            result_waiter_1.Quit();
+          })));
+  result_waiter_1.Run();
+
+  base::RunLoop result_waiter_2;
+  suggest_service->GetSuggestFileData(
+      FileSuggestionType::kDriveFile,
+      base::BindOnce(base::BindLambdaForTesting(
+          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+            ASSERT_TRUE(data);
+            ASSERT_EQ(1u, data->size());
+
+            const auto& suggestion_1 = data.value()[0];
+            EXPECT_EQ(FileSuggestionType::kDriveFile, suggestion_1.type);
+            EXPECT_EQ(GetDriveRoot().Append("Item 1"), suggestion_1.file_path);
+            EXPECT_EQ(u"[Needs i18n] Modified yesterday",
+                      suggestion_1.prediction_reason.value_or(u"null"));
+
+            result_waiter_2.Quit();
+          })));
+  result_waiter_2.Run();
+}
+
+TEST_F(DriveRecentFileSuggestionProviderTest, ConcurrentRequests) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
+
+  drive::DriveIntegrationServiceFactory::GetInstance()
+      ->GetForProfile(profile())
+      ->SetEnabled(true);
+  file_manager::test_util::WaitUntilDriveMountPointIsAdded(profile());
+
+  EXPECT_CALL(*fake_drivefs(), StartSearchQuery)
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortField::kLastModified,
+                  query_params->sort_field);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+
+        auto search_query = std::make_unique<FakeSearchQuery>(
+            CreateQueryItems({{.path = base::FilePath("/Item 1"),
+                               .last_modified_time = GetReferenceTime()}}));
+        mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                    std::move(receiver));
+      });
+
+  auto* const suggest_service =
+      FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile());
+
+  base::RunLoop result_waiter_1;
+  suggest_service->GetSuggestFileData(
+      FileSuggestionType::kDriveFile,
+      base::BindOnce(base::BindLambdaForTesting(
+          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+            ASSERT_TRUE(data);
+            ASSERT_EQ(1u, data->size());
+
+            const auto& suggestion = data.value()[0];
+            EXPECT_EQ(GetDriveRoot().Append("Item 1"), suggestion.file_path);
+            EXPECT_EQ(u"[Needs i18n] Modified today",
+                      suggestion.prediction_reason.value_or(u"null"));
+
+            result_waiter_1.Quit();
+          })));
+
+  base::RunLoop result_waiter_2;
+  suggest_service->GetSuggestFileData(
+      FileSuggestionType::kDriveFile,
+      base::BindOnce(base::BindLambdaForTesting(
+          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+            ASSERT_TRUE(data);
+            ASSERT_EQ(1u, data->size());
+
+            const auto& suggestion = data.value()[0];
+            EXPECT_EQ(GetDriveRoot().Append("Item 1"), suggestion.file_path);
+            EXPECT_EQ(u"[Needs i18n] Modified today",
+                      suggestion.prediction_reason.value_or(u"null"));
+
+            result_waiter_2.Quit();
+          })));
+
+  result_waiter_1.Run();
+  result_waiter_2.Run();
+}
+
+}  // namespace ash

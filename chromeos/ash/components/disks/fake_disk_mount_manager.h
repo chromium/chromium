@@ -106,6 +106,9 @@ class FakeDiskMountManager : public DiskMountManager {
   bool AddMountPointForTest(const MountPoint& mount_point) override;
   void InvokeDiskEventForTest(DiskEvent event, const Disk* disk);
 
+  void RegisterMountPointForNetworkStorageScheme(const std::string& scheme,
+                                                 const std::string& mount_path);
+
  private:
   base::ObserverList<Observer> observers_;
   base::queue<base::OnceClosure> pending_unmount_callbacks_;
@@ -117,6 +120,9 @@ class FakeDiskMountManager : public DiskMountManager {
   std::vector<std::string> unmount_requests_;
   std::vector<RemountAllRequest> remount_all_requests_;
   std::map<std::string, MountError> unmount_errors_;
+  // Maps a network storage URL scheme to a registered mount point path for that
+  // scheme.
+  std::map<std::string, std::string> network_storage_mount_paths_;
 };
 
 }  // namespace ash::disks

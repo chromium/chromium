@@ -31,18 +31,8 @@ class DriveFileSuggestionProvider : public FileSuggestionProvider {
 
   // FileSuggestionProvider:
   void GetSuggestFileData(GetSuggestFileDataCallback callback) override;
-
-  // Requests to update the data in `item_suggest_cache_`. Only used by the file
-  // suggest keyed service.
-  // TODO(https://crbug.com/1356347): Now the app list relies on this service to
-  // fetch the drive suggestion data. Meanwhile, this service relies on the app
-  // list to trigger the item cache update. This cyclic dependency could be
-  // confusing. The service should update the data cache by its own without
-  // depending on the app list code.
-  void MaybeUpdateItemSuggestCache(base::PassKey<FileSuggestKeyedService>);
-
-  // Returns true if there is pending fetch on file suggestions.
-  bool HasPendingDriveSuggestionFetchForTest() const;
+  void MaybeUpdateItemSuggestCache(
+      base::PassKey<FileSuggestKeyedService>) override;
 
   ItemSuggestCache* item_suggest_cache_for_test() {
     return item_suggest_cache_.get();

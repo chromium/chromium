@@ -27,7 +27,7 @@ class ZeroStateDriveProvider;
 }  // namespace app_list
 
 namespace ash {
-class DriveFileSuggestionProvider;
+class FileSuggestionProvider;
 class LocalFileSuggestionProvider;
 struct SearchResultMetadata;
 
@@ -91,13 +91,10 @@ class FileSuggestKeyedService : public KeyedService {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Returns true if there is pending fetch on file suggestions.
-  bool HasPendingSuggestionFetchForTest() const;
-
   // Returns true if the service is ready to provide all types of suggestions.
   bool IsReadyForTest() const;
 
-  DriveFileSuggestionProvider* drive_file_suggestion_provider_for_test() {
+  FileSuggestionProvider* drive_file_suggestion_provider_for_test() {
     return drive_file_suggestion_provider_.get();
   }
 
@@ -128,7 +125,7 @@ class FileSuggestKeyedService : public KeyedService {
           type_id_pairs);
 
   // The provider of drive file suggestions.
-  std::unique_ptr<DriveFileSuggestionProvider> drive_file_suggestion_provider_;
+  std::unique_ptr<FileSuggestionProvider> drive_file_suggestion_provider_;
 
   // The provider of local file suggestions.
   std::unique_ptr<LocalFileSuggestionProvider> local_file_suggestion_provider_;

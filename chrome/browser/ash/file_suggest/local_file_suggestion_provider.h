@@ -49,12 +49,12 @@ class LocalFileSuggestionProvider
 
   // FileSuggestionProvider:
   void GetSuggestFileData(GetSuggestFileDataCallback callback) override;
+  void MaybeUpdateItemSuggestCache(
+      base::PassKey<FileSuggestKeyedService>) override;
 
   // file_manager::file_tasks::FileTaskObserver:
   void OnFilesOpened(const std::vector<FileOpenEvent>& file_opens) override;
 
-  // Returns true if there is pending fetch on file suggestions.
-  bool HasPendingLocalSuggestionFetchForTest() const;
 
  private:
   void OnProtoInitialized(app_list::ReadStatus status);
