@@ -31,6 +31,14 @@ void ReportFPS(const std::string& category_name, double fps) {
                               static_cast<int>(std::round(fps)));
 }
 
+void ReportPerceivedFPS(const std::string& category_name,
+                        double perceived_fps) {
+  DCHECK(!category_name.empty());
+  DCHECK_GT(perceived_fps, 0);
+  base::UmaHistogramCounts100(GetHistogramName(category_name, "PerceivedFPS2"),
+                              static_cast<int>(std::round(perceived_fps)));
+}
+
 void ReportCommitDeviation(const std::string& category_name, double error_mcs) {
   DCHECK(!category_name.empty());
   DCHECK_GE(error_mcs, 0);
@@ -82,6 +90,7 @@ void UmaPerfReporting::OnDone(ArcAppPerformanceTracingSession* session,
             << ", present_deviation: " << result->present_deviation;
 
     ReportFPS(category, result->fps);
+    ReportPerceivedFPS(category, result->perceived_fps);
     ReportCommitDeviation(category, result->present_deviation);
     ReportQuality(category, result->render_quality);
 

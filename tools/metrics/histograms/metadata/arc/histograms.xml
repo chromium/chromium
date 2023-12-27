@@ -1995,6 +1995,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Arc.Runtime.Performance.PerceivedFPS2{ArcPerformanceAppCategories}"
+    units="fps" expires_after="2024-05-05">
+  <owner>khmel@google.com</owner>
+  <owner>matvore@google.com</owner>
+  <summary>
+    Render frames per second, not considering frames which exo could not
+    present. Only collected if the user has app syncing enabled and doesn't have
+    a custom passphrase set. {ArcPerformanceAppCategories}
+  </summary>
+  <token key="ArcPerformanceAppCategories"
+      variants="ArcPerformanceAppCategories">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
     name="Arc.Runtime.Performance.RenderQuality2{ArcPerformanceAppCategories}"
     units="%" expires_after="2024-05-05">
   <owner>khmel@google.com</owner>

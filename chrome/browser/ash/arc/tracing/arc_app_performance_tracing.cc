@@ -199,6 +199,7 @@ void ArcAppPerformanceTracing::OnCustomTraceDone(
       base::Value::Dict()
           .Set("success", success)
           .Set("fps", success ? result->fps : 0)
+          .Set("perceivedFps", success ? result->perceived_fps : 0)
           .Set("commitDeviation", success ? result->present_deviation : 0)
           .Set("renderQuality", success ? result->render_quality : 0));
 }
