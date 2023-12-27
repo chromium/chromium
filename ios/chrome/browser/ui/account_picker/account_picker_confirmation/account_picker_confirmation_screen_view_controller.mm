@@ -245,6 +245,10 @@ CGFloat GetPixelLength() {
                             action:@selector(askEveryTimeSwitchAction:)
                   forControlEvents:UIControlEventValueChanged];
     _askEveryTimeSwitch.on = YES;
+    [_askEveryTimeSwitch
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
     [switchWithLabel addArrangedSubview:askEveryTimeLabel];
     [switchWithLabel addArrangedSubview:_askEveryTimeSwitch];
 
