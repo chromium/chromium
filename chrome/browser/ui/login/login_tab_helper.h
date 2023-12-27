@@ -70,6 +70,9 @@ class LoginTabHelper : public content::WebContentsObserver,
   WillProcessMainFrameUnauthorizedResponse(
       content::NavigationHandle* navigation_handle);
 
+  void RegisterExtensionCancelledNavigation(
+      const content::GlobalRequestID& request_id);
+
  protected:
   explicit LoginTabHelper(content::WebContents* web_contents);
   virtual std::unique_ptr<LoginHandler> CreateLoginHandler(
@@ -82,9 +85,6 @@ class LoginTabHelper : public content::WebContentsObserver,
 
   void HandleCredentials(
       const std::optional<net::AuthCredentials>& credentials);
-
-  void RegisterExtensionCancelledNavigation(
-      const content::GlobalRequestID& request_id);
 
   // When the user enters credentials into the login prompt, they are populated
   // in the auth cache and then page is reloaded to re-send the request with the

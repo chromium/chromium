@@ -29,13 +29,7 @@ LoginTabHelper::CreateAndStartMainFrameLoginDelegate(
     LoginAuthRequiredCallback auth_required_callback) {
   std::unique_ptr<LoginHandler> login_handler = CreateLoginHandler(
       auth_info, web_contents, std::move(auth_required_callback));
-  login_handler->StartMainFrame(
-      request_id, url, response_headers,
-      // The caller owns the created LoginHandler, and there's no guarantee that
-      // |this| outlives it, so use a weak pointer to receive a callback when an
-      // extension has cancelled the auth request for a navigation.
-      base::BindOnce(&LoginTabHelper::RegisterExtensionCancelledNavigation,
-                     weak_ptr_factory_.GetWeakPtr()));
+  login_handler->Start(url, /*is_main_frame=*/true);
   return login_handler;
 }
 

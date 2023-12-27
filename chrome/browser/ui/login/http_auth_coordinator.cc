@@ -7,6 +7,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_tab_helper.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/api/web_request/web_request_api.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif
 
 HttpAuthCoordinator::HttpAuthCoordinator() = default;
 HttpAuthCoordinator::~HttpAuthCoordinator() = default;
@@ -27,8 +33,10 @@ HttpAuthCoordinator::CreateLoginDelegate(
   Flow* flow = flow_owned.get();
   flows_[flow] = std::move(flow_owned);
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&Flow::ShowDialog, flow->GetWeakPtr()));
+  if (!flow->ForwardToExtension()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&Flow::ShowDialog, flow->GetWeakPtr()));
+  }
 
   return std::make_unique<LoginDelegateWrapper>(flow);
 }
@@ -58,7 +66,7 @@ HttpAuthCoordinator::CreateLoginDelegateFromLoginHandler(
     content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   std::unique_ptr<LoginHandler> login_handler = LoginHandler::Create(
       auth_info, web_contents, std::move(auth_required_callback));
-  login_handler->StartSubresource(request_id, url, response_headers);
+  login_handler->Start(url, /*is_main_frame=*/false);
   return login_handler;
 }
 
@@ -93,6 +101,26 @@ void HttpAuthCoordinator::Flow::WrapperDestroyed() {
   coordinator_->FlowFinished(this);
 }
 
+bool HttpAuthCoordinator::Flow::ForwardToExtension() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // If the WebRequest API wants to take a shot at intercepting this, we can
+  // return immediately. |continuation| will eventually be invoked if the
+  // request isn't cancelled.
+  auto* api =
+      extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
+          web_contents_->GetBrowserContext());
+  auto continuation = base::BindOnce(&Flow::OnExtensionResponse, GetWeakPtr());
+  if (api->MaybeProxyAuthRequest(
+          web_contents_->GetBrowserContext(), auth_info_, response_headers_,
+          request_id_, is_request_for_primary_main_frame_,
+          std::move(continuation),
+          extensions::WebViewGuest::FromWebContents(web_contents_.get()))) {
+    return true;
+  }
+#endif
+  return false;
+}
+
 void HttpAuthCoordinator::Flow::ShowDialog() {
   // If we're being asked to show a dialog, then the callback must still be
   // valid.
@@ -114,6 +142,10 @@ void HttpAuthCoordinator::Flow::ShowDialog() {
     login_handler_ = coordinator_->CreateLoginDelegateFromTabHelper(
         web_contents_.get(), auth_info_, request_id_, url_, response_headers_,
         std::move(wrapped_callback));
+    if (did_cancel_from_extension_) {
+      LoginTabHelper::FromWebContents(web_contents_.get())
+          ->RegisterExtensionCancelledNavigation(request_id_);
+    }
   } else {
     login_handler_ = coordinator_->CreateLoginDelegateFromLoginHandler(
         web_contents_.get(), auth_info_, request_id_, url_, response_headers_,
@@ -124,6 +156,24 @@ void HttpAuthCoordinator::Flow::ShowDialog() {
 base::WeakPtr<HttpAuthCoordinator::Flow>
 HttpAuthCoordinator::Flow::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void HttpAuthCoordinator::Flow::OnExtensionResponse(
+    const absl::optional<net::AuthCredentials>& credentials,
+    bool should_cancel) {
+  if (credentials) {
+    std::move(callback_).Run(credentials);
+    return;
+  }
+  if (should_cancel) {
+    if (is_request_for_primary_main_frame_) {
+      did_cancel_from_extension_ = true;
+    }
+    std::move(callback_).Run(absl::nullopt);
+    return;
+  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&Flow::ShowDialog, GetWeakPtr()));
 }
 
 void HttpAuthCoordinator::Flow::OnCredentials(

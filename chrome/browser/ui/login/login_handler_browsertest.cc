@@ -209,8 +209,7 @@ class HttpAuthCoordinatorFake : public HttpAuthCoordinator {
     auto login_handler = std::make_unique<LoginHandlerFake>(
         auth_info, web_contents, std::move(auth_required_callback),
         browser_client_);
-    login_handler->StartSubresource(request_id, url,
-                                    std::move(response_headers));
+    login_handler->Start(url, /*is_main_frame=*/false);
     return login_handler;
   }
 

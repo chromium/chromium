@@ -107,6 +107,10 @@ class HttpAuthCoordinator {
     // (3b) and (5b). See HttpAuthCoordinator class comment.
     void WrapperDestroyed();
 
+    // Gives the extension subsystem the chance to respond to http auth. Returns
+    // true if the extension subsystem is responding.
+    bool ForwardToExtension();
+
     // Show a dialog to the user.
     void ShowDialog();
 
@@ -114,6 +118,11 @@ class HttpAuthCoordinator {
     base::WeakPtr<Flow> GetWeakPtr();
 
    private:
+    // Called by the extension subsystem with a response from the extension.
+    void OnExtensionResponse(
+        const absl::optional<net::AuthCredentials>& credentials,
+        bool should_cancel);
+
     // Called by LoginHandler when credentials are obtained or cancelled.
     void OnCredentials(const absl::optional<net::AuthCredentials>& credentials);
 
@@ -130,6 +139,9 @@ class HttpAuthCoordinator {
     const bool is_request_for_primary_main_frame_;
     const GURL url_;
     const scoped_refptr<net::HttpResponseHeaders> response_headers_;
+
+    // Set to true if the extension cancels the request.
+    bool did_cancel_from_extension_ = false;
 
     // Invoking this callback will destroy the wrapper. The one instance this
     // callback should not be invoked is if the wrapper is already destroyed.

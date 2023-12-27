@@ -47,8 +47,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/guest_view/browser/guest_view_base.h"
-#include "extensions/browser/api/web_request/web_request_api.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #endif
@@ -109,24 +107,13 @@ std::vector<LoginHandler*> LoginHandler::GetAllLoginHandlersForTest() {
   return output;
 }
 
-void LoginHandler::StartMainFrame(
-    const content::GlobalRequestID& request_id,
-    const GURL& request_url,
-    scoped_refptr<net::HttpResponseHeaders> response_headers,
-    base::OnceCallback<void(const content::GlobalRequestID& request_id)>
-        extension_cancellation_callback) {
-  extension_main_frame_cancellation_callback_ =
-      std::move(extension_cancellation_callback);
-  StartInternal(request_id, true /* is_main_frame */, request_url,
-                response_headers);
-}
-
-void LoginHandler::StartSubresource(
-    const content::GlobalRequestID& request_id,
-    const GURL& request_url,
-    scoped_refptr<net::HttpResponseHeaders> response_headers) {
-  StartInternal(request_id, false /* is_main_frame */, request_url,
-                response_headers);
+void LoginHandler::Start(const GURL& request_url,
+                         bool is_request_for_main_frame) {
+  auto callback =
+      base::BindOnce(&LoginHandler::StartAsync, weak_factory_.GetWeakPtr(),
+                     request_url, is_request_for_main_frame);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
 void LoginHandler::ShowLoginPromptAfterCommit(const GURL& request_url) {
@@ -214,44 +201,6 @@ LoginHandler::LoginHandler(const net::AuthChallengeInfo& auth_info,
       auth_required_callback_(std::move(auth_required_callback)),
       prompt_started_(false) {
   GetAllLoginHandlers().push_back(weak_factory_.GetWeakPtr());
-}
-
-void LoginHandler::StartInternal(
-    const content::GlobalRequestID& request_id,
-    bool is_main_frame,
-    const GURL& request_url,
-    scoped_refptr<net::HttpResponseHeaders> response_headers) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(web_contents_);
-  DCHECK(!WasAuthHandled());
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // If the WebRequest API wants to take a shot at intercepting this, we can
-  // return immediately. |continuation| will eventually be invoked if the
-  // request isn't cancelled.
-  auto* api =
-      extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
-          web_contents_->GetBrowserContext());
-  auto continuation = base::BindOnce(
-      &LoginHandler::MaybeSetUpLoginPromptBeforeCommit,
-      weak_factory_.GetWeakPtr(), request_url, request_id, is_main_frame);
-  if (api->MaybeProxyAuthRequest(
-          web_contents_->GetBrowserContext(), auth_info_,
-          std::move(response_headers), request_id, is_main_frame,
-          std::move(continuation),
-          extensions::WebViewGuest::FromWebContents(web_contents_.get()))) {
-    return;
-  }
-#endif
-
-  // To avoid reentrancy problems, this function must not call
-  // |auth_required_callback_| synchronously. Defer
-  // MaybeSetUpLoginPromptBeforeCommit by an event loop iteration.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LoginHandler::MaybeSetUpLoginPromptBeforeCommit,
-                     weak_factory_.GetWeakPtr(), request_url, request_id,
-                     is_main_frame, std::nullopt, false /* should_cancel */));
 }
 
 void LoginHandler::NotifyAuthNeeded() {
@@ -438,27 +387,13 @@ void LoginHandler::GetDialogStrings(const GURL& request_url,
   }
 }
 
-void LoginHandler::MaybeSetUpLoginPromptBeforeCommit(
-    const GURL& request_url,
-    const content::GlobalRequestID& request_id,
-    bool is_request_for_main_frame,
-    const std::optional<net::AuthCredentials>& credentials,
-    bool cancelled_by_extension) {
+void LoginHandler::StartAsync(const GURL& request_url,
+                              bool is_request_for_main_frame) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // The request may have been handled while the WebRequest API was processing.
-  if (!web_contents_ || !web_contents_->GetDelegate() || WasAuthHandled() ||
-      cancelled_by_extension) {
-    if (cancelled_by_extension && is_request_for_main_frame &&
-        !extension_main_frame_cancellation_callback_.is_null()) {
-      std::move(extension_main_frame_cancellation_callback_).Run(request_id);
-    }
+  // The request may have been handled asynchronously.
+  if (!web_contents_ || !web_contents_->GetDelegate() || WasAuthHandled()) {
     CancelAuth();
-    return;
-  }
-
-  if (credentials) {
-    SetAuth(credentials->username(), credentials->password());
     return;
   }
 

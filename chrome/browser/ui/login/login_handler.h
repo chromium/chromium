@@ -59,28 +59,8 @@ class LoginHandler : public content::LoginDelegate {
   // Exposed for testing.
   static std::vector<LoginHandler*> GetAllLoginHandlersForTest();
 
-  // The main entry point for an auth request for a main-frame request. This
-  // method allows extensions to handle the auth request, and otherwise cancels
-  // the request to show a blank error page. ShowLoginPromptAfterCommit() can be
-  // called to show a login prompt atop the blank page once it commits.
-  // |extension_cancellation_callback| will be called if an extension chooses to
-  // cancel the auth request; the callback will be called immediately before the
-  // auth request is actually cancelled.
-  void StartMainFrame(
-      const content::GlobalRequestID& request_id,
-      const GURL& request_url,
-      scoped_refptr<net::HttpResponseHeaders> response_headers,
-      base::OnceCallback<void(const content::GlobalRequestID& request_id)>
-          extension_cancellation_callback);
-
-  // The main entry point for an auth request for a subresource (include
-  // subframe main resources). This method allows extensions to handle the auth
-  // request, and may show an auth prompt to the user if extensions do not
-  // handle the request.
-  void StartSubresource(
-      const content::GlobalRequestID& request_id,
-      const GURL& request_url,
-      scoped_refptr<net::HttpResponseHeaders> response_headers);
+  // The main entry point for every auth request.
+  void Start(const GURL& request_url, bool is_main_frame);
 
   void ShowLoginPromptAfterCommit(const GURL& request_url);
 
@@ -126,10 +106,9 @@ class LoginHandler : public content::LoginDelegate {
  private:
   FRIEND_TEST_ALL_PREFIXES(LoginHandlerTest, DialogStringsAndRealm);
 
-  void StartInternal(const content::GlobalRequestID& request_id,
-                     bool is_main_frame,
-                     const GURL& request_url,
-                     scoped_refptr<net::HttpResponseHeaders> response_headers);
+  // Start is always dispatched asynchronously in the short term. This will
+  // change in the future.
+  void StartAsync(const GURL& request_url, bool is_main_frame);
 
   // When any handler finishes, called on every other handler. |username| and
   // |password| are only valid if |supplied| is true. If |supplied| is false
@@ -176,20 +155,6 @@ class LoginHandler : public content::LoginDelegate {
                                std::u16string* authority,
                                std::u16string* explanation);
 
-  // Continuation from |Start| after any potential interception from the
-  // extensions WebRequest API. If |cancelled_by_extension| is |true| the
-  // request is cancelled. Otherwise |credentials| are used if supplied. Finally
-  // if the request is NOT cancelled AND |credentials| is empty, then we'll take
-  // the necessary steps to show a login prompt. This may entail cancelling the
-  // navigation if it is a main-frame request (and a login prompt will be shown
-  // after commit), or showing the prompt directly otherwise.
-  void MaybeSetUpLoginPromptBeforeCommit(
-      const GURL& request_url,
-      const content::GlobalRequestID& request_id,
-      bool is_main_frame,
-      const std::optional<net::AuthCredentials>& credentials,
-      bool cancelled_by_extension);
-
   void ShowLoginPrompt(const GURL& request_url);
 
   void BuildViewAndNotify(const std::u16string& authority,
@@ -207,11 +172,6 @@ class LoginHandler : public content::LoginDelegate {
   password_manager::PasswordForm password_form_;
 
   LoginAuthRequiredCallback auth_required_callback_;
-
-  // This callback is called if an extension cancels an auth request for a main
-  // frame main resource.
-  base::OnceCallback<void(const content::GlobalRequestID& request_id)>
-      extension_main_frame_cancellation_callback_;
 
   // True if the extensions logic has run and the prompt logic has started.
   bool prompt_started_;
