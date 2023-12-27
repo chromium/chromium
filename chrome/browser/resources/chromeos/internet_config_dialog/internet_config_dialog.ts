@@ -12,11 +12,15 @@ import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './strings.m.js';
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {NetworkConfigElement} from 'chrome://resources/ash/common/network/network_config.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './internet_config_dialog.html.js';
 
 /**
  * @fileoverview
@@ -25,28 +29,27 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
  * new network from the system tray).
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const InternetConfigDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+export interface InternetConfigDialogElement {
+  $: {
+    networkConfig: NetworkConfigElement,
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
+const InternetConfigDialogElementBase = I18nMixin(PolymerElement);
+
 export class InternetConfigDialogElement extends
     InternetConfigDialogElementBase {
   static get is() {
-    return 'internet-config-dialog';
+    return 'internet-config-dialog' as const;
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @private */
       shareAllowEnable_: {
         type: Boolean,
         value() {
@@ -54,7 +57,6 @@ export class InternetConfigDialogElement extends
         },
       },
 
-      /** @private */
       shareDefault_: {
         type: Boolean,
         value() {
@@ -64,23 +66,19 @@ export class InternetConfigDialogElement extends
 
       /**
        * The network GUID to configure, or empty when configuring a new network.
-       * @private
        */
       guid_: String,
 
       /**
        * The type of network to be configured as a string. May be set initially
        * or updated by network-config.
-       * @private
        */
       type_: String,
 
-      /** @private */
       enableConnect_: Boolean,
 
       /**
        * Set by network-config when a configuration error occurs.
-       * @private
        */
       error_: {
         type: String,
@@ -89,8 +87,14 @@ export class InternetConfigDialogElement extends
     };
   }
 
-  /** @override */
-  connectedCallback() {
+  private shareAllowEnable_: boolean;
+  private shareDefault_: boolean;
+  private guid_: string;
+  private type_: string;
+  private enableConnect_: boolean;
+  private error_: string;
+
+  override connectedCallback() {
     super.connectedCallback();
 
     const isJellyEnabled = loadTimeData.valueExists('isJellyEnabled') &&
@@ -115,7 +119,6 @@ export class InternetConfigDialogElement extends
       document.head.appendChild(link);
       document.body.classList.add('jelly-enabled');
 
-      /** @suppress {checkTypes} */
       (function() {
         ColorChangeUpdater.forDocument().start();
       })();
@@ -123,41 +126,30 @@ export class InternetConfigDialogElement extends
 
     this.$.networkConfig.init();
 
-    /** @type {!CrDialogElement} */ (this.$.dialog).showModal();
+    this.$.dialog.showModal();
   }
 
-  /** @private */
-  close_() {
+  private close_(): void {
     chrome.send('dialogClose');
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getDialogTitle_() {
+  private getDialogTitle_(): string {
     const type = this.i18n('OncType' + this.type_);
     return this.i18n('internetJoinType', type);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getError_() {
+  private getError_(): string {
     if (this.i18nExists(this.error_)) {
       return this.i18n(this.error_);
     }
     return this.i18n('networkErrorUnknown');
   }
 
-  /** @private */
-  onCancelClick_() {
+  private onCancelClick_(): void {
     this.close_();
   }
 
-  /** @private */
-  onConnectClick_() {
+  private onConnectClick_(): void {
     this.$.networkConfig.connect();
   }
 }

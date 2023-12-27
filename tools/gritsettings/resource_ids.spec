@@ -506,7 +506,7 @@
     "META": {"sizes": {"includes": [50]}},
     "includes": [4280],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/internet_config_dialog/internet_config_dialog_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/internet_config_dialog/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [4300],
   },
