@@ -219,7 +219,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kInstantStart,
     &kLensCameraAssistedSearch,
     &kLensOnQuickActionSearchWidget,
-    &kMagicStackAndroid,
     &kMultiInstanceApplicationStatusCleanup,
     &kNewTabSearchEngineUrlAndroid,
     &kNotificationPermissionVariant,
@@ -632,10 +631,6 @@ BASE_FEATURE(kIncognitoScreenshot,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInstantStart, "InstantStart", base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kMagicStackAndroid,
-             "MagicStackAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMultiInstanceApplicationStatusCleanup,
              "MultiInstanceApplicationStatusCleanup",

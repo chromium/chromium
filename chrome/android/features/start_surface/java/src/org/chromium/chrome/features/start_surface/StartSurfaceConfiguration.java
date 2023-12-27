@@ -110,6 +110,10 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_SCROLLABLE_MVT_PARAM, false);
 
+    public static final BooleanCachedFieldTrialParameter SURFACE_POLISH_USE_MAGIC_SPACE =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.SURFACE_POLISH, "use_magic_space", false);
+
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String INSTANT_START_SUBFIX = ".Instant";
     private static final String REGULAR_START_SUBFIX = ".NoInstant";
@@ -134,7 +138,7 @@ public class StartSurfaceConfiguration {
     /** Returns whether a magic space is enabled on Start surface. */
     public static boolean useMagicSpace() {
         return ChromeFeatureList.sSurfacePolish.isEnabled()
-                && ChromeFeatureList.sMagicStackAndroid.isEnabled()
+                && SURFACE_POLISH_USE_MAGIC_SPACE.getValue()
                 && ChromeFeatureList.sStartSurfaceRefactor.isEnabled();
     }
 

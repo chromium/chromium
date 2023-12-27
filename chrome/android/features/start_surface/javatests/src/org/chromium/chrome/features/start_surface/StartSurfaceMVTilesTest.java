@@ -174,12 +174,8 @@ public class StartSurfaceMVTilesTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
-    @EnableFeatures({
-        ChromeFeatureList.START_SURFACE_REFACTOR,
-        ChromeFeatureList.SURFACE_POLISH,
-        ChromeFeatureList.MAGIC_STACK_ANDROID
-    })
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/use_magic_space/true"})
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR, ChromeFeatureList.SURFACE_POLISH})
     public void testTapMVTilesInSingleSurfaceWithSurfacePolish() {
         testTapMVTilesInSingleSurfaceImpl();
     }
