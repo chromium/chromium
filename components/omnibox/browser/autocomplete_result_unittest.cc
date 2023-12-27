@@ -2424,16 +2424,16 @@ TEST_F(AutocompleteResultTest, DocumentSuggestionsCanMergeButNotToDefault) {
   ACMatches matches;
   PopulateAutocompleteMatches(data, std::size(data), &matches);
   matches[0].type = AutocompleteMatchType::DOCUMENT_SUGGESTION;
-  static_cast<FakeAutocompleteProvider*>(matches[0].provider)
-      ->SetType(AutocompleteProvider::Type::TYPE_DOCUMENT);
+  static_cast<FakeAutocompleteProvider*>(matches[0].provider)->type_ =
+      AutocompleteProvider::Type::TYPE_DOCUMENT;
   matches[1].type = AutocompleteMatchType::HISTORY_URL;
   matches[2].type = AutocompleteMatchType::DOCUMENT_SUGGESTION;
-  static_cast<FakeAutocompleteProvider*>(matches[2].provider)
-      ->SetType(AutocompleteProvider::Type::TYPE_DOCUMENT);
+  static_cast<FakeAutocompleteProvider*>(matches[2].provider)->type_ =
+      AutocompleteProvider::Type::TYPE_DOCUMENT;
   matches[3].type = AutocompleteMatchType::HISTORY_URL;
   matches[4].type = AutocompleteMatchType::DOCUMENT_SUGGESTION;
-  static_cast<FakeAutocompleteProvider*>(matches[4].provider)
-      ->SetType(AutocompleteProvider::Type::TYPE_DOCUMENT);
+  static_cast<FakeAutocompleteProvider*>(matches[4].provider)->type_ =
+      AutocompleteProvider::Type::TYPE_DOCUMENT;
   matches[5].type = AutocompleteMatchType::HISTORY_URL;
 
   AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
@@ -2527,20 +2527,20 @@ TEST_F(AutocompleteResultTest, ClipboardSuggestionOnTopOfSearchSuggestionTest) {
   ACMatches matches;
   PopulateAutocompleteMatches(data, std::size(data), &matches);
   matches[0].type = AutocompleteMatchType::SEARCH_SUGGEST;
-  static_cast<FakeAutocompleteProvider*>(matches[0].provider)
-      ->SetType(AutocompleteProvider::Type::TYPE_ZERO_SUGGEST_LOCAL_HISTORY);
+  static_cast<FakeAutocompleteProvider*>(matches[0].provider)->type_ =
+      AutocompleteProvider::Type::TYPE_ZERO_SUGGEST_LOCAL_HISTORY;
   matches[1].type = AutocompleteMatchType::SEARCH_SUGGEST;
-  static_cast<FakeAutocompleteProvider*>(matches[1].provider)
-      ->SetType(AutocompleteProvider::Type::TYPE_ZERO_SUGGEST_LOCAL_HISTORY);
+  static_cast<FakeAutocompleteProvider*>(matches[1].provider)->type_ =
+      AutocompleteProvider::Type::TYPE_ZERO_SUGGEST_LOCAL_HISTORY;
   matches[2].type = AutocompleteMatchType::SEARCH_SUGGEST;
-  static_cast<FakeAutocompleteProvider*>(matches[2].provider)
-      ->SetType(AutocompleteProvider::Type::TYPE_ZERO_SUGGEST_LOCAL_HISTORY);
+  static_cast<FakeAutocompleteProvider*>(matches[2].provider)->type_ =
+      AutocompleteProvider::Type::TYPE_ZERO_SUGGEST_LOCAL_HISTORY;
   matches[3].type = AutocompleteMatchType::SEARCH_SUGGEST;
-  static_cast<FakeAutocompleteProvider*>(matches[3].provider)
-      ->SetType(AutocompleteProvider::Type::TYPE_ZERO_SUGGEST_LOCAL_HISTORY);
+  static_cast<FakeAutocompleteProvider*>(matches[3].provider)->type_ =
+      AutocompleteProvider::Type::TYPE_ZERO_SUGGEST_LOCAL_HISTORY;
   matches[4].type = AutocompleteMatchType::CLIPBOARD_URL;
-  static_cast<FakeAutocompleteProvider*>(matches[4].provider)
-      ->SetType(AutocompleteProvider::Type::TYPE_CLIPBOARD);
+  static_cast<FakeAutocompleteProvider*>(matches[4].provider)->type_ =
+      AutocompleteProvider::Type::TYPE_CLIPBOARD;
 
   AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());

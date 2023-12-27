@@ -29,11 +29,9 @@ NSArray<AutocompleteMatchFormatter*>* ExtractAutocompleteMatches(
 }  // namespace
 
 @implementation OmniboxAutocompleteEvent {
-  /// Whether all sync and async providers from the autocomplete controller are
-  /// done.
-  BOOL _autocompleteControllerAsyncPassDone;
-  /// Whether all sync providers from the autocomplete controller are done.
-  BOOL _autocompleteControllerSyncPassDone;
+  /// Represents the type of the latest autocomplete pass. See
+  /// `AutocompleteController::UpdateType`.
+  std::string _autocompleteControllerLastUpdateType;
   /// List of the autocomplete matches from the AutocompleteResult.
   NSArray<AutocompleteMatchFormatter*>* _matches;
   /// List of autocomplete matches from the ShortcutsProvider.
@@ -45,8 +43,9 @@ NSArray<AutocompleteMatchFormatter*>* ExtractAutocompleteMatches(
   self = [super init];
 
   if (self) {
-    _autocompleteControllerAsyncPassDone = controller->done();
-    _autocompleteControllerSyncPassDone = controller->sync_pass_done();
+    _autocompleteControllerLastUpdateType =
+        AutocompleteController::UpdateTypeToDebugString(
+            controller->last_update_type());
 
     // Extract matches.
     _matches = ExtractAutocompleteMatches(controller->result());
@@ -79,14 +78,9 @@ NSArray<AutocompleteMatchFormatter*>* ExtractAutocompleteMatches(
 }
 
 - (NSString*)title {
-  NSString* autocompleteControllerStatus = @"Processing";
-  if (_autocompleteControllerAsyncPassDone) {
-    autocompleteControllerStatus = @"Async Done";
-  } else if (_autocompleteControllerSyncPassDone) {
-    autocompleteControllerStatus = @"Sync Done";
-  }
-  return [NSString
-      stringWithFormat:@"Result update (%@)", autocompleteControllerStatus];
+  return
+      [NSString stringWithFormat:@"Result update (%s)",
+                                 _autocompleteControllerLastUpdateType.c_str()];
 }
 
 - (EventType)type {

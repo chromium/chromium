@@ -16,10 +16,10 @@ class FakeAutocompleteScoringModelService
   ~FakeAutocompleteScoringModelService() override;
 
   // AutocompleteScoringModelService:
+  // Will return each match's `site_engagement` signal as its ML score. Chosen
+  // because that's the only float signal.
   std::vector<Result> BatchScoreAutocompleteUrlMatchesSync(
       const std::vector<const ScoringSignals*>& batch_scoring_signals) override;
-
-  std::vector<Result> fake_response_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_FAKE_AUTOCOMPLETE_SCORING_MODEL_SERVICE_H_

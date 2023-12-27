@@ -17,16 +17,13 @@ class FakeAutocompleteProvider : public AutocompleteProvider {
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
   void DeleteMatch(const AutocompleteMatch& match) override;
 
-  // Used by some tests that create providers ahead of time and later set the
-  // specific type needed.
-  void SetType(Type type) { type_ = type; }
-
   using AutocompleteProvider::done_;
   using AutocompleteProvider::matches_;
+  using AutocompleteProvider::type_;
 
   ACMatches deleted_matches_;
 
- private:
+ protected:
   ~FakeAutocompleteProvider() override;
 };
 

@@ -19,5 +19,8 @@ FakeAutocompleteScoringModelService::BatchScoreAutocompleteUrlMatchesSync(
     const std::vector<
         const FakeAutocompleteScoringModelService::ScoringSignals*>&
         batch_scoring_signals) {
-  return fake_response_;
+  std::vector<Result> results;
+  for (size_t i = 0; i < batch_scoring_signals.size(); ++i)
+    results.push_back(batch_scoring_signals[i]->site_engagement());
+  return results;
 }
