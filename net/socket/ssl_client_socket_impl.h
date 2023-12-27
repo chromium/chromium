@@ -292,11 +292,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
   int signature_result_;
   std::vector<uint8_t> signature_;
 
-  // pinning_failure_log contains a message produced by
-  // TransportSecurityState::CheckPublicKeyPins in the event of a
-  // pinning failure. It is a (somewhat) human-readable string.
-  std::string pinning_failure_log_;
-
   // True if PKP is bypassed due to a local trust anchor.
   bool pkp_bypassed_ = false;
 

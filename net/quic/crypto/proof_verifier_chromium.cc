@@ -401,11 +401,7 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
         transport_security_state_->CheckPublicKeyPins(
             HostPortPair(hostname_, port_),
             cert_verify_result.is_issued_by_known_root,
-            cert_verify_result.public_key_hashes, cert_.get(),
-            cert_verify_result.verified_cert.get(),
-            TransportSecurityState::ENABLE_PIN_REPORTS,
-            proof_verifier_->network_anonymization_key_,
-            &verify_details_->pinning_failure_log);
+            cert_verify_result.public_key_hashes);
     switch (pin_validity) {
       case TransportSecurityState::PKPStatus::VIOLATED:
         result = ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN;

@@ -69,7 +69,6 @@ const char kPopularSCT2[] = "oKGio6SlpqeoqaqrrK2urwEjRWeJq83v";
 // Constants for test pinset.
 const char kPinsetName[] = "example";
 const char kPinsetHostName[] = "example.test";
-const char kPinsetReportURI[] = "http://example-reports.test";
 const bool kPinsetIncludeSubdomains = true;
 
 // SHA256 SPKI hashes.
@@ -188,7 +187,6 @@ class PKIMetadataComponentInstallerTest : public testing::Test {
       host_pin->set_include_subdomains(kPinsetIncludeSubdomains);
       auto* pinset = pinlist_.add_pinsets();
       pinset->set_name(kPinsetName);
-      pinset->set_report_uri(kPinsetReportURI);
       std::string spki_bytes_as_string(kSpkiHash1.data(),
                                        kSpkiHash1.data() + kSpkiHash1.size());
       std::string bad_spki_bytes_as_string(
@@ -322,7 +320,6 @@ TEST_F(PKIMetadataComponentInstallerTest,
   EXPECT_EQ(pinsets.at(0).name(), kPinsetName);
   EXPECT_EQ(pinsets.at(0).static_spki_hashes().at(0), kSpkiHash1);
   EXPECT_EQ(pinsets.at(0).bad_static_spki_hashes().at(0), kSpkiHash2);
-  EXPECT_EQ(pinsets.at(0).report_uri(), kPinsetReportURI);
 
   EXPECT_EQ(host_pins.at(0).hostname_, kPinsetHostName);
   EXPECT_EQ(host_pins.at(0).pinset_name_, kPinsetName);

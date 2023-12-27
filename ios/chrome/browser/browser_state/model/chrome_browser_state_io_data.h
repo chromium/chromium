@@ -39,7 +39,6 @@ class CookieSettings;
 namespace net {
 class HttpTransactionFactory;
 class ProxyConfigService;
-class ReportSender;
 class SystemCookieStore;
 class URLRequestContextBuilder;
 }  // namespace net
@@ -171,8 +170,6 @@ class ChromeBrowserStateIOData {
 
   BooleanPrefMember enable_metrics_;
   std::unique_ptr<AcceptLanguagePrefWatcher> accept_language_pref_watcher_;
-
-  mutable std::unique_ptr<net::ReportSender> certificate_report_sender_;
 
   // These are only valid in between LazyInitialize() and their accessor being
   // called.

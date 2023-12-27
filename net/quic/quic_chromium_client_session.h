@@ -1058,7 +1058,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   raw_ptr<SSLConfigService> ssl_config_service_;
   std::unique_ptr<QuicServerInfo> server_info_;
   std::unique_ptr<CertVerifyResult> cert_verify_result_;
-  std::string pinning_failure_log_;
   bool pkp_bypassed_ = false;
   bool is_fatal_cert_error_ = false;
   HandleSet handles_;

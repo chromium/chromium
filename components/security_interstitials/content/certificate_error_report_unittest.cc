@@ -47,7 +47,6 @@ using testing::UnorderedElementsAreArray;
 namespace {
 
 const char kDummyHostname[] = "dummy.hostname.com";
-const char kDummyFailureLog[] = "dummy failure log";
 const char kTestCertFilename[] = "x509_verify_results.chain.pem";
 
 const net::CertStatus kCertStatus =
@@ -80,7 +79,6 @@ void GetTestSSLInfo(UnverifiedCertChainStatus unverified_cert_chain_status,
   }
   info->is_issued_by_known_root = true;
   info->cert_status = cert_status;
-  info->pinning_failure_log = kDummyFailureLog;
 }
 
 std::string GetPEMEncodedChain() {
@@ -126,8 +124,6 @@ void VerifyErrorReportSerialization(
   EXPECT_EQ(kDummyHostname, deserialized_report.hostname());
   EXPECT_EQ(GetPEMEncodedChain(), deserialized_report.cert_chain());
   EXPECT_EQ(GetPEMEncodedChain(), deserialized_report.unverified_cert_chain());
-  EXPECT_EQ(1, deserialized_report.pin().size());
-  EXPECT_EQ(kDummyFailureLog, deserialized_report.pin().Get(0));
   EXPECT_EQ(ssl_info.is_issued_by_known_root,
             deserialized_report.is_issued_by_known_root());
   EXPECT_THAT(deserialized_report.cert_error(),
@@ -180,8 +176,6 @@ TEST(ErrorReportTest, SerializedReportAsProtobufWithInterstitialInfo) {
   EXPECT_EQ(kDummyHostname, deserialized_report.hostname());
   EXPECT_EQ(GetPEMEncodedChain(), deserialized_report.cert_chain());
   EXPECT_EQ(std::string(), deserialized_report.unverified_cert_chain());
-  EXPECT_EQ(1, deserialized_report.pin().size());
-  EXPECT_EQ(kDummyFailureLog, deserialized_report.pin().Get(0));
 
   EXPECT_EQ(chrome_browser_ssl::CertLoggerInterstitialInfo::INTERSTITIAL_CLOCK,
             deserialized_report.interstitial_info().interstitial_reason());

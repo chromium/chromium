@@ -6157,17 +6157,13 @@ TEST(CanPoolTest, CanPool) {
                                      "spdy_pooling.pem");
 
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                   "www.example.org", "www.example.org",
-                                   NetworkAnonymizationKey()));
+                                   "www.example.org", "www.example.org"));
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                   "www.example.org", "mail.example.org",
-                                   NetworkAnonymizationKey()));
+                                   "www.example.org", "mail.example.org"));
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                   "www.example.org", "mail.example.com",
-                                   NetworkAnonymizationKey()));
+                                   "www.example.org", "mail.example.com"));
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                    "www.example.org", "mail.google.com",
-                                    NetworkAnonymizationKey()));
+                                    "www.example.org", "mail.google.com"));
 }
 
 TEST(CanPoolTest, CanNotPoolWithCertErrors) {
@@ -6184,8 +6180,7 @@ TEST(CanPoolTest, CanNotPoolWithCertErrors) {
   ssl_info.cert_status = CERT_STATUS_REVOKED;
 
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                    "www.example.org", "mail.example.org",
-                                    NetworkAnonymizationKey()));
+                                    "www.example.org", "mail.example.org"));
 }
 
 TEST(CanPoolTest, CanNotPoolWithClientCerts) {
@@ -6202,8 +6197,7 @@ TEST(CanPoolTest, CanNotPoolWithClientCerts) {
   ssl_info.client_cert_sent = true;
 
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                    "www.example.org", "mail.example.org",
-                                    NetworkAnonymizationKey()));
+                                    "www.example.org", "mail.example.org"));
 }
 
 TEST(CanPoolTest, CanNotPoolWithBadPins) {
@@ -6224,8 +6218,7 @@ TEST(CanPoolTest, CanNotPoolWithBadPins) {
   ssl_info.public_key_hashes.push_back(test::GetTestHashValue(bad_pin));
 
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                    "www.example.org", "example.test",
-                                    NetworkAnonymizationKey()));
+                                    "www.example.org", "example.test"));
 }
 
 TEST(CanPoolTest, CanNotPoolWithBadCTWhenCTRequired) {
@@ -6253,8 +6246,7 @@ TEST(CanPoolTest, CanNotPoolWithBadCTWhenCTRequired) {
   tss.SetRequireCTDelegate(&require_ct_delegate);
 
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                    "www.example.org", "mail.example.org",
-                                    NetworkAnonymizationKey()));
+                                    "www.example.org", "mail.example.org"));
 }
 
 TEST(CanPoolTest, CanPoolWithBadCTWhenCTNotRequired) {
@@ -6282,8 +6274,7 @@ TEST(CanPoolTest, CanPoolWithBadCTWhenCTNotRequired) {
   tss.SetRequireCTDelegate(&require_ct_delegate);
 
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                   "www.example.org", "mail.example.org",
-                                   NetworkAnonymizationKey()));
+                                   "www.example.org", "mail.example.org"));
 }
 
 TEST(CanPoolTest, CanPoolWithGoodCTWhenCTRequired) {
@@ -6311,8 +6302,7 @@ TEST(CanPoolTest, CanPoolWithGoodCTWhenCTRequired) {
   tss.SetRequireCTDelegate(&require_ct_delegate);
 
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                   "www.example.org", "mail.example.org",
-                                   NetworkAnonymizationKey()));
+                                   "www.example.org", "mail.example.org"));
 }
 
 TEST(CanPoolTest, CanPoolWithAcceptablePins) {
@@ -6333,8 +6323,7 @@ TEST(CanPoolTest, CanPoolWithAcceptablePins) {
   ssl_info.public_key_hashes.push_back(hash);
 
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                   "www.example.org", "mail.example.org",
-                                   NetworkAnonymizationKey()));
+                                   "www.example.org", "mail.example.org"));
 }
 
 TEST(CanPoolTest, CanPoolWithClientCertsAndPolicy) {
@@ -6354,14 +6343,11 @@ TEST(CanPoolTest, CanPoolWithClientCertsAndPolicy) {
   // CanShareConnectionWithClientCerts returns true for both hostnames, but not
   // just one hostname.
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                   "www.example.org", "mail.example.org",
-                                   NetworkAnonymizationKey()));
+                                   "www.example.org", "mail.example.org"));
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                    "www.example.org", "mail.example.com",
-                                    NetworkAnonymizationKey()));
+                                    "www.example.org", "mail.example.com"));
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                    "mail.example.com", "www.example.org",
-                                    NetworkAnonymizationKey()));
+                                    "mail.example.com", "www.example.org"));
 }
 
 // Regression test for https://crbug.com/1115492.

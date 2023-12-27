@@ -993,7 +993,7 @@ void NetworkService::UpdateKeyPinsList(mojom::PinListPtr pin_list,
   pins_list_update_time_ = update_time;
   for (const auto& pinset : pin_list->pinsets) {
     pinsets_.emplace_back(pinset->name, pinset->static_spki_hashes,
-                          pinset->bad_static_spki_hashes, pinset->report_uri);
+                          pinset->bad_static_spki_hashes);
   }
   for (const auto& info : pin_list->host_pins) {
     host_pins_.emplace_back(info->hostname, info->pinset_name,

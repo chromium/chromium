@@ -233,7 +233,6 @@ class TestNetworkContext : public mojom::NetworkContext {
   void VerifyCertForSignedExchange(
       const scoped_refptr<net::X509Certificate>& certificate,
       const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
       const std::string& ocsp_result,
       const std::string& sct_list,
       VerifyCertForSignedExchangeCallback callback) override {}

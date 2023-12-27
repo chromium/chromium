@@ -728,13 +728,11 @@ void SpdyStreamRequest::OnConfirmHandshakeComplete(int rv) {
 }
 
 // static
-bool SpdySession::CanPool(
-    TransportSecurityState* transport_security_state,
-    const SSLInfo& ssl_info,
-    const SSLConfigService& ssl_config_service,
-    const std::string& old_hostname,
-    const std::string& new_hostname,
-    const net::NetworkAnonymizationKey& network_anonymization_key) {
+bool SpdySession::CanPool(TransportSecurityState* transport_security_state,
+                          const SSLInfo& ssl_info,
+                          const SSLConfigService& ssl_config_service,
+                          const std::string& old_hostname,
+                          const std::string& new_hostname) {
   // Pooling is prohibited if the server cert is not valid for the new domain,
   // and for connections on which client certs were sent. It is also prohibited
   // when channel ID was sent if the hosts are from different eTLDs+1.
@@ -750,15 +748,10 @@ bool SpdySession::CanPool(
   if (!ssl_info.cert->VerifyNameMatch(new_hostname))
     return false;
 
-  std::string pinning_failure_log;
-  // DISABLE_PIN_REPORTS is set here because this check can fail in
-  // normal operation without being indicative of a misconfiguration or
-  // attack. Port is left at 0 as it is never used.
+  // Port is left at 0 as it is never used.
   if (transport_security_state->CheckPublicKeyPins(
           HostPortPair(new_hostname, 0), ssl_info.is_issued_by_known_root,
-          ssl_info.public_key_hashes, ssl_info.unverified_cert.get(),
-          ssl_info.cert.get(), TransportSecurityState::DISABLE_PIN_REPORTS,
-          network_anonymization_key, &pinning_failure_log) ==
+          ssl_info.public_key_hashes) ==
       TransportSecurityState::PKPStatus::VIOLATED) {
     return false;
   }
@@ -979,8 +972,7 @@ bool SpdySession::VerifyDomainAuthentication(const std::string& domain) const {
     return true;  // This is not a secure session, so all domains are okay.
 
   return CanPool(transport_security_state_, ssl_info, *ssl_config_service_,
-                 host_port_pair().host(), domain,
-                 spdy_session_key_.network_anonymization_key());
+                 host_port_pair().host(), domain);
 }
 
 void SpdySession::EnqueueStreamWrite(
@@ -3015,8 +3007,7 @@ void SpdySession::OnAltSvc(
     if (!GetSSLInfo(&ssl_info))
       return;
     if (!CanPool(transport_security_state_, ssl_info, *ssl_config_service_,
-                 host_port_pair().host(), gurl.host(),
-                 spdy_session_key_.network_anonymization_key())) {
+                 host_port_pair().host(), gurl.host())) {
       return;
     }
     scheme_host_port = url::SchemeHostPort(gurl);

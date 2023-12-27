@@ -587,40 +587,6 @@ int BlockingNetworkDelegate::MaybeBlockStage(
   return 0;
 }
 
-// A mock ReportSenderInterface that just remembers the latest report
-// URI and report to be sent.
-class MockCertificateReportSender
-    : public TransportSecurityState::ReportSenderInterface {
- public:
-  MockCertificateReportSender() = default;
-  ~MockCertificateReportSender() override = default;
-
-  void Send(
-      const GURL& report_uri,
-      base::StringPiece content_type,
-      base::StringPiece report,
-      const NetworkAnonymizationKey& network_anonymization_key,
-      base::OnceCallback<void()> success_callback,
-      base::OnceCallback<void(const GURL&, int, int)> error_callback) override {
-    latest_report_uri_ = report_uri;
-    latest_report_.assign(report.data(), report.size());
-    latest_content_type_.assign(content_type.data(), content_type.size());
-    latest_network_anonymization_key_ = network_anonymization_key;
-  }
-  const GURL& latest_report_uri() { return latest_report_uri_; }
-  const std::string& latest_report() { return latest_report_; }
-  const std::string& latest_content_type() { return latest_content_type_; }
-  const NetworkAnonymizationKey& latest_network_anonymization_key() {
-    return latest_network_anonymization_key_;
-  }
-
- private:
-  GURL latest_report_uri_;
-  std::string latest_report_;
-  std::string latest_content_type_;
-  NetworkAnonymizationKey latest_network_anonymization_key_;
-};
-
 // OCSPErrorTestDelegate caches the SSLInfo passed to OnSSLCertificateError.
 // This is needed because after the certificate failure, the URLRequest will
 // retry the connection, and return a partial SSLInfo with a cached cert status.
@@ -3961,10 +3927,6 @@ class URLRequestTestHTTP : public URLRequestTest {
         isolation_info1_(IsolationInfo::CreateForInternalRequest(origin1_)),
         isolation_info2_(IsolationInfo::CreateForInternalRequest(origin2_)),
         test_server_(base::FilePath(kTestFilePath)) {
-    // Needed for NetworkAnonymizationKey to make it down to the socket layer,
-    // for the PKP violation report test.
-    feature_list_.InitAndEnableFeature(
-        net::features::kPartitionConnectionsByNetworkIsolationKey);
   }
 
  protected:
@@ -6262,140 +6224,6 @@ TEST_F(URLRequestTestHTTP, STSNotProcessedOnIP) {
       security_state->GetDynamicSTSState(test_server_hostname, &sts_state));
 }
 
-namespace {
-const char kPKPReportUri[] = "http://report-uri.preloaded.test/pkp";
-const char kPKPHost[] = "with-report-uri-pkp.preloaded.test";
-}  // namespace
-
-// Tests that reports get sent on PKP violations when a report-uri is set.
-TEST_F(URLRequestTestHTTP, ProcessPKPAndSendReport) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      net::features::kStaticKeyPinningEnforcement);
-  GURL report_uri(kPKPReportUri);
-  EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.SetSSLConfig(
-      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
-  https_test_server.ServeFilesFromSourceDirectory(
-      base::FilePath(kTestFilePath));
-  ASSERT_TRUE(https_test_server.Start());
-
-  std::string test_server_hostname = kPKPHost;
-
-  SetTransportSecurityStateSourceForTesting(&test_default::kHSTSSource);
-
-  // Set up a MockCertVerifier to trigger a violation of the previously
-  // set pin.
-  scoped_refptr<X509Certificate> cert = https_test_server.GetCertificate();
-  ASSERT_TRUE(cert);
-
-  CertVerifyResult verify_result;
-  verify_result.verified_cert = cert;
-  verify_result.is_issued_by_known_root = true;
-  HashValue hash3;
-  ASSERT_TRUE(
-      hash3.FromString("sha256/3333333333333333333333333333333333333333333="));
-  verify_result.public_key_hashes.push_back(hash3);
-  auto cert_verifier = std::make_unique<MockCertVerifier>();
-  cert_verifier->AddResultForCert(cert.get(), verify_result, OK);
-
-  MockCertificateReportSender mock_report_sender;  // Must outlive `context`.
-  auto context_builder = CreateTestURLRequestContextBuilder();
-  context_builder->SetCertVerifier(std::move(cert_verifier));
-  auto context = context_builder->Build();
-  context->transport_security_state()->EnableStaticPinsForTesting();
-  context->transport_security_state()->SetPinningListAlwaysTimelyForTesting(
-      true);
-  context->transport_security_state()->SetReportSender(&mock_report_sender);
-
-  IsolationInfo isolation_info = IsolationInfo::CreateTransient();
-
-  // Now send a request to trigger the violation.
-  TestDelegate d;
-  std::unique_ptr<URLRequest> violating_request(context->CreateRequest(
-      https_test_server.GetURL(test_server_hostname, "/simple.html"),
-      DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-  violating_request->set_isolation_info(isolation_info);
-  violating_request->Start();
-  d.RunUntilComplete();
-
-  // Check that a report was sent.
-  EXPECT_EQ(report_uri, mock_report_sender.latest_report_uri());
-  ASSERT_FALSE(mock_report_sender.latest_report().empty());
-  EXPECT_EQ("application/json; charset=utf-8",
-            mock_report_sender.latest_content_type());
-  base::Value::Dict report_dict =
-      base::test::ParseJsonDict(mock_report_sender.latest_report());
-  ASSERT_FALSE(report_dict.empty());
-  std::string* report_hostname = report_dict.FindString("hostname");
-  ASSERT_TRUE(report_hostname);
-  EXPECT_EQ(test_server_hostname, *report_hostname);
-  EXPECT_EQ(isolation_info.network_anonymization_key(),
-            mock_report_sender.latest_network_anonymization_key());
-}
-
-// Tests that reports do not get sent on requests to static pkp hosts that
-// don't have pin violations.
-TEST_F(URLRequestTestHTTP, ProcessPKPWithNoViolation) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      net::features::kStaticKeyPinningEnforcement);
-  EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.SetSSLConfig(
-      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
-  https_test_server.ServeFilesFromSourceDirectory(
-      base::FilePath(kTestFilePath));
-  ASSERT_TRUE(https_test_server.Start());
-
-  std::string test_server_hostname = kPKPHost;
-
-  SetTransportSecurityStateSourceForTesting(&test_default::kHSTSSource);
-
-  scoped_refptr<X509Certificate> cert = https_test_server.GetCertificate();
-  ASSERT_TRUE(cert);
-  CertVerifyResult verify_result;
-  verify_result.verified_cert = cert;
-  verify_result.is_issued_by_known_root = true;
-  HashValue hash;
-  // The expected value of GoodPin1 used by |test_default::kHSTSSource|.
-  ASSERT_TRUE(
-      hash.FromString("sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY="));
-  verify_result.public_key_hashes.push_back(hash);
-  auto mock_cert_verifier = std::make_unique<MockCertVerifier>();
-  mock_cert_verifier->AddResultForCert(cert.get(), verify_result, OK);
-
-  MockCertificateReportSender mock_report_sender;  // Must outlive `context`.
-  auto context_builder = CreateTestURLRequestContextBuilder();
-  context_builder->SetCertVerifier(std::move(mock_cert_verifier));
-  auto context = context_builder->Build();
-  context->transport_security_state()->EnableStaticPinsForTesting();
-  context->transport_security_state()->SetPinningListAlwaysTimelyForTesting(
-      true);
-  context->transport_security_state()->SetReportSender(&mock_report_sender);
-
-  // Now send a request that does not trigger the violation.
-  TestDelegate d;
-  std::unique_ptr<URLRequest> request(context->CreateRequest(
-      https_test_server.GetURL(test_server_hostname, "/simple.html"),
-      DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-  request->set_isolation_info(IsolationInfo::CreateTransient());
-  request->Start();
-  d.RunUntilComplete();
-
-  // Check that the request succeeded, a report was not sent and the pkp was
-  // not bypassed.
-  EXPECT_EQ(OK, d.request_status());
-  EXPECT_EQ(GURL(), mock_report_sender.latest_report_uri());
-  EXPECT_EQ(std::string(), mock_report_sender.latest_report());
-  EXPECT_EQ(NetworkAnonymizationKey(),
-            mock_report_sender.latest_network_anonymization_key());
-  TransportSecurityState::PKPState pkp_state;
-  EXPECT_TRUE(context->transport_security_state()->GetStaticPKPState(
-      test_server_hostname, &pkp_state));
-  EXPECT_TRUE(pkp_state.HasPublicKeyPins());
-  EXPECT_FALSE(request->ssl_info().pkp_bypassed);
-}
-
 TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
@@ -6421,18 +6249,16 @@ TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
   auto cert_verifier = std::make_unique<MockCertVerifier>();
   cert_verifier->AddResultForCert(cert.get(), verify_result, OK);
 
-  std::string test_server_hostname = kPKPHost;
+  std::string test_server_hostname = "www.example.org";
 
   SetTransportSecurityStateSourceForTesting(&test_default::kHSTSSource);
 
-  MockCertificateReportSender mock_report_sender;  // Must outlive `context`.
   auto context_builder = CreateTestURLRequestContextBuilder();
   context_builder->SetCertVerifier(std::move(cert_verifier));
   auto context = context_builder->Build();
   context->transport_security_state()->EnableStaticPinsForTesting();
   context->transport_security_state()->SetPinningListAlwaysTimelyForTesting(
       true);
-  context->transport_security_state()->SetReportSender(&mock_report_sender);
 
   TestDelegate d;
   std::unique_ptr<URLRequest> request(context->CreateRequest(
@@ -6442,13 +6268,8 @@ TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
   request->Start();
   d.RunUntilComplete();
 
-  // Check that the request succeeded, a report was not sent and the PKP was
-  // bypassed.
+  // Check that the request succeeded and that PKP was bypassed.
   EXPECT_EQ(OK, d.request_status());
-  EXPECT_EQ(GURL(), mock_report_sender.latest_report_uri());
-  EXPECT_EQ(std::string(), mock_report_sender.latest_report());
-  EXPECT_EQ(NetworkAnonymizationKey(),
-            mock_report_sender.latest_network_anonymization_key());
   TransportSecurityState::PKPState pkp_state;
   EXPECT_TRUE(context->transport_security_state()->GetStaticPKPState(
       test_server_hostname, &pkp_state));

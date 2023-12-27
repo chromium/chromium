@@ -84,7 +84,6 @@
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/report_sender.h"
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -687,14 +686,6 @@ NetworkContext::~NetworkContext() {
 
   if (url_request_context_ &&
       url_request_context_->transport_security_state()) {
-    if (certificate_report_sender_) {
-      // Destroy |certificate_report_sender_| before |url_request_context_|,
-      // since the former has a reference to the latter.
-      url_request_context_->transport_security_state()->SetReportSender(
-          nullptr);
-      certificate_report_sender_.reset();
-    }
-
 #if BUILDFLAG(IS_CT_SUPPORTED)
     if (require_ct_delegate_) {
       url_request_context_->transport_security_state()->SetRequireCTDelegate(
@@ -1736,14 +1727,9 @@ void NetworkContext::CreateHostResolver(
 void NetworkContext::VerifyCertForSignedExchange(
     const scoped_refptr<net::X509Certificate>& certificate,
     const GURL& url,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
     const std::string& ocsp_result,
     const std::string& sct_list,
     VerifyCertForSignedExchangeCallback callback) {
-  if (require_network_anonymization_key_) {
-    DCHECK(!network_anonymization_key.IsEmpty());
-  }
-
   uint64_t cert_verify_id = ++next_cert_verify_id_;
   CHECK_NE(0u, next_cert_verify_id_);  // The request ID should not wrap around.
   auto pending_cert_verify = std::make_unique<PendingCertVerify>();
@@ -1751,7 +1737,6 @@ void NetworkContext::VerifyCertForSignedExchange(
   pending_cert_verify->result = std::make_unique<net::CertVerifyResult>();
   pending_cert_verify->certificate = certificate;
   pending_cert_verify->url = url;
-  pending_cert_verify->network_anonymization_key = network_anonymization_key;
   pending_cert_verify->ocsp_result = ocsp_result;
   pending_cert_verify->sct_list = sct_list;
   net::CertVerifier* cert_verifier =
@@ -2697,41 +2682,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // TransportSecurityState.  Since no requests have been made yet, safe to do
   // this even after the call to Build().
 
-  if (params_->enable_certificate_reporting) {
-    net::NetworkTrafficAnnotationTag traffic_annotation =
-        net::DefineNetworkTrafficAnnotation("domain_security_policy", R"(
-        semantics {
-          sender: "Domain Security Policy"
-          description:
-            "Websites can opt in to have Chrome send reports to them when "
-            "Chrome observes connections to that website that do not meet "
-            "stricter security policies, such as with HTTP Public Key Pinning. "
-            "Websites can use this feature to discover misconfigurations that "
-            "prevent them from complying with stricter security policies that "
-            "they\'ve opted in to."
-          trigger:
-            "Chrome observes that a user is loading a resource from a website "
-            "that has opted in for security policy reports, and the connection "
-            "does not meet the required security policies."
-          data:
-            "The time of the request, the hostname and port being requested, "
-            "the certificate chain, and sometimes certificate revocation "
-            "information included on the connection."
-          destination: OTHER
-        }
-        policy {
-          cookies_allowed: NO
-          setting: "This feature cannot be disabled by settings."
-          policy_exception_justification:
-            "Not implemented, this is a feature that websites can opt into and "
-            "thus there is no Chrome-wide policy to disable it."
-        })");
-    certificate_report_sender_ = std::make_unique<net::ReportSender>(
-        result.url_request_context.get(), traffic_annotation);
-    result.url_request_context->transport_security_state()->SetReportSender(
-        certificate_report_sender_.get());
-  }
-
   if (network_service_->pins_list_updated()) {
     result.url_request_context->transport_security_state()->UpdatePinList(
         network_service_->pinsets(), network_service_->host_pins(),
@@ -2886,7 +2836,6 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
   cert_verifier_requests_.erase(iter);
 
   bool pkp_bypassed = false;
-  std::string pinning_failure_log;
   if (result == net::OK) {
 #if BUILDFLAG(IS_CT_SUPPORTED)
     int ct_result = CheckCTRequirementsForSignedExchange(
@@ -2897,12 +2846,7 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
         url_request_context_->transport_security_state()->CheckPublicKeyPins(
             net::HostPortPair::FromURL(pending_cert_verify->url),
             pending_cert_verify->result->is_issued_by_known_root,
-            pending_cert_verify->result->public_key_hashes,
-            pending_cert_verify->certificate.get(),
-            pending_cert_verify->result->verified_cert.get(),
-            net::TransportSecurityState::ENABLE_PIN_REPORTS,
-            pending_cert_verify->network_anonymization_key,
-            &pinning_failure_log);
+            pending_cert_verify->result->public_key_hashes);
     switch (pin_validity) {
       case net::TransportSecurityState::PKPStatus::VIOLATED:
         pending_cert_verify->result->cert_status |=
@@ -2924,8 +2868,7 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
   }
 
   std::move(pending_cert_verify->callback)
-      .Run(result, *pending_cert_verify->result.get(), pkp_bypassed,
-           pinning_failure_log);
+      .Run(result, *pending_cert_verify->result.get(), pkp_bypassed);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

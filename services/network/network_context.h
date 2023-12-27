@@ -94,7 +94,6 @@ class CookieCryptoDelegate;
 class HostPortPair;
 class IsolationInfo;
 class NetworkAnonymizationKey;
-class ReportSender;
 class StaticHttpUserAgentSettings;
 class URLRequestContext;
 class URLRequestContextBuilder;
@@ -409,7 +408,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void VerifyCertForSignedExchange(
       const scoped_refptr<net::X509Certificate>& certificate,
       const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
       const std::string& ocsp_result,
       const std::string& sct_list,
       VerifyCertForSignedExchangeCallback callback) override;
@@ -871,10 +869,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // Owned by the URLRequestContext
   raw_ptr<net::StaticHttpUserAgentSettings> user_agent_settings_ = nullptr;
 
-  // Pointed to by the TransportSecurityState (owned by the
-  // URLRequestContext), and must be disconnected from it before it's destroyed.
-  std::unique_ptr<net::ReportSender> certificate_report_sender_;
-
 #if BUILDFLAG(IS_CT_SUPPORTED)
   std::unique_ptr<certificate_transparency::ChromeRequireCTDelegate>
       require_ct_delegate_;
@@ -919,7 +913,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     VerifyCertForSignedExchangeCallback callback;
     scoped_refptr<net::X509Certificate> certificate;
     GURL url;
-    net::NetworkAnonymizationKey network_anonymization_key;
     std::string ocsp_result;
     std::string sct_list;
   };

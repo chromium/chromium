@@ -334,7 +334,7 @@ class SignedExchangeHandlerTest
         std::move(source_stream_),
         base::BindOnce(&SignedExchangeHandlerTest::OnHeaderFound,
                        base::Unretained(this)),
-        std::move(cert_fetcher_factory_), network_anonymization_key_,
+        std::move(cert_fetcher_factory_),
         absl::nullopt /* outer_request_isolation_info */, net::LOAD_NORMAL,
         net::IPEndPoint(),
         std::make_unique<blink::WebPackageRequestMatcher>(
@@ -371,12 +371,6 @@ class SignedExchangeHandlerTest
                              ocsp_response_status);
     ExpectZeroOrUniqueSample("SignedExchange.OCSPRevocationStatus",
                              ocsp_revocation_status);
-  }
-
-  // Sets the NetworkAnonymizationKey used by CreateSignedExchangeHandler().
-  void set_network_anonymization_key(
-      const net::NetworkAnonymizationKey& network_anonymization_key) {
-    network_anonymization_key_ = network_anonymization_key;
   }
 
  protected:
@@ -423,7 +417,6 @@ class SignedExchangeHandlerTest
       original_ignore_errors_spki_list_;
   std::unique_ptr<net::MockSourceStream> source_stream_;
   std::unique_ptr<MockSignedExchangeCertFetcherFactory> cert_fetcher_factory_;
-  net::NetworkAnonymizationKey network_anonymization_key_;
 
   bool read_header_ = false;
   SignedExchangeLoadResult result_;
@@ -864,47 +857,6 @@ TEST_P(SignedExchangeHandlerTest, NotEnoughSCTsFromPubliclyTrustedCert) {
   SetSourceStreamContents("test.example.org_test.sxg");
 
   CreateSignedExchangeHandler(CreateTestURLRequestContext());
-  WaitForHeader();
-
-  ASSERT_TRUE(read_header());
-  EXPECT_EQ(SignedExchangeLoadResult::kCTVerificationError, result());
-  EXPECT_EQ(net::ERR_INVALID_SIGNED_EXCHANGE, error());
-  EXPECT_EQ(kTestSxgInnerURL, inner_url());
-  ExpectHistogramValues(SignedExchangeSignatureVerifier::Result::kSuccess,
-                        net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED,
-                        net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-                        absl::nullopt /* ocsp_response_status */,
-                        absl::nullopt /* ocsp_revocation_status */);
-  // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
-  ReadStream(source_, nullptr);
-}
-
-TEST_P(SignedExchangeHandlerTest, ReportUsesNetworkIsolationKey) {
-  if (!IsCTSupported()) {
-    GTEST_SKIP() << "CT not supported";
-  }
-
-  const net::NetworkAnonymizationKey kNetworkIsolationKey =
-      net::NetworkAnonymizationKey::CreateTransient();
-  const GURL kReportUri = GURL("https://report.test/");
-
-  set_network_anonymization_key(kNetworkIsolationKey);
-
-  mock_cert_fetcher_factory_->ExpectFetch(
-      GURL("https://cert.example.org/cert.msg"),
-      GetTestFileContents("test.example.org.public.pem.cbor"));
-
-  net::CertVerifyResult cert_result = CreateCertVerifyResult();
-  cert_result.is_issued_by_known_root = true;
-  cert_result.policy_compliance =
-      net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
-  SetupMockCertVerifier("prime256v1-sha256.public.pem", cert_result);
-
-  SetSourceStreamContents("test.example.org_test.sxg");
-
-  std::unique_ptr<net::URLRequestContext> url_request_context =
-      CreateTestURLRequestContext();
-  CreateSignedExchangeHandler(std::move(url_request_context));
   WaitForHeader();
 
   ASSERT_TRUE(read_header());

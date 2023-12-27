@@ -119,7 +119,7 @@ SignedExchangeLoader::SignedExchangeLoader(
             std::move(outer_response_body)),
         base::BindOnce(&SignedExchangeLoader::OnHTTPExchangeFound,
                        weak_factory_.GetWeakPtr()),
-        std::move(cert_fetcher_factory), network_anonymization_key,
+        std::move(cert_fetcher_factory),
         outer_request_.trusted_params
             ? absl::make_optional(outer_request_.trusted_params->isolation_info)
             : absl::nullopt,
