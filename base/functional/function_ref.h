@@ -62,14 +62,17 @@ class FunctionRef;
 //   }([] { return 42; });
 template <typename R, typename... Args>
 class FunctionRef<R(Args...)> {
- public:
-  // `ABSL_ATTRIBUTE_LIFETIME_BOUND` is important since `FunctionRef` retains
-  // only a reference to `functor`, `functor` must outlive `this`.
   template <typename Functor,
             typename RunType = internal::MakeFunctorTraits<Functor>::RunType>
-    requires std::convertible_to<internal::ExtractReturnType<RunType>, R> &&
-             std::same_as<internal::ExtractArgs<RunType>,
-                          internal::TypeList<Args...>>
+  static constexpr bool kCompatibleFunctor =
+      std::convertible_to<internal::ExtractReturnType<RunType>, R> &&
+      std::same_as<internal::ExtractArgs<RunType>, internal::TypeList<Args...>>;
+
+ public:
+  // `ABSL_ATTRIBUTE_LIFETIME_BOUND` is important; since `FunctionRef` retains
+  // only a reference to `functor`, `functor` must outlive `this`.
+  template <typename Functor>
+    requires kCompatibleFunctor<Functor>
   // NOLINTNEXTLINE(google-explicit-constructor)
   FunctionRef(const Functor& functor ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : wrapped_func_ref_(functor) {}

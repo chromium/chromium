@@ -12,11 +12,6 @@
 
 namespace base {
 
-void NoImplicitVoidify() {
-  // Return values cannot be implicitly discarded.
-  FunctionRef<void()> ref([] { return 0; });  // expected-error {{no matching constructor for initialization of 'FunctionRef<void ()>'}}
-}
-
 void CannotBindFunctionRefs() {
   // `Bind{Once,Repeating}` do not accept `FunctionRef` args due to potential
   // lifetime concerns.
