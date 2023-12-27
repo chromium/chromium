@@ -41,7 +41,7 @@ FeedbackData::FeedbackData(base::WeakPtr<feedback::FeedbackUploader> uploader,
   // sending the report. If it is created after this point, then the tracing is
   // not relevant to this report.
   if (tracing_manager) {
-    tracing_manager_ = base::AsWeakPtr(tracing_manager);
+    tracing_manager_ = tracing_manager->AsWeakPtr();
   }
 }
 
