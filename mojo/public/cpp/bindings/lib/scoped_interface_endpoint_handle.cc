@@ -22,12 +22,11 @@ namespace mojo {
 class ScopedInterfaceEndpointHandle::State
     : public base::RefCountedThreadSafe<State> {
  public:
-  State() : lock_("ScopedInterfaceEndpointHandle::State.lock_") {}
+  State() = default;
 
   State(InterfaceId id,
         scoped_refptr<AssociatedGroupController> group_controller)
-      : lock_("ScopedInterfaceEndpointHandle::State.lock_"),
-        id_(id), group_controller_(group_controller) {}
+      : id_(id), group_controller_(group_controller) {}
 
   State(const State&) = delete;
   State& operator=(const State&) = delete;
@@ -36,7 +35,7 @@ class ScopedInterfaceEndpointHandle::State
     DCHECK(!lock_);
     DCHECK(!pending_association_);
 
-    lock_.emplace();
+    lock_.emplace("ScopedInterfaceEndpointHandle::State.lock_");
     pending_association_ = true;
     peer_state_ = std::move(peer);
   }
