@@ -714,7 +714,9 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
   if (customize_chrome::IsSidePanelEnabled()) {
     auto* customize_chrome_tab_helper =
         CustomizeChromeTabHelper::FromWebContents(web_contents());
-    customize_chrome_tab_helper->CreateAndRegisterEntry();
+    if (customize_chrome_tab_helper) {
+      customize_chrome_tab_helper->CreateAndRegisterEntry();
+    }
   }
 
   // Populates the load time data with basic info.
@@ -740,7 +742,9 @@ NewTabPageUI::~NewTabPageUI() {
   }
   auto* customize_chrome_tab_helper =
       CustomizeChromeTabHelper::FromWebContents(web_contents());
-  customize_chrome_tab_helper->DeregisterEntry();
+  if (customize_chrome_tab_helper) {
+    customize_chrome_tab_helper->DeregisterEntry();
+  }
 }
 
 // static
