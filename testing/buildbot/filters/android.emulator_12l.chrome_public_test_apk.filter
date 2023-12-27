@@ -64,6 +64,7 @@
 
 # crbug.com/1429757
 -org.chromium.chrome.browser.incognito.reauth.TabSwitcherIncognitoReauthViewTest.testIncognitoReauthView_TabSwitcherRenderTest
+-org.chromium.chrome.browser.incognito.reauth.TabSwitcherIncognitoReauthViewTest.testIncognitoReauthViewIsRestored_WhenActivityIsKilled
 
 # crbug.com/1429763
 -org.chromium.chrome.browser.metrics.MainIntentBehaviorMetricsIntegrationTest.testLaunch_From_InAppActivities
@@ -76,7 +77,10 @@
 
 # crbug.com/1416433
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithFileSchemeDoesNothing
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithMixedCaseFileSchemeDoesNothing
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationWithFallbackURL
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testOpenWindowFromUserGesture
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testWindowServerRedirect
 
 
 # crbug.com/1432046
@@ -117,6 +121,10 @@
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherTabletTest.testGridTabSwitcherOnCloseAllTabs
 
 # crbug.com/1512251
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__INCOGNITO_CCT_INCOGNITO_CCT
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__INCOGNITO_CCT_INCOGNITO_TAB
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__INCOGNITO_CCT_REGULAR_CCT
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__INCOGNITO_CCT_REGULAR_TAB
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_INCOGNITO_CCT
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_INCOGNITO_TAB
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_REGULAR_CCT
@@ -149,6 +157,7 @@
 
 # crbug.com/1513557
 -org.chromium.chrome.browser.NavigateTest.testTabObserverOnPageLoadStarted
+-org.chromium.chrome.browser.NavigateTest.testOpenLink
 
 # crbug.com/1513561
 -org.chromium.chrome.browser.keyboard_accessory.ManualFillingIntegrationTest.testInfobarStaysHiddenWhileChangingFieldsWithOpenKeyboard
@@ -158,8 +167,10 @@
 
 # crbug.com/1513565
 -org.chromium.chrome.browser.permissions.GeolocationTest.testGeolocationWatchDialog
+-org.chromium.chrome.browser.permissions.GeolocationTest.testGeolocationPlumbingAllowedDialog
 -org.chromium.chrome.browser.permissions.MediaTest.testCombinedPermissionsPlumbingDialog
 -org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyAndNeverAskCamera
+-org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyAndNeverAskMicrophone
 
 # crbug.com/1513566
 -org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeTest.testNoticeShownOnlyOnSecurePage
@@ -171,7 +182,15 @@
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testSuspendNullCurrentTab
 
 # crbug.com/1513571
+-org.chromium.chrome.browser.webshare.WebShareTest.testWebShareMany
 -org.chromium.chrome.browser.webshare.WebShareTest.testWebShareSeparator
 
 # crbug.com/1513573
 -org.chromium.chrome.features.start_surface.ShowNtpAtStartupTest.testThumbnailRecaptureForSingleTabCardAfterMostRecentTabClosed
+
+# crbug.com/1513740
+-org.chromium.chrome.browser.signin.SigninManagerIntegrationTest.testUpdateAccountListTwoAccountsThenRemoveAll
+
+# crbug.com/1513741
+-org.chromium.chrome.browser.tab.TabUmaTest.testNoCreationStateNoTabUma
+
