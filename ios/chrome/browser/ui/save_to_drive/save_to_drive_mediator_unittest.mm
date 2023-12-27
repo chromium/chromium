@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/ui/save_to_drive/save_to_drive_mediator.h"
 
+#import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
+#import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
@@ -16,6 +19,27 @@ const char kTestUrl[] = "https://chromium.test/download.txt";
 const char kTestMimeType[] = "text/html";
 
 }  // namespace
+
+#pragma mark - FakeDownloadManagerTabHelper
+
+// Fake `DownloadManagerTabHelper` to override `OnDownloadAddedToSaveToDrive()`.
+class FakeDownloadManagerTabHelper final : public DownloadManagerTabHelper {
+ public:
+  explicit FakeDownloadManagerTabHelper(web::WebState* web_state)
+      : DownloadManagerTabHelper(web_state) {}
+
+  static void CreateForWebState(web::WebState* web_state) {
+    web_state->SetUserData(
+        UserDataKey(),
+        std::make_unique<FakeDownloadManagerTabHelper>(web_state));
+  }
+
+  void OnDownloadAddedToSaveToDrive(web::DownloadTask* task) override {
+    download_task_added_to_save_to_drive_ = task;
+  }
+
+  raw_ptr<web::DownloadTask> download_task_added_to_save_to_drive_ = nullptr;
+};
 
 #pragma mark - FakeSaveToDriveCommandsHandler
 
@@ -50,6 +74,8 @@ class SaveToDriveMediatorTest : public PlatformTest {
   void SetUp() final {
     PlatformTest::SetUp();
     web_state_ = std::make_unique<web::FakeWebState>();
+    DriveTabHelper::CreateForWebState(web_state_.get());
+    FakeDownloadManagerTabHelper::CreateForWebState(web_state_.get());
     download_task_ =
         std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);
     download_task_->SetWebState(web_state_.get());
@@ -66,6 +92,15 @@ class SaveToDriveMediatorTest : public PlatformTest {
     [mediator_ disconnect];
     mediator_ = nil;
     PlatformTest::TearDown();
+  }
+
+  DriveTabHelper* GetDriveTabHelper() const {
+    return DriveTabHelper::FromWebState(web_state_.get());
+  }
+
+  FakeDownloadManagerTabHelper* GetDownloadManagerTabHelper() const {
+    return static_cast<FakeDownloadManagerTabHelper*>(
+        DownloadManagerTabHelper::FromWebState(web_state_.get()));
   }
 
   std::unique_ptr<web::FakeWebState> web_state_;
@@ -97,4 +132,24 @@ TEST_F(SaveToDriveMediatorTest, HidesSaveToDriveOnWebStateHidden) {
             save_to_drive_commands_handler_.presentedDownloadTask);
   web_state_->WasHidden();
   EXPECT_EQ(nullptr, save_to_drive_commands_handler_.presentedDownloadTask);
+}
+
+// Tests that the `DownloadManagerTabHelper` is informed and that the
+// `DownloadTask` and the selected identity are sent to the `DriveTabHelper`
+// when `startDownloadAndSaveToDriveWithIdentity:` is invoked.
+TEST_F(SaveToDriveMediatorTest, AddsDownloadToSaveToDrive) {
+  id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
+  EXPECT_EQ(
+      nullptr,
+      GetDownloadManagerTabHelper()->download_task_added_to_save_to_drive_);
+  EXPECT_EQ(std::nullopt,
+            GetDriveTabHelper()->GetDownloadTaskSaveToDriveData());
+  [mediator_ startDownloadAndSaveToDriveWithIdentity:identity];
+  EXPECT_EQ(
+      download_task_.get(),
+      GetDownloadManagerTabHelper()->download_task_added_to_save_to_drive_);
+  DownloadTaskSaveToDriveData expected_save_to_drive_data{
+      .task = download_task_.get(), .identity = identity};
+  EXPECT_EQ(expected_save_to_drive_data,
+            GetDriveTabHelper()->GetDownloadTaskSaveToDriveData());
 }

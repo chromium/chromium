@@ -5,9 +5,12 @@
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 
 #import "base/check_op.h"
+#import "base/feature_list.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper_delegate.h"
+#import "ios/chrome/browser/drive/model/drive_tab_helper.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/download/download_task.h"
 
 DownloadManagerTabHelper::DownloadManagerTabHelper(web::WebState* web_state)
@@ -33,7 +36,8 @@ DownloadManagerTabHelper::~DownloadManagerTabHelper() {
 void DownloadManagerTabHelper::Download(
     std::unique_ptr<web::DownloadTask> task) {
   // If downloads are persistent, they cannot be lost once completed.
-  if (!task_ || task_->GetState() == web::DownloadTask::State::kComplete) {
+  if (!task_ || (task_->GetState() == web::DownloadTask::State::kComplete &&
+                 !WillDownloadTaskBeSavedToDrive())) {
     // The task is the first download for this web state.
     DidCreateDownload(std::move(task));
     return;
@@ -130,6 +134,17 @@ void DownloadManagerTabHelper::DidCreateDownload(
                       didCreateDownload:task_.get()
                       webStateIsVisible:true];
   }
+}
+
+bool DownloadManagerTabHelper::WillDownloadTaskBeSavedToDrive() const {
+  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+    return false;
+  }
+  DriveTabHelper* drive_tab_helper =
+      DriveTabHelper::FromWebState(task_->GetWebState());
+  std::optional<DownloadTaskSaveToDriveData> save_to_drive_data =
+      drive_tab_helper->GetDownloadTaskSaveToDriveData();
+  return save_to_drive_data && save_to_drive_data->task == task_.get();
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(DownloadManagerTabHelper)

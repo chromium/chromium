@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/save_to_drive/save_to_drive_mediator.h"
 
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
+#import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/web/public/download/download_task.h"
@@ -59,9 +60,10 @@
   if (!_downloadTask || !_webState) {
     return;
   }
+  DriveTabHelper* driveTabHelper = DriveTabHelper::FromWebState(_webState);
   DownloadManagerTabHelper* downloadManagerTabHelper =
       DownloadManagerTabHelper::FromWebState(_webState);
-  // TODO(crbug.com/1495353): Add DownloadTask to the Save to Drive tab helper.
+  driveTabHelper->AddDownloadToSaveToDrive(_downloadTask, identity);
   downloadManagerTabHelper->OnDownloadAddedToSaveToDrive(_downloadTask);
 }
 

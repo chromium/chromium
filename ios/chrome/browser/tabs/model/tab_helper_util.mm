@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/download/model/safari_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/vcard_tab_helper.h"
+#import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/java_script_find_tab_helper.h"
@@ -225,6 +226,11 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   SafariDownloadTabHelper::CreateForWebState(web_state);
   PassKitTabHelper::CreateForWebState(web_state);
   VcardTabHelper::CreateForWebState(web_state);
+
+  // Drive tab helper.
+  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+    DriveTabHelper::CreateForWebState(web_state);
+  }
 
   PageloadForegroundDurationTabHelper::CreateForWebState(web_state);
 
