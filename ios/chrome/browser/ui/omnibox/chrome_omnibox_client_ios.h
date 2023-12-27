@@ -8,6 +8,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_client.h"
@@ -24,8 +25,8 @@ class NavigationContext;
 class WebState;
 }  // namespace web
 
-class ChromeOmniboxClientIOS : public OmniboxClient,
-                               public web::WebStateObserver {
+class ChromeOmniboxClientIOS final : public OmniboxClient,
+                                     public web::WebStateObserver {
  public:
   ChromeOmniboxClientIOS(WebLocationBar* location_bar,
                          ChromeBrowserState* browser_state,
@@ -85,6 +86,7 @@ class ChromeOmniboxClientIOS : public OmniboxClient,
       const AutocompleteMatch& alternative_nav_match,
       IDNA2008DeviationCharacter deviation_char_in_hostname) override;
   LocationBarModel* GetLocationBarModel() override;
+  base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
   // web::WebStateObserver.
   void DidFinishNavigation(web::WebState* web_state,
@@ -109,6 +111,8 @@ class ChromeOmniboxClientIOS : public OmniboxClient,
   // Automatically remove this observer from its host when destroyed.
   base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
       scoped_observations_{this};
+
+  base::WeakPtrFactory<ChromeOmniboxClientIOS> weak_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_CLIENT_IOS_H_

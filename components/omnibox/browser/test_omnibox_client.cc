@@ -111,3 +111,7 @@ gfx::Image TestOmniboxClient::GetSizedIcon(
 void TestOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   last_log_disposition_ = log->disposition;
 }
+
+base::WeakPtr<OmniboxClient> TestOmniboxClient::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}

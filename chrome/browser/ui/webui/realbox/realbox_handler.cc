@@ -8,6 +8,7 @@
 #include "base/base64url.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -453,7 +454,7 @@ std::string GetBase64UrlVariations(Profile* profile) {
 
 // TODO(crbug.com/1431513): Consider inheriting from `ChromeOmniboxClient`
 //  to avoid reimplementation of methods like `OnBookmarkLaunched`.
-class RealboxOmniboxClient : public OmniboxClient {
+class RealboxOmniboxClient final : public OmniboxClient {
  public:
   RealboxOmniboxClient(LocationBarModel* location_bar_model,
                        Profile* profile,
@@ -495,12 +496,14 @@ class RealboxOmniboxClient : public OmniboxClient {
       const AutocompleteMatch& alternative_nav_match,
       IDNA2008DeviationCharacter deviation_char_in_hostname) override;
   LocationBarModel* GetLocationBarModel() override;
+  base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
  private:
   raw_ptr<LocationBarModel> location_bar_model_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
   ChromeAutocompleteSchemeClassifier scheme_classifier_;
+  base::WeakPtrFactory<RealboxOmniboxClient> weak_factory_{this};
 };
 
 RealboxOmniboxClient::RealboxOmniboxClient(LocationBarModel* location_bar_model,
@@ -609,6 +612,10 @@ void RealboxOmniboxClient::OnAutocompleteAccept(
 
 LocationBarModel* RealboxOmniboxClient::GetLocationBarModel() {
   return location_bar_model_;
+}
+
+base::WeakPtr<OmniboxClient> RealboxOmniboxClient::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace

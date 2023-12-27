@@ -514,6 +514,10 @@ LocationBarModel* ChromeOmniboxClient::GetLocationBarModel() {
   return location_bar_->GetLocationBarModel();
 }
 
+base::WeakPtr<OmniboxClient> ChromeOmniboxClient::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
   content::WebContents* web_contents = location_bar_->GetWebContents();
 

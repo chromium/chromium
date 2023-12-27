@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -22,7 +23,7 @@
 class AutocompleteSchemeClassifier;
 
 // Fake implementation of OmniboxClient for use in tests.
-class TestOmniboxClient : public testing::NiceMock<OmniboxClient> {
+class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
  public:
   TestOmniboxClient();
   ~TestOmniboxClient() override;
@@ -67,6 +68,8 @@ class TestOmniboxClient : public testing::NiceMock<OmniboxClient> {
   MOCK_METHOD(bookmarks::BookmarkModel*, GetBookmarkModel, ());
   MOCK_METHOD(PrefService*, GetPrefs, ());
 
+  base::WeakPtr<OmniboxClient> AsWeakPtr() override;
+
   WindowOpenDisposition last_log_disposition() const {
     return last_log_disposition_;
   }
@@ -77,6 +80,7 @@ class TestOmniboxClient : public testing::NiceMock<OmniboxClient> {
   TestSchemeClassifier scheme_classifier_;
   AutocompleteClassifier autocomplete_classifier_;
   WindowOpenDisposition last_log_disposition_;
+  base::WeakPtrFactory<TestOmniboxClient> weak_factory_{this};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_CLIENT_H_

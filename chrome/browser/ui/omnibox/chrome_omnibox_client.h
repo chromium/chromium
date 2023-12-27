@@ -23,7 +23,7 @@ class GURL;
 class LocationBar;
 class Profile;
 
-class ChromeOmniboxClient : public OmniboxClient {
+class ChromeOmniboxClient final : public OmniboxClient {
  public:
   ChromeOmniboxClient(LocationBar* location_bar,
                       Browser* browser,
@@ -106,6 +106,7 @@ class ChromeOmniboxClient : public OmniboxClient {
       IDNA2008DeviationCharacter deviation_char_in_hostname) override;
   void OnInputInProgress(bool in_progress) override;
   void OnPopupVisibilityChanged() override;
+  base::WeakPtr<OmniboxClient> AsWeakPtr() override;
   LocationBarModel* GetLocationBarModel() override;
 
   // Update shortcuts when a navigation succeeds.
