@@ -1520,7 +1520,7 @@
 <translation id="2143808295261240440">استخدام كلمة المرور المقترَحة</translation>
 <translation id="2143915448548023856">إعدادات العرض</translation>
 <translation id="2144536955299248197">عارض الشهادة: <ph name="CERTIFICATE_NAME" /></translation>
-<translation id="2144557304298909478">‏تطوير تطبيق متوافق مع Android لنظام التشغيل Linux</translation>
+<translation id="2144557304298909478">‏تطوير تطبيق Android لنظام التشغيل Linux</translation>
 <translation id="2144873026585036769">‏هل تريد استخدام حسابك على Google لحفظ كلمات المرور ومفاتيح المرور وملئها؟</translation>
 <translation id="2146263598007866206">قد تعمل المواقع الإلكترونية على تنزيل الملفات المتشابهة معًا تلقائيًا لتوفير الوقت.</translation>
 <translation id="2147151613919729065">لمحو سجلّ "وضع الضيف"، أغلِق كل النوافذ المفتوحة في هذا الوضع.</translation>
@@ -2160,7 +2160,7 @@
 <translation id="2626799779920242286">يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2627424346328942291">لا يمكن المشاركة</translation>
 <translation id="2628770867680720336">‏يجب إعادة ضبط جهاز Chromebook على الإعدادات الأصلية لتفعيل خيار "تصحيح الأخطاء عبر ADB". <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="2629227353894235473">‏تطوير تطبيقات متوافقة مع Android</translation>
+<translation id="2629227353894235473">‏تطوير تطبيقات Android</translation>
 <translation id="2629437048544561682">محو لوحة الرسم</translation>
 <translation id="2631498379019108537">إظهار خيارات الإدخال في الرف</translation>
 <translation id="2633212996805280240">هل تريد إزالة "<ph name="EXTENSION_NAME" />"؟</translation>
@@ -3646,7 +3646,7 @@
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (معرف الإضافة "<ph name="EXTENSION_ID" />") غير مسموح به على شاشة تسجيل الدخول.</translation>
 <translation id="3807747707162121253">إل&amp;غاء</translation>
 <translation id="3808202562160426447">تعتيم محتوى الخلفية</translation>
-<translation id="3808443763115411087">‏تطوير تطبيق متوافق مع Android لنظام التشغيل Crostini</translation>
+<translation id="3808443763115411087">‏تطوير تطبيق Android لنظام التشغيل Crostini</translation>
 <translation id="3808617121485025547">مزيد من المعلومات حول حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="38089336910894858">‏عرض تحذير قبل الإنهاء باستخدام ⌘Q</translation>
 <translation id="3809272675881623365">أرنب</translation>
@@ -4075,7 +4075,7 @@
 <translation id="4134838386867070505">الخطوة 1 من 4: وصف المشكلة</translation>
 <translation id="4135746311382563554">‏بنود الخدمة الإضافية لكلٍ من متصفِّح Google Chrome ونظام التشغيل Chrome</translation>
 <translation id="4136203100490971508">سيتم إيقاف الإضاءة الليلية تلقائيًا عند شروق الشمس.</translation>
-<translation id="41365691917097717">‏ستؤدي المواصلة إلى تفعيل خيار "تصحيح الأخطاء عبر ADB" لإنشاء تطبيقات متوافقة مع Android واختبارها. ويُرجى ملاحظة أن هذا الإجراء يتيح تثبيت تطبيقات متوافقة مع Android لم تتحقَّق منها Google، ويتطلب أيضًا إعادة ضبط على الإعدادات الأصلية لإيقافه.</translation>
+<translation id="41365691917097717">‏ستؤدي المواصلة إلى تفعيل خيار "تصحيح الأخطاء عبر ADB" لإنشاء تطبيقات Android واختبارها. ويُرجى ملاحظة أن هذا الإجراء يتيح تثبيت تطبيقات Android لم تتحقَّق منها Google، ويتطلب أيضًا إعادة ضبط على الإعدادات الأصلية لإيقافه.</translation>
 <translation id="4137923333452716643">يجب تمييز النص الذي تريد عرضه في "وضع القراءة"</translation>
 <translation id="4138267921960073861">عرض أسماء المستخدمين والصور على شاشة تسجيل الدخول</translation>
 <translation id="4138598238327913711">يتوفّر التدقيق النحوي في الوقت الحالي للغة الإنجليزية فقط.</translation>
@@ -5145,7 +5145,7 @@
 <translation id="5001526427543320409">ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="5005498671520578047">نسخ كلمة المرور</translation>
 <translation id="5006118752738286774">قبل عامين</translation>
-<translation id="5006218871145547804">‏أداة ADB في تطبيق متوافق مع Android لنظام التشغيل Crostini</translation>
+<translation id="5006218871145547804">‏أداة ADB في تطبيق Android لنظام التشغيل Crostini</translation>
 <translation id="5007392906805964215">مراجعة</translation>
 <translation id="50080882645628821">إزالة الملف الشخصي</translation>
 <translation id="5008936837313706385">اسم النشاط</translation>
@@ -5988,7 +5988,7 @@
 <translation id="5691581861107245578">يمكنك الحصول على اقتراحات الرموز التعبيرية بناءً على النص الذي تتم كتابته.</translation>
 <translation id="5691772641933328258">لم يتمّ التعرُّف على البصمة</translation>
 <translation id="5692183275898619210">اكتملت الطباعة</translation>
-<translation id="5695184138696833495">‏أداة ADB في تطبيق متوافق مع Android لنظام التشغيل Linux</translation>
+<translation id="5695184138696833495">‏أداة ADB في تطبيق Android لنظام التشغيل Linux</translation>
 <translation id="5696143504434933566">الإبلاغ عن إساءة الاستخدام من "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5696679855467848181">‏الملف الحالي بتنسيق PPD قيد الاستخدام: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">أداة اختيار الرموز التعبيرية</translation>
@@ -8488,7 +8488,7 @@
 <translation id="7683834360226457448">أدوات العرض لمن يعانون من ضعف في النظر</translation>
 <translation id="7684212569183643648">تم التثبيت من قبل مشرفك</translation>
 <translation id="7684559058815332124">الانتقال إلى صفحة تسجيل الدخول إلى المدخل المشروط الوصول إليه</translation>
-<translation id="7684718995427157417">‏لإنشاء تطبيقاتك واختبارها، فعِّل (Android Debug Bridge (ADB. تجدر الإشارة إلى أنه يسمح هذا الإجراء بتثبيت تطبيقات متوافقة مع Android لم يتم إثبات ملكيتها من خلال Google، ويتطلب إعادة الضبط على الإعدادات الأصلية للإيقاف.</translation>
+<translation id="7684718995427157417">‏لإنشاء تطبيقاتك واختبارها، فعِّل (Android Debug Bridge (ADB. تجدر الإشارة إلى أنه يسمح هذا الإجراء بتثبيت تطبيقات Android لم يتم إثبات ملكيتها من خلال Google، ويتطلب إعادة الضبط على الإعدادات الأصلية للإيقاف.</translation>
 <translation id="7684913007876670600">لإظهار عرض مبسَّط لهذه الصفحة، افتح اللوحة الجانبية واختَر "وضع القراءة".</translation>
 <translation id="7685049629764448582">‏ذاكرة JavaScript</translation>
 <translation id="7685087414635069102">رقم التعريف الشخصي مطلوب</translation>
