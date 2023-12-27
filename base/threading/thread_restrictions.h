@@ -312,6 +312,7 @@ class BlockingUrlProtocol;
 class FileVideoCaptureDeviceFactory;
 class MojoVideoEncodeAccelerator;
 class PaintCanvasVideoRenderer;
+class VpxChangeStateScopedAllowBaseSyncPrimitives;
 }  // namespace media
 namespace memory_instrumentation {
 class OSMetrics;
@@ -750,6 +751,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   friend class leveldb::port::CondVar;
   friend class nearby::chrome::ScheduledExecutor;
   friend class nearby::chrome::SubmittableExecutor;
+  friend class media::VpxChangeStateScopedAllowBaseSyncPrimitives;
   friend class media::AudioOutputDevice;
   friend class media::BlockingUrlProtocol;
   friend class media::MojoVideoEncodeAccelerator;

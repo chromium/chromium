@@ -195,6 +195,8 @@ source_set("base") {
     "key_system_names.h",
     "key_systems.cc",
     "key_systems.h",
+    "libvpx_thread_wrapper.cc",
+    "libvpx_thread_wrapper.h",
     "localized_strings.cc",
     "localized_strings.h",
     "logging_override_if_enabled.h",
