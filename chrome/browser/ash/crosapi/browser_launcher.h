@@ -109,12 +109,18 @@ class BrowserLauncher {
   bool LaunchProcessForTesting(const base::CommandLine& command_line,
                                const base::LaunchOptions& options);
 
-  // Sets up additional flags for unit tests.
-  // This function overwrites `command_line` with the desired flags.
-  void SetUpAdditionalParametersForTesting(LaunchParamsFromBackground& params,
-                                           base::CommandLine& command_line);
-
  private:
+  // Initializes argv for making the command line.
+  // TODO(mayukoaiba): The process of making `command_line` is separated into 2
+  // parts (initializing with argv and appending to commandline) because of
+  // historical reasons. We should combine and unify them.
+  std::vector<std::string> InitializeArgv(
+      const base::FilePath& chrome_path,
+      const LaunchParamsFromBackground& params,
+      bool launching_at_login_screen,
+      std::optional<int> startup_data_fd,
+      std::optional<int> postlogin_data_fd);
+
   // Initializes the command line for launching Lacros.
   base::CommandLine InitializeParameters(
       const base::FilePath& chrome_path,
@@ -124,7 +130,7 @@ class BrowserLauncher {
       std::optional<int> postlogin_data_fd,
       std::string_view channel_flag_value);
 
-  // Launches a process , which is executed in `LaunchProcess`.
+  // Launches a process , which is excuted in `LaunchProcess`.
   // This is also used for unittest.
   bool LaunchProcessWithParameters(const base::CommandLine& command_line,
                                    const base::LaunchOptions& options);
