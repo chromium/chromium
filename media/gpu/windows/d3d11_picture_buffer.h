@@ -24,6 +24,7 @@
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_texture_wrapper.h"
+#include "media/gpu/windows/d3d12_helpers.h"
 #include "media/video/picture.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
@@ -86,6 +87,10 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   ComD3D11Texture2D Texture() const;
   D3D11Status::Or<ID3D11VideoDecoderOutputView*> AcquireOutputView() const;
 
+  // Get the D3D12Resource by device->OpenSharedHandle or return the opened one.
+  D3D11Status::Or<Microsoft::WRL::ComPtr<ID3D12Resource>> ToD3D12Resource(
+      ID3D12Device* device);
+
   const gfx::Size& size() const { return size_; }
   size_t picture_index() const { return picture_index_; }
 
@@ -128,6 +133,10 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   size_t picture_index_;
 
   ComD3D11VideoDecoderOutputView output_view_;
+
+  // The cached pointer of D3D12 version of texture, if ToD3D12Resource() has
+  // been called.
+  Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource_;
 };
 
 }  // namespace media

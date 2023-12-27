@@ -7,19 +7,23 @@
 
 #include <memory>
 
+#include "media/base/video_decoder_config.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
+#include "media/gpu/windows/d3d11_decoder_configurator.h"
 #include "media/gpu/windows/d3d_video_decoder_wrapper.h"
 
 namespace media {
 
+// A wrapper class for API calls around ID3D11VideoDecoder.
 class D3D11VideoDecoderWrapper : public D3DVideoDecoderWrapper {
  public:
   static std::unique_ptr<D3D11VideoDecoderWrapper> Create(
       MediaLog* media_log,
       ComD3D11VideoDevice video_device,
       ComD3D11VideoContext video_context,
-      ComD3D11VideoDecoder video_decoder,
-      D3D_FEATURE_LEVEL supported_d3d11_version);
+      const D3D11DecoderConfigurator* decoder_configurator,
+      D3D_FEATURE_LEVEL supported_d3d11_version,
+      VideoDecoderConfig config);
   ~D3D11VideoDecoderWrapper() override;
 
  protected:
