@@ -55,6 +55,7 @@ constexpr int kAutofillPopupAddressProfileGranularFillingEnabledMaxWidth = 320;
 
 // The additional height of the row in case it has two lines of text.
 constexpr int kAutofillPopupAdditionalDoubleRowHeight = 22;
+constexpr int kAutofillPopupAdditionalDoubleRowHeightNewStyle = 16;
 
 // The additional padding of the row in case it has three lines of text.
 constexpr int kAutofillPopupAdditionalPadding = 16;
@@ -435,13 +436,14 @@ void AddSuggestionContentToView(
   layout.set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  // Adjust the cell height based on the number of subtexts.
-  const int kStandardRowHeight =
-      views::MenuConfig::instance().touchable_menu_height;
-  const int kActualHeight =
-      kStandardRowHeight +
-      (subtext_views.empty() ? 0 : kAutofillPopupAdditionalDoubleRowHeight);
-  layout.set_minimum_cross_axis_size(kActualHeight);
+  // Adjust the row height based on the number of subtexts (lines of text).
+  int row_height = views::MenuConfig::instance().touchable_menu_height;
+  if (!subtext_views.empty()) {
+    row_height += ShouldApplyNewAutofillPopupStyle()
+                      ? kAutofillPopupAdditionalDoubleRowHeightNewStyle
+                      : kAutofillPopupAdditionalDoubleRowHeight;
+  }
+  layout.set_minimum_cross_axis_size(row_height);
 
   // If there are three rows in total, add extra padding to avoid cramming.
   DCHECK_LE(subtext_views.size(), 2u);
