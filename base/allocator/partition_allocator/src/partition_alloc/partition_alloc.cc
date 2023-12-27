@@ -91,7 +91,7 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
         (internal::kSuperPageSize / internal::SystemPageSize()))
        << internal::GetPartitionRefCountIndexMultiplierShift()) <=
           internal::SystemPageSize(),
-      "PartitionRefCount Bitmap size must be smaller than or equal to "
+      "PartitionRefCount table size must be smaller than or equal to "
       "<= SystemPageSize().");
 #endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 

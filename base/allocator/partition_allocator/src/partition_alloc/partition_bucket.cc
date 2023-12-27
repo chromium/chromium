@@ -309,9 +309,9 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     }
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-    // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is
-    // used, allocate a SystemPage for RefCount "bitmap" (only one of its
-    // elements will be used).
+    // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is used,
+    // allocate a system page for BRP ref-count table (only one of its elements
+    // will be used).
     if (pool == kBRPPoolHandle) {
       ScopedSyscallTimer timer{root};
       RecommitSystemPages(reservation_start + SystemPageSize() * 2,
@@ -802,8 +802,8 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
   }
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-  // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is
-  // used, allocate a SystemPage for RefCount bitmap.
+  // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is used,
+  // allocate a system page for BRP ref-count table.
   if (root->ChoosePool() == kBRPPoolHandle) {
     ScopedSyscallTimer timer{root};
     RecommitSystemPages(super_page + SystemPageSize() * 2, SystemPageSize(),
