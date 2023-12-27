@@ -805,7 +805,13 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
           profiles, /*suggested_fields=*/std::nullopt, trigger_field_type,
           GetFieldTypesToExcludeFromDifferentiatingLabelsGeneration(
               trigger_field_type, last_targeted_fields),
-          /*minimal_fields_shown=*/1, app_locale, &differentiating_labels);
+          // Phone fields are a special case. For them we want both the
+          // `FULL_NAME` and `ADDRESS_HOME_LINE1` to be present.
+          /*minimal_fields_shown=*/GroupTypeOfFieldType(trigger_field_type) ==
+                  FieldTypeGroup::kPhone
+              ? 2
+              : 1,
+          app_locale, &differentiating_labels);
     } else {
       AutofillProfile::CreateInferredLabels(
           profiles, field_types, /*triggering_field_type=*/std::nullopt,

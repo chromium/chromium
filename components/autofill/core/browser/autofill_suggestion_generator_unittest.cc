@@ -779,7 +779,8 @@ class AutofillLabelSuggestionGeneratorTest
 INSTANTIATE_TEST_SUITE_P(AutofillSuggestionGeneratorTest,
                          AutofillLabelSuggestionGeneratorTest,
                          ::testing::ValuesIn({NAME_FULL, ADDRESS_HOME_ZIP,
-                                              ADDRESS_HOME_STREET_ADDRESS}));
+                                              ADDRESS_HOME_STREET_ADDRESS,
+                                              PHONE_HOME_WHOLE_NUMBER}));
 
 // Suggestions for `ADDRESS_HOME_LINE1` should have `NAME_FULL` as the label.
 // Suggestions for name or address fields which do not include
@@ -790,6 +791,18 @@ TEST_P(
   FieldType trigerring_field_type = GetTriggeringFieldType();
   AutofillProfile profile = test::GetFullProfile();
 
+  // Phone fields are a snow flake, they contain both `NAME_FULL` and
+  // `ADDRESS_HOME_LINE1`.
+  const std::u16string label_applied_to_phone_fields =
+      profile.GetRawInfo(NAME_FULL) + u", " +
+      profile.GetRawInfo(ADDRESS_HOME_LINE1);
+  const std::u16string full_form_filling_label =
+      trigerring_field_type == ADDRESS_HOME_STREET_ADDRESS
+          ? profile.GetRawInfo(NAME_FULL)
+      : trigerring_field_type == PHONE_HOME_WHOLE_NUMBER
+          ? label_applied_to_phone_fields
+          : profile.GetRawInfo(ADDRESS_HOME_LINE1);
+
   EXPECT_THAT(suggestion_generator()->CreateSuggestionsFromProfiles(
                   {&profile},
                   {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP},
@@ -797,10 +810,8 @@ TEST_P(
                   /*trigger_field_max_length=*/0),
               ElementsAre(AllOf(testing::Field(
                   &Suggestion::labels,
-                  std::vector<std::vector<Suggestion::Text>>{{Suggestion::Text(
-                      trigerring_field_type == ADDRESS_HOME_STREET_ADDRESS
-                          ? profile.GetRawInfo(NAME_FULL)
-                          : profile.GetRawInfo(ADDRESS_HOME_LINE1))}}))));
+                  std::vector<std::vector<Suggestion::Text>>{
+                      {Suggestion::Text(full_form_filling_label)}}))));
 }
 
 TEST_P(
@@ -814,11 +825,19 @@ TEST_P(
 
   // The only difference between the two profiles is the email address.
   // That's why the email address is part of the differentating label.
+  // Note that phone fields are a snow flake, they contain both `NAME_FULL` and
+  // `ADDRESS_HOME_LINE1`.
+  const std::u16string label_applied_to_phone_fields =
+      profile1.GetRawInfo(NAME_FULL) + u", " +
+      profile1.GetRawInfo(ADDRESS_HOME_LINE1);
   const std::u16string full_form_filling_label =
       (trigerring_field_type == ADDRESS_HOME_STREET_ADDRESS
            ? profile1.GetRawInfo(NAME_FULL)
+       : trigerring_field_type == PHONE_HOME_WHOLE_NUMBER
+           ? label_applied_to_phone_fields
            : profile1.GetRawInfo(ADDRESS_HOME_LINE1)) +
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
+
   EXPECT_THAT(
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile1, &profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
