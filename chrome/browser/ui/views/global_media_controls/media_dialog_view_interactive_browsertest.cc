@@ -486,6 +486,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void ClickEnableLiveCaptionOnDialog() {
+    base::RunLoop().RunUntilIdle();
     base::RunLoop run_loop;
     PrefChangeRegistrar change_observer;
     change_observer.Init(browser()->profile()->GetPrefs());
@@ -499,6 +500,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void ClickEnableLiveTranslateOnDialog() {
+    base::RunLoop().RunUntilIdle();
     base::RunLoop run_loop;
     PrefChangeRegistrar change_observer;
     change_observer.Init(browser()->profile()->GetPrefs());
