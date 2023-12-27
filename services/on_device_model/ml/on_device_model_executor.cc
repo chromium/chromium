@@ -223,6 +223,7 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
         .context_mode = GetContextMode(*input),
         .max_tokens = input->max_tokens.value_or(0),
         .token_offset = input->token_offset.value_or(0),
+        .max_output_tokens = input->max_output_tokens.value_or(0),
         .output_fn = &output_fn,
         .completion_fn = &completion_fn,
     };

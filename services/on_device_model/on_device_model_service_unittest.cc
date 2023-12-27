@@ -81,7 +81,8 @@ class OnDeviceModelServiceTest : public testing::Test {
   }
 
   mojom::InputOptionsPtr MakeInput(const std::string& input) {
-    return mojom::InputOptions::New(input, std::nullopt, std::nullopt, false);
+    return mojom::InputOptions::New(input, std::nullopt, std::nullopt, false,
+                                    std::nullopt);
   }
 
  private:
@@ -140,7 +141,7 @@ TEST_F(OnDeviceModelServiceTest, IgnoresContext) {
   session->AddContext(MakeInput("cheese"), {});
   session->Execute(
       mojom::InputOptions::New("cheddar", std::nullopt, std::nullopt,
-                               /*ignore_context=*/true),
+                               /*ignore_context=*/true, std::nullopt),
       response.BindRemote());
   response.WaitForCompletion();
 
@@ -157,13 +158,15 @@ TEST_F(OnDeviceModelServiceTest, AddContextWithTokenLimits) {
   std::string input = "big cheese";
   ContextClientWaiter client1;
   session->AddContext(
-      mojom::InputOptions::New(input, /*max_tokens=*/4, std::nullopt, false),
+      mojom::InputOptions::New(input, /*max_tokens=*/4, std::nullopt, false,
+                               std::nullopt),
       client1.BindRemote());
   EXPECT_EQ(client1.WaitForCompletion(), 4);
 
   ContextClientWaiter client2;
   session->AddContext(
-      mojom::InputOptions::New(input, std::nullopt, /*token_offset=*/4, false),
+      mojom::InputOptions::New(input, std::nullopt, /*token_offset=*/4, false,
+                               std::nullopt),
       client2.BindRemote());
   EXPECT_EQ(client2.WaitForCompletion(), 6);
 
