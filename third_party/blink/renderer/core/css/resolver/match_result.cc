@@ -63,21 +63,32 @@ void MatchResult::AddMatchedProperties(
   new_properties.types_.is_inline_style = options.IsInlineStyle();
   new_properties.types_.origin = current_origin_;
   new_properties.types_.tree_order = current_tree_order_;
+
+  if (recordreplay::IsRecordingOrReplaying() && !recordreplay::AreAssertsDisabled()) {
+    recordreplay::Assert("[RUN-2424-3053] MatchResult::AddMatchedProperties %u %u %s",
+      matched_properties_.size(),
+      (unsigned)current_tree_order_,
+      properties->AsText().Utf8().c_str()
+    );
+  }
 }
 
 void MatchResult::FinishAddingUARules() {
   DCHECK_EQ(current_origin_, CascadeOrigin::kUserAgent);
   current_origin_ = CascadeOrigin::kUser;
+  recordreplay::Assert("[RUN-2424-3053] FinishAddingUARules");
 }
 
 void MatchResult::FinishAddingUserRules() {
   DCHECK_EQ(current_origin_, CascadeOrigin::kUser);
   current_origin_ = CascadeOrigin::kAuthorPresentationalHint;
+  recordreplay::Assert("[RUN-2424-3053] FinishAddingUserRules");
 }
 
 void MatchResult::FinishAddingPresentationalHints() {
   DCHECK_EQ(current_origin_, CascadeOrigin::kAuthorPresentationalHint);
   current_origin_ = CascadeOrigin::kAuthor;
+  recordreplay::Assert("[RUN-2424-3053] FinishAddingPresentationalHints");
 }
 
 void MatchResult::FinishAddingAuthorRulesForTreeScope(
@@ -85,9 +96,16 @@ void MatchResult::FinishAddingAuthorRulesForTreeScope(
   DCHECK_EQ(current_origin_, CascadeOrigin::kAuthor);
   tree_scopes_.push_back(&tree_scope);
   current_tree_order_ = base::ClampAdd(current_tree_order_, 1);
+  recordreplay::Assert("[RUN-2424-3053] MatchResult::FinishAddingAuthorRulesForTreeScope %u",
+    tree_scopes_.size()
+  );
 }
 
 void MatchResult::Reset() {
+  recordreplay::Assert("[RUN-2424-3053] MatchResult::Reset %u",
+    (unsigned)current_tree_order_
+  );
+
   matched_properties_.clear();
   is_cacheable_ = true;
   depends_on_size_container_queries_ = false;

@@ -174,9 +174,6 @@ void StyleCascade::AddInterpolations(const ActiveInterpolationsMap* map,
 void StyleCascade::Apply(CascadeFilter filter) {
   AnalyzeIfNeeded();
 
-  recordreplay::Assert("[RUN-1436-2226] StyleCascade::Apply %d",
-                       state_.GetElement().RecordReplayId());
-
   CascadeResolver resolver(filter, ++generation_);
 
   ApplyCascadeAffecting(resolver);
@@ -240,6 +237,9 @@ void StyleCascade::Apply(CascadeFilter filter) {
   if (resolver.RejectedFlags() & CSSProperty::kLegacyOverlapping)
     state_.SetRejectedLegacyOverlapping();
 
+  recordreplay::Assert("[RUN-2424-3053] StyleCascade::Apply %d",
+                       state_.GetElement().RecordReplayId());
+
   // TOOD(crbug.com/1334570):
   //
   // Count applied H1 font-size from html.css UA stylesheet where H1 is inside
@@ -249,7 +249,6 @@ void StyleCascade::Apply(CascadeFilter filter) {
   //
   if (!state_.GetElement().HasTagName(html_names::kH1Tag))
     return;
-
   if (CascadePriority* priority =
           map_.Find(GetCSSPropertyFontSize().GetCSSPropertyName())) {
     if (priority->GetOrigin() != CascadeOrigin::kUserAgent)
