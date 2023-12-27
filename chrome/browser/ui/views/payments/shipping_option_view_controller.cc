@@ -21,7 +21,7 @@ namespace payments {
 
 namespace {
 
-class ShippingOptionItem : public PaymentRequestItemList::Item {
+class ShippingOptionItem final : public PaymentRequestItemList::Item {
  public:
   ShippingOptionItem(mojom::PaymentShippingOptionPtr shipping_option,
                      base::WeakPtr<PaymentRequestSpec> spec,
@@ -43,6 +43,10 @@ class ShippingOptionItem : public PaymentRequestItemList::Item {
   ShippingOptionItem& operator=(const ShippingOptionItem&) = delete;
 
   ~ShippingOptionItem() override {}
+
+  base::WeakPtr<PaymentRequestRowView> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   // payments::PaymentRequestItemList::Item:
@@ -82,6 +86,7 @@ class ShippingOptionItem : public PaymentRequestItemList::Item {
   }
 
   mojom::PaymentShippingOptionPtr shipping_option_;
+  base::WeakPtrFactory<ShippingOptionItem> weak_ptr_factory_{this};
 };
 
 }  // namespace

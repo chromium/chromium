@@ -65,6 +65,10 @@ class ProfileItem : public PaymentRequestItemList::Item {
 
   ~ProfileItem() override {}
 
+  base::WeakPtr<PaymentRequestRowView> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // PaymentRequestItemList::Item:
   std::unique_ptr<views::View> CreateContentView(
@@ -102,6 +106,7 @@ class ProfileItem : public PaymentRequestItemList::Item {
 
   base::WeakPtr<ProfileListViewController> controller_;
   raw_ptr<autofill::AutofillProfile> profile_;
+  base::WeakPtrFactory<ProfileItem> weak_ptr_factory_{this};
 };
 
 // The ProfileListViewController subtype for the Shipping address list
