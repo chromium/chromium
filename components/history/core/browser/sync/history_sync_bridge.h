@@ -154,8 +154,7 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
 
   // A non-owning pointer to the database, which is for storing sync metadata
   // and state. Can be null in case of unrecoverable database errors.
-  raw_ptr<HistorySyncMetadataDatabase, AcrossTasksDanglingUntriaged>
-      sync_metadata_database_;
+  raw_ptr<HistorySyncMetadataDatabase> sync_metadata_database_;
 
   // HistoryBackend uses SequencedTaskRunner, so this makes sure
   // HistorySyncBridge is used on the correct sequence.
