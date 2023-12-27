@@ -46,6 +46,9 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
     // items.
     int menu_text_id;
 
+    // Menu item icon. nullptr if this menu item has no icon.
+    raw_ptr<const gfx::VectorIcon> menu_icon = nullptr;
+
     // The toolbar button to be activated with menu text pressed. This is not
     // necessarily the same as the element that overflows. E.g. when the
     // overflowed element is kToolbarExtensionsContainerElementId the
@@ -76,6 +79,12 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
     // |=================| -> potential separator
     // | Profile         |
     // |-----------------|
+
+    ResponsiveElementInfo(absl::variant<ElementIdInfo, actions::ActionId>,
+                          bool = false,
+                          std::optional<ui::ElementIdentifier> = std::nullopt);
+    ResponsiveElementInfo(const ResponsiveElementInfo&);
+    ~ResponsiveElementInfo();
 
     // The toolbar element that potentially overflows.
     absl::variant<ElementIdInfo, actions::ActionId> overflow_id;
@@ -186,6 +195,10 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
 
   // Generate menu text from the responsive element.
   virtual std::u16string GetMenuText(
+      const ResponsiveElementInfo& element_info) const;
+
+  // Get menu icon from the responsive element.
+  std::optional<ui::ImageModel> GetMenuIcon(
       const ResponsiveElementInfo& element_info) const;
 
   // Utility that recursively searches for a view with `id` from `view`.
