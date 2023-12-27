@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/supervised_user/core/browser/kids_management_url_checker_client.h"
+#include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 
 #include <memory>
 #include <string>
@@ -29,6 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace supervised_user {
 namespace {
 
 using kids_chrome_management::ClassifyUrlResponse;
@@ -52,22 +53,10 @@ std::string ConvertToString(
   }
 }
 
-class KidsManagementURLCheckerClientTest : public ::testing::Test {
+class KidsChromeManagementURLCheckerClientTest : public ::testing::Test {
  public:
-  KidsManagementURLCheckerClientTest() {
-    shadow_call_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{supervised_user::kShadowKidsApiWithSafeSites},
-        /*disabled_features=*/{});
-  }
-
-  ~KidsManagementURLCheckerClientTest() override {
-      // Since scoped_feature_list_::Init* / scoped_feature_list_.Reset are
-      // stack-based clean-up in the same life-cycle moment.
-      shadow_call_feature_list_.Reset();
-  }
-
   void SetUp() override {
-    url_classifier_ = std::make_unique<KidsManagementURLCheckerClient>(
+    url_classifier_ = std::make_unique<KidsChromeManagementURLCheckerClient>(
         identity_test_env_.identity_manager(),
         test_url_loader_factory_.GetSafeWeakWrapper(), "us");
   }
@@ -94,8 +83,7 @@ class KidsManagementURLCheckerClientTest : public ::testing::Test {
         std::string(kSafeSitesEndpoint),
         base::StringPrintf(R"json(
           {"displayClassification": "%s"}
-        )json",
-                           ConvertToString(classification).c_str()));
+        )json",ConvertToString(classification).c_str()));
   }
 
   void SimulateMalformedResponse() {
@@ -135,7 +123,7 @@ class KidsManagementURLCheckerClientTest : public ::testing::Test {
   void StartCheckUrl(base::StringPiece url) {
     url_classifier_->CheckURL(
         GURL(url),
-        base::BindOnce(&KidsManagementURLCheckerClientTest::OnCheckDone,
+        base::BindOnce(&KidsChromeManagementURLCheckerClientTest::OnCheckDone,
                        base::Unretained(this)));
   }
 
@@ -144,11 +132,11 @@ class KidsManagementURLCheckerClientTest : public ::testing::Test {
 
  private:
   signin::IdentityTestEnvironment identity_test_env_;
-  std::unique_ptr<KidsManagementURLCheckerClient> url_classifier_;
-  base::test::ScopedFeatureList shadow_call_feature_list_;
+  std::unique_ptr<KidsChromeManagementURLCheckerClient> url_classifier_;
+  base::test::ScopedFeatureList shadow_call_feature_list_{kShadowKidsApiWithSafeSites};
 };
 
-TEST_F(KidsManagementURLCheckerClientTest, UrlAllowed) {
+TEST_F(KidsChromeManagementURLCheckerClientTest, UrlAllowed) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -162,7 +150,7 @@ TEST_F(KidsManagementURLCheckerClientTest, UrlAllowed) {
   SimulateKidsApiResponse(kids_chrome_management::ClassifyUrlResponse::ALLOWED);
 }
 
-TEST_F(KidsManagementURLCheckerClientTest, HistogramsAreEmitted) {
+TEST_F(KidsChromeManagementURLCheckerClientTest, HistogramsAreEmitted) {
   base::HistogramTester histogram_tester;
   MakePrimaryAccountAvailable();
 
@@ -183,7 +171,7 @@ TEST_F(KidsManagementURLCheckerClientTest, HistogramsAreEmitted) {
                                     /*expected_count(grew by)*/ 1);
 }
 
-TEST_F(KidsManagementURLCheckerClientTest, UrlRestricted) {
+TEST_F(KidsChromeManagementURLCheckerClientTest, UrlRestricted) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -198,7 +186,7 @@ TEST_F(KidsManagementURLCheckerClientTest, UrlRestricted) {
       kids_chrome_management::ClassifyUrlResponse::RESTRICTED);
 }
 
-TEST_F(KidsManagementURLCheckerClientTest, AccessTokenError) {
+TEST_F(KidsChromeManagementURLCheckerClientTest, AccessTokenError) {
   EXPECT_CALL(*this,
               OnCheckDone(GURL("http://example.com"),
                           safe_search_api::ClientClassification::kUnknown));
@@ -209,7 +197,7 @@ TEST_F(KidsManagementURLCheckerClientTest, AccessTokenError) {
   SimulateSafeSitesResponse(safe_search_api::ClientClassification::kAllowed);
 }
 
-TEST_F(KidsManagementURLCheckerClientTest, NetworkError) {
+TEST_F(KidsChromeManagementURLCheckerClientTest, NetworkError) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -223,7 +211,7 @@ TEST_F(KidsManagementURLCheckerClientTest, NetworkError) {
   SimulateNetworkError(net::ERR_UNEXPECTED);
 }
 
-TEST_F(KidsManagementURLCheckerClientTest, HttpError) {
+TEST_F(KidsChromeManagementURLCheckerClientTest, HttpError) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -237,7 +225,7 @@ TEST_F(KidsManagementURLCheckerClientTest, HttpError) {
   SimulateHttpError(net::HTTP_BAD_GATEWAY);
 }
 
-TEST_F(KidsManagementURLCheckerClientTest, ServiceError) {
+TEST_F(KidsChromeManagementURLCheckerClientTest, ServiceError) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -251,7 +239,7 @@ TEST_F(KidsManagementURLCheckerClientTest, ServiceError) {
   SimulateMalformedResponse();
 }
 
-TEST_F(KidsManagementURLCheckerClientTest,
+TEST_F(KidsChromeManagementURLCheckerClientTest,
        PendingRequestsAreCanceledWhenClientIsDestroyed) {
   EXPECT_CALL(*this, OnCheckDone(_, _)).Times(0);
 
@@ -262,3 +250,4 @@ TEST_F(KidsManagementURLCheckerClientTest,
   task_environment_.RunUntilIdle();
 }
 }  // namespace
+}  // namespace supervised_user

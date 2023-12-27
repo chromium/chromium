@@ -20,7 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/supervised_user/core/browser/kids_management_url_checker_client.h"
+#include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/url_matcher/url_util.h"
@@ -682,7 +682,7 @@ void SupervisedUserURLFilter::InitAsyncURLChecker(
   std::string country = service_delegate_->GetCountryCode();
 
   std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
-      std::make_unique<KidsManagementURLCheckerClient>(
+      std::make_unique<KidsChromeManagementURLCheckerClient>(
           identity_manager, url_loader_factory, country);
   async_url_checker_ = std::make_unique<safe_search_api::URLChecker>(
       std::move(url_checker_client));
