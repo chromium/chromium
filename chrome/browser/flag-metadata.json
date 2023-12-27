@@ -1406,7 +1406,7 @@
   {
     "name": "cros-labs-overview-desk-navigation",
     "owners": [ "richui@chromium.org", "janetmac@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 136
   },
   {
     "name": "cros-labs-window-cycle-shortcut",
