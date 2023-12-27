@@ -376,6 +376,7 @@ namespace autotestPrivate {
     double fps;
     double perceivedFps;
     double commitDeviation;
+    double presentDeviation;
     double renderQuality;
   };
 
