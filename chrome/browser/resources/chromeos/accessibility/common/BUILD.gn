@@ -15,6 +15,7 @@ assert(is_chromeos_ash)
 
 accessibility_common_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/common"
+tsc_preprocess_folder = "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/tsc_preprocessed"
 tsc_out_dir = "$target_gen_dir/tsc"
 
 group("build") {
@@ -23,6 +24,29 @@ group("build") {
     "tutorial:build",
   ]
 }
+
+js_sources = [
+  "async_util.js",
+  "automation_predicate.js",
+  "browser_util.js",
+  "constants.js",
+  "cursors/cursor.js",
+  "cursors/range.js",
+  "cursors/recovery_strategy.js",
+  "event_generator.js",
+  "event_handler.js",
+  "gdocs_script.js",
+  "key_code.js",
+  "local_storage.js",
+  "node_navigation_utils.js",
+  "node_utils.js",
+  "rect_util.js",
+  "repeated_event_handler.js",
+  "repeated_tree_change_handler.js",
+  "sentence_utils.js",
+  "testing/accessibility_test_base.js",
+  "testing/test_node_generator.js",
+]
 
 # Add typescript files to compile here.
 ts_modules = [
@@ -38,55 +62,50 @@ ts_modules = [
   "string_util.ts",
 ]
 
+ts_definitions = [
+  "../definitions/automation.d.ts",
+  "../definitions/command_line_private.d.ts",
+  "../definitions/extensions.d.ts",
+  "../definitions/extension_types.d.ts",
+  "../definitions/i18n.d.ts",
+  "../definitions/runtime.d.ts",
+  "../definitions/settings_private_mv2.d.ts",
+  "../definitions/tabs.d.ts",
+  "../definitions/tts.d.ts",
+  "//tools/typescript/definitions/windows.d.ts",
+]
+
+# Generated TS definition files.
+generated_ts_definitions =
+    [ "$tsc_preprocess_folder/definitions/chrome_event.d.ts" ]
+
 ts_library("ts_build") {
-  in_files = ts_modules
+  root_dir = "$tsc_preprocess_folder"
   out_dir = tsc_out_dir
-  definitions = [
-    "../definitions/automation.d.ts",
-    "../definitions/command_line_private.d.ts",
-    "../definitions/extensions.d.ts",
-    "../definitions/extension_types.d.ts",
-    "../definitions/i18n.d.ts",
-    "../definitions/runtime.d.ts",
-    "../definitions/settings_private_mv2.d.ts",
-    "../definitions/tabs.d.ts",
-    "../definitions/tts.d.ts",
-    "//tools/typescript/definitions/windows.d.ts",
-  ]
+  definitions = ts_definitions + generated_ts_definitions
+
+  in_files = []
+  foreach(_ts_file, ts_modules) {
+    in_files += [ "common/" + _ts_file ]
+  }
 
   tsconfig_base = "../tsconfig.base.json"
+
+  extra_deps = [
+    ":preprocess_files_for_ts_build",
+    "..:preprocess_files_for_ts_build",
+  ]
 }
 
 run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = accessibility_common_out_dir
   deps = [ ":ts_build" ]
-  sources = [
-    "async_util.js",
-    "automation_predicate.js",
-    "browser_util.js",
-    "constants.js",
-    "cursors/cursor.js",
-    "cursors/range.js",
-    "cursors/recovery_strategy.js",
-    "event_generator.js",
-    "event_handler.js",
-    "gdocs_script.js",
-    "key_code.js",
-    "local_storage.js",
-    "node_navigation_utils.js",
-    "node_utils.js",
-    "rect_util.js",
-    "repeated_event_handler.js",
-    "repeated_tree_change_handler.js",
-    "sentence_utils.js",
-    "testing/accessibility_test_base.js",
-    "testing/test_node_generator.js",
-  ]
-  sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
+  sources =
+      js_sources + filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
-    rebase_path(tsc_out_dir, root_build_dir) + ":",
+    rebase_path("$tsc_out_dir/common", root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
   ]
 }
@@ -159,4 +178,12 @@ js2gtest("accessibility_tests") {
     ]
   }
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}
+
+# Copy all JS and TS sources to a preprocess folder. All generated TS/JS files
+# will also be copied into this folder, which will allow us to support a TS
+# build that uses both checked-in and generated files.
+copy("preprocess_files_for_ts_build") {
+  sources = js_sources + ts_modules
+  outputs = [ "$tsc_preprocess_folder/common/{{source_target_relative}}" ]
 }
