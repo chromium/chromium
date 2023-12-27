@@ -337674,6 +337674,14 @@
       []
      ],
      "parsing": {
+      "transition-behavior-expected.txt": [
+       "42b08d5872ee00aa553969f034b85d370d813276",
+       []
+      ],
+      "transition-computed-expected.txt": [
+       "29c9f00c7671de1fe0b2adbfc7bb02e68fe63527",
+       []
+      ],
       "transition-timing-function-valid-expected.txt": [
        "38c33e6977a64c46b0f4f4ceb6adc8dff48de44e",
        []
@@ -464938,14 +464946,14 @@
      ],
      "parsing": {
       "transition-behavior.html": [
-       "08ad3a6adf4da0cea53b4d3110eba16221d6ba6d",
+       "6e4729f9dba2bfe6eff05af07a218598b479cc66",
        [
         null,
         {}
        ]
       ],
       "transition-computed.html": [
-       "a82551372f160fa77fdd0dcc7ac7d62d546db20d",
+       "51ec1baa8ab1a3b91c2c591bf4b7f3cebaaeb0cb",
        [
         null,
         {}
