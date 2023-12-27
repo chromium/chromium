@@ -262,6 +262,14 @@ const char kUserGestureRequiredPolicy[] = "user-gesture-required";
 const char kHardwareVideoDecodeFrameRate[] = "hardware-video-decode-framerate";
 #endif
 
+#if BUILDFLAG(USE_V4L2_CODEC)
+// This is needed for V4L2 testing using VISL (virtual driver) on cros VM with
+// arm64-generic-vm. Minigbm buffer allocation is done using dumb driver with
+// vkms.
+const char kEnablePrimaryNodeAccessForVkmsTesting[] =
+    "enable-primary-node-access-for-vkms-testing";
+#endif
+
 const char kCastStreamingForceDisableHardwareH264[] =
     "cast-streaming-force-disable-hardware-h264";
 const char kCastStreamingForceDisableHardwareVp8[] =

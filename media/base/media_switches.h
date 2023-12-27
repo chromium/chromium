@@ -109,6 +109,10 @@ MEDIA_EXPORT extern const char kUserGestureRequiredPolicy[];
 MEDIA_EXPORT extern const char kHardwareVideoDecodeFrameRate[];
 #endif
 
+#if BUILDFLAG(USE_V4L2_CODEC)
+MEDIA_EXPORT extern const char kEnablePrimaryNodeAccessForVkmsTesting[];
+#endif
+
 // NOTE: callers should always use the free functions in
 // /media/cast/encoding/encoding_support.h instead of accessing these features
 // directly.
