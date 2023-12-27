@@ -45,6 +45,8 @@ TEST(FunctionRef, CapturingLambda) {
 
 TEST(FunctionRef, FunctionPtr) {
   [](FunctionRef<char(float)> ref) { EXPECT_EQ('a', ref(1.0)); }(&Func);
+  const FunctionRef<char(float)> ref = +[](float) { return 'a'; };
+  EXPECT_EQ('a', ref(1.0f));
 }
 
 TEST(FunctionRef, Functor) {

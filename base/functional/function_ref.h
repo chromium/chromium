@@ -77,6 +77,19 @@ class FunctionRef<R(Args...)> {
   FunctionRef(const Functor& functor ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : wrapped_func_ref_(functor) {}
 
+  // Constructs a reference to the given function pointer. This constructor
+  // serves to exclude this case from lifetime analysis, since the underlying
+  // code pointed to by a function pointer is safe to invoke even if the
+  // lifetime of the pointer provided doesn't outlive us, e.g.:
+  //   `const FunctionRef<void(int)> ref = +[](int i) { ... };`
+  // Without this constructor, the above code would warn about dangling refs.
+  // TODO(pkasting): Also support ptr-to-member-functions; this requires changes
+  // in `absl::FunctionRef` or else rewriting this class to not use that one.
+  template <typename Func>
+    requires kCompatibleFunctor<Func*>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  FunctionRef(Func* func) : wrapped_func_ref_(func) {}
+
   // Null FunctionRefs are not allowed.
   FunctionRef() = delete;
 
