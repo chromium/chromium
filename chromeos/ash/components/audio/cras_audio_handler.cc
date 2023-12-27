@@ -2406,11 +2406,6 @@ void CrasAudioHandler::UpdateAudioAfterHDMIRediscoverGracePeriod() {
     // Unmute the audio output after the HDMI transition period.
     VLOG(1) << "Unmute output after HDMI rediscovering grace period.";
     SetOutputMuteInternal(false);
-
-    // Notify UI about the mute state change.
-    for (auto& observer : observers_) {
-      observer.OnOutputMuteChanged(output_mute_on_);
-    }
   }
 }
 
