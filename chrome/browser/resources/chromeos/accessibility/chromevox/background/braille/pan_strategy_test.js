@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../../../common/testing/accessibility_test_base.js']);
+GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 
 /**
  * Test fixture.
  */
-ChromeVoxPanStrategyUnitTest = class extends AccessibilityTestBase {
+ChromeVoxPanStrategyUnitTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -20,13 +20,6 @@ ChromeVoxPanStrategyUnitTest = class extends AccessibilityTestBase {
     ]);
   }
 };
-
-/** @override */
-ChromeVoxPanStrategyUnitTest.prototype.extraLibraries = [
-  '../../../common/testing/assert_additions.js',
-  '../../testing/fake_dom.js',
-];
-
 
 /**
  * Creates an array buffer based off of the passed in content.
@@ -42,7 +35,7 @@ function createArrayBuffer(content) {
   return result;
 }
 
-TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedPanning', function() {
+AX_TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedPanning', function() {
   const panner = new PanStrategy();
   panner.setPanStrategy(false);
 
@@ -95,100 +88,102 @@ TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedPanning', function() {
   assertEqualsJSON({firstRow: 0, lastRow: 1}, panner.viewPort);
 });
 
-TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedPanningSingleLine', function() {
-  const panner = new PanStrategy();
-  panner.setPanStrategy(true);
+AX_TEST_F(
+    'ChromeVoxPanStrategyUnitTest', 'WrappedPanningSingleLine', function() {
+      const panner = new PanStrategy();
+      panner.setPanStrategy(true);
 
-  // 30 cells with blank cells at positions 8, 22 and 26.
-  const content = createArrayBuffer('11234567 9112345678911 345 789');
-  panner.setContent('a', content, [], 0);
-  assertEqualsJSON({firstRow: 0, lastRow: 0}, panner.viewPort);
-  assertFalse(panner.next());
-  assertFalse(panner.previous());
+      // 30 cells with blank cells at positions 8, 22 and 26.
+      const content = createArrayBuffer('11234567 9112345678911 345 789');
+      panner.setContent('a', content, [], 0);
+      assertEqualsJSON({firstRow: 0, lastRow: 0}, panner.viewPort);
+      assertFalse(panner.next());
+      assertFalse(panner.previous());
 
-  panner.setDisplaySize(1, 10);
-  assertEqualsJSON({firstRow: 0, lastRow: 0}, panner.viewPort);
-  assertArrayBuffersEquals(
-      createArrayBuffer('11234567  '),
-      panner.getCurrentBrailleViewportContents());
-  assertTrue(panner.next());
-  assertEqualsJSON({firstRow: 1, lastRow: 1}, panner.viewPort);
-  assertArrayBuffersEquals(
-      createArrayBuffer('9112345678'),
-      panner.getCurrentBrailleViewportContents());
-  assertTrue(panner.next());
-  assertEqualsJSON({firstRow: 2, lastRow: 2}, panner.viewPort);
-  assertArrayBuffersEquals(
-      createArrayBuffer('911 345   '),
-      panner.getCurrentBrailleViewportContents());
-  assertTrue(panner.next());
-  assertEqualsJSON({firstRow: 3, lastRow: 3}, panner.viewPort);
-  assertArrayBuffersEquals(
-      createArrayBuffer('789'), panner.getCurrentBrailleViewportContents());
-  assertFalse(panner.next());
-  assertEqualsJSON({firstRow: 3, lastRow: 3}, panner.viewPort);
-  assertTrue(panner.previous());
-  assertEqualsJSON({firstRow: 2, lastRow: 2}, panner.viewPort);
-  assertTrue(panner.previous());
-  assertEqualsJSON({firstRow: 1, lastRow: 1}, panner.viewPort);
-  assertTrue(panner.previous());
-  assertEqualsJSON({firstRow: 0, lastRow: 0}, panner.viewPort);
-  assertFalse(panner.previous());
+      panner.setDisplaySize(1, 10);
+      assertEqualsJSON({firstRow: 0, lastRow: 0}, panner.viewPort);
+      assertArrayBuffersEquals(
+          createArrayBuffer('11234567  '),
+          panner.getCurrentBrailleViewportContents());
+      assertTrue(panner.next());
+      assertEqualsJSON({firstRow: 1, lastRow: 1}, panner.viewPort);
+      assertArrayBuffersEquals(
+          createArrayBuffer('9112345678'),
+          panner.getCurrentBrailleViewportContents());
+      assertTrue(panner.next());
+      assertEqualsJSON({firstRow: 2, lastRow: 2}, panner.viewPort);
+      assertArrayBuffersEquals(
+          createArrayBuffer('911 345   '),
+          panner.getCurrentBrailleViewportContents());
+      assertTrue(panner.next());
+      assertEqualsJSON({firstRow: 3, lastRow: 3}, panner.viewPort);
+      assertArrayBuffersEquals(
+          createArrayBuffer('789'), panner.getCurrentBrailleViewportContents());
+      assertFalse(panner.next());
+      assertEqualsJSON({firstRow: 3, lastRow: 3}, panner.viewPort);
+      assertTrue(panner.previous());
+      assertEqualsJSON({firstRow: 2, lastRow: 2}, panner.viewPort);
+      assertTrue(panner.previous());
+      assertEqualsJSON({firstRow: 1, lastRow: 1}, panner.viewPort);
+      assertTrue(panner.previous());
+      assertEqualsJSON({firstRow: 0, lastRow: 0}, panner.viewPort);
+      assertFalse(panner.previous());
 
-  panner.setContent('a', content, [], 21);
-  assertEqualsJSON({firstRow: 2, lastRow: 2}, panner.viewPort);
-  assertArrayBuffersEquals(
-      createArrayBuffer('911 345   '),
-      panner.getCurrentBrailleViewportContents());
+      panner.setContent('a', content, [], 21);
+      assertEqualsJSON({firstRow: 2, lastRow: 2}, panner.viewPort);
+      assertArrayBuffersEquals(
+          createArrayBuffer('911 345   '),
+          panner.getCurrentBrailleViewportContents());
 
-  panner.setContent('a', content, [], 30);
-  assertEqualsJSON({firstRow: 3, lastRow: 3}, panner.viewPort);
-  assertArrayBuffersEquals(
-      createArrayBuffer('789'), panner.getCurrentBrailleViewportContents());
+      panner.setContent('a', content, [], 30);
+      assertEqualsJSON({firstRow: 3, lastRow: 3}, panner.viewPort);
+      assertArrayBuffersEquals(
+          createArrayBuffer('789'), panner.getCurrentBrailleViewportContents());
 
-  panner.setDisplaySize(1, 8);
-  assertEqualsJSON({firstRow: 0, lastRow: 0}, panner.viewPort);
-  assertArrayBuffersEquals(
-      createArrayBuffer('11234567'),
-      panner.getCurrentBrailleViewportContents());
-});
+      panner.setDisplaySize(1, 8);
+      assertEqualsJSON({firstRow: 0, lastRow: 0}, panner.viewPort);
+      assertArrayBuffersEquals(
+          createArrayBuffer('11234567'),
+          panner.getCurrentBrailleViewportContents());
+    });
 
-TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedPanningMultiline', function() {
-  const panner = new PanStrategy();
-  panner.setPanStrategy(true);
+AX_TEST_F(
+    'ChromeVoxPanStrategyUnitTest', 'WrappedPanningMultiline', function() {
+      const panner = new PanStrategy();
+      panner.setPanStrategy(true);
 
-  // 30 cells with blank cells at positions 8, 22 and 26.
-  const content = createArrayBuffer('11234567 9112345678911 345 789');
-  panner.setContent('a', content, [], 0);
+      // 30 cells with blank cells at positions 8, 22 and 26.
+      const content = createArrayBuffer('11234567 9112345678911 345 789');
+      panner.setContent('a', content, [], 0);
 
-  panner.setDisplaySize(2, 10);
-  assertEqualsJSON({firstRow: 0, lastRow: 1}, panner.viewPort);
-  assertArrayBuffersEquals(
-      createArrayBuffer('11234567  9112345678'),
-      panner.getCurrentBrailleViewportContents());
-  assertTrue(panner.next());
-  assertEqualsJSON({firstRow: 2, lastRow: 3}, panner.viewPort);
-  assertArrayBuffersEquals(
-      createArrayBuffer('911 345   789'),
-      panner.getCurrentBrailleViewportContents());
-  assertFalse(panner.next());
-  assertEqualsJSON({firstRow: 2, lastRow: 3}, panner.viewPort);
-  assertArrayBuffersEquals(
-      createArrayBuffer('911 345   789'),
-      panner.getCurrentBrailleViewportContents());
-  assertTrue(panner.previous());
-  assertEqualsJSON({firstRow: 0, lastRow: 1}, panner.viewPort);
-  assertArrayBuffersEquals(
-      createArrayBuffer('11234567  9112345678'),
-      panner.getCurrentBrailleViewportContents());
-  assertFalse(panner.previous());
-  assertEqualsJSON({firstRow: 0, lastRow: 1}, panner.viewPort);
-  assertArrayBuffersEquals(
-      createArrayBuffer('11234567  9112345678'),
-      panner.getCurrentBrailleViewportContents());
-});
+      panner.setDisplaySize(2, 10);
+      assertEqualsJSON({firstRow: 0, lastRow: 1}, panner.viewPort);
+      assertArrayBuffersEquals(
+          createArrayBuffer('11234567  9112345678'),
+          panner.getCurrentBrailleViewportContents());
+      assertTrue(panner.next());
+      assertEqualsJSON({firstRow: 2, lastRow: 3}, panner.viewPort);
+      assertArrayBuffersEquals(
+          createArrayBuffer('911 345   789'),
+          panner.getCurrentBrailleViewportContents());
+      assertFalse(panner.next());
+      assertEqualsJSON({firstRow: 2, lastRow: 3}, panner.viewPort);
+      assertArrayBuffersEquals(
+          createArrayBuffer('911 345   789'),
+          panner.getCurrentBrailleViewportContents());
+      assertTrue(panner.previous());
+      assertEqualsJSON({firstRow: 0, lastRow: 1}, panner.viewPort);
+      assertArrayBuffersEquals(
+          createArrayBuffer('11234567  9112345678'),
+          panner.getCurrentBrailleViewportContents());
+      assertFalse(panner.previous());
+      assertEqualsJSON({firstRow: 0, lastRow: 1}, panner.viewPort);
+      assertArrayBuffersEquals(
+          createArrayBuffer('11234567  9112345678'),
+          panner.getCurrentBrailleViewportContents());
+    });
 
-TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedSetContent', function() {
+AX_TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedSetContent', function() {
   const panner = new PanStrategy();
   panner.setPanStrategy(false);
 
@@ -203,7 +198,7 @@ TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedSetContent', function() {
   assertArraysEquals(expectedMappingValue, panner.brailleToText);
 });
 
-TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedSetContent', function() {
+AX_TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedSetContent', function() {
   const panner = new PanStrategy();
   panner.setPanStrategy(true);
 
@@ -257,7 +252,7 @@ TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedSetContent', function() {
   assertArraysEquals(expectedMappingValue, panner.brailleToText);
 });
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxPanStrategyUnitTest', 'getCurrentTextViewportContents',
     function() {
       const panner = new PanStrategy();
@@ -285,26 +280,27 @@ TEST_F(
       assertEquals('789', panner.getCurrentTextViewportContents());
     });
 
-TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedUnwrappedCursors', function() {
-  const panner = new PanStrategy();
-  panner.setPanStrategy(true);
+AX_TEST_F(
+    'ChromeVoxPanStrategyUnitTest', 'WrappedUnwrappedCursors', function() {
+      const panner = new PanStrategy();
+      panner.setPanStrategy(true);
 
-  // 30 cells with blank cells at positions 8, 22 and 26.
-  const content = createArrayBuffer('11234567 9112345678911 345 789');
+      // 30 cells with blank cells at positions 8, 22 and 26.
+      const content = createArrayBuffer('11234567 9112345678911 345 789');
 
-  panner.setCursor(1, 3);
-  panner.setContent('a', content, [], 0);
-  panner.setDisplaySize(2, 10);
-  assertEqualsJSON({start: 1, end: 3}, panner.getCursor());
-  assertEqualsJSON({start: 1, end: 3}, panner.wrappedCursor_);
+      panner.setCursor(1, 3);
+      panner.setContent('a', content, [], 0);
+      panner.setDisplaySize(2, 10);
+      assertEqualsJSON({start: 1, end: 3}, panner.getCursor());
+      assertEqualsJSON({start: 1, end: 3}, panner.wrappedCursor_);
 
-  panner.setCursor(5, 10);
-  panner.setContent('a', content, [], 0);
-  assertEqualsJSON({start: 5, end: 10}, panner.getCursor());
-  assertEqualsJSON({start: 5, end: 11}, panner.wrappedCursor_);
+      panner.setCursor(5, 10);
+      panner.setContent('a', content, [], 0);
+      assertEqualsJSON({start: 5, end: 10}, panner.getCursor());
+      assertEqualsJSON({start: 5, end: 11}, panner.wrappedCursor_);
 
-  panner.setCursor(9, 9);
-  panner.setContent('a', content, [], 0);
-  assertEqualsJSON({start: 9, end: 9}, panner.getCursor());
-  assertEqualsJSON({start: 10, end: 11}, panner.wrappedCursor_);
-});
+      panner.setCursor(9, 9);
+      panner.setContent('a', content, [], 0);
+      assertEqualsJSON({start: 9, end: 9}, panner.getCursor());
+      assertEqualsJSON({start: 10, end: 11}, panner.wrappedCursor_);
+    });

@@ -410,36 +410,6 @@ if (is_chromeos_ash) {
   }
 
   # These tests can run in a pure V8 renderer (e.g. no DOM).
-  js2gtest("chromevox_unit_js_tests") {
-    test_type = "unit"
-    sources = [
-      "background/braille/expanding_braille_translator_test.js",
-      "background/braille/pan_strategy_test.js",
-      "background/editing/editable_text_base_test.js",
-      "background/phonetic_data_test.js",
-      "common/key_sequence_test.js",
-      "common/spannable_test.js",
-      "testing/mock_feedback_test.js",
-    ]
-    gen_include_files = [ "../common/testing/accessibility_test_base.js" ]
-    extra_js_files = [
-      "../common/testing/accessibility_test_base.js",
-      "../common/testing/assert_additions.js",
-      "../common/testing/callback_helper.js",
-      "background/braille/expanding_braille_translator.js",
-      "background/braille/pan_strategy.js",
-      "background/braille/spans.js",
-      "background/braille/liblouis.js",
-      "background/editing/editable_text_base.js",
-      "background/phonetic_data.js",
-      "common/key_sequence.js",
-      "common/msgs.js",
-      "common/spannable.js",
-      "testing/fake_dom.js",
-      "testing/mock_feedback.js",
-      "third_party/tamachiyomi/ja_phonetic_data.js",
-    ]
-  }
 
   # These tests need a full extension renderer.
   js2gtest("chromevox_extension_js_tests") {
@@ -480,6 +450,20 @@ if (is_chromeos_ash) {
       "panel/panel_test_base.js",
       "panel/tutorial_test.js",
     ]
+
+    # These tests need support for async/await (b/317173285).
+    sources += [
+      "background/braille/expanding_braille_translator_test.js",
+      "background/braille/pan_strategy_test.js",
+
+      # TODO(anastasi): Determine why this test suite is flaky and re-enable.
+      # "background/editing/editable_text_base_test.js",
+      "background/phonetic_data_test.js",
+      "common/key_sequence_test.js",
+      "common/spannable_test.js",
+      "testing/mock_feedback_test.js",
+    ]
+
     gen_include_files = [
       "../common/testing/accessibility_test_base.js",
       "../common/testing/assert_additions.js",

@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../../../common/testing/accessibility_test_base.js']);
+GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 
 /**
  * Test fixture.
  */
-ChromeVoxExpandingBrailleTranslatorUnitTest =
-    class extends AccessibilityTestBase {
+ChromeVoxExpandingBrailleTranslatorUnitTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -19,19 +18,18 @@ ChromeVoxExpandingBrailleTranslatorUnitTest =
           'ExpandingBrailleTranslator',
           '/chromevox/background/braille/expanding_braille_translator.js'),
       importModule(
-          ['ExtraCellsSpan', 'ValueSelectionSpan', 'ValueSpan'],
+          [
+            'BrailleTextStyleSpan',
+            'ExtraCellsSpan',
+            'ValueSelectionSpan',
+            'ValueSpan',
+          ],
           '/chromevox/background/braille/spans.js'),
       importModule('LibLouis', '/chromevox/background/braille/liblouis.js'),
       importModule('Spannable', '/chromevox/common/spannable.js'),
     ]);
   }
 };
-
-/** @override */
-ChromeVoxExpandingBrailleTranslatorUnitTest.prototype.extraLibraries = [
-  '../../../common/testing/assert_additions.js',
-  '../../testing/fake_dom.js',
-];
 
 /**
  * An implementation of {@link LibLouis.Translator} whose translation
@@ -86,7 +84,7 @@ function assertArrayBufferMatches(expected, actual) {
   }
 }
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxExpandingBrailleTranslatorUnitTest', 'TranslationError',
     function() {
       const text = new Spannable('error ok', new ValueSpan());
@@ -268,7 +266,7 @@ function createText(text, opt_selectionStart, opt_selectionEnd, opt_style) {
 
 const TEXT = 'Hello, world!';
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxExpandingBrailleTranslatorUnitTest', 'successfulTranslations',
     function() {
       /**
@@ -339,7 +337,7 @@ TEST_F(
       assertEquals(totalExpectedTranslationTests, totalRunTranslationTests);
     });
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxExpandingBrailleTranslatorUnitTest', 'StyleTranslations',
     function() {
       const formTypeMap = {};

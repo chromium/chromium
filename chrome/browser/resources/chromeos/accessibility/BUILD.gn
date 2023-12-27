@@ -171,10 +171,7 @@ group("browser_tests") {
 group("unit_tests_js") {
   testonly = true
   if (is_chromeos_ash) {
-    deps = [
-      ":misc_unit_tests_js",
-      "chromevox:chromevox_unit_js_tests",
-    ]
+    deps = [ ":misc_unit_tests_js" ]
   }
 }
 
