@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=blue>[bar</font></a>baz]" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com\\">a</a>" but got "fooa"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<font color=blue><a href=http://www.google.com>[bar</a></font>baz]" compare innerHTML
@@ -88,5 +88,9 @@ Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "gh" not in array ["<div>gh</div>", "<div>gh<br></div>"]
 [FAIL] [["delete",""],["inserttext","g"],["inserttext","h"]] "<div><b>{abc</b></div><div>def</div>}" compare innerHTML
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<b>gh</b>" not in array ["<div><b>gh</b></div>", "<div><b>gh<br></b></div>", "<div><b>gh</b><br></div>"]
+[FAIL] [["delete",""],["inserttext","Y"]] "<b>X[]<span contenteditable=false>abc</span></b><i>def</i>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "Y<b><span contenteditable=\\"false\\">abc</span></b><i>def</i>" not in array ["<b>Y<span contenteditable=\\"false\\">abc</span></b><i>def</i>", "<b>Y</b><b><span contenteditable=\\"false\\">abc</span></b><i>def</i>"]
+[FAIL] [["forwarddelete",""],["inserttext","Y"]] "<b>[]X<span contenteditable=false>abc</span></b><i>def</i>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "Y<b><span contenteditable=\\"false\\">abc</span></b><i>def</i>" not in array ["<b>Y<span contenteditable=\\"false\\">abc</span></b><i>def</i>", "<b>Y</b><b><span contenteditable=\\"false\\">abc</span></b><i>def</i>"]
 Harness: the test ran to completion.
 

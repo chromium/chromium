@@ -102435,6 +102435,32 @@
        {}
       ]
      ],
+     "oklch-l-over-1-1.html": [
+      "4eb3cda8462639e740c4e606252fc9784dab580e",
+      [
+       null,
+       [
+        [
+         "/css/css-color/oklch-l-over-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "oklch-l-over-1-2.html": [
+      "de8b1a6cdd05c32267cded3a633456db04127888",
+      [
+       null,
+       [
+        [
+         "/css/css-color/oklch-l-over-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "opacity-overlapping-letters.html": [
       "65ab3742de39205341e04b18001deea3f7be192d",
       [
@@ -307507,6 +307533,10 @@
       "fd1deb36f4a7632beaf6cda83b4fa2ba9f46cf96",
       []
      ],
+     "oklch-l-over-1-ref.html": [
+      "2c7815c5f0e408197241367e2bb38e7b7df8dfdc",
+      []
+     ],
      "opacity-overlapping-letters-ref.html": [
       "bab1f80f685f9e52ea74b8b98f5153dcd9516624",
       []
@@ -346178,6 +346208,10 @@
        "b92232a73d509f0b7649f7d9a8af32bfe1fd35a3",
        []
       ],
+      "parse-part-expected.txt": [
+       "305291700a56145e8e7237ab03946594bafa7586",
+       []
+      ],
       "parse-state-expected.txt": [
        "9f273b4a145e8585c7799442575f13acaf15d4e5",
        []
@@ -348262,7 +348296,7 @@
       []
      ],
      "delete.js": [
-      "3c2855e28f535ec95ef3c870169d067cdb6efa23",
+      "131c99b1d5af0fcef45c270ea76596bc31af12a0",
       []
      ],
      "fontname.js": [
@@ -348282,7 +348316,7 @@
       []
      ],
      "forwarddelete.js": [
-      "5e76ee898853bd77ab812566494dbed20b422f9d",
+      "ea590a4fbba137fa1b265f15effe5bd03a7f2225",
       []
      ],
      "hilitecolor.js": [
@@ -348302,7 +348336,7 @@
       []
      ],
      "inserthtml.js": [
-      "841f5493c90ee915f435028252e23b6c993ad3bd",
+      "350f0a15569cdfe06f94b7bb65a59e804fb3a669",
       []
      ],
      "insertimage.js": [
@@ -348318,7 +348352,7 @@
       []
      ],
      "insertparagraph.js": [
-      "608b7ceccebafe6aadba0a9c02a97bee1b56e395",
+      "7a5fe7158b2c6db56da0b97bf759dba33680bfe6",
       []
      ],
      "inserttext.js": [
@@ -348354,7 +348388,7 @@
       []
      ],
      "multitest.js": [
-      "aeda7b2e7b6bc26eb851ed361f5a1338160b6dfc",
+      "e85f54addfc80919bed813b8a9236ee3fd508360",
       []
      ],
      "outdent.js": [
@@ -349040,7 +349074,7 @@
       []
      ],
      "inserthtml-expected.txt": [
-      "c8f8b12a5ccbd8102cdffcaadfc4630f7696e17b",
+      "babf37beee4acf9b4a0eac67ec1d0b44c7f9280f",
       []
      ],
      "insertimage-expected.txt": [
@@ -349192,7 +349226,7 @@
       []
      ],
      "multitest_9001-last-expected.txt": [
-      "c1b05d420e01dcdc0f865468dddff383fd99071b",
+      "652836f49584867daeea9abe10b211a93629f1ed",
       []
      ],
      "outdent_1-1000-expected.txt": [
@@ -469012,7 +469046,7 @@
       ]
      ],
      "round-function.html": [
-      "d21f56d6c8a70b9f0c5e6ac0f88232467d1b8cd2",
+      "29ec60ea44585b87386d0cc5b6e4df2b5b1230a2",
       [
        null,
        {}
@@ -475031,7 +475065,7 @@
        ]
       ],
       "parse-part.html": [
-       "d6ee5d54d839070b36955a6b303a7d337ec471bf",
+       "f0bec6fbc9b9ace2b7489ed4b655711f43abd470",
        [
         null,
         {}

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("stylewithcss") before
   assert_equals: Wrong result returned expected false but got true
 [FAIL] [["defaultparagraphseparator","div"],["inserthtml","<p>abc"]] "<p>foo[bar]baz" compare innerHTML
@@ -112,5 +112,7 @@ Found 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div>ab</div>" not in array ["<div>a<span></span>b</div>", "<div>a<span></span>b<br></div>"]
 [FAIL] [["inserthtml","<span class=\\"s1\\"></span>b<span class=\\"s2\\"></span>"]] "<div>a[]c</div>" compare innerHTML
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div>ab</div><span class=\\"s1\\"></span><span class=\\"s2\\"></span><div>c<br></div>" not in array ["<div>a<span class=\\"s1\\"></span>b<span class=\\"s2\\"></span>c</div>", "<div>a<span class=\\"s1\\"></span>b<span class=\\"s2\\"></span>c<br></div>"]
+[FAIL] [["inserthtml","<i>Z</i>"]] "<p><b><span contenteditable=false>abc</span>[Y]</b><i>def</i></p>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<p><b><span contenteditable=\\"false\\">abc</span></b><i>def</i></p>" not in array ["<p><b><span contenteditable=\\"false\\">abc</span></b><i>Z</i><i>def</i></p>", "<p><b><span contenteditable=\\"false\\">abc</span></b><i>Zdef</i></p>"]
 Harness: the test ran to completion.
 
