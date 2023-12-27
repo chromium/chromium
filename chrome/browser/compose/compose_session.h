@@ -270,6 +270,7 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // Logging counters.
   int compose_count_ = 0;
   int dialog_shown_count_ = 0;
+  int msbb_dialog_shown_count_ = 0;
   int undo_count_ = 0;
   int update_input_count_ = 0;
 

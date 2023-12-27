@@ -19,7 +19,6 @@
 #include "components/compose/core/browser/config.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/flags_storage.h"
-#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 
@@ -148,15 +147,6 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
   if (!base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
     DVLOG(2) << "feature not enabled ";
     return base::unexpected(compose::ComposeShowStatus::kGenericBlocked);
-  }
-
-  // Check MSBB.
-  std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper> helper =
-      unified_consent::UrlKeyedDataCollectionConsentHelper::
-          NewAnonymizedDataCollectionConsentHelper(profile->GetPrefs());
-  if (helper != nullptr && !helper->IsEnabled()) {
-    DVLOG(2) << "MSBB not enabled";
-    return base::unexpected(compose::ComposeShowStatus::kDisabledMsbb);
   }
 
   // Check signin status.

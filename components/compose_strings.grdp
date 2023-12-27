@@ -52,17 +52,21 @@
   </message>
 
   <!-- MSBB consent dialog -->
-  <message name="IDS_COMPOSE_MSBB_CONSENT_TITLE" desc="The title of the MSBB consent dialog." translateable="false">
+  <message name="IDS_COMPOSE_FRE_MSBB_TITLE" desc="The title of the MSBB consent dialog." translateable="false">
    Turn on the make searches and browsing better setting to use this feature
   </message>
-  <message name="IDS_COMPOSE_MSBB_CONSENT_MAIN_TOP" desc="The top main text of the MSBB consent dialog." translateable="false">
-   You’ll need to turn on this option in <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>settings<ph name="END_LINK">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_COMPOSE_MSBB_CONSENT_MAIN_BOTTOM" desc="The bottom main text of the MSBB consent dialog." translateable="false">
-    After you turn on the setting, come back to this tab to continue where you left off.
-  </message>
-  <message name="IDS_COMPOSE_MSBB_CONSENT_CONTINUE_BUTTON" desc="The continue option the MSBB consent dialog." translateable="false">
-    Continue
+  <if expr="is_macosx">
+    <message name="IDS_COMPOSE_FRE_MSBB_MAIN" desc="The main text of the MSBB consent dialog." translateable="false">
+        After you turn on the setting, come back to this tab to continue where you left off.
+    </message>
+  </if> <!-- is_macosx -->
+  <if expr="not is_macosx">
+    <message name="IDS_COMPOSE_FRE_MSBB_MAIN" desc="The main text of the MSBB consent dialog." translateable="false">
+        After you turn on the setting, come back to this tab to continue where you left off
+    </message>
+  </if> <!-- not is_macosx -->
+  <message name="IDS_COMPOSE_FRE_MSBB_SETTINGS_BUTTON" desc="Open the settings page from the MSBB consent dialog." translateable="false">
+    Go to Settings
   </message>
 
   <!-- Disclaimer dialog -->

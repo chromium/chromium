@@ -1185,6 +1185,60 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
   histograms().ExpectTotalCount(compose::kComposeMSBBSessionCloseReason, 0);
 }
 
+TEST_F(ChromeComposeClientTest, CloseButtonMSBBHistogramTest) {
+  SetPrefsForComposeMSBBState(false);
+  ShowDialogAndBindMojo();
+
+  client().CloseUI(compose::mojom::CloseReason::kMSBBCloseButton);
+
+  histograms().ExpectBucketCount(
+      compose::kComposeMSBBSessionCloseReason,
+      compose::ComposeMSBBSessionCloseReason::kMSBBCloseButtonPressed, 1);
+
+  histograms().ExpectBucketCount(
+      compose::kComposeMSBBSessionDialogShownCount + std::string(".Ignored"),
+      1,  // Expect that one total MSBB dialog was shown.
+      1);
+  histograms().ExpectTotalCount(compose::kComposeMSBBSessionCloseReason, 1);
+
+  // No consent related close reasons should have been recorded.
+  histograms().ExpectTotalCount(compose::kComposeConsentSessionCloseReason, 0);
+}
+
+TEST_F(ChromeComposeClientTest,
+       CloseButtonMSBBEnabledDuringSessionHistogramTest) {
+  SetPrefsForComposeMSBBState(false);
+  ShowDialogAndBindMojo();
+
+  SetPrefsForComposeMSBBState(true);
+  // Show the dialog a second time.
+  ShowDialogAndBindMojo();
+
+  client().CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionComposeCount + std::string(".Ignored"),
+      0,  // Expect that zero total Compose calls were recorded.
+      1);
+
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionCloseReason,
+      compose::ComposeSessionCloseReason::kCloseButtonPressed, 1);
+
+  histograms().ExpectBucketCount(
+      compose::kComposeMSBBSessionCloseReason,
+      compose::ComposeMSBBSessionCloseReason::kMSBBAcceptedWithoutInsert, 1);
+
+  histograms().ExpectBucketCount(
+      compose::kComposeMSBBSessionDialogShownCount + std::string(".Accepted"),
+      1,  // Expect that the dialog was shown once.
+      1);
+  histograms().ExpectTotalCount(compose::kComposeMSBBSessionCloseReason, 1);
+
+  // No consent related close reasons should have been recorded.
+  histograms().ExpectTotalCount(compose::kComposeConsentSessionCloseReason, 0);
+}
+
 TEST_F(ChromeComposeClientTest, ConsentUICloseDialogHistogramTest) {
   // Set unset consent state and show the dialog
   SetPrefsForComposeConsentState(compose::mojom::ConsentState::kUnset);

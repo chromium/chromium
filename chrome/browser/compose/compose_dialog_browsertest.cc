@@ -70,6 +70,15 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, LifetimeOfBubbleWrapper) {
 }
 
 IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, OpenFeedbackPage) {
+  // Feedback page can only be opened from a dialog state where MSSB is enabled.
+  // TODO(b/316601302): Without directly setting the MSBB pref value this test
+  // is flaky on Linux MSan builders. This requires further investigation, but
+  // the MSBB dialog state is not on the feedback page testing path so the
+  // current state still satisfies the test requirement.
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
