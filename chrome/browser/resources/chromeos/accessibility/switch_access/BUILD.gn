@@ -21,6 +21,7 @@ tsc_out_dir = "$target_gen_dir/tsc"
 ts_modules = [
   "commands.ts",
   "navigator_interfaces.ts",
+  "settings_manager.ts",
 ]
 
 # JS files needed to compile TS.
@@ -37,6 +38,7 @@ ts_library("ts_build") {
     "../definitions/extension_types.d.ts",
     "../definitions/extensions.d.ts",
     "../definitions/runtime.d.ts",
+    "../definitions/settings_private_mv2.d.ts",
     "../definitions/tabs.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/windows.d.ts",
@@ -116,7 +118,6 @@ run_jsbundler("copied_files") {
     "nodes/tab_node.js",
     "nodes/window_node.js",
     "point_scan_manager.js",
-    "settings_manager.js",
     "switch_access.js",
     "switch_access_constants.js",
     "switch_access_predicate.js",
