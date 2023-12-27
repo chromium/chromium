@@ -136,7 +136,11 @@ class AffiliationServiceImpl : public AffiliationService,
   template <typename Method, typename... Args>
   void PostToBackend(const Method& method, Args&&... args) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    CHECK(backend_);
+    // If `backend` is destroyed there is nothing to do.
+    if (!backend_) {
+      return;
+    }
+
     backend_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(method, base::Unretained(backend_.get()),
                                   std::forward<Args>(args)...));
