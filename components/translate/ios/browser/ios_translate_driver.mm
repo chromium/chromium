@@ -215,7 +215,7 @@ void IOSTranslateDriver::RevertTranslation(int page_seq_no) {
   TranslateController::FromWebState(web_state_)->RevertTranslation();
 }
 
-bool IOSTranslateDriver::IsIncognito() {
+bool IOSTranslateDriver::IsIncognito() const {
   return web_state_->GetBrowserState()->IsOffTheRecord();
 }
 

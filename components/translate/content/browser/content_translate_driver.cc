@@ -63,6 +63,7 @@ ContentTranslateDriver::ContentTranslateDriver(
     translate::TranslateModelService* translate_model_service)
     : content::WebContentsObserver(&web_contents),
       translate_manager_(nullptr),
+      is_otr_context_(web_contents.GetBrowserContext()->IsOffTheRecord()),
       max_reload_check_attempts_(kMaxTranslateLoadCheckAttempts),
       next_page_seq_no_(0),
       language_histogram_(url_language_histogram),
@@ -146,8 +147,8 @@ void ContentTranslateDriver::RevertTranslation(int page_seq_no) {
   it->second->RevertTranslation();
 }
 
-bool ContentTranslateDriver::IsIncognito() {
-  return web_contents()->GetBrowserContext()->IsOffTheRecord();
+bool ContentTranslateDriver::IsIncognito() const {
+  return is_otr_context_;
 }
 
 const std::string& ContentTranslateDriver::GetContentsMimeType() {

@@ -93,7 +93,7 @@ class TestTranslateDriver : public testing::MockTranslateDriver {
  public:
   ~TestTranslateDriver() override;
   MOCK_METHOD(void, RevertTranslation, (int), (override));
-  MOCK_METHOD(bool, IsIncognito, (), (override));
+  MOCK_METHOD(bool, IsIncognito, (), (const override));
   MOCK_METHOD(bool, HasCurrentPage, (), (const override));
 };
 

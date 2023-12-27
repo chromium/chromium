@@ -82,7 +82,7 @@ class IOSTranslateDriver
                      const std::string& source_lang,
                      const std::string& target_lang) override;
   void RevertTranslation(int page_seq_no) override;
-  bool IsIncognito() override;
+  bool IsIncognito() const override;
   const std::string& GetContentsMimeType() override;
   const GURL& GetLastCommittedURL() override;
   const GURL& GetVisibleURL() override;

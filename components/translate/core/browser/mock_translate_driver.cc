@@ -45,7 +45,7 @@ bool MockTranslateDriver::IsLinkNavigation() {
   return false;
 }
 
-bool MockTranslateDriver::IsIncognito() {
+bool MockTranslateDriver::IsIncognito() const {
   return is_incognito_;
 }
 
