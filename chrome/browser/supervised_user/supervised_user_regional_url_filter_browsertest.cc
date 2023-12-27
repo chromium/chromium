@@ -135,8 +135,6 @@ class SupervisedUserRegionalURLFilterTest
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, kRegionCode);
-    // TODO(crbug.com/1491942): This fails with the field trial testing config.
-    command_line->AppendSwitch("disable-field-trial-config");
   }
 
  protected:
