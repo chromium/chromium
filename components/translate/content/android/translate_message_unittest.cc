@@ -108,7 +108,7 @@ class TestTranslateDriver : public testing::MockTranslateDriver {
   MOCK_METHOD(bool, IsIncognito, (), (const override));
   MOCK_METHOD(bool, HasCurrentPage, (), (const override));
 
-  const GURL& GetLastCommittedURL() override { return url_; }
+  const GURL& GetLastCommittedURL() const override { return url_; }
   void SetLastCommittedURL(GURL url) { url_ = std::move(url); }
 
  private:

@@ -223,7 +223,7 @@ const std::string& IOSTranslateDriver::GetContentsMimeType() {
   return web_state_->GetContentsMimeType();
 }
 
-const GURL& IOSTranslateDriver::GetLastCommittedURL() {
+const GURL& IOSTranslateDriver::GetLastCommittedURL() const {
   return web_state_->GetLastCommittedURL();
 }
 

@@ -53,7 +53,7 @@ const std::string& MockTranslateDriver::GetContentsMimeType() {
   return page_mime_type_;
 }
 
-const GURL&  MockTranslateDriver::GetLastCommittedURL() {
+const GURL& MockTranslateDriver::GetLastCommittedURL() const {
   return last_committed_url_;
 }
 

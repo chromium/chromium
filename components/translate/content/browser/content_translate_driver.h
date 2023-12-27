@@ -93,7 +93,7 @@ class ContentTranslateDriver : public TranslateDriver,
   void RevertTranslation(int page_seq_no) override;
   bool IsIncognito() const override;
   const std::string& GetContentsMimeType() override;
-  const GURL& GetLastCommittedURL() override;
+  const GURL& GetLastCommittedURL() const override;
   const GURL& GetVisibleURL() override;
   ukm::SourceId GetUkmSourceId() override;
   bool HasCurrentPage() const override;
@@ -146,6 +146,9 @@ class ContentTranslateDriver : public TranslateDriver,
 
   // Whether the associated browser context is off the record.
   bool is_otr_context_;
+
+  // The last committed URL of the primary main frame of the contents.
+  GURL last_committed_url_;
 
   // Max number of attempts before checking if a page has been reloaded.
   int max_reload_check_attempts_;

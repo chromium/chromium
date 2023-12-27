@@ -155,8 +155,8 @@ const std::string& ContentTranslateDriver::GetContentsMimeType() {
   return web_contents()->GetContentsMimeType();
 }
 
-const GURL& ContentTranslateDriver::GetLastCommittedURL() {
-  return web_contents()->GetLastCommittedURL();
+const GURL& ContentTranslateDriver::GetLastCommittedURL() const {
+  return last_committed_url_;
 }
 
 const GURL& ContentTranslateDriver::GetVisibleURL() {
@@ -258,6 +258,9 @@ void ContentTranslateDriver::DidFinishNavigation(
   if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
   }
+
+  // Store the main frame committed URL.
+  last_committed_url_ = web_contents()->GetLastCommittedURL();
 
   InitiateTranslationIfReload(navigation_handle);
 
