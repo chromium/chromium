@@ -217,7 +217,10 @@ TEST_F(AttributionStorageTest,
 }
 
 TEST_F(AttributionStorageTest, ImpressionStoredAndRetrieved_ValuesIdentical) {
+  base::HistogramTester histograms;
   storage()->StoreSource(SourceBuilder().Build());
+  histograms.ExpectBucketCount("Conversions.DbVersionOnSourceStored",
+                               AttributionStorageSql::kCurrentVersionNumber, 1);
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(SourceBuilder().BuildStored()));
 }

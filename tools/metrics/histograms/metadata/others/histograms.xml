@@ -2916,6 +2916,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.DbVersionOnSourceStored" units="Source"
+    expires_after="2024-04-28">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the DB version on every successful source or noised source stored.
+    This metric was added starting with version 56.
+  </summary>
+</histogram>
+
 <histogram
     name="Conversions.DebugReport.HttpResponseOrNetErrorCodeAggregatable"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-05-10">
