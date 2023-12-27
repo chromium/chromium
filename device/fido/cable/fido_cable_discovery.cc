@@ -153,7 +153,7 @@ FidoCableDiscovery::~FidoCableDiscovery() {
     adapter_->RemoveObserver(this);
 }
 
-std::unique_ptr<FidoDeviceDiscovery::EventStream<base::span<const uint8_t, 20>>>
+std::unique_ptr<FidoDiscoveryBase::EventStream<base::span<const uint8_t, 20>>>
 FidoCableDiscovery::GetV2AdvertStream() {
   DCHECK(!advert_callback_);
 

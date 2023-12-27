@@ -5926,13 +5926,13 @@ TEST_F(PINAuthenticatorImplTest, RemoveSecondAuthenticator) {
   device_1.state->pin = kTestPIN;
   device_1.config.pin_support = true;
   std::tie(disconnect_1, device_1.disconnect_events) =
-      device::FidoDeviceDiscovery::EventStream<bool>::New();
+      device::FidoDiscoveryBase::EventStream<bool>::New();
 
   device::test::MultipleVirtualFidoDeviceFactory::DeviceDetails device_2;
   device_2.state->pin = kTestPIN;
   device_2.config.pin_support = true;
   std::tie(disconnect_2, device_2.disconnect_events) =
-      device::FidoDeviceDiscovery::EventStream<bool>::New();
+      device::FidoDiscoveryBase::EventStream<bool>::New();
 
   int callbacks = 0;
   auto touch_callback = [&](int device_num) -> bool {

@@ -6,6 +6,8 @@
 #define DEVICE_FIDO_ENCLAVE_ENCLAVE_AUTHENTICATOR_H_
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -35,8 +37,6 @@ class HandshakeInitiator;
 
 namespace enclave {
 
-// TODO(kenrb): Remove the export directive when it is no longer used by the
-// client stand-alone app.
 class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
     : public FidoAuthenticator {
  public:
@@ -63,9 +63,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
                       MakeCredentialOptions options,
                       MakeCredentialCallback callback) override;
 
+  void SetOauthToken(absl::optional<std::string_view> token);
+
  private:
   enum class State {
     kInitialized,
+    kWaitingForOauthToken,
+    kOauthTokenReceived,
     kWaitingForHandshakeResponse,
     kConnected,
     kError,

@@ -54,11 +54,18 @@ EnclaveAuthenticatorDiscovery::EnclaveAuthenticatorDiscovery(
     std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
     base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
         save_passkey_callback,
-    raw_ptr<network::mojom::NetworkContext> network_context)
+    raw_ptr<network::mojom::NetworkContext> network_context,
+    std::unique_ptr<EventStream<absl::optional<std::string_view>>>
+        oauth_token_provider)
     : FidoDiscoveryBase(FidoTransportProtocol::kInternal),
       passkeys_(std::move(passkeys)),
       save_passkey_callback_(std::move(save_passkey_callback)),
-      network_context_(network_context) {}
+      network_context_(network_context),
+      oauth_token_provider_(std::move(oauth_token_provider)) {
+  oauth_token_provider_->Connect(
+      base::BindRepeating(&EnclaveAuthenticatorDiscovery::OnOauthTokenAvailable,
+                          weak_factory_.GetWeakPtr()));
+}
 
 EnclaveAuthenticatorDiscovery::~EnclaveAuthenticatorDiscovery() = default;
 
@@ -96,6 +103,11 @@ void EnclaveAuthenticatorDiscovery::AddAuthenticator() {
       std::move(save_passkey_callback_), std::move(device_id), kTestUsername,
       network_context_, base::BindRepeating(&Sign, signing_key_.get()));
   observer()->DiscoveryStarted(this, /*success=*/true, {authenticator_.get()});
+}
+
+void EnclaveAuthenticatorDiscovery::OnOauthTokenAvailable(
+    absl::optional<std::string_view> token) {
+  authenticator_->SetOauthToken(token);
 }
 
 }  // namespace device::enclave

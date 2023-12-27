@@ -28,6 +28,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -48,6 +49,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/user_prefs/user_prefs.h"
@@ -70,6 +72,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/url_util.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -1232,12 +1235,46 @@ void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
           Profile::FromBrowserContext(GetBrowserContext()));
   CHECK(passkey_model);
 
+  base::OnceCallback<void(GoogleServiceAuthError error,
+                          signin::AccessTokenInfo access_token_info)>
+      callback = base::BindOnce(
+          &ChromeAuthenticatorRequestDelegate::EnclaveAccessTokenFetched,
+          weak_ptr_factory_.GetWeakPtr(),
+          discovery_factory->get_enclave_oauth_token_callback());
+
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(
+      Profile::FromBrowserContext(GetBrowserContext()));
+  access_token_fetcher_ =
+      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+          "enclave", identity_manager,
+          signin::ScopeSet{GaiaConstants::kPasskeysEnclaveOAuth2Scope},
+          std::move(callback),
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+          signin::ConsentLevel::kSignin);
+
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
       passkey_model->GetPasskeysForRelyingPartyId(rp_id);
   discovery_factory->set_enclave_passkeys(std::move(passkeys));
   discovery_factory->set_enclave_passkey_creation_callback(
       base::BindRepeating(&ChromeAuthenticatorRequestDelegate::OnPasskeyCreated,
                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ChromeAuthenticatorRequestDelegate::EnclaveAccessTokenFetched(
+    base::RepeatingCallback<void(absl::optional<std::string_view>)> callback,
+    GoogleServiceAuthError error,
+    signin::AccessTokenInfo access_token_info) {
+  access_token_fetcher_.release();
+
+  if (error.state() != GoogleServiceAuthError::NONE) {
+    FIDO_LOG(ERROR)
+        << "Cloud enclave authenticator access token retrieval failed "
+        << error.state();
+    callback.Run(absl::nullopt);
+    return;
+  }
+
+  callback.Run(access_token_info.token);
 }
 
 void ChromeAuthenticatorRequestDelegate::OnPasskeyCreated(

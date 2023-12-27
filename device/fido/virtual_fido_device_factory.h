@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/virtual_ctap2_device.h"
@@ -69,7 +70,7 @@ class VirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
 
  private:
   std::unique_ptr<
-      FidoDeviceDiscovery::EventStream<std::unique_ptr<cablev2::Pairing>>>
+      FidoDiscoveryBase::EventStream<std::unique_ptr<cablev2::Pairing>>>
       contact_device_stream_;
   ProtocolVersion supported_protocol_ = ProtocolVersion::kU2f;
   FidoTransportProtocol transport_ =

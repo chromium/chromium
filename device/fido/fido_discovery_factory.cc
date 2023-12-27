@@ -194,6 +194,15 @@ void FidoDiscoveryFactory::set_enclave_passkey_creation_callback(
   enclave_passkey_creation_callback_ = callback;
 }
 
+base::RepeatingCallback<void(absl::optional<std::string_view>)>
+FidoDiscoveryFactory::get_enclave_oauth_token_callback() {
+  CHECK(!oauth_token_provider_);
+  base::RepeatingCallback<void(absl::optional<std::string_view>)> ret;
+  std::tie(ret, oauth_token_provider_) =
+      FidoDiscoveryBase::EventStream<absl::optional<std::string_view>>::New();
+  return ret;
+}
+
 // static
 std::vector<std::unique_ptr<FidoDiscoveryBase>>
 FidoDiscoveryFactory::SingleDiscovery(
@@ -274,7 +283,8 @@ void FidoDiscoveryFactory::MaybeCreateEnclaveDiscovery(
   discoveries.emplace_back(
       std::make_unique<enclave::EnclaveAuthenticatorDiscovery>(
           std::move(enclave_passkeys_),
-          std::move(enclave_passkey_creation_callback_), network_context_));
+          std::move(enclave_passkey_creation_callback_), network_context_,
+          std::move(oauth_token_provider_)));
 }
 #endif
 

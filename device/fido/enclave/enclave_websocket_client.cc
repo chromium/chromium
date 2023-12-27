@@ -9,6 +9,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace device::enclave {
@@ -103,6 +104,10 @@ void EnclaveWebSocketClient::Write(base::span<const uint8_t> data) {
   InternalWrite(data);
 }
 
+void EnclaveWebSocketClient::set_oauth_token(std::string_view token) {
+  oauth_token_ = token;
+}
+
 void EnclaveWebSocketClient::Connect() {
   // A disconnect handler is used so that the request can be completed in the
   // event of an unexpected disconnection from the network service.
@@ -112,15 +117,18 @@ void EnclaveWebSocketClient::Connect() {
 
   state_ = State::kConnecting;
 
+  std::vector<network::mojom::HttpHeaderPtr> additional_headers;
+  additional_headers.emplace_back(network::mojom::HttpHeader::New(
+      net::HttpRequestHeaders::kAuthorization, oauth_token_));
+
   GURL socket_url;
   GURL::Replacements replacement;
   replacement.SetPathStr(username_);
   socket_url = service_url_.ReplaceComponents(replacement);
   network_context_->CreateWebSocket(
       socket_url, {}, net::SiteForCookies(), /*has_storage_access=*/false,
-      net::IsolationInfo(),
-      /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
-      url::Origin::Create(socket_url),
+      net::IsolationInfo(), std::move(additional_headers),
+      network::mojom::kBrowserProcessId, url::Origin::Create(socket_url),
       network::mojom::kWebSocketOptionBlockAllCookies,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_remote),
