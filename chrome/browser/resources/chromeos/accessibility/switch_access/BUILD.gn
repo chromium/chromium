@@ -18,7 +18,10 @@ switch_access_dir =
 tsc_out_dir = "$target_gen_dir/tsc"
 
 # TS files to compile.
-ts_modules = [ "commands.ts" ]
+ts_modules = [
+  "commands.ts",
+  "navigator_interfaces.ts",
+]
 
 # JS files needed to compile TS.
 js_deps = []
@@ -100,7 +103,6 @@ run_jsbundler("copied_files") {
     "menu_manager.js",
     "metrics.js",
     "navigator.js",
-    "navigator_interfaces.js",
     "nodes/back_button_node.js",
     "nodes/basic_node.js",
     "nodes/combo_box_node.js",
