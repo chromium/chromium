@@ -404,9 +404,9 @@ class PartitionAllocTest
                              .set_bucket_distribution = true});
   }
 
-  size_t RealAllocSize() const {
-    return partition_alloc::internal::base::bits::AlignUp(
-        kTestAllocSize + ExtraAllocSize(allocator), kAlignment);
+  // Actual slot size used for requests of size kTestAllocSize.
+  size_t ActualTestAllocSize() const {
+    return SizeToBucketSize(kTestAllocSize + ExtraAllocSize(allocator));
   }
 
   void SetUp() override {
@@ -417,17 +417,7 @@ class PartitionAllocTest
     PartitionAllocGlobalInit(HandleOOM);
     InitializeMainTestAllocators();
 
-    test_bucket_index_ = SizeToIndex(RealAllocSize());
-  }
-
-  size_t SizeToIndex(size_t size) {
-    const auto distribution_to_use = GetBucketDistribution();
-    return PartitionRoot::SizeToBucketIndex(size, distribution_to_use);
-  }
-
-  size_t SizeToBucketSize(size_t size) {
-    const auto index = SizeToIndex(size);
-    return allocator.root()->buckets[index].slot_size;
+    test_bucket_index_ = SizeToIndex(ActualTestAllocSize());
   }
 
   void TearDown() override {
@@ -439,6 +429,16 @@ class PartitionAllocTest
       PkeyFree(pkey_);
     }
 #endif
+  }
+
+  size_t SizeToIndex(size_t size) const {
+    const auto distribution_to_use = GetBucketDistribution();
+    return PartitionRoot::SizeToBucketIndex(size, distribution_to_use);
+  }
+
+  size_t SizeToBucketSize(size_t size) const {
+    const auto index = SizeToIndex(size);
+    return allocator.root()->buckets[index].slot_size;
   }
 
   static size_t ExtraAllocSize(const PartitionAllocator& allocator) {
@@ -745,24 +745,24 @@ TEST_P(PartitionAllocTest, MultiAlloc) {
   EXPECT_TRUE(ptr1);
   EXPECT_TRUE(ptr2);
   ptrdiff_t diff = UntagPtr(ptr2) - UntagPtr(ptr1);
-  EXPECT_EQ(static_cast<ptrdiff_t>(RealAllocSize()), diff);
+  EXPECT_EQ(static_cast<ptrdiff_t>(ActualTestAllocSize()), diff);
 
   // Check that we re-use the just-freed slot.
   allocator.root()->Free(ptr2);
   ptr2 = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr2);
   diff = UntagPtr(ptr2) - UntagPtr(ptr1);
-  EXPECT_EQ(static_cast<ptrdiff_t>(RealAllocSize()), diff);
+  EXPECT_EQ(static_cast<ptrdiff_t>(ActualTestAllocSize()), diff);
   allocator.root()->Free(ptr1);
   ptr1 = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr1);
   diff = UntagPtr(ptr2) - UntagPtr(ptr1);
-  EXPECT_EQ(static_cast<ptrdiff_t>(RealAllocSize()), diff);
+  EXPECT_EQ(static_cast<ptrdiff_t>(ActualTestAllocSize()), diff);
 
   void* ptr3 = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr3);
   diff = UntagPtr(ptr3) - UntagPtr(ptr1);
-  EXPECT_EQ(static_cast<ptrdiff_t>(RealAllocSize() * 2), diff);
+  EXPECT_EQ(static_cast<ptrdiff_t>(ActualTestAllocSize() * 2), diff);
 
   allocator.root()->Free(ptr1);
   allocator.root()->Free(ptr2);
@@ -2849,8 +2849,8 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
 
   // This test checks large-but-not-quite-direct allocations.
   {
-    const size_t requested_size = 16 * SystemPageSize();
-    void* ptr = allocator.root()->Alloc(requested_size + 1, type_name);
+    size_t requested_size = 16 * SystemPageSize() + 1;
+    void* ptr = allocator.root()->Alloc(requested_size, type_name);
 
     {
       MockPartitionStatsDumper dumper;
@@ -2858,21 +2858,21 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
                                   &dumper);
       EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
-      size_t slot_size = SizeToBucketSize(requested_size + 1);
+      size_t slot_size = SizeToBucketSize(requested_size);
       const PartitionBucketMemoryStats* stats =
           dumper.GetBucketStats(slot_size);
       ASSERT_TRUE(stats);
       EXPECT_TRUE(stats->is_valid);
       EXPECT_FALSE(stats->is_direct_map);
       EXPECT_EQ(slot_size, stats->bucket_slot_size);
-      EXPECT_EQ(requested_size + 1 + ExtraAllocSize(allocator),
+      EXPECT_EQ(requested_size + ExtraAllocSize(allocator),
                 stats->active_bytes);
       EXPECT_EQ(1u, stats->active_count);
       EXPECT_EQ(slot_size, stats->resident_bytes);
       EXPECT_EQ(0u, stats->decommittable_bytes);
-      EXPECT_EQ((slot_size - (requested_size + 1)) / SystemPageSize() *
-                    SystemPageSize(),
-                stats->discardable_bytes);
+      EXPECT_EQ(
+          base::bits::AlignDown(slot_size - requested_size, SystemPageSize()),
+          stats->discardable_bytes);
       EXPECT_EQ(1u, stats->num_full_slot_spans);
       EXPECT_EQ(0u, stats->num_active_slot_spans);
       EXPECT_EQ(0u, stats->num_empty_slot_spans);
@@ -2887,7 +2887,7 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
                                   &dumper);
       EXPECT_FALSE(dumper.IsMemoryAllocationRecorded());
 
-      size_t slot_size = SizeToBucketSize(requested_size + 1);
+      size_t slot_size = SizeToBucketSize(requested_size);
       const PartitionBucketMemoryStats* stats =
           dumper.GetBucketStats(slot_size);
       EXPECT_TRUE(stats);
@@ -2904,8 +2904,8 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
       EXPECT_EQ(0u, stats->num_decommitted_slot_spans);
     }
 
-    void* ptr2 = allocator.root()->Alloc(requested_size + SystemPageSize() + 1,
-                                         type_name);
+    requested_size = 17 * SystemPageSize() + 1;
+    void* ptr2 = allocator.root()->Alloc(requested_size, type_name);
     EXPECT_EQ(ptr, ptr2);
 
     {
@@ -2914,23 +2914,21 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
                                   &dumper);
       EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
-      size_t slot_size =
-          SizeToBucketSize(requested_size + SystemPageSize() + 1);
+      size_t slot_size = SizeToBucketSize(requested_size);
       const PartitionBucketMemoryStats* stats =
           dumper.GetBucketStats(slot_size);
       EXPECT_TRUE(stats);
       EXPECT_TRUE(stats->is_valid);
       EXPECT_FALSE(stats->is_direct_map);
       EXPECT_EQ(slot_size, stats->bucket_slot_size);
-      EXPECT_EQ(
-          requested_size + SystemPageSize() + 1 + ExtraAllocSize(allocator),
-          stats->active_bytes);
+      EXPECT_EQ(requested_size + ExtraAllocSize(allocator),
+                stats->active_bytes);
       EXPECT_EQ(1u, stats->active_count);
       EXPECT_EQ(slot_size, stats->resident_bytes);
       EXPECT_EQ(0u, stats->decommittable_bytes);
-      EXPECT_EQ((slot_size - (requested_size + SystemPageSize() + 1)) /
-                    SystemPageSize() * SystemPageSize(),
-                stats->discardable_bytes);
+      EXPECT_EQ(
+          base::bits::AlignDown(slot_size - requested_size, SystemPageSize()),
+          stats->discardable_bytes);
       EXPECT_EQ(1u, stats->num_full_slot_spans);
       EXPECT_EQ(0u, stats->num_active_slot_spans);
       EXPECT_EQ(0u, stats->num_empty_slot_spans);
@@ -4249,10 +4247,10 @@ TEST_P(PartitionAllocTest, RefCountRealloc) {
     return;
   }
 
-  size_t alloc_sizes[] = {500, 5000, 50000, 400000};
+  size_t raw_sizes[] = {500, 5000, 50000, 400000};
 
-  for (size_t alloc_size : alloc_sizes) {
-    alloc_size -= ExtraAllocSize(allocator);
+  for (size_t raw_size : raw_sizes) {
+    size_t alloc_size = raw_size - ExtraAllocSize(allocator);
     RunRefCountReallocSubtest(alloc_size, alloc_size - 9);
     RunRefCountReallocSubtest(alloc_size, alloc_size + 9);
     RunRefCountReallocSubtest(alloc_size, alloc_size * 2);
