@@ -29,6 +29,11 @@ class SidePanelToolbarButtonTest : public TestWithBrowserView {
 
 // Verify correct buttons are shown when side panel alignment is changed.
 TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInLTR) {
+  if (features::IsSidePanelPinningEnabled()) {
+    GTEST_SKIP()
+        << "Default sidepanel button is not present with pinning feature.";
+  }
+
   SidePanelToolbarButton* const side_panel_button = GetSidePanelToolbarButton();
   ASSERT_TRUE(side_panel_button != nullptr);
 
@@ -64,6 +69,11 @@ TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInLTR) {
 
 // Verify correct buttons are shown in RTL mode.
 TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInRTL) {
+  if (features::IsSidePanelPinningEnabled()) {
+    GTEST_SKIP()
+        << "Default sidepanel button is not present with pinning feature.";
+  }
+
   // Enter RTL mode by using an RTL language.
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_("he");
 

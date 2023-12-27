@@ -246,7 +246,7 @@ void SearchCompanionSidePanelCoordinator::
         CompanionSidePanelAvailabilityChanged::kUnavailableToAvailable);
     is_currently_observing_tab_changes_ = true;
 
-    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    if (features::IsSidePanelPinningEnabled()) {
       GetActionItem()->SetVisible(true);
     } else {
       container->AddPinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion,
@@ -264,7 +264,7 @@ void SearchCompanionSidePanelCoordinator::
         CompanionSidePanelAvailabilityChanged::kAvailableToUnavailable);
     is_currently_observing_tab_changes_ = false;
 
-    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    if (features::IsSidePanelPinningEnabled()) {
       GetActionItem()->SetVisible(false);
     } else {
       container->RemovePinnedEntryButtonFor(
@@ -302,7 +302,7 @@ actions::ActionItem* SearchCompanionSidePanelCoordinator::GetActionItem() {
 void SearchCompanionSidePanelCoordinator::MaybeUpdateCompanionEnabledState() {
   bool enabled = companion::IsCompanionAvailableForCurrentActiveTab(browser_);
 
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (features::IsSidePanelPinningEnabled()) {
     actions::ActionItem* action_item = GetActionItem();
     action_item->SetEnabled(enabled);
     action_item->SetImage(ui::ImageModel::FromVectorIcon(

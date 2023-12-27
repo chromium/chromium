@@ -632,7 +632,7 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
   DCHECK_LE(start_child_index, parent->children().size());
   if (parent == GetBookmarkModel()->other_node()) {
     ui::ImageModel bookmarks_side_panel_icon =
-        base::FeatureList::IsEnabled(features::kSidePanelPinning)
+        features::IsSidePanelPinningEnabled()
             ? ui::ImageModel::FromVectorIcon(
                   kBookmarksSidePanelIcon, ui::kColorMenuIcon,
                   ui::SimpleMenuModel::kDefaultIconSize)

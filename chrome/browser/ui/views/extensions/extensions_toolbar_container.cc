@@ -193,7 +193,7 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
   UpdateControlsVisibility();
 
   // Create close side panel button.
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (features::IsSidePanelPinningEnabled()) {
     std::unique_ptr<ToolbarButton> close_side_panel_button =
         std::make_unique<ToolbarButton>(base::BindRepeating(
             &ExtensionsToolbarContainer::CloseSidePanelButtonPressed,

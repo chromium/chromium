@@ -67,7 +67,7 @@ bool SidePanelService::HasSidePanelActionForTab(const Extension& extension,
 bool SidePanelService::HasSidePanelContextMenuActionForTab(
     const Extension& extension,
     TabId tab_id) {
-  if (!base::FeatureList::IsEnabled(features::kSidePanelPinning) ||
+  if (!features::IsSidePanelPinningEnabled() ||
       !base::FeatureList::IsEnabled(
           extensions_features::kExtensionSidePanelIntegration)) {
     return false;

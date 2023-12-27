@@ -19,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
+#include "ui/base/ui_base_features.h"
 
 namespace {
 // A simple observer that tracks the number of times certain events occur.
@@ -90,7 +91,8 @@ class PinnedToolbarActionsModelBrowserTest : public InProcessBrowserTest {
   PinnedToolbarActionsModelBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kSidePanelPinning,
-         companion::features::internal::kSidePanelCompanion},
+         companion::features::internal::kSidePanelCompanion,
+         features::kChromeRefresh2023},
         {});
   }
 
