@@ -134,7 +134,7 @@ const char* kJourneysIconResourceName =
     "//resources/cr_components/omnibox/icons/journeys.svg";
 const char* kPageIconResourceName =
     "//resources/cr_components/omnibox/icons/page.svg";
-constexpr char kPedalsIconResourceName[] = "//theme/current-channel-logo";
+const char* kPedalsIconResourceName = "//theme/current-channel-logo";
 const char* kSearchIconResourceName = "//resources/images/icon_search.svg";
 const char* kTabIconResourceName =
     "//resources/cr_components/omnibox/icons/tab.svg";
@@ -192,6 +192,8 @@ static void DefineChromeRefreshRealboxIcons() {
       "//resources/cr_components/omnibox/icons/journeys_cr23.svg";
   kPageIconResourceName =
       "//resources/cr_components/omnibox/icons/page_cr23.svg";
+  kPedalsIconResourceName =
+      "//resources/cr_components/omnibox/icons/chrome_product_cr23.svg";
   kSearchIconResourceName =
       "//resources/cr_components/omnibox/icons/search_cr23.svg";
   kTabIconResourceName = "//resources/cr_components/omnibox/icons/tab_cr23.svg";
