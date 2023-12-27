@@ -149,7 +149,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
             {
               value: Length.kUnset,
               label: loadTimeData.getString('lengthMenuTitle'),
-              hidden: true,
+              isDefault: true,
             },
             {
               value: Length.kShorter,
@@ -169,7 +169,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
             {
               value: Tone.kUnset,
               label: loadTimeData.getString('toneMenuTitle'),
-              hidden: true,
+              isDefault: true,
             },
             {
               value: Tone.kCasual,

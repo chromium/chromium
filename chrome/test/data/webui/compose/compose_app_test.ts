@@ -623,7 +623,7 @@ suite('ComposeApp', () => {
 
     assertTrue(isVisible(app.$.lengthMenu), 'Length menu should be visible.');
     assertEquals(
-        2, app.$.lengthMenu.querySelectorAll('option:not([hidden])').length);
+        2, app.$.lengthMenu.querySelectorAll('option:not([disabled])').length);
 
     app.$.lengthMenu.value = `${Length.kShorter}`;
     app.$.lengthMenu.dispatchEvent(new CustomEvent('change'));
@@ -637,7 +637,7 @@ suite('ComposeApp', () => {
 
     assertTrue(isVisible(app.$.toneMenu), 'Tone menu should be visible.');
     assertEquals(
-        2, app.$.toneMenu.querySelectorAll('option:not([hidden])').length);
+        2, app.$.toneMenu.querySelectorAll('option:not([disabled])').length);
 
     app.$.toneMenu.value = `${Tone.kCasual}`;
     app.$.toneMenu.dispatchEvent(new CustomEvent('change'));

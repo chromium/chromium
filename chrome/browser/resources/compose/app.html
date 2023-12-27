@@ -432,7 +432,8 @@
           <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
               aria-label="$i18n{lengthMenuTitle}" on-change="onLengthChanged_">
             <template is="dom-repeat" items="[[lengthOptions_]]">
-              <option value="[[item.value]]" hidden$="[[item.hidden]]">
+              <option value="[[item.value]]" disabled$="[[item.isDefault]]"
+                  selected$="[[item.isDefault]]">
                 [[item.label]]
               </option>
             </template>
@@ -440,7 +441,8 @@
           <select class="md-select" id="toneMenu" value="[[selectedTone_]]"
               aria-label="$i18n{toneMenuTitle}" on-change="onToneChanged_">
             <template is="dom-repeat" items="[[toneOptions_]]">
-              <option value="[[item.value]]" hidden$="[[item.hidden]]">
+              <option value="[[item.value]]" disabled$="[[item.isDefault]]"
+                  selected$="[[item.isDefault]]">
                 [[item.label]]
               </option>
             </template>
