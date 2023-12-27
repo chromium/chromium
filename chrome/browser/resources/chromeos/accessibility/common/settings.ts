@@ -37,7 +37,7 @@ export class Settings {
     // TODO(b/314203187): Not null asserted, check these to make sure this is
     // correct.
     chrome.settingsPrivate.onPrefsChanged.addListener(
-        updates => Settings.instance!.update_(updates));
+        (updates: PrefObject[]) => Settings.instance!.update_(updates));
   }
 
   /**
