@@ -15,16 +15,77 @@
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/drive/model/drive_availability.h"
+#import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/download_task.h"
 #import "net/base/net_errors.h"
 #import "ui/base/l10n/l10n_util.h"
 
+namespace {
+
+// Returns the Save to Drive data associated with `task` if any.
+std::optional<DownloadTaskSaveToDriveData> GetDownloadTaskSaveToDriveData(
+    web::DownloadTask* task) {
+  CHECK_NE(task, nullptr);
+  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+    return std::nullopt;
+  }
+  DriveTabHelper* drive_tab_helper =
+      DriveTabHelper::FromWebState(task->GetWebState());
+  return drive_tab_helper->GetDownloadTaskSaveToDriveData();
+}
+
+// Returns the downloaded file destination for `task`. `task` cannot be nullptr.
+DownloadFileDestination GetDownloadTaskFileDestination(
+    web::DownloadTask* task) {
+  CHECK_NE(task, nullptr);
+  if (GetDownloadTaskSaveToDriveData(task)) {
+    return DownloadFileDestination::kDrive;
+  }
+
+  return DownloadFileDestination::kFiles;
+}
+
+// If the `task` will be saved to Drive, returns the Save to Drive user email
+// address associated with `task`.
+NSString* GetDownloadTaskSaveToDriveUserEmail(web::DownloadTask* task) {
+  CHECK_NE(task, nullptr);
+  std::optional<DownloadTaskSaveToDriveData> task_save_to_drive_data =
+      GetDownloadTaskSaveToDriveData(task);
+  CHECK(task_save_to_drive_data);
+  return task_save_to_drive_data->identity.userEmail;
+}
+
+// Returns whether `task` still needs to be saved to Drive.
+bool WillDownloadTaskBeSavedToDrive(web::DownloadTask* task) {
+  CHECK_NE(task, nullptr);
+  std::optional<DownloadTaskSaveToDriveData> task_save_to_drive_data =
+      GetDownloadTaskSaveToDriveData(task);
+  if (!task_save_to_drive_data) {
+    return false;
+  }
+
+  // TODO(crbug.com/1495354): Return false if the task has been saved to Drive.
+  return true;
+}
+
+// Returns whether `task` still needs to be saved to Drive.
+float GetDownloadTaskSaveToDriveProgress(web::DownloadTask* task) {
+  CHECK_NE(task, nullptr);
+  // TODO(crbug.com/1495354): Return the actual upload progress.
+  return 0.0f;
+}
+
+}  // namespace
+
 DownloadManagerMediator::DownloadManagerMediator() : weak_ptr_factory_(this) {}
 DownloadManagerMediator::~DownloadManagerMediator() {
   SetDownloadTask(nullptr);
 }
+
+#pragma mark - Public
 
 void DownloadManagerMediator::SetIsIncognito(bool is_incognito) {
   is_incognito_ = is_incognito;
@@ -76,26 +137,44 @@ void DownloadManagerMediator::StartDownloading() {
   task_->Start(download_dir.Append(task_->GenerateFileName()));
 }
 
-void DownloadManagerMediator::OnDownloadUpdated(web::DownloadTask* task) {
-  UpdateConsumer();
+DownloadManagerState DownloadManagerMediator::GetDownloadManagerState() const {
+  // Returns the `DownloadManagerState`, depending on the state of `task_` and
+  // the state of the upload to Save to Drive, if that is the destination of the
+  // downloaded file.
+  switch (task_->GetState()) {
+    case web::DownloadTask::State::kNotStarted:
+      return kDownloadManagerStateNotStarted;
+    case web::DownloadTask::State::kInProgress:
+      return kDownloadManagerStateInProgress;
+    case web::DownloadTask::State::kComplete:
+      if (WillDownloadTaskBeSavedToDrive(task_)) {
+        return kDownloadManagerStateInProgress;
+      } else {
+        return kDownloadManagerStateSucceeded;
+      }
+    case web::DownloadTask::State::kFailed:
+      return kDownloadManagerStateFailed;
+    case web::DownloadTask::State::kFailedNotResumable:
+      return kDownloadManagerStateFailedNotResumable;
+    case web::DownloadTask::State::kCancelled:
+      // Download Manager should dismiss the UI after download cancellation.
+      return kDownloadManagerStateNotStarted;
+  }
 }
 
-void DownloadManagerMediator::OnDownloadDestroyed(web::DownloadTask* task) {
-  SetDownloadTask(nullptr);
-}
+#pragma mark - Private
 
 void DownloadManagerMediator::UpdateConsumer() {
   DownloadManagerState state = GetDownloadManagerState();
 
-  if (base::FeatureList::IsEnabled(kIOSSaveToDrive) &&
-      [consumer_
-          respondsToSelector:@selector(setDownloadToDriveButtonVisible:)]) {
+  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
     bool is_save_to_drive_available = drive::IsSaveToDriveAvailable(
         is_incognito_, identity_manager_, drive_service_);
     [consumer_ setDownloadToDriveButtonVisible:is_save_to_drive_available];
   }
 
-  if (state == kDownloadManagerStateSucceeded) {
+  if (state == kDownloadManagerStateSucceeded &&
+      !WillDownloadTaskBeSavedToDrive(task_)) {
     base::FilePath user_download_path;
     GetDownloadsDirectory(&user_download_path);
     download_path_ = user_download_path.Append(task_->GenerateFileName());
@@ -112,10 +191,18 @@ void DownloadManagerMediator::UpdateConsumer() {
   }
 
   if (!base::FeatureList::IsEnabled(kIOSSaveToDrive) &&
-      state == kDownloadManagerStateSucceeded && !IsGoogleDriveAppInstalled() &&
-      [consumer_ respondsToSelector:@selector(setInstallDriveButtonVisible:
-                                                                  animated:)]) {
+      state == kDownloadManagerStateSucceeded && !IsGoogleDriveAppInstalled()) {
     [consumer_ setInstallDriveButtonVisible:YES animated:YES];
+  }
+
+  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+    [consumer_
+        setDownloadFileDestination:GetDownloadTaskFileDestination(task_)];
+
+    if (WillDownloadTaskBeSavedToDrive(task_)) {
+      [consumer_
+          setSaveToDriveUserEmail:GetDownloadTaskSaveToDriveUserEmail(task_)];
+    }
   }
 
   [consumer_ setState:state];
@@ -152,24 +239,6 @@ void DownloadManagerMediator::MoveComplete(bool move_completed) {
   DCHECK(move_completed);
 }
 
-DownloadManagerState DownloadManagerMediator::GetDownloadManagerState() const {
-  switch (task_->GetState()) {
-    case web::DownloadTask::State::kNotStarted:
-      return kDownloadManagerStateNotStarted;
-    case web::DownloadTask::State::kInProgress:
-      return kDownloadManagerStateInProgress;
-    case web::DownloadTask::State::kComplete:
-      return kDownloadManagerStateSucceeded;
-    case web::DownloadTask::State::kFailed:
-      return kDownloadManagerStateFailed;
-    case web::DownloadTask::State::kFailedNotResumable:
-      return kDownloadManagerStateFailedNotResumable;
-    case web::DownloadTask::State::kCancelled:
-      // Download Manager should dismiss the UI after download cancellation.
-      return kDownloadManagerStateNotStarted;
-  }
-}
-
 int DownloadManagerMediator::GetDownloadManagerA11yAnnouncement() const {
   switch (task_->GetState()) {
     case web::DownloadTask::State::kNotStarted:
@@ -189,5 +258,24 @@ int DownloadManagerMediator::GetDownloadManagerA11yAnnouncement() const {
 float DownloadManagerMediator::GetDownloadManagerProgress() const {
   if (task_->GetPercentComplete() == -1)
     return 0.0f;
-  return static_cast<float>(task_->GetPercentComplete()) / 100.0f;
+  float download_progress =
+      static_cast<float>(task_->GetPercentComplete()) / 100.0f;
+  if (!WillDownloadTaskBeSavedToDrive(task_)) {
+    return download_progress;
+  }
+  float save_to_drive_progress = GetDownloadTaskSaveToDriveProgress(task_);
+  // If the downloaded file needs to be uploaded to Drive, then the overall
+  // progress is 50% once the download is complete, and then reaches 100% when
+  // the upload is complete.
+  return download_progress / 2.0 + save_to_drive_progress / 2.0;
+}
+
+#pragma mark - web::DownloadTaskObserver overrides
+
+void DownloadManagerMediator::OnDownloadUpdated(web::DownloadTask* task) {
+  UpdateConsumer();
+}
+
+void DownloadManagerMediator::OnDownloadDestroyed(web::DownloadTask* task) {
+  SetDownloadTask(nullptr);
 }

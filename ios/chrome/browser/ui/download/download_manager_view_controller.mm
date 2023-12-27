@@ -31,13 +31,6 @@ NSString* const kDriveAppWithBackgroundImage =
     @"google_drive_app_with_background";
 #endif
 
-// Possible icons for Download buttons.
-enum class DownloadDestinationIcon {
-  kNoIcon,
-  kFilesIcon,
-  kDriveIcon,
-};
-
 // `self.view` constants.
 constexpr CGFloat kWidthConstraintRegularMultiplier = 0.6;
 constexpr CGFloat kWidthConstraintCompactMultiplier = 1.0;
@@ -73,18 +66,16 @@ NSString* GetSizeString(int64_t size_in_bytes) {
 
 // Returns the appropriate image for a destination icon, with or without
 // background.
-UIImage* GetDownloadDestinationIconImage(DownloadDestinationIcon icon,
+UIImage* GetDownloadFileDestinationImage(DownloadFileDestination destination,
                                          bool with_background) {
   NSString* image_name = nil;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  switch (icon) {
-    case DownloadDestinationIcon::kNoIcon:
-      break;
-    case DownloadDestinationIcon::kFilesIcon:
+  switch (destination) {
+    case DownloadFileDestination::kFiles:
       image_name =
           with_background ? kFilesAppWithBackgroundImage : kFilesAppImage;
       break;
-    case DownloadDestinationIcon::kDriveIcon:
+    case DownloadFileDestination::kDrive:
       image_name =
           with_background ? kDriveAppWithBackgroundImage : kDriveAppImage;
       break;
@@ -97,8 +88,9 @@ UIImage* GetDownloadDestinationIconImage(DownloadDestinationIcon icon,
 // Creates a button configuration for a download button.
 UIButtonConfiguration* CreateDownloadButtonConfiguration(
     NSString* title,
-    DownloadDestinationIcon destination_icon,
-    bool use_image_with_background) {
+    DownloadFileDestination destination,
+    bool use_image,
+    bool use_image_background) {
   UIButtonConfiguration* conf = [UIButtonConfiguration grayButtonConfiguration];
   conf.contentInsets = NSDirectionalEdgeInsetsMake(
       kDownloadButtonVerticalInset, kDownloadButtonHorizontalInset,
@@ -106,8 +98,10 @@ UIButtonConfiguration* CreateDownloadButtonConfiguration(
   conf.imagePlacement = NSDirectionalRectEdgeTop;
   conf.imagePadding = kDownloadButtonImagePadding;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  conf.image = GetDownloadDestinationIconImage(destination_icon,
-                                               use_image_with_background);
+  if (use_image) {
+    conf.image =
+        GetDownloadFileDestinationImage(destination, use_image_background);
+  }
 #endif
   if (title) {
     NSMutableParagraphStyle* centered_style =
@@ -139,6 +133,8 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
   float _progress;
   DownloadManagerState _state;
   BOOL _downloadToDriveButtonVisible;
+  DownloadFileDestination _downloadFileDestination;
+  NSString* _saveToDriveUserEmail;
   BOOL _addedConstraints;  // YES if NSLayoutConstraits were added.
 
   // UI elements.
@@ -351,6 +347,20 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
   }
 }
 
+- (void)setDownloadFileDestination:(DownloadFileDestination)destination {
+  if (_downloadFileDestination != destination) {
+    _downloadFileDestination = destination;
+    [self updateViews];
+  }
+}
+
+- (void)setSaveToDriveUserEmail:(NSString*)userEmail {
+  if (![userEmail isEqualToString:_saveToDriveUserEmail]) {
+    _saveToDriveUserEmail = userEmail;
+    [self updateViews];
+  }
+}
+
 #pragma mark - DownloadManagerViewControllerProtocol
 
 - (UIView*)openInSourceView {
@@ -426,8 +436,8 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
 - (UIButton*)downloadToFilesButton {
   if (!_downloadToFilesButton) {
     UIButtonConfiguration* downloadToFilesButtonConf =
-        CreateDownloadButtonConfiguration(
-            nil, DownloadDestinationIcon::kFilesIcon, true);
+        CreateDownloadButtonConfiguration(nil, DownloadFileDestination::kFiles,
+                                          false, false);
     __weak __typeof(self) weakSelf = self;
     UIAction* downloadToFilesAction =
         [UIAction actionWithHandler:^(UIAction* action) {
@@ -454,8 +464,8 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
 - (UIButton*)downloadToDriveButton {
   if (!_downloadToDriveButton) {
     UIButtonConfiguration* downloadToDriveButtonConf =
-        CreateDownloadButtonConfiguration(
-            nil, DownloadDestinationIcon::kDriveIcon, true);
+        CreateDownloadButtonConfiguration(nil, DownloadFileDestination::kDrive,
+                                          false, false);
     __weak __typeof(self) weakSelf = self;
     UIAction* downloadToDriveAction =
         [UIAction actionWithHandler:^(UIAction* action) {
@@ -687,43 +697,92 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
       _downloadToDriveButtonVisible
           ? l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_FILES)
           : l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD),
-      _downloadToDriveButtonVisible ? DownloadDestinationIcon::kFilesIcon
-                                    : DownloadDestinationIcon::kNoIcon,
+      DownloadFileDestination::kFiles, _downloadToDriveButtonVisible,
       self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
   self.downloadToDriveButton.configuration = CreateDownloadButtonConfiguration(
       l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_DRIVE),
-      DownloadDestinationIcon::kDriveIcon,
+      DownloadFileDestination::kDrive, true,
       self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
 }
 
 // Sets up views for the state `kDownloadManagerStateInProgress`.
 - (void)updateViewsForStateInProgress {
-  self.leadingIcon.image = GetDownloadDestinationIconImage(
-      DownloadDestinationIcon::kFilesIcon, true);
-  std::u16string size =
-      base::SysNSStringToUTF16(GetSizeString(_countOfBytesReceived));
-  self.statusLabel.text = l10n_util::GetNSStringF(
-      IDS_IOS_DOWNLOAD_MANAGER_DOWNLOADING_ELIPSIS, size);
+  self.leadingIcon.image =
+      GetDownloadFileDestinationImage(_downloadFileDestination, true);
 
-  self.detailLabel.text = _fileName;
-  self.detailLabel.numberOfLines = 1;
+  switch (_downloadFileDestination) {
+      // File is being downloaded to local Downloads folder.
+    case DownloadFileDestination::kFiles: {
+      std::u16string size =
+          base::SysNSStringToUTF16(GetSizeString(_countOfBytesReceived));
+      self.statusLabel.text = l10n_util::GetNSStringF(
+          IDS_IOS_DOWNLOAD_MANAGER_DOWNLOADING_ELIPSIS, size);
+
+      self.detailLabel.text = _fileName;
+      self.detailLabel.numberOfLines = 1;
+      break;
+    }
+    // File is being downloaded, then uploaded to Drive.
+    case DownloadFileDestination::kDrive: {
+      if (_countOfBytesExpectedToReceive == -1) {
+        self.statusLabel.text = _fileName;
+        self.statusLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+      } else {
+        NSString* size = GetSizeString(_countOfBytesExpectedToReceive);
+        self.statusLabel.text =
+            l10n_util::GetNSStringF(IDS_IOS_DOWNLOAD_MANAGER_FILENAME_WITH_SIZE,
+                                    base::SysNSStringToUTF16(_fileName),
+                                    base::SysNSStringToUTF16(size));
+        self.statusLabel.numberOfLines = 0;
+      }
+      self.detailLabel.text = l10n_util::GetNSStringF(
+          IDS_IOS_DOWNLOAD_MANAGER_SAVING_TO_DRIVE,
+          base::SysNSStringToUTF16(_saveToDriveUserEmail));
+      self.detailLabel.numberOfLines = 0;
+      break;
+    }
+  }
+
   self.progressView.progress = _progress;
 }
 
 // Sets up views for the state `kDownloadManagerStateSucceeded`.
 - (void)updateViewsForStateSucceeded {
-  self.leadingIcon.image = GetDownloadDestinationIconImage(
-      DownloadDestinationIcon::kFilesIcon, true);
-  self.statusLabel.text =
-      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_COMPLETE);
-  self.detailLabel.text = _fileName;
-  self.detailLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+  self.leadingIcon.image =
+      GetDownloadFileDestinationImage(_downloadFileDestination, true);
+  switch (_downloadFileDestination) {
+    // File was downloaded to local Downloads folder.
+    case DownloadFileDestination::kFiles:
+      self.statusLabel.text =
+          l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_COMPLETE);
+      self.detailLabel.text = _fileName;
+      self.detailLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+      break;
+    // File was downloaded, then uploaded to Drive.
+    case DownloadFileDestination::kDrive:
+      if (_countOfBytesExpectedToReceive == -1) {
+        self.statusLabel.text = _fileName;
+        self.statusLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+      } else {
+        NSString* size = GetSizeString(_countOfBytesExpectedToReceive);
+        self.statusLabel.text =
+            l10n_util::GetNSStringF(IDS_IOS_DOWNLOAD_MANAGER_FILENAME_WITH_SIZE,
+                                    base::SysNSStringToUTF16(_fileName),
+                                    base::SysNSStringToUTF16(size));
+        self.statusLabel.numberOfLines = 0;
+      }
+      self.detailLabel.text = l10n_util::GetNSStringF(
+          IDS_IOS_DOWNLOAD_MANAGER_SAVED_TO_DRIVE,
+          base::SysNSStringToUTF16(_saveToDriveUserEmail));
+      self.detailLabel.numberOfLines = 0;
+      break;
+  }
 }
 
 // Sets up views for the state `kDownloadManagerStateFailed`.
 - (void)updateViewsForStateFailed {
-  self.leadingIcon.image = GetDownloadDestinationIconImage(
-      DownloadDestinationIcon::kFilesIcon, true);
+  self.leadingIcon.image =
+      GetDownloadFileDestinationImage(_downloadFileDestination, true);
   self.statusLabel.text =
       l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_COULDNT_DOWNLOAD);
   self.detailLabel.text = _fileName;
@@ -732,8 +791,8 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
 
 // Sets up views for the state `kDownloadManagerStateFailedNotResumable`.
 - (void)updateViewsForStateFailedNotResumable {
-  self.leadingIcon.image = GetDownloadDestinationIconImage(
-      DownloadDestinationIcon::kFilesIcon, true);
+  self.leadingIcon.image =
+      GetDownloadFileDestinationImage(_downloadFileDestination, true);
   self.statusLabel.text =
       l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_CANNOT_BE_RETRIED);
   self.detailLabel.text = _fileName;

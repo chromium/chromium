@@ -1371,6 +1371,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_FILES" desc="Button to start downloading a file to Files e.g. download to local storage. Files is a product name i.e. the Files app on iOS devices and the correct localized version of the product name should be used. [Length: 15em] [iOS only]" meaning="Button to start downloading a file to Files e.g. download to local storage. Files is a product name i.e. the Files app on iOS devices and the correct localized version of the product name should be used. [Length: 15em] [iOS only]">
         Files
       </message>
+      <message name="IDS_IOS_DOWNLOAD_MANAGER_FILENAME_WITH_SIZE" desc="Label for the download manager when the download has completed. It includes the size of the downloaded file. [iOS only]" meaning="Label for the download manager when the download has completed. It includes the size of the downloaded file. [iOS only]">
+        <ph name="FILENAME">$1<ex>image.jpeg</ex></ph> (<ph name="FILESIZE">$2<ex>4 MB</ex></ph>)
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_MANAGER_SAVED_TO_DRIVE" desc="Label for the file having been downloaded to Drive. [iOS only]" meaning="Label for the file having been downloaded to Drive. [iOS only]">
+        saved in Drive for <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>.
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_MANAGER_SAVING_TO_DRIVE" desc="Label for the file being downloaded to Drive. [iOS only]" meaning="Label for the file being downloaded to Drive. [iOS only]">
+        saving in Drive for <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>.
+      </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_FAILED_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement read by Voice Over when the download has failed. [Length: unlimited] [iOS only]">
         Download failed
       </message>
