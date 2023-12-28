@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
+#include "base/version.h"
 #include "media/base/android/android_util.h"
 #include "media/base/android/media_crypto_context.h"
 #include "media/base/android/media_crypto_context_impl.h"
@@ -102,6 +103,9 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
 
   // Returns the scheme UUID for |key_system|.
   static std::vector<uint8_t> GetUUID(const std::string& key_system);
+
+  // Gets the current version for |key_system|.
+  static base::Version GetVersion(const std::string& key_system);
 
   // Same as Create() except that no session callbacks are provided. This is
   // used when we need to use MediaDrmBridge without creating any sessions.
@@ -301,8 +305,11 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
 
   ~MediaDrmBridge() override;
 
-  // Get the security level of the media.
+  // Get the security level of the media. Only valid for Widevine.
   SecurityLevel GetSecurityLevel();
+
+  // Returns the version of the CDM.
+  std::string GetVersionInternal();
 
   // A helper method that is called when MediaCrypto is ready.
   void NotifyMediaCryptoReady(JavaObjectPtr j_media_crypto);
