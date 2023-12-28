@@ -10,8 +10,7 @@
   self.configuration = configuration;
 }
 
-- (void)setToolbarsButtonsDelegate:
-    (id<TabGridToolbarsButtonsDelegate>)delegate {
+- (void)setToolbarsButtonsDelegate:(id<TabGridToolbarsGridDelegate>)delegate {
   self.delegate = delegate;
 }
 

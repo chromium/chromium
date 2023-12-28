@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 
 @class TabGridToolbarsConfiguration;
-@protocol TabGridToolbarsButtonsDelegate;
+@protocol TabGridToolbarsGridDelegate;
 
 // Allows grids mediator to reflect toolbars needs in tab grid toolbars' model.
 @protocol GridToolbarsMutator <NSObject>
@@ -20,7 +20,7 @@
 
 // Sends to tab grid toolbars model which delegates should handle buttons'
 // actions.
-- (void)setToolbarsButtonsDelegate:(id<TabGridToolbarsButtonsDelegate>)delegate;
+- (void)setToolbarsButtonsDelegate:(id<TabGridToolbarsGridDelegate>)delegate;
 
 // Sends to the model the current mode.
 - (void)setToolbarsMode:(TabGridMode)mode;

@@ -20,7 +20,7 @@ class FaviconLoader;
 @protocol GridToolbarsMutator;
 @protocol RecentTabsConsumer;
 @class SceneState;
-@protocol TabGridToolbarsActionWrangler;
+@protocol TabGridToolbarsMainTabGridDelegate;
 
 namespace signin {
 class IdentityManager;
@@ -56,9 +56,9 @@ class TabRestoreService;
 @property(nonatomic, weak) id<GridToolbarsMutator> toolbarsMutator;
 // Grid consumer.
 @property(nonatomic, weak) id<GridConsumer> gridConsumer;
-// Wrangler handling the TabGrid modifications.
-@property(nonatomic, weak) id<TabGridToolbarsActionWrangler>
-    toolbarActionWrangler;
+// Delegate handling the Tab Grid modifications.
+@property(nonatomic, weak) id<TabGridToolbarsMainTabGridDelegate>
+    toolbarTabGridDelegate;
 
 - (instancetype)
     initWithSessionSyncService:

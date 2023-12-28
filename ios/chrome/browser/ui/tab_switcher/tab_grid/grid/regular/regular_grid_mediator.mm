@@ -80,7 +80,7 @@
   // TODO(crbug.com/1457146): Implement.
 }
 
-#pragma mark - TabGridToolbarsButtonsDelegate
+#pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
   // TODO(crbug.com/1457146): Clean this in order to have "Close All" and "Undo"

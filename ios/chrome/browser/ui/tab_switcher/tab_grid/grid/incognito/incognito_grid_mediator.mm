@@ -93,7 +93,7 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
   // TODO(crbug.com/1457146): Implement.
 }
 
-#pragma mark - TabGridToolbarsButtonsDelegate
+#pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
   [self closeAllItems];

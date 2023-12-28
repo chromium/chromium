@@ -107,7 +107,7 @@
   _mediator.browser = self.browser;
   _mediator.delegate = self.gridMediatorDelegate;
   _mediator.toolbarsMutator = self.toolbarsMutator;
-  _mediator.actionWrangler = self.tabGridViewController;
+  _mediator.toolbarTabGridDelegate = self.tabGridViewController;
   _mediator.incognitoDelegate = self;
   _mediator.reauthSceneAgent = _reauthAgent;
   _mediator.dispatcher = self;

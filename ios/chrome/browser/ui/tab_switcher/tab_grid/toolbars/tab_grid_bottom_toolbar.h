@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 
 @class TabGridNewTabButton;
-@protocol TabGridToolbarsButtonsDelegate;
+@protocol TabGridToolbarsGridDelegate;
 
 // Bottom toolbar for TabGrid. The appearance of the toolbar is decided by
 // screen size, current TabGrid page and mode:
@@ -41,7 +41,7 @@
 // title (singular or plural).
 @property(nonatomic, assign) int selectedTabsCount;
 // Delegate to call when a button is pushed.
-@property(nonatomic, weak) id<TabGridToolbarsButtonsDelegate> buttonsDelegate;
+@property(nonatomic, weak) id<TabGridToolbarsGridDelegate> buttonsDelegate;
 
 // Set `enabled` on the new tab button.
 - (void)setNewTabButtonEnabled:(BOOL)enabled;

@@ -9,7 +9,7 @@
 
 @protocol GridToolbarsMutator;
 @class TabGridBottomToolbar;
-@protocol TabGridToolbarsActionWrangler;
+@protocol TabGridToolbarsMainTabGridDelegate;
 @class TabGridTopToolbar;
 @protocol TabGridToolbarsCommandsWrangler;
 
@@ -26,11 +26,9 @@
 // Mutator to handle toolbars modification.
 @property(nonatomic, readonly, weak) id<GridToolbarsMutator> toolbarsMutator;
 
-// Wrangler to manage actions/delegate, should be removed in a future
-// refactoring. Those should be moved to the Grid once the grid has a direct
-// connection to the toolbars.
-// TODO(crbug.com/1456659): Remove those.
-@property(nonatomic, weak) id<TabGridToolbarsActionWrangler> actionWrangler;
+// Action handler for the actions related to the tab grid .
+@property(nonatomic, weak) id<TabGridToolbarsMainTabGridDelegate>
+    toolbarTabGridDelegate;
 
 @end
 

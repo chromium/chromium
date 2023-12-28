@@ -1950,7 +1950,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   NOTREACHED();
 }
 
-#pragma mark - TabGridToolbarsActionWrangler
+#pragma mark - TabGridToolbarsMainTabGridDelegate
 
 - (void)doneButtonTapped:(id)sender {
   TabGridPage newActivePage = self.currentPage;

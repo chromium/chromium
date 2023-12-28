@@ -716,7 +716,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       [[TabGridToolbarsCoordinator alloc] initWithBaseViewController:nil
                                                              browser:nil];
   _toolbarsCoordinator.searchDelegate = self.baseViewController;
-  _toolbarsCoordinator.actionWrangler = self.baseViewController;
+  _toolbarsCoordinator.toolbarTabGridDelegate = self.baseViewController;
   [_toolbarsCoordinator start];
   self.baseViewController.topToolbar = _toolbarsCoordinator.topToolbar;
   self.baseViewController.bottomToolbar = _toolbarsCoordinator.bottomToolbar;
@@ -848,7 +848,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                 disabledByPolicy:_pageConfiguration ==
                                  TabGridPageConfiguration::kIncognitoPageOnly];
   self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
-  self.remoteTabsMediator.toolbarActionWrangler = self.baseViewController;
+  self.remoteTabsMediator.toolbarTabGridDelegate = self.baseViewController;
   baseViewController.remoteTabsViewController.imageDataSource =
       self.remoteTabsMediator;
   baseViewController.remoteTabsViewController.delegate =

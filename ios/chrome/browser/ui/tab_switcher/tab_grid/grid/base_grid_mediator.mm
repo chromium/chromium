@@ -60,8 +60,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_action_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -233,7 +233,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   _delegate = nil;
   _toolbarsMutator = nil;
   _containedGridToolbarsProvider = nil;
-  _actionWrangler = nil;
+  _toolbarTabGridDelegate = nil;
   _gridConsumer = nil;
   _tabPresentationDelegate = nil;
 
@@ -1122,7 +1122,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   self.currentMode = mode;
 }
 
-#pragma mark - TabGridToolbarsButtonsDelegate
+#pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
   NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
@@ -1136,7 +1136,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
     // Records action when user exit the selection mode.
     base::RecordAction(base::UserMetricsAction("MobileTabGridSelectionDone"));
   } else {
-    [self.actionWrangler doneButtonTapped:sender];
+    [self.toolbarTabGridDelegate doneButtonTapped:sender];
   }
 }
 

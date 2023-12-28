@@ -38,9 +38,9 @@
 #import "ios/chrome/browser/ui/recent_tabs/sessions_sync_user_state.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_action_wrangler.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_buttons_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "url/gurl.h"
 
@@ -97,7 +97,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
 @interface RecentTabsMediator () <IdentityManagerObserverBridgeDelegate,
                                   SyncedSessionsObserver,
-                                  TabGridToolbarsButtonsDelegate,
+                                  TabGridToolbarsGridDelegate,
                                   WebStateListObserving> {
   std::unique_ptr<AllWebStateListObservationRegistrar> _registrar;
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
@@ -396,14 +396,14 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
       << "remote tabs should only support normal and search modes.";
 }
 
-#pragma mark - TabGridToolbarsButtonsDelegate
+#pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
   NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
 }
 
 - (void)doneButtonTapped:(id)sender {
-  [self.toolbarActionWrangler doneButtonTapped:sender];
+  [self.toolbarTabGridDelegate doneButtonTapped:sender];
 }
 
 - (void)newTabButtonTapped:(id)sender {

@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 
 @protocol GridToolbarsMutator;
-@protocol TabGridToolbarsButtonsDelegate;
+@protocol TabGridToolbarsGridDelegate;
 @protocol TabGridToolbarsConfiguration;
 
 // Fake mediator class that implement the mutator to be able to verify the
@@ -17,7 +17,7 @@
 @interface FakeTabGridToolbarsMediator : NSObject <GridToolbarsMutator>
 
 @property(nonatomic, strong) TabGridToolbarsConfiguration* configuration;
-@property(nonatomic, weak) id<TabGridToolbarsButtonsDelegate> delegate;
+@property(nonatomic, weak) id<TabGridToolbarsGridDelegate> delegate;
 @property(nonatomic, assign) TabGridMode mode;
 @property(nonatomic, assign) BOOL enabled;
 
