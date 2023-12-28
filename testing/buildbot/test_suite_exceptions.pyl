@@ -2393,6 +2393,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
         ],
       },
+      'android-arm64-proguard-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.arm64_proguard_rel.crashpad_tests.filter',
+        ],
+      },
       # TODO(crbug.com/1254975): dyld was rebuilt for macOS 12, which breaks
       # the tests. Run this experimentally on all the macOS bots >= 12 and
       # remove this exception once fixed.
