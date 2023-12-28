@@ -279,13 +279,6 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
 
   EXPECT_EQ(job.status(), RemoteCommandJob::ACKED);
 
-  // The result payload should contain the success result code.
-  EXPECT_THAT(
-      *job.GetResultPayload(),
-      IsJson(base::Value::Dict().Set(
-          "result", enterprise_management::FetchSupportPacketResultCode::
-                        FETCH_SUPPORT_PACKET_RESULT_SUCCESS)));
-
   base::FilePath exported_file = job.GetExportedFilepathForTesting();
 
   // Check the contents of LogUploadEvent that the job enqueued.
@@ -299,6 +292,12 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
             *enqueued_event.mutable_upload_settings()->mutable_origin_path());
   EXPECT_TRUE(enqueued_event.has_command_id());
   EXPECT_EQ(enqueued_event.command_id(), kUniqueID);
+  // The result payload should contain the success result code.
+  EXPECT_THAT(
+      enqueued_event.command_result_payload(),
+      IsJson(base::Value::Dict().Set(
+          "result", enterprise_management::FetchSupportPacketResultCode::
+                        FETCH_SUPPORT_PACKET_RESULT_SUCCESS)));
 
   int64_t file_size;
   ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
@@ -334,21 +333,6 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
 
   EXPECT_EQ(job.status(), RemoteCommandJob::ACKED);
 
-  // The result payload should contain the success result code.
-  base::Value::Dict expected_payload;
-  expected_payload.Set("result",
-                       enterprise_management::FetchSupportPacketResultCode::
-                           FETCH_SUPPORT_PACKET_RESULT_SUCCESS);
-  if (!session_info.pii_allowed) {
-    // A note will be added to the result payload when requested PII is
-    // not included in the collected logs.
-    expected_payload.Set(
-        "notes", base::Value::List().Append(
-                     enterprise_management::FetchSupportPacketResultNote::
-                         WARNING_PII_NOT_ALLOWED));
-  }
-  EXPECT_THAT(*job.GetResultPayload(), IsJson(std::move(expected_payload)));
-
   base::FilePath exported_file = job.GetExportedFilepathForTesting();
 
   // Check the contents of LogUploadEvent that the job enqueued.
@@ -362,6 +346,21 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
             *enqueued_event.mutable_upload_settings()->mutable_origin_path());
   EXPECT_TRUE(enqueued_event.has_command_id());
   EXPECT_EQ(enqueued_event.command_id(), kUniqueID);
+  // The result payload should contain the success result code.
+  base::Value::Dict expected_payload;
+  expected_payload.Set("result",
+                       enterprise_management::FetchSupportPacketResultCode::
+                           FETCH_SUPPORT_PACKET_RESULT_SUCCESS);
+  if (!session_info.pii_allowed) {
+    // A note will be added to the result payload when requested PII is
+    // not included in the collected logs.
+    expected_payload.Set(
+        "notes", base::Value::List().Append(
+                     enterprise_management::FetchSupportPacketResultNote::
+                         WARNING_PII_NOT_ALLOWED));
+  }
+  EXPECT_THAT(enqueued_event.command_result_payload(),
+              IsJson(std::move(expected_payload)));
 
   int64_t file_size;
   ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
