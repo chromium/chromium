@@ -12,7 +12,7 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/bit_cast.h"
@@ -97,10 +97,6 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
     wl_remote_surface_resource_.reset();
 
     test::ExoTestBase::TearDown();
-  }
-
-  void EnableTabletMode(bool enable) {
-    ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(enable);
   }
 
   std::unique_ptr<ClientControlledShellSurface::Delegate> CreateDelegate() {
@@ -249,7 +245,7 @@ TEST_F(WaylandRemoteShellTest, TabletTransition) {
 
   // Enable tablet mode.
   ResetEventRecords();
-  EnableTabletMode(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   task_environment()->FastForwardBy(base::Seconds(1));
   task_environment()->RunUntilIdle();
 
