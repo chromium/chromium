@@ -2415,7 +2415,7 @@
     "args": ["--disable-features=FormControlsVerticalWritingModeTextSupport",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["dizhangg@chromium.org"],
-    "expires": "Mar 1, 2023"
+    "expires": "Mar 1, 2024"
   },
   {
     "prefix": "url-non-special",
@@ -2553,5 +2553,18 @@
     "args": ["--enable-features=DeprecateUnload"],
     "expires": "Jun 1, 2024",
     "owners": ["fergal@chromium.org", "rakina@chromium.org"]
+  },
+  {
+    "prefix": "vertical-form-controls-direction-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "fast/forms/color-scheme/meter/meter-appearance-basic-vertical.html",
+      "fast/forms/color-scheme/progress/progress-appearance-basic.html",
+      "fast/forms/range/range-appearance-border-padding.html"
+    ],
+    "args": ["--disable-features=FormControlsVerticalWritingModeDirectionSupport",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "owners": ["dizhangg@chromium.org"],
+    "expires": "Jun 1, 2024"
   }
 ]

@@ -21,9 +21,11 @@ HTMLMeterElement* MeterShadowElement::MeterElement() const {
 void MeterShadowElement::AdjustStyle(ComputedStyleBuilder& builder) {
   const ComputedStyle* meter_style = MeterElement()->GetComputedStyle();
   DCHECK(meter_style);
-  // For vertical writing-mode, we need to set the direction to rtl so that
-  // the meter value bar is rendered bottom up.
-  if (!IsHorizontalWritingMode(builder.GetWritingMode())) {
+  // For vertical writing-mode, if direction is not supported, we need to set
+  // the direction to rtl so that the meter value bar is rendered bottom up.
+  if (!RuntimeEnabledFeatures::
+          FormControlsVerticalWritingModeDirectionSupportEnabled() &&
+      !IsHorizontalWritingMode(builder.GetWritingMode())) {
     builder.SetDirection(TextDirection::kRtl);
   }
 }

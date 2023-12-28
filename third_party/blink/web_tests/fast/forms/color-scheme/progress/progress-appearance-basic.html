@@ -1,5 +1,13 @@
 <!DOCTYPE html>
 <meta name="color-scheme" content="light dark">
+<style>
+progress.vertical {
+  writing-mode: vertical-rl;
+}
+progress.rtl {
+  direction: rtl;
+}
+</style>
 
 <progress max="100" value="0"></progress><br><br>
 <progress max="100" value="1"></progress><br><br>
@@ -9,11 +17,17 @@
 <progress max="100" value="99"></progress><br><br>
 <progress max="100" value="100"></progress><br><br>
 <progress max="100" value="50" style="height:30px"></progress><br><br>
-<progress max="100" value="0" style="writing-mode: vertical-rl"></progress>
-<progress max="100" value="1" style="writing-mode: vertical-rl"></progress>
-<progress max="100" value="5" style="writing-mode: vertical-rl"></progress>
-<progress max="100" value="50" style="writing-mode: vertical-rl"></progress>
-<progress max="100" value="95" style="writing-mode: vertical-rl"></progress>
-<progress max="100" value="99" style="writing-mode: vertical-rl"></progress>
-<progress max="100" value="100" style="writing-mode: vertical-rl"></progress>
-<progress max="100" value="50" style="writing-mode: vertical-rl"></progress><br><br>
+<progress max="100" value="0" class="vertical"></progress>
+<progress max="100" value="1" class="vertical rtl"></progress>
+<progress max="100" value="1" class="vertical"></progress>
+<progress max="100" value="5" class="vertical rtl"></progress>
+<progress max="100" value="5" class="vertical"></progress>
+<progress max="100" value="50" class="vertical rtl"></progress>
+<progress max="100" value="50" class="vertical"></progress>
+<progress max="100" value="95" class="vertical rtl"></progress>
+<progress max="100" value="95" class="vertical"></progress>
+<progress max="100" value="99" class="vertical rtl"></progress>
+<progress max="100" value="99" class="vertical"></progress>
+<progress max="100" value="100" class="vertical"></progress>
+<progress max="100" value="50" style="width:30px" class="vertical rtl"></progress>
+<progress max="100" value="50" style="width:30px" class="vertical"></progress></progress><br><br>
