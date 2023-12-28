@@ -9,23 +9,24 @@ import {EventHandler} from '../../common/event_handler.js';
 import {MediapipeAvailability} from './mediapipe_availability.js';
 import {FaceLandmarkerResult} from './mediapipe_task_vision/vision.js';
 
-/**
- * TODO(b/309121742): Add more gestures here.
- * The facial gestures that are supported by FaceGaze.
- */
+/** The facial gestures that are supported by FaceGaze. */
 export enum FacialGesture {
+  BROW_DOWN_LEFT = 'browDownLeft',
+  BROW_DOWN_RIGHT = 'browDownRight',
   BROW_INNER_UP = 'browInnerUp',
   JAW_OPEN = 'jawOpen',
+  MOUTH_LEFT = 'mouthLeft',
+  MOUTH_RIGHT = 'mouthRight',
 }
 
 /**
- * TODO(b/309121742): Add more actions here.
  * TODO(b/309121742): Move this into a dedicated class for action fulfillment.
  * The actions that are supported by FaceGaze.
  */
 export enum Action {
   CLICK_LEFT = 'clickLeft',
   CLICK_RIGHT = 'clickRight',
+  RESET_MOUSE = 'resetMouse',
 }
 
 interface ActionData {
@@ -79,7 +80,13 @@ export class FaceGaze {
             FaceGaze.createDefaultActionData(Action.CLICK_LEFT))
         .set(
             FacialGesture.BROW_INNER_UP,
-            FaceGaze.createDefaultActionData(Action.CLICK_RIGHT));
+            FaceGaze.createDefaultActionData(Action.CLICK_RIGHT))
+        .set(
+            FacialGesture.BROW_DOWN_LEFT,
+            FaceGaze.createDefaultActionData(Action.RESET_MOUSE))
+        .set(
+            FacialGesture.BROW_DOWN_RIGHT,
+            FaceGaze.createDefaultActionData(Action.RESET_MOUSE));
 
     chrome.accessibilityPrivate.enableMouseEvents(true);
     const desktop = await AsyncUtil.getDesktop();
@@ -187,7 +194,6 @@ export class FaceGaze {
   }
 
   /**
-   * TODO(b/309121742): Add handling for more gestures.
    * TODO(b/309121742): Gestures can be detected multiple times in a row, so
    * implement throttling/filtering so that actions aren't unintentionally
    * spammed.
@@ -196,12 +202,28 @@ export class FaceGaze {
    */
   private detectGesturesAndPerformActions_(result: FaceLandmarkerResult): void {
     for (const classification of result.faceBlendshapes) {
+      const browDownData = {
+        [FacialGesture.BROW_DOWN_LEFT]: false,
+        [FacialGesture.BROW_DOWN_RIGHT]: false,
+      };
+
       for (const category of classification.categories) {
-        const data = this.gestureToActionData_.get(
-            category.categoryName as FacialGesture);
+        const gesture = category.categoryName as FacialGesture;
+        const data = this.gestureToActionData_.get(gesture);
         if (!data || (category.score < data.confidenceThreshold)) {
           // Skip over categories that don't meet the confidence threshold.
           continue;
+        }
+
+        if (gesture === FacialGesture.BROW_DOWN_LEFT ||
+            gesture === FacialGesture.BROW_DOWN_RIGHT) {
+          browDownData[gesture] = true;
+          if (Object.values(browDownData).includes(false)) {
+            // The BrowDown gesture is special because it is the combination of
+            // two separate facial gestures. Ensure that the associated action
+            // is only performed if both gestures are recognized.
+            continue;
+          }
         }
 
         this.performAction_(data.action);
@@ -209,7 +231,6 @@ export class FaceGaze {
     }
   }
 
-  /** TODO(b/309121742): Add support for more actions. */
   private performAction_(action: Action): void {
     switch (action) {
       case Action.CLICK_LEFT:
@@ -223,6 +244,11 @@ export class FaceGaze {
                   chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT,
               delayMs: 0,
             });
+        break;
+      case Action.RESET_MOUSE:
+        const x = this.screenBounds_.x / 2;
+        const y = this.screenBounds_.y / 2;
+        chrome.accessibilityPrivate.setCursorPosition({x, y});
         break;
     }
   }

@@ -58,3 +58,36 @@ AX_TEST_F('FaceGazeTest', 'DetectGesturesAndPerformActions', async function() {
   assertEquals(600, releaseEvent.x);
   assertEquals(400, releaseEvent.y);
 });
+
+// The BrowDown gesture is special because it is the combination of two
+// separate facial gestures. This test ensures that the associated action is
+// only performed when both gestures are detected.
+AX_TEST_F('FaceGazeTest', 'BrowDownGesture', async function() {
+  assertEquals(
+      Action.RESET_MOUSE,
+      this.getActionForGesture(FacialGesture.BROW_DOWN_LEFT));
+  assertEquals(
+      Action.RESET_MOUSE,
+      this.getActionForGesture(FacialGesture.BROW_DOWN_RIGHT));
+
+  this.setMouseLocation({x: 0, y: 0});
+  let result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(FacialGesture.BROW_DOWN_LEFT, 0.9)
+          .addGestureWithConfidence(FacialGesture.BROW_DOWN_RIGHT, 0.3);
+  this.processFaceLandmarkerResult(result);
+  assertEquals(null, this.mockAccessibilityPrivate.getLatestCursorPosition());
+
+  result = new MockFaceLandmarkerResult()
+               .addGestureWithConfidence(FacialGesture.BROW_DOWN_LEFT, 0.3)
+               .addGestureWithConfidence(FacialGesture.BROW_DOWN_RIGHT, 0.9);
+  this.processFaceLandmarkerResult(result);
+  assertEquals(null, this.mockAccessibilityPrivate.getLatestCursorPosition());
+
+  result = new MockFaceLandmarkerResult()
+               .addGestureWithConfidence(FacialGesture.BROW_DOWN_LEFT, 0.9)
+               .addGestureWithConfidence(FacialGesture.BROW_DOWN_RIGHT, 0.9);
+  this.processFaceLandmarkerResult(result);
+  assertEquals(600, this.mockAccessibilityPrivate.getLatestCursorPosition().x);
+  assertEquals(400, this.mockAccessibilityPrivate.getLatestCursorPosition().y);
+});
