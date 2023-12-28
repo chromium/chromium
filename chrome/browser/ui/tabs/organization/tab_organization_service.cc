@@ -105,6 +105,12 @@ TabOrganizationSession* TabOrganizationService::ResetSessionForBrowser(
   return CreateSessionForBrowser(browser, base_session_webcontents);
 }
 
+void TabOrganizationService::OnUserInvokedFeature(const Browser* browser) {
+  for (TabOrganizationObserver& observer : observers_) {
+    observer.OnUserInvokedFeature(browser);
+  }
+}
+
 void TabOrganizationService::StartRequest(const Browser* browser) {
   TabOrganizationSession* session = GetSessionForBrowser(browser);
   if (!session || session->IsComplete()) {
@@ -113,9 +119,6 @@ void TabOrganizationService::StartRequest(const Browser* browser) {
   if (session->request()->state() ==
       TabOrganizationRequest::State::NOT_STARTED) {
     session->StartRequest();
-  }
-  for (TabOrganizationObserver& observer : observers_) {
-    observer.OnUserInvokedFeature(browser);
   }
 }
 
@@ -154,7 +157,7 @@ void TabOrganizationService::AcceptTabOrganization(
 }
 
 void TabOrganizationService::OnActionUIAccepted(const Browser* browser) {
-  StartRequest(browser);
+  OnUserInvokedFeature(browser);
   trigger_backoff_->Decrement();
 }
 

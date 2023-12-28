@@ -64,6 +64,9 @@ class TabOrganizationService
       const Browser* browser,
       const content::WebContents* base_session_webcontents = nullptr);
 
+  // Allows for other User actions to open up the Organization UI.
+  void OnUserInvokedFeature(const Browser* browser);
+
   void AcceptTabOrganization(Browser* browser,
                              TabOrganization::ID session_id,
                              TabOrganization::ID organization_id);

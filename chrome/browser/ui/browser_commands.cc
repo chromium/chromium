@@ -1515,7 +1515,8 @@ void ShowVirtualCardEnrollBubble(Browser* browser) {
 void StartTabOrganizationRequest(Browser* browser) {
   TabOrganizationService* service =
       TabOrganizationServiceFactory::GetForProfile(browser->profile());
-  service->StartRequest(browser);
+  service->ResetSessionForBrowser(browser);
+  service->OnUserInvokedFeature(browser);
 }
 
 void ShowTranslateBubble(Browser* browser) {
