@@ -27,7 +27,6 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
-#include "content/public/browser/browser_thread.h"
 #include "google_apis/classroom/classroom_api_course_work_response_types.h"
 #include "google_apis/classroom/classroom_api_courses_response_types.h"
 #include "google_apis/classroom/classroom_api_list_course_work_request.h"
@@ -221,23 +220,10 @@ bool GlanceablesClassroomClientImpl::CourseWorkRequest::RespondIfComplete() {
 GlanceablesClassroomClientImpl::GlanceablesClassroomClientImpl(
     base::Clock* clock,
     const GlanceablesClassroomClientImpl::CreateRequestSenderCallback&
-        create_request_sender_callback,
-    bool use_best_effort_prefetch_task_runner)
+        create_request_sender_callback)
     : clock_(clock),
       create_request_sender_callback_(create_request_sender_callback),
-      number_of_assignments_prioritized_for_display_(3) {
-  if (features::IsGlanceablesV2ClassroomTeacherViewEnabled()) {
-    if (use_best_effort_prefetch_task_runner) {
-      teacher_data_prefetch_timer_.SetTaskRunner(
-          content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}));
-    }
-
-    teacher_data_prefetch_timer_.Start(
-        FROM_HERE, base::Seconds(20),
-        base::BindOnce(&GlanceablesClassroomClientImpl::PrefetchTeacherData,
-                       base::Unretained(this)));
-  }
-}
+      number_of_assignments_prioritized_for_display_(3) {}
 
 GlanceablesClassroomClientImpl::~GlanceablesClassroomClientImpl() = default;
 
@@ -373,17 +359,6 @@ void GlanceablesClassroomClientImpl::OnGlanceablesBubbleClosed() {
   }
   student_courses_.InvalidateFetchStatus();
   teacher_courses_.InvalidateFetchStatus();
-}
-
-bool GlanceablesClassroomClientImpl::
-    FireTeacherDataPrefetchTimerIfRunningForTesting(
-        base::OnceClosure prefetch_callback) {
-  if (!teacher_data_prefetch_timer_.IsRunning()) {
-    return false;
-  }
-  prefetch_callback_ = std::move(prefetch_callback);
-  teacher_data_prefetch_timer_.FireNow();
-  return true;
 }
 
 // static
@@ -534,8 +509,6 @@ void GlanceablesClassroomClientImpl::InvokeOnceStudentDataFetched(
 void GlanceablesClassroomClientImpl::InvokeOnceTeacherDataFetched(
     DataFetchCallback callback) {
   CHECK(callback);
-
-  teacher_data_prefetch_timer_.Stop();
 
   if (teacher_data_fetch_status_ == FetchStatus::kFetched) {
     std::move(callback).Run();
@@ -1108,39 +1081,6 @@ void GlanceablesClassroomClientImpl::PruneInvalidCourseWork(
         return !course_work_item.second.IsValid();
       });
     }
-  }
-}
-
-void GlanceablesClassroomClientImpl::PrefetchTeacherData() {
-  CHECK(features::IsGlanceablesV2ClassroomTeacherViewEnabled());
-  CHECK_EQ(teacher_data_fetch_status_, FetchStatus::kNotFetched);
-
-  callbacks_waiting_for_teacher_data_.push_back(base::BindOnce(
-      [](base::OnceClosure callback) {
-        if (callback) {
-          std::move(callback).Run();
-        }
-        return true;
-      },
-      std::move(prefetch_callback_)));
-
-  // Start in kFetchingInvalidated state so more recent data gets refetched when
-  // requested from UI.
-  teacher_data_fetch_status_ = FetchStatus::kFetchingInvalidated;
-
-  const bool needs_refetch =
-      teacher_courses_.RunOrEnqueueCallbackAndUpdateFetchStatus(base::BindOnce(
-          &GlanceablesClassroomClientImpl::OnCoursesFetched,
-          weak_factory_.GetWeakPtr(), CourseWorkType::kTeacher,
-          base::BindOnce(&GlanceablesClassroomClientImpl::OnTeacherDataFetched,
-                         weak_factory_.GetWeakPtr(), clock_->Now())));
-
-  if (needs_refetch) {
-    teacher_courses_.InvalidateFetchStatus();
-    auto courses = std::make_unique<CourseList>();
-    FetchCoursesPage(
-        /*student_id=*/"", /*teacher_id=*/kOwnCoursesFilterValue,
-        /*page_token=*/"", teacher_courses_, std::move(courses));
   }
 }
 

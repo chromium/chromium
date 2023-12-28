@@ -18,7 +18,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
 #include "google_apis/common/api_error_codes.h"
@@ -57,8 +56,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
 
   GlanceablesClassroomClientImpl(
       base::Clock* clock,
-      const CreateRequestSenderCallback& create_request_sender_callback,
-      bool use_best_effort_prefetch_task_runner = true);
+      const CreateRequestSenderCallback& create_request_sender_callback);
   GlanceablesClassroomClientImpl(const GlanceablesClassroomClientImpl&) =
       delete;
   GlanceablesClassroomClientImpl& operator=(
@@ -80,15 +78,6 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       size_t value) {
     number_of_assignments_prioritized_for_display_ = value;
   }
-
-  // If `teacher_data_prefetch_timer_` is running, fires it.
-  // `prefetch_callback`, if set, will run when the data requested by the
-  // prefetch gets loaded.
-  // No-op if the timer is not running. `prefetch_callback` gets ignored in this
-  // case.
-  // Returns whether the timer was fired.
-  bool FireTeacherDataPrefetchTimerIfRunningForTesting(
-      base::OnceClosure prefetch_callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest, FetchCourses);
@@ -461,11 +450,6 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void PruneInvalidCourseWork(const CourseList& courses,
                               CourseWorkPerCourse& course_work);
 
-  // Triggers teacher data fetch. Runs with a delay after login. The goal is to
-  // fetch course work student submissions state early, so older submissions
-  // don't have to be refetched when the UI is first shown.
-  void PrefetchTeacherData();
-
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
 
@@ -479,14 +463,6 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
 
   // Helper class that sends requests, handles retries and authentication.
   std::unique_ptr<google_apis::RequestSender> request_sender_;
-
-  // Timers used to prefetch teacher data.
-  base::OneShotTimer teacher_data_prefetch_timer_;
-
-  // Callback which, if set, gets called when a fetch triggered by
-  // `teacher_data_prefetch_timer_` completes. The callback can be set using
-  // `FireTeacherDataPrefetchTimerIfRunningForTesting()`.
-  base::OnceClosure prefetch_callback_;
 
   // The number of top teacher assignments that are expected to be displayed in
   // the glanceables bubble, and should thus be fresh when returned using the
