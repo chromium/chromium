@@ -850,16 +850,17 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // dragged.
     return @[];
   }
+  GridItemIdentifier* itemIdentifier =
+      [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
+  CHECK(itemIdentifier.type == GridItemType::Tab);
   if (_mode != TabGridModeSelection) {
-    TabSwitcherItem* item = self.items[indexPath.item];
-    _draggedItemID = item.identifier;
+    _draggedItemID = itemIdentifier.tabSwitcherItem.identifier;
     return @[ [self.dragDropHandler dragItemForItemWithID:_draggedItemID] ];
   }
 
   // Make sure that the long pressed cell is selected before initiating a drag
   // from it.
-  NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
-  web::WebStateID pressedItemID = self.items[index].identifier;
+  web::WebStateID pressedItemID = itemIdentifier.tabSwitcherItem.identifier;
   [self.mutator addToSelectionItemID:pressedItemID];
   return [self.dragDropHandler allSelectedDragItems];
 }
@@ -1574,7 +1575,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // Check `selectedIndex` boundaries in order to filter out possible race
   // conditions while mutating the collection.
   if (selectedIndex == NSNotFound ||
-      selectedIndex >= static_cast<NSInteger>(self.items.count) ||
       selectedIndex >= [self numberOfTabs]) {
     return;
   }
