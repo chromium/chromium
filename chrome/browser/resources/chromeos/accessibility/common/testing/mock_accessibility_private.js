@@ -89,6 +89,23 @@ class MockAccessibilityPrivate {
       DICTATION_NO_FOCUSED_TEXT_FIELD: 'dictationNoFocusedTextField',
     };
 
+    this.SyntheticMouseEventType = {
+      PRESS: 'press',
+      RELEASE: 'release',
+      DRAG: 'drag',
+      MOVE: 'move',
+      ENTER: 'enter',
+      EXIT: 'exit',
+    };
+
+    this.SyntheticMouseEventButton = {
+      LEFT: 'left',
+      MIDDLE: 'middle',
+      RIGHT: 'right',
+      BACK: 'back',
+      FOWARD: 'foward',
+    };
+
     /** @private {function<number, number>} */
     this.boundsListener_ = null;
 
@@ -146,6 +163,12 @@ class MockAccessibilityPrivate {
 
     /** @private {!Object<chrome.accessibilityPrivate.ToastType, number} */
     this.showToastData_ = {};
+
+    /** @private {?chrome.accessibilityPrivate.ScreenPoint} */
+    this.latestCursorPosition_ = null;
+
+    /** @private {!Array<chrome.accessibilityPrivate.SyntheticMouseEvent> */
+    this.syntheticMouseEvents_ = [];
 
     // Methods from AccessibilityPrivate API. //
 
@@ -301,6 +324,16 @@ class MockAccessibilityPrivate {
     callback(MockAccessibilityPrivate.pumpkinData_);
   }
 
+  /** @param {!chrome.accessibilityPrivate.ScreenPoint} point */
+  setCursorPosition(point) {
+    this.latestCursorPosition_ = point;
+  }
+
+  /** @param {!chrome.accessibilityPrivate.SyntheticMouseEvent} event */
+  sendSyntheticMouseEvent(event) {
+    this.syntheticMouseEvents_.push(event);
+  }
+
   // Methods for testing. //
 
   /**
@@ -454,6 +487,11 @@ class MockAccessibilityPrivate {
     }
 
     return this.showToastData_[type];
+  }
+
+  /** @return {?chrome.accessibilityPrivate.ScreenPoint} */
+  getLatestCursorPosition() {
+    return this.latestCursorPosition_;
   }
 
   /**
