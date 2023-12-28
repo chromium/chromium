@@ -217,6 +217,9 @@ void NavigationManagerImpl::OnNavigationItemCommitted() {
   DCHECK(item);
   delegate_->OnNavigationItemCommitted(item);
 
+  if (native_restore_in_progress_) {
+    native_restore_in_progress_ = false;
+  }
   if (!wk_navigation_util::IsRestoreSessionUrl(item->GetURL())) {
     restored_visible_item_.reset();
     if (is_restore_session_in_progress_) {
@@ -528,7 +531,9 @@ void NavigationManagerImpl::SetWKWebViewNextPendingUrlNotSerializable(
 }
 
 void NavigationManagerImpl::RestoreNativeSession() {
-  DCHECK(is_restore_session_in_progress_);
+  if (!base::FeatureList::IsEnabled(features::kRemoveOldWebStateRestoration)) {
+    DCHECK(is_restore_session_in_progress_);
+  }
   RecordSessionRestorationHasFetchers(!session_data_blob_fetchers_.empty());
 
   // Try to load session data blob from each registered source in order,
@@ -840,7 +845,9 @@ void NavigationManagerImpl::LoadIfNecessary() {
     Restore(web_view_cache_.GetCurrentItemIndex(),
             web_view_cache_.ReleaseCachedItems());
     DCHECK(web_view_cache_.IsAttachedToWebView());
-  } else {
+  } else if (!base::FeatureList::IsEnabled(
+                 features::kRemoveOldWebStateRestoration) ||
+             !native_restore_in_progress_) {
     delegate_->LoadIfNecessary();
   }
 }
@@ -1037,6 +1044,11 @@ void NavigationManagerImpl::Restore(
     delegate_->RemoveWebView();
   }
 
+  if (base::FeatureList::IsEnabled(features::kRemoveOldWebStateRestoration) &&
+      !web_view_cache_.IsAttachedToWebView()) {
+    web_view_cache_.ResetToAttached();
+  }
+
   for (size_t index = 0; index < items.size(); ++index) {
     RewriteItemURLIfNecessary(items[index].get());
   }
@@ -1049,10 +1061,36 @@ void NavigationManagerImpl::Restore(
         SessionDataBlobSource::kSynthesized);
   }
 
-  DCHECK_EQ(0, GetItemCount());
-  DCHECK_EQ(-1, pending_item_index_);
-  last_committed_item_index_ = -1;
-  UnsafeRestore(last_committed_item_index, std::move(items));
+  if (!base::FeatureList::IsEnabled(features::kRemoveOldWebStateRestoration)) {
+    DCHECK_EQ(0, GetItemCount());
+    DCHECK_EQ(-1, pending_item_index_);
+    last_committed_item_index_ = -1;
+    UnsafeRestore(last_committed_item_index, std::move(items));
+    return;
+  }
+
+  native_restore_in_progress_ = true;
+
+  // Ordering is important. Cache the visible item of the restored session
+  // before starting the new navigation, which may trigger client lookup of
+  // visible item. The visible item of the restored session is the last
+  // committed item, because a restored session has no pending item.
+  if (last_committed_item_index > -1) {
+    restored_visible_item_ = std::move(items[last_committed_item_index]);
+  }
+
+  std::vector<std::unique_ptr<NavigationItem>> back_items;
+  for (int index = 0; index < last_committed_item_index; index++) {
+    back_items.push_back(std::move(items[index]));
+  }
+
+  std::vector<std::unique_ptr<NavigationItem>> forward_items;
+  for (size_t index = last_committed_item_index + 1; index < items.size();
+       index++) {
+    forward_items.push_back(std::move(items[index]));
+  }
+
+  RestoreNativeSession();
 }
 
 bool NavigationManagerImpl::IsRestoreSessionInProgress() const {
@@ -1465,8 +1503,9 @@ NavigationManagerImpl::WKWebViewCache::ReleaseCachedItems() {
 
 size_t NavigationManagerImpl::WKWebViewCache::GetBackForwardListItemCount()
     const {
-  if (!IsAttachedToWebView())
+  if (!IsAttachedToWebView()) {
     return cached_items_.size();
+  }
 
   id<CRWWebViewNavigationProxy> proxy =
       navigation_manager_->delegate_->GetWebViewNavigationProxy();

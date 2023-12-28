@@ -1730,7 +1730,8 @@ enum HeaderBehaviour {
     _tabUsageRecorderBrowserAgent->RecordPageLoadStart(webState);
   }
   if (!webState->IsCrashed()) {
-    // Load the page if it was evicted by browsing data clearing logic.
+    // Load the page if it was evicted by browsing data clearing logic or if
+    // page was never loaded yet after launch.
     webState->GetNavigationManager()->LoadIfNecessary();
   }
   return webState->GetView();
@@ -2129,12 +2130,13 @@ enum HeaderBehaviour {
 }
 
 - (void)webStateSelected {
-  if (!self.viewForCurrentWebState) {
-    return;
-  }
   // Ignore changes while the tab stack view is visible (or while suspended).
   // The display will be refreshed when this view becomes active again.
   if (!self.visible || !self.webUsageEnabled) {
+    return;
+  }
+
+  if (!self.viewForCurrentWebState) {
     return;
   }
 

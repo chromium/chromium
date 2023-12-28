@@ -602,6 +602,7 @@ test("ios_web_inttests") {
     "navigation/crw_wk_navigation_handler_inttest.mm",
     "navigation/history_state_operations_inttest.mm",
     "navigation/meta_tag_inttest.mm",
+    "navigation/navigation_manager_impl_inttest.mm",
     "navigation/window_location_inttest.mm",
     "public/test/http_server_inttest.mm",
     "test/run_all_unittests.cc",
