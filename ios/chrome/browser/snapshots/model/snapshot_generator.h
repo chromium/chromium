@@ -25,11 +25,11 @@ class WebState;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Generates a new snapshot and runs a callback with the new snapshot image. It
-// uses UIKit-based snapshot APIs if the web state is showing anything other
-// than a web view (e.g., native content). Otherwise, it uses WebKit-based
-// snapshot APIs.
-- (void)generateSnapshotWithCompletion:(void (^)(UIImage*))completion;
+// Asynchronously generates a new snapshot with WebKit-based snapshot API and
+// runs a callback with the new snapshot image. It is an error to call this
+// method if the web state is showing anything other (e.g., native content) than
+// a web view.
+- (void)generateWKWebViewSnapshotWithCompletion:(void (^)(UIImage*))completion;
 
 // Generates and returns a new snapshot image with UIKit-based snapshot API.
 - (UIImage*)generateUIViewSnapshot;
