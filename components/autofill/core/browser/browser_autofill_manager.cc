@@ -2047,7 +2047,7 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
 
   // Check if the form is among the forms that were recently auto-filled.
   bool was_autofilled = base::Contains(autofilled_form_signatures_,
-                                       submitted_form->FormSignatureAsStr());
+                                       submitted_form->form_signature());
 
   FieldTypeSet non_empty_types;
   client().GetPersonalDataManager()->GetNonEmptyTypes(&non_empty_types);
@@ -2537,7 +2537,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     filling_context->filled_form = result;
   }
 
-  autofilled_form_signatures_.push_front(form_structure->FormSignatureAsStr());
+  autofilled_form_signatures_.push_front(form_structure->form_signature());
   // Only remember the last few forms that we've seen, both to avoid false
   // positives and to avoid wasting memory.
   if (autofilled_form_signatures_.size() > kMaxRecentFormSignaturesToRemember)
