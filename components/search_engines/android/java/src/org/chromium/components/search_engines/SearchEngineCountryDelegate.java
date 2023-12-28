@@ -3,16 +3,21 @@
 // found in the LICENSE file.
 package org.chromium.components.search_engines;
 
+import android.content.Context;
+
 import androidx.annotation.MainThread;
 
 import org.chromium.base.Promise;
 
-/** Delegate class to get device country. Implemented in the internal code. */
-public interface SearchEngineCountryDelegate {
+/** Placeholder delegate class to get device country. Implemented in the internal code. */
+public abstract class SearchEngineCountryDelegate {
+    @MainThread
+    public SearchEngineCountryDelegate(Context context) {}
+
     /**
      * Returns a {@link Promise} that will be fulfilled with the device country code. The promise
      * may be rejected if unable to fetch device country code.
      */
     @MainThread
-    public Promise<String> getDeviceCountry();
+    public abstract Promise<String> getDeviceCountry();
 }
