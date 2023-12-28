@@ -13,7 +13,7 @@ import {constants} from '../constants.js';
 
 import {Cursor, CURSOR_NODE_INDEX, CursorMovement, CursorUnit, WrappingCursor} from './cursor.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
+import AutomationNode = chrome.automation.AutomationNode;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
@@ -23,23 +23,10 @@ const StateType = chrome.automation.StateType;
  * It is assumed that the caller provides |start| and |end| in document order.
  */
 export class CursorRange {
-  /**
-   * @param {!Cursor} start
-   * @param {!Cursor} end
-   */
-  constructor(start, end) {
-    /** @type {!Cursor} @private */
-    this.start_ = start;
-    /** @type {!Cursor} @private */
-    this.end_ = end;
-  }
+  constructor(private start_: Cursor, private end_: Cursor) {}
 
-  /**
-   * Convenience method to construct a Range surrounding one node.
-   * @param {!AutomationNode} node
-   * @return {!CursorRange}
-   */
-  static fromNode(node) {
+  /** Convenience method to construct a Range surrounding one node. */
+  static fromNode(node: AutomationNode): CursorRange {
     const cursor = WrappingCursor.fromNode(node);
     return new CursorRange(cursor, cursor);
   }
@@ -47,11 +34,8 @@ export class CursorRange {
   /**
    * Given |rangeA| and |rangeB| in order, determine which |constants.Dir|
    * relates them.
-   * @param {!CursorRange} rangeA
-   * @param {!CursorRange} rangeB
-   * @return {constants.Dir}
    */
-  static getDirection(rangeA, rangeB) {
+  static getDirection(rangeA: CursorRange, rangeB: CursorRange): constants.Dir {
     if (!rangeA || !rangeB) {
       return constants.Dir.FORWARD;
     }
@@ -73,9 +57,12 @@ export class CursorRange {
         AutomationUtil.getDirection(rangeB.start.node, rangeA.end.node);
 
     // The two ranges are either partly overlapping or non overlapping.
-    if (testDirA === constants.Dir.FORWARD && testDirB === constants.Dir.BACKWARD) {
+    if (testDirA === constants.Dir.FORWARD &&
+        testDirB === constants.Dir.BACKWARD) {
       return constants.Dir.FORWARD;
-    } else if (testDirA === constants.Dir.BACKWARD && testDirB === constants.Dir.FORWARD) {
+    } else if (
+        testDirA === constants.Dir.BACKWARD &&
+        testDirB === constants.Dir.FORWARD) {
       return constants.Dir.BACKWARD;
     } else {
       return testDirA;
@@ -85,10 +72,8 @@ export class CursorRange {
   /**
    * Returns true if |rhs| is equal to this range.
    * Use this for strict equality between ranges.
-   * @param {!CursorRange} rhs
-   * @return {boolean}
    */
-  equals(rhs) {
+  equals(rhs: CursorRange): boolean {
     return this.start_.equals(rhs.start) && this.end_.equals(rhs.end);
   }
 
@@ -96,10 +81,8 @@ export class CursorRange {
   /**
    * Similar to above equals(), but does not trigger recovery in either start or
    * end cursor. Use this for strict equality between ranges.
-   * @param {!CursorRange} rhs
-   * @return {boolean}
    */
-  equalsWithoutRecovery(rhs) {
+  equalsWithoutRecovery(rhs: CursorRange): boolean {
     return this.start_.equalsWithoutRecovery(rhs.start) &&
         this.end_.equalsWithoutRecovery(rhs.end);
   }
@@ -107,52 +90,39 @@ export class CursorRange {
   /**
    * Returns true if |rhs| is equal to this range.
    * Use this for loose equality between ranges.
-   * @param {!CursorRange} rhs
-   * @return {boolean}
    */
-  contentEquals(rhs) {
+  contentEquals(rhs: CursorRange): boolean {
     return this.start_.contentEquals(rhs.start) &&
         this.end_.contentEquals(rhs.end);
   }
 
   /**
    * Gets the directed end cursor of this range.
-   * @param {constants.Dir} dir Which endpoint cursor to return;
+   * @param dir Which endpoint cursor to return;
    *     constants.Dir.FORWARD for end,
    * constants.Dir.BACKWARD for start.
-   * @return {!Cursor}
    */
-  getBound(dir) {
+  getBound(dir: constants.Dir): Cursor {
     return dir === constants.Dir.FORWARD ? this.end_ : this.start_;
   }
 
   /**
    * Returns true if either start or end of this range requires recovery.
-   * @return {boolean}
    */
-  requiresRecovery() {
+  requiresRecovery(): boolean {
     return this.start_.requiresRecovery() || this.end_.requiresRecovery();
   }
 
-  /**
-   * @return {!Cursor}
-   */
-  get start() {
+  get start(): Cursor {
     return this.start_;
   }
 
-  /**
-   * @return {!Cursor}
-   */
-  get end() {
+  get end(): Cursor {
     return this.end_;
   }
 
-  /**
-   * Returns true if this range covers less than a node.
-   * @return {boolean}
-   */
-  isSubNode() {
+  /** Returns true if this range covers less than a node. */
+  isSubNode(): boolean {
     const startIndex = this.start.index;
     const endIndex = this.end.index;
     return this.start.node === this.end.node && startIndex !== -1 &&
@@ -163,9 +133,8 @@ export class CursorRange {
   /**
    * Returns true if this range covers inline text (i.e. each end points to an
    * inlineTextBox).
-   * @return {boolean?}
    */
-  isInlineText() {
+  isInlineText(): boolean {
     return this.start.node && this.end.node &&
         this.start.node.role === this.end.node.role &&
         this.start.node.role === RoleType.INLINE_TEXT_BOX;
@@ -174,11 +143,8 @@ export class CursorRange {
   /**
    * Makes a Range which has been moved from this range by the given unit and
    * direction.
-   * @param {CursorUnit} unit
-   * @param {constants.Dir} dir
-   * @return {CursorRange}
    */
-  move(unit, dir) {
+  move(unit: CursorUnit, dir: constants.Dir): CursorRange {
     let newStart = this.start_;
     if (!newStart.node) {
       return this;
@@ -214,10 +180,8 @@ export class CursorRange {
     return new CursorRange(newStart, newEnd);
   }
 
-  /**
-   * Select the text contained within this range.
-   */
-  select() {
+  /** Select the text contained within this range. */
+  select(): void {
     let start = this.start_;
     let end = this.end_;
     if (this.start.compare(this.end) === constants.Dir.BACKWARD) {
@@ -269,11 +233,8 @@ export class CursorRange {
    * current range. If no matching range is found, then null is returned.
    * Note that there is a chance that new range's end spans beyond the current
    * end when the given unit is larger than the current range.
-   * @param {CursorUnit} unit
-   * @param {constants.Dir} dir
-   * @return {CursorRange}
    */
-  sync(unit, dir) {
+  sync(unit: CursorUnit, dir: constants.Dir): CursorRange|null {
     switch (unit) {
       case CursorUnit.CHARACTER:
       case CursorUnit.WORD:
@@ -282,7 +243,8 @@ export class CursorRange {
           let startNode = startCursor.node;
           if (dir === constants.Dir.FORWARD) {
             startNode = AutomationUtil.findNextNode(
-                startNode, constants.Dir.FORWARD, AutomationPredicate.leafWithWordStop,
+                startNode, constants.Dir.FORWARD,
+                AutomationPredicate.leafWithWordStop,
                 {skipInitialSubtree: false});
           } else {
             startNode = AutomationUtil.findNodePost(
@@ -325,7 +287,8 @@ export class CursorRange {
         let node;
         if (dir === constants.Dir.FORWARD) {
           node = AutomationUtil.findNextNode(
-              this.start.node, constants.Dir.FORWARD, pred, {skipInitialSubtree: false});
+              this.start.node, constants.Dir.FORWARD, pred,
+              {skipInitialSubtree: false});
         } else {
           node = AutomationUtil.findNodePost(this.start.node, dir, pred);
         }
@@ -339,33 +302,26 @@ export class CursorRange {
     }
   }
 
-  /**
-   * Returns true if this range has either cursor end on web content.
-   * @return {boolean}
-   */
-  isWebRange() {
+  /** Returns true if this range has either cursor end on web content. */
+  isWebRange(): boolean {
     return this.isValid() &&
         (this.start.node.root.role !== RoleType.DESKTOP ||
          this.end.node.root.role !== RoleType.DESKTOP);
   }
 
-  /**
-   * Returns whether this range has valid start and end cursors.
-   * @return {boolean}
-   */
-  isValid() {
+  /** Returns whether this range has valid start and end cursors. */
+  isValid(): boolean {
     return this.start.isValid() && this.end.isValid();
   }
 
   /**
    * Compares this range with |rhs|.
-   * @param {CursorRange} rhs
-   * @return {constants.Dir|undefined} constants.Dir.BACKWARD if |rhs| comes
+   * @return constants.Dir.BACKWARD if |rhs| comes
    *     before this range in
    * document order. constants.Dir.FORWARD if |rhs| comes after this range.
    * Undefined otherwise.
    */
-  compare(rhs) {
+  compare(rhs: CursorRange): constants.Dir|undefined {
     const startDir = this.start.compare(rhs.start);
     const endDir = this.end.compare(rhs.end);
     if (startDir !== endDir) {
@@ -375,11 +331,8 @@ export class CursorRange {
     return startDir;
   }
 
-  /**
-   * Returns an undirected version of this range.
-   * @return {!CursorRange}
-   */
-  normalize() {
+  /** Returns an undirected version of this range. */
+  normalize(): CursorRange {
     if (this.start.compare(this.end) === constants.Dir.BACKWARD) {
       return new CursorRange(this.end, this.start);
     }
@@ -390,9 +343,8 @@ export class CursorRange {
    * Returns true if this range was created after wrapping. For example, moving
    * from a range at the end of a web contents to [this] range at the beginning
    * of the document.
-   * @return {boolean}
    */
-  get wrapped() {
+  get wrapped(): boolean {
     return this.start_.wrapped || this.end_.wrapped;
   }
 }
