@@ -2209,6 +2209,12 @@ const char kLegacyTechReportTopLevelUrlDescription[] =
     "allow browser trace back to the top level URL instead and populate the "
     "Frame URL in the `frame_url` field on the API.";
 
+const char kLensCameraAssistedSearchName[] =
+    "Google Lens in Omnibox and New Tab Page";
+const char kLensCameraAssistedSearchDescription[] =
+    "Enable an entry point to Google Lens to allow users to search what they "
+    "see using their mobile camera.";
+
 const char kLensRegionSearchStaticPageName[] =
     "Use a static page with the Lens region search feature.";
 const char kLensRegionSearchStaticPageDescription[] =

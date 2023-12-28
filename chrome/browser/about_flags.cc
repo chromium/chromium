@@ -2529,12 +2529,38 @@ const FeatureEntry::FeatureVariation kAddToHomescreenIPHVariations[] = {
      std::size(kAddToHomescreen_UseMessage), nullptr}};
 #endif
 
-constexpr FeatureEntry::FeatureParam kStorageAccessAPI_WithPrompt[] = {
-    {"storage_access_api_auto_deny_outside_fps", "false"}};
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kLensCameraAssistedSearchLensButtonStart[] = {
+    {"searchBoxStartVariantForLensCameraAssistedSearch", "true"}};
 
-const FeatureEntry::FeatureVariation kStorageAccessAPIVariations[] = {
-    {"(with prompt)", kStorageAccessAPI_WithPrompt,
-     std::size(kStorageAccessAPI_WithPrompt), nullptr}};
+const FeatureEntry::FeatureParam kLensCameraAssistedSearchLensButtonEnd[] = {
+    {"searchBoxStartVariantForLensCameraAssistedSearch", "false"}};
+
+const FeatureEntry::FeatureParam
+    kLensCameraAssistedSkipAgsaVersionCheckEnabled[] = {
+        {"skipAgsaVersionCheck", "true"}};
+
+const FeatureEntry::FeatureParam
+    kLensCameraAssistedSkipAgsaVersionCheckDisabled[] = {
+        {"skipAgsaVersionCheck", "false"}};
+
+const FeatureEntry::FeatureParam kLensCameraAssistedSearchOnTablet[] = {
+    {"enableCameraAssistedSearchOnTablet", "true"}};
+
+const FeatureEntry::FeatureVariation kLensCameraAssistedSearchVariations[] = {
+    {"(Lens then Mic)", kLensCameraAssistedSearchLensButtonStart,
+     std::size(kLensCameraAssistedSearchLensButtonStart), nullptr},
+    {"(Mic then Lens)", kLensCameraAssistedSearchLensButtonEnd,
+     std::size(kLensCameraAssistedSearchLensButtonEnd), nullptr},
+    {"(without AGSA version check)",
+     kLensCameraAssistedSkipAgsaVersionCheckEnabled,
+     std::size(kLensCameraAssistedSkipAgsaVersionCheckEnabled), nullptr},
+    {"(with AGSA version check )",
+     kLensCameraAssistedSkipAgsaVersionCheckDisabled,
+     std::size(kLensCameraAssistedSkipAgsaVersionCheckDisabled), nullptr},
+    {"(on Tablet)", kLensCameraAssistedSearchOnTablet,
+     std::size(kLensCameraAssistedSearchOnTablet), nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::Choice kNotificationSchedulerChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -7805,6 +7831,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          content_settings::kDarkenWebsitesCheckboxInThemesSetting)},
 
+    {"lens-camera-assisted-search",
+     flag_descriptions::kLensCameraAssistedSearchName,
+     flag_descriptions::kLensCameraAssistedSearchDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kLensCameraAssistedSearch,
+                                    kLensCameraAssistedSearchVariations,
+                                    "LensCameraAssistedSearch")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"back-forward-cache", flag_descriptions::kBackForwardCacheName,
