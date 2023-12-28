@@ -701,7 +701,11 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Handles routing single-field form filling requests, such as for
   // Autocomplete and merchant promo codes.
-  std::unique_ptr<SingleFieldFormFillRouter> single_field_form_fill_router_;
+  std::unique_ptr<SingleFieldFormFillRouter> single_field_form_fill_router_ =
+      std::make_unique<SingleFieldFormFillRouter>(
+          unsafe_client().GetAutocompleteHistoryManager(),
+          unsafe_client().GetIbanManager(),
+          unsafe_client().GetMerchantPromoCodeManager());
 
   // Utilities for logging form events. The loggers emit metrics during their
   // destruction, effectively when the BrowserAutofillManager is reset or

@@ -2286,8 +2286,8 @@ class AutofillExternalDelegate_RemoveSuggestionTest
             client().GetMockAutocompleteHistoryManager(), nullptr, nullptr));
   }
 
-  MockSingleFieldFormFillRouter* single_field_form_fill_router() {
-    return static_cast<MockSingleFieldFormFillRouter*>(
+  MockSingleFieldFormFillRouter& single_field_form_fill_router() {
+    return static_cast<MockSingleFieldFormFillRouter&>(
         test_api(manager()).single_field_form_fill_router());
   }
 };
@@ -2315,7 +2315,7 @@ TEST_P(AutofillExternalDelegate_RemoveSuggestionTest, RemoveSuggestion) {
   pdm().AddProfile(profile);
 
   if (popup_item_id == PopupItemId::kAutocompleteEntry) {
-    EXPECT_CALL(*single_field_form_fill_router(),
+    EXPECT_CALL(single_field_form_fill_router(),
                 OnRemoveCurrentSingleFieldSuggestion);
   } else if (popup_item_id != PopupItemId::kPasswordEntry) {
     // Passwords entries cannot be deleted. Since all the remaining ones are

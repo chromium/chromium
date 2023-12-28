@@ -107,7 +107,6 @@ struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 class PersonalDataManager;
-class SingleFieldFormFillRouter;
 class StrikeDatabase;
 struct Suggestion;
 class TouchToFillDelegate;
@@ -314,9 +313,9 @@ class AutofillClient : public RiskDataLoader {
                   AutofillSuggestionTriggerSource trigger_source);
     PopupOpenArgs(const PopupOpenArgs&);
     PopupOpenArgs(PopupOpenArgs&&);
-    ~PopupOpenArgs();
     PopupOpenArgs& operator=(const PopupOpenArgs&);
     PopupOpenArgs& operator=(PopupOpenArgs&&);
+    ~PopupOpenArgs();
 
     gfx::RectF element_bounds;
     base::i18n::TextDirection text_direction =
@@ -465,11 +464,6 @@ class AutofillClient : public RiskDataLoader {
   virtual CreditCardCvcAuthenticator* GetCvcAuthenticator();
   virtual CreditCardOtpAuthenticator* GetOtpAuthenticator();
   virtual CreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator();
-
-  // Creates and returns a SingleFieldFormFillRouter using the
-  // AutocompleteHistoryManager, IbanManager and MerchantPromoCodeManager
-  // instances associated with the client.
-  std::unique_ptr<SingleFieldFormFillRouter> CreateSingleFieldFormFillRouter();
 
   // Gets the preferences associated with the client.
   virtual PrefService* GetPrefs() = 0;

@@ -12,7 +12,6 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
-#include "components/autofill/core/browser/single_field_form_fill_router.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -89,13 +88,6 @@ void AutofillClient::OfferPlusAddressCreation(
 
 MerchantPromoCodeManager* AutofillClient::GetMerchantPromoCodeManager() {
   return nullptr;
-}
-
-std::unique_ptr<SingleFieldFormFillRouter>
-AutofillClient::CreateSingleFieldFormFillRouter() {
-  return std::make_unique<SingleFieldFormFillRouter>(
-      GetAutocompleteHistoryManager(), GetIbanManager(),
-      GetMerchantPromoCodeManager());
 }
 
 CreditCardCvcAuthenticator* AutofillClient::GetCvcAuthenticator() {

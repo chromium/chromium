@@ -730,7 +730,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     // returned because it is assumed |field.should_autocomplete| is set to
     // true. This should be overridden in tests where
     // |field.should_autocomplete| is set to false.
-    ON_CALL(*single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+    ON_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
         .WillByDefault(Return(true));
 
     autofill_client_.set_crowdsourcing_manager(
@@ -1305,8 +1305,8 @@ class BrowserAutofillManagerTest : public testing::Test {
     return static_cast<TestFormDataImporter&>(
         *autofill_client_.GetFormDataImporter());
   }
-  MockSingleFieldFormFillRouter* single_field_form_fill_router() {
-    return static_cast<MockSingleFieldFormFillRouter*>(
+  MockSingleFieldFormFillRouter& single_field_form_fill_router() {
+    return static_cast<MockSingleFieldFormFillRouter&>(
         test_api(*browser_autofill_manager_).single_field_form_fill_router());
   }
 
@@ -1572,7 +1572,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Ensure that the SingleFieldFormFillRouter is not called for
   // suggestions either.
-  EXPECT_CALL(*single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .Times(0);
 
   // Suggestions should be returned for the first two fields.
@@ -1768,7 +1768,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   // Ensure that the SingleFieldFormFillRouter is called for both fields.
-  EXPECT_CALL(*single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .Times(2);
 
   GetAutofillSuggestions(form, form.fields[0]);
@@ -1849,7 +1849,7 @@ TEST_F(BrowserAutofillManagerTest, OnSingleFieldSuggestionSelected) {
   FormData form = CreateTestAddressFormData();
   FormFieldData field = form.fields[0];
 
-  EXPECT_CALL(*single_field_form_fill_router(),
+  EXPECT_CALL(single_field_form_fill_router(),
               OnSingleFieldSuggestionSelected(test_value,
                                               PopupItemId::kAutocompleteEntry))
       .Times(1);
@@ -1857,7 +1857,7 @@ TEST_F(BrowserAutofillManagerTest, OnSingleFieldSuggestionSelected) {
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
       test_value, PopupItemId::kAutocompleteEntry, form, field);
 
-  EXPECT_CALL(*single_field_form_fill_router(),
+  EXPECT_CALL(single_field_form_fill_router(),
               OnSingleFieldSuggestionSelected(test_value,
                                               PopupItemId::kAutocompleteEntry))
       .Times(1);
@@ -1866,14 +1866,14 @@ TEST_F(BrowserAutofillManagerTest, OnSingleFieldSuggestionSelected) {
       test_value, PopupItemId::kAutocompleteEntry, form, field);
 
   EXPECT_CALL(
-      *single_field_form_fill_router(),
+      single_field_form_fill_router(),
       OnSingleFieldSuggestionSelected(test_value, PopupItemId::kIbanEntry))
       .Times(1);
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
       test_value, PopupItemId::kIbanEntry, form, field);
 
-  EXPECT_CALL(*single_field_form_fill_router(),
+  EXPECT_CALL(single_field_form_fill_router(),
               OnSingleFieldSuggestionSelected(
                   test_value, PopupItemId::kMerchantPromoCodeEntry))
       .Times(1);
@@ -2085,7 +2085,7 @@ TEST_F(BrowserAutofillManagerTest,
                                          Suggestion(u"two")};
 
   // Mock returning some autocomplete `suggestions`.
-  EXPECT_CALL(*single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .WillOnce([&](const FormFieldData& field, const AutofillClient& client,
                     SingleFieldFormFiller::OnSuggestionsReturnedCallback
                         on_suggestions_returned,
@@ -6477,7 +6477,7 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedAutocompleteEnabled) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
 
-  EXPECT_CALL(*single_field_form_fill_router(), OnWillSubmitForm(_, _, true));
+  EXPECT_CALL(single_field_form_fill_router(), OnWillSubmitForm(_, _, true));
   FormSubmitted(form);
 }
 
@@ -6520,7 +6520,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   // Expect the SingleFieldFormFillRouter to be called for suggestions.
-  EXPECT_CALL(*single_field_form_fill_router(), OnGetSingleFieldSuggestions);
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions);
 
   GetAutofillSuggestions(form, form.fields[0]);
 
@@ -6538,7 +6538,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   // SingleFieldFormFillRouter is not called for suggestions.
-  EXPECT_CALL(*single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .Times(0);
 
   GetAutofillSuggestions(form, form.fields[0]);
@@ -6560,7 +6560,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Single field form fill manager is called for suggestions because Autofill
   // is empty.
-  EXPECT_CALL(*single_field_form_fill_router(), OnGetSingleFieldSuggestions);
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions);
 
   GetAutofillSuggestions(form, field);
 }
@@ -6589,7 +6589,7 @@ TEST_F(BrowserAutofillManagerTest,
   field.should_autocomplete = true;
 
   // SingleFieldFormFillRouter is called for suggestions.
-  EXPECT_CALL(*single_field_form_fill_router(), OnGetSingleFieldSuggestions);
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions);
 
   GetAutofillSuggestions(form, field);
 }
@@ -6618,7 +6618,7 @@ TEST_F(BrowserAutofillManagerTest,
   field.should_autocomplete = true;
 
   // SingleFieldFormFillRouter is not called for suggestions.
-  EXPECT_CALL(*single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .Times(0);
 
   GetAutofillSuggestions(form, field);
@@ -6641,8 +6641,8 @@ TEST_F(
   field.should_autocomplete = false;
 
   // Autocomplete is set to off, so suggestions should not get returned from
-  // |single_field_form_fill_router()|.
-  EXPECT_CALL(*single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+  // single_field_form_fill_router()|.
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .WillRepeatedly(Return(false));
 
   GetAutofillSuggestions(form, field);
@@ -6671,7 +6671,7 @@ TEST_F(
 
   // Autocomplete is set to off, so suggestions should not get returned from
   // |single_field_form_fill_router()|.
-  EXPECT_CALL(*single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .WillRepeatedly(Return(false));
 
   GetAutofillSuggestions(form, field);
@@ -6683,7 +6683,7 @@ TEST_F(
 
 TEST_F(BrowserAutofillManagerTest,
        DestructorCancelsSingleFieldFormFillQueries) {
-  EXPECT_CALL(*single_field_form_fill_router(), CancelPendingQueries);
+  EXPECT_CALL(single_field_form_fill_router(), CancelPendingQueries);
   browser_autofill_manager_.reset();
 }
 
@@ -8110,7 +8110,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 // !should_autocomplete for SingleFieldFormFillRouter::OnWillSubmitForm.
 TEST_F(BrowserAutofillManagerTest, DontSaveCvcInAutocompleteHistory) {
   FormData form_seen_by_ahm;
-  EXPECT_CALL(*single_field_form_fill_router(), OnWillSubmitForm(_, _, true))
+  EXPECT_CALL(single_field_form_fill_router(), OnWillSubmitForm(_, _, true))
       .WillOnce(SaveArg<0>(&form_seen_by_ahm));
 
   FormData form;
@@ -8367,7 +8367,7 @@ TEST_F(BrowserAutofillManagerTest,
     // know autocomplete must be the single field form filler in this case due
     // to the field not having a type that would route to any of the other
     // single field form fillers.
-    ON_CALL(*single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+    ON_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
         .WillByDefault(Return(mixed_form_field.should_autocomplete));
     GetAutofillSuggestions(mixed_form, mixed_form_field);
 
@@ -10848,7 +10848,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
       autofill_client_.GetLastCommittedPrimaryMainFrameOrigin(),
       kDummyPlusAddress);
   FormData form_seen_by_autocomplete;
-  EXPECT_CALL(*single_field_form_fill_router(),
+  EXPECT_CALL(single_field_form_fill_router(),
               OnWillSubmitForm(_, _, /*is_autocomplete_enabled=*/true))
       .WillOnce(SaveArg<0>(&form_seen_by_autocomplete));
 

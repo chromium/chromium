@@ -73,8 +73,8 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
         ->form_interactions_flow_id_for_test();
   }
 
-  SingleFieldFormFillRouter* single_field_form_fill_router() {
-    return manager_->single_field_form_fill_router_.get();
+  SingleFieldFormFillRouter& single_field_form_fill_router() {
+    return *manager_->single_field_form_fill_router_;
   }
 
   autofill_metrics::CreditCardFormEventLogger* credit_card_form_event_logger() {
