@@ -19,20 +19,6 @@
 
 LoginTabHelper::~LoginTabHelper() {}
 
-std::unique_ptr<content::LoginDelegate>
-LoginTabHelper::CreateAndStartMainFrameLoginDelegate(
-    const net::AuthChallengeInfo& auth_info,
-    content::WebContents* web_contents,
-    const content::GlobalRequestID& request_id,
-    const GURL& url,
-    scoped_refptr<net::HttpResponseHeaders> response_headers,
-    LoginAuthRequiredCallback auth_required_callback) {
-  std::unique_ptr<LoginHandler> login_handler = CreateLoginHandler(
-      auth_info, web_contents, std::move(auth_required_callback));
-  login_handler->Start(url, /*is_main_frame=*/true);
-  return login_handler;
-}
-
 void LoginTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // When navigating away, the LoginHandler for the previous navigation (if any)

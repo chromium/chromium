@@ -66,14 +66,7 @@ class HttpAuthCoordinator {
       content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
 
   // Exposed for testing.
-  virtual std::unique_ptr<content::LoginDelegate>
-  CreateLoginDelegateFromTabHelper(
-      content::WebContents* web_contents,
-      const net::AuthChallengeInfo& auth_info,
-      const content::GlobalRequestID& request_id,
-      const GURL& url,
-      scoped_refptr<net::HttpResponseHeaders> response_headers,
-      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
+  virtual void CreateLoginTabHelper(content::WebContents* web_contents);
 
   // Exposed for testing.
   virtual std::unique_ptr<content::LoginDelegate>

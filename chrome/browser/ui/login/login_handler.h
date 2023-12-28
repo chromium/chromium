@@ -60,7 +60,7 @@ class LoginHandler : public content::LoginDelegate {
   static std::vector<LoginHandler*> GetAllLoginHandlersForTest();
 
   // The main entry point for every auth request.
-  void Start(const GURL& request_url, bool is_main_frame);
+  void Start(const GURL& request_url);
 
   void ShowLoginPromptAfterCommit(const GURL& request_url);
 
@@ -108,7 +108,7 @@ class LoginHandler : public content::LoginDelegate {
 
   // Start is always dispatched asynchronously in the short term. This will
   // change in the future.
-  void StartAsync(const GURL& request_url, bool is_main_frame);
+  void StartAsync(const GURL& request_url);
 
   // When any handler finishes, called on every other handler. |username| and
   // |password| are only valid if |supplied| is true. If |supplied| is false

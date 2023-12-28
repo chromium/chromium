@@ -178,24 +178,13 @@ class HttpAuthCoordinatorFake : public HttpAuthCoordinator {
       : browser_client_(browser_client) {}
   ~HttpAuthCoordinatorFake() override = default;
 
-  std::unique_ptr<content::LoginDelegate> CreateLoginDelegateFromTabHelper(
-      content::WebContents* web_contents,
-      const net::AuthChallengeInfo& auth_info,
-      const content::GlobalRequestID& request_id,
-      const GURL& url,
-      scoped_refptr<net::HttpResponseHeaders> response_headers,
-      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
-      override {
+  void CreateLoginTabHelper(content::WebContents* web_contents) override {
     if (!LoginTabHelper::FromWebContents(web_contents)) {
       auto tab_helper =
           std::make_unique<LoginTabHelperFake>(web_contents, browser_client_);
       web_contents->SetUserData(LoginTabHelper::UserDataKey(),
                                 std::move(tab_helper));
     }
-    return LoginTabHelper::FromWebContents(web_contents)
-        ->CreateAndStartMainFrameLoginDelegate(
-            auth_info, web_contents, request_id, url,
-            std::move(response_headers), std::move(auth_required_callback));
   }
 
   std::unique_ptr<content::LoginDelegate> CreateLoginDelegateFromLoginHandler(
@@ -209,7 +198,7 @@ class HttpAuthCoordinatorFake : public HttpAuthCoordinator {
     auto login_handler = std::make_unique<LoginHandlerFake>(
         auth_info, web_contents, std::move(auth_required_callback),
         browser_client_);
-    login_handler->Start(url, /*is_main_frame=*/false);
+    login_handler->Start(url);
     return login_handler;
   }
 

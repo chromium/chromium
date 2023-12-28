@@ -107,11 +107,9 @@ std::vector<LoginHandler*> LoginHandler::GetAllLoginHandlersForTest() {
   return output;
 }
 
-void LoginHandler::Start(const GURL& request_url,
-                         bool is_request_for_main_frame) {
-  auto callback =
-      base::BindOnce(&LoginHandler::StartAsync, weak_factory_.GetWeakPtr(),
-                     request_url, is_request_for_main_frame);
+void LoginHandler::Start(const GURL& request_url) {
+  auto callback = base::BindOnce(&LoginHandler::StartAsync,
+                                 weak_factory_.GetWeakPtr(), request_url);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                            std::move(callback));
 }
@@ -387,34 +385,11 @@ void LoginHandler::GetDialogStrings(const GURL& request_url,
   }
 }
 
-void LoginHandler::StartAsync(const GURL& request_url,
-                              bool is_request_for_main_frame) {
+void LoginHandler::StartAsync(const GURL& request_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // The request may have been handled asynchronously.
   if (!web_contents_ || !web_contents_->GetDelegate() || WasAuthHandled()) {
-    CancelAuth();
-    return;
-  }
-
-  // Always cancel main frame requests that receive auth challenges. An
-  // interstitial will be committed as the result of the cancellation, and the
-  // login prompt will be shown on top of it once the interstitial commits.
-  //
-  // Strictly speaking, it is not necessary to show an interstitial for all
-  // main-frame navigations, just cross-origin ones. However, we show an
-  // interstitial for all main-frame navigations for simplicity. Otherwise,
-  // it's difficult to prevent repeated prompts on cancellation. For example,
-  // imagine that we navigate from http://a.com/1 to http://a.com/2 and show a
-  // login prompt without committing an interstitial. If the prompt is
-  // cancelled, the request will then be resumed to read the 401 body and
-  // commit the navigation. But the committed 401 error looks
-  // indistinguishable from what we commit in the case of a cross-origin
-  // navigation, so LoginHandler will show another login prompt. For
-  // simplicity, and because same-origin auth prompts should be relatively
-  // rare due to credential caching, we commit an interstitial for all
-  // main-frame navigations.
-  if (is_request_for_main_frame) {
     CancelAuth();
     return;
   }

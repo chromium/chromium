@@ -41,19 +41,9 @@ HttpAuthCoordinator::CreateLoginDelegate(
   return std::make_unique<LoginDelegateWrapper>(flow);
 }
 
-std::unique_ptr<content::LoginDelegate>
-HttpAuthCoordinator::CreateLoginDelegateFromTabHelper(
-    content::WebContents* web_contents,
-    const net::AuthChallengeInfo& auth_info,
-    const content::GlobalRequestID& request_id,
-    const GURL& url,
-    scoped_refptr<net::HttpResponseHeaders> response_headers,
-    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
+void HttpAuthCoordinator::CreateLoginTabHelper(
+    content::WebContents* web_contents) {
   LoginTabHelper::CreateForWebContents(web_contents);
-  return LoginTabHelper::FromWebContents(web_contents)
-      ->CreateAndStartMainFrameLoginDelegate(auth_info, web_contents,
-                                             request_id, url, response_headers,
-                                             std::move(auth_required_callback));
 }
 
 std::unique_ptr<content::LoginDelegate>
@@ -66,7 +56,7 @@ HttpAuthCoordinator::CreateLoginDelegateFromLoginHandler(
     content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   std::unique_ptr<LoginHandler> login_handler = LoginHandler::Create(
       auth_info, web_contents, std::move(auth_required_callback));
-  login_handler->Start(url, /*is_main_frame=*/false);
+  login_handler->Start(url);
   return login_handler;
 }
 
@@ -132,21 +122,22 @@ void HttpAuthCoordinator::Flow::ShowDialog() {
     return;
   }
 
-  auto wrapped_callback = base::BindOnce(&Flow::OnCredentials, GetWeakPtr());
 
-  // For subresources, create a LoginHandler directly, which may show a login
-  // prompt to the user. Main frame resources go through LoginTabHelper, which
-  // manages a more complicated flow to avoid confusion about which website is
-  // showing the prompt.
   if (is_request_for_primary_main_frame_) {
-    login_handler_ = coordinator_->CreateLoginDelegateFromTabHelper(
-        web_contents_.get(), auth_info_, request_id_, url_, response_headers_,
-        std::move(wrapped_callback));
+    // For main frame resources, create a login tab helper. The login tab helper
+    // will take care of flows (3b) and (5b), see class comment.
+    coordinator_->CreateLoginTabHelper(web_contents_.get());
     if (did_cancel_from_extension_) {
       LoginTabHelper::FromWebContents(web_contents_.get())
           ->RegisterExtensionCancelledNavigation(request_id_);
     }
+
+    // Cancel the current auth request. This will result in synchronous
+    // destruction of `this`.
+    std::move(callback_).Run(absl::nullopt);
   } else {
+    // For subresources, create a LoginHandler which will show a login prompt.
+    auto wrapped_callback = base::BindOnce(&Flow::OnCredentials, GetWeakPtr());
     login_handler_ = coordinator_->CreateLoginDelegateFromLoginHandler(
         web_contents_.get(), auth_info_, request_id_, url_, response_headers_,
         std::move(wrapped_callback));

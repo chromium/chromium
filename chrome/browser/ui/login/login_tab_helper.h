@@ -15,7 +15,6 @@
 #include "url/gurl.h"
 
 namespace content {
-class LoginDelegate;
 class NavigationHandle;
 class WebContents;
 }  // namespace content
@@ -32,14 +31,6 @@ class LoginTabHelper : public content::WebContentsObserver,
   LoginTabHelper& operator=(const LoginTabHelper&) = delete;
 
   ~LoginTabHelper() override;
-
-  std::unique_ptr<content::LoginDelegate> CreateAndStartMainFrameLoginDelegate(
-      const net::AuthChallengeInfo& auth_info,
-      content::WebContents* web_contents,
-      const content::GlobalRequestID& request_id,
-      const GURL& url,
-      scoped_refptr<net::HttpResponseHeaders> response_headers,
-      LoginAuthRequiredCallback auth_required_callback);
 
   // content::WebContentsObserver:
   void DidStartNavigation(
