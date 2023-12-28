@@ -168,12 +168,12 @@ export class EmojiGroupComponent extends PolymerElement {
       const text = this.getDisplayEmojiForEmoji(emoji.base.string);
 
       this.dispatchEvent(createCustomEvent(EMOJI_TEXT_BUTTON_CLICK, {
-        text: text,
-        isVariant: text !== emoji.base.string,
-        baseEmoji: emoji.base.string,
-        allVariants: emoji.alternates,
         name: emoji.base.name,
         category: this.category,
+        text,
+        baseEmoji: emoji.base.string,
+        isVariant: text !== emoji.base.string,
+        alternates: emoji.alternates ?? [],
       }));
     } else {
       if (emoji.base.visualContent) {
