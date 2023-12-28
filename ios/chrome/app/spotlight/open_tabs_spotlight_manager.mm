@@ -99,9 +99,6 @@ const int kBatchSize = 100;
        searchableItemFactory:(SearchableItemFactory*)searchableItemFactory {
   self = [super initWithSpotlightInterface:spotlightInterface
                      searchableItemFactory:searchableItemFactory];
-  for (Browser* browser : browserList->AllRegularBrowsers()) {
-    [self browserList:browserList browserAdded:browser];
-  }
 
   if (self) {
     _browserList = browserList;
@@ -115,6 +112,7 @@ const int kBatchSize = 100;
     _browserList->AddObserver(_browserListObserverBridge.get());
     [self startObservingAllWebStates];
   }
+
   return self;
 }
 
