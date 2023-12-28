@@ -2193,7 +2193,6 @@ void LayoutObject::InvalidateDisplayItemClients(
   NOT_DESTROYED();
   // This default implementation invalidates only the object itself as a
   // DisplayItemClient.
-  DCHECK(!GetSelectionDisplayItemClient());
   ObjectPaintInvalidator(*this).InvalidateDisplayItemClient(*this, reason);
 }
 

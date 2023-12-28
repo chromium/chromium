@@ -963,21 +963,16 @@ void LayoutInline::AddAnnotatedRegions(Vector<AnnotatedRegionValue>& regions) {
 void LayoutInline::InvalidateDisplayItemClients(
     PaintInvalidationReason invalidation_reason) const {
   NOT_DESTROYED();
-  ObjectPaintInvalidator paint_invalidator(*this);
+  LayoutBoxModelObject::InvalidateDisplayItemClients(invalidation_reason);
 
-  if (IsInLayoutNGInlineFormattingContext()) {
-    if (!ShouldCreateBoxFragment())
-      return;
 #if DCHECK_IS_ON()
+  if (IsInLayoutNGInlineFormattingContext()) {
     InlineCursor cursor;
-    for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
+    for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
       DCHECK_EQ(cursor.Current().GetDisplayItemClient(), this);
-#endif
-    paint_invalidator.InvalidateDisplayItemClient(*this, invalidation_reason);
-    return;
+    }
   }
-
-  paint_invalidator.InvalidateDisplayItemClient(*this, invalidation_reason);
+#endif
 }
 
 PhysicalRect LayoutInline::DebugRect() const {

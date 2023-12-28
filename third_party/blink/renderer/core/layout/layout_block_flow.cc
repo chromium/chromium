@@ -62,8 +62,8 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/layout/unpositioned_float.h"
-#include "third_party/blink/renderer/core/paint/block_flow_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
+#include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
@@ -780,8 +780,33 @@ bool LayoutBlockFlow::ShouldMoveCaretToHorizontalBoundaryWhenPastTopOrBottom()
 void LayoutBlockFlow::InvalidateDisplayItemClients(
     PaintInvalidationReason invalidation_reason) const {
   NOT_DESTROYED();
-  BlockFlowPaintInvalidator(*this).InvalidateDisplayItemClients(
-      invalidation_reason);
+  LayoutBlock::InvalidateDisplayItemClients(invalidation_reason);
+
+  InlineCursor cursor(*this);
+  if (!cursor) {
+    return;
+  }
+
+  ObjectPaintInvalidator paint_invalidator(*this);
+  // Line boxes record hit test data (see BoxFragmentPainter::PaintLineBox)
+  // and should be invalidated if they change.
+  bool invalidate_all_lines =
+      HasEffectiveAllowedTouchAction() || InsideBlockingWheelEventHandler();
+
+  for (cursor.MoveToFirstLine(); cursor; cursor.MoveToNextLine()) {
+    // The first line LineBoxFragment paints the ::first-line background.
+    // Because it may be expensive to figure out if the first line is affected
+    // by any ::first-line selectors at all, we just invalidate
+    // unconditionally which is typically cheaper.
+    if (invalidate_all_lines || cursor.Current().UsesFirstLineStyle()) {
+      DCHECK(cursor.Current().GetDisplayItemClient());
+      paint_invalidator.InvalidateDisplayItemClient(
+          *cursor.Current().GetDisplayItemClient(), invalidation_reason);
+    }
+    if (!invalidate_all_lines) {
+      break;
+    }
+  }
 }
 
 }  // namespace blink
