@@ -594,6 +594,8 @@ crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/mov
 crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-iframe-success-inline-classic.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-grid/stretch-grid-item-button-overflow.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-grid/stretch-grid-item-text-input-overflow.html [ Failure ]
 crbug.com/626703 external/wpt/html/rendering/widgets/button-layout/input-type-button-clip.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-justify/text-justify-word-separators.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001.html?class=chws,htb [ Failure ]

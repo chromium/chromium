@@ -5187,6 +5187,13 @@
        {}
       ]
      ],
+     "delete-from-ruby-at-start-of-button.html": [
+      "0159e5281594b6736b5bacae4d9f4f0d3e35c53c",
+      [
+       null,
+       {}
+      ]
+     ],
      "delete-immediately-after-changing-input-type-from-time.html": [
       "e608b8c86612d73f731d3127127e768328c7644c",
       [
@@ -140803,6 +140810,19 @@
        {}
       ]
      ],
+     "stretch-grid-item-button-overflow.html": [
+      "0b86a7e9ac9ca874c3b4a3121cec61f3ec40a766",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/stretch-grid-item-button-overflow-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "stretch-grid-item-checkbox-input.html": [
       "c6a34a8288db1e034dfba0856ef0e4f9ec16d8f8",
       [
@@ -140823,6 +140843,19 @@
        [
         [
          "/css/css-grid/stretch-grid-item-radio-input-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "stretch-grid-item-text-input-overflow.html": [
+      "0814b3dcf058f4fba01ba6517480078469a492f7",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/stretch-grid-item-text-input-overflow-ref.html",
          "=="
         ]
        ],
@@ -321655,12 +321688,20 @@
        []
       ]
      },
+     "stretch-grid-item-button-overflow-ref.html": [
+      "900c794af10e750ce98b50dd5d15016d963f471e",
+      []
+     ],
      "stretch-grid-item-checkbox-input-ref.html": [
       "6a75b0fcfb985a932c3cad3e982af38cba8047dd",
       []
      ],
      "stretch-grid-item-radio-input-ref.html": [
       "401a2bfc72d354d9ea3e1d11d5b09649cc4fce00",
+      []
+     ],
+     "stretch-grid-item-text-input-overflow-ref.html": [
+      "ebc0c8ef9cee175211c0e7823b611b40c452ab50",
       []
      ],
      "subgrid": {

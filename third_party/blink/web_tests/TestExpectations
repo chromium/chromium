@@ -2610,6 +2610,8 @@ crbug.com/626703 external/wpt/html/dom/elements/global-attributes/dir-auto-form-
 crbug.com/626703 external/wpt/editing/other/insertparagraph-in-editing-host-cannot-have-div.tentative.html* [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-grid/stretch-grid-item-button-overflow.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-grid/stretch-grid-item-text-input-overflow.html [ Failure ]
 crbug.com/626703 [ Mac12 ] external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Skip Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Skip Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Skip Timeout ]
