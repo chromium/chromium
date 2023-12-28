@@ -1348,7 +1348,6 @@ crbug.com/1310326 http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
 
 crbug.com/1307741 external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Slow ]
 
-crbug.com/626703 [ Debug Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-inset-animation.html [ Slow ]
 crbug.com/626703 [ Mac Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-inset-animation.html [ Slow ]
 crbug.com/1376679 [ Mac11 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
 crbug.com/1376679 [ Mac11-arm64 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
