@@ -26,6 +26,8 @@
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
 
+#include "base/record_replay_atomic_sequence_num.h"
+
 namespace discardable_memory {
 namespace {
 
@@ -34,7 +36,7 @@ BASE_FEATURE(kShorterPeriodicPurge,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Global atomic to generate unique discardable shared memory IDs.
-base::AtomicSequenceNumber g_next_discardable_shared_memory_id;
+::recordreplay::AtomicSequenceNumber g_next_discardable_shared_memory_id;
 
 size_t GetDefaultAllocationSize() {
   const size_t kOneMegabyteInBytes = 1024 * 1024;
@@ -113,7 +115,7 @@ bool ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Lock() {
   DCHECK(!is_locked());
 
   recordreplay::Assert(
-    "[RUN-2947-2951] ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Lock %d",
+    "[RUN-3056-3057] ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Lock %d",
     span_ ? recordreplay::PointerId(span_->shared_memory()) : -1);
   if (span_ && manager_->LockSpan(span_.get()))
     last_locked_ = base::TimeTicks();
@@ -139,7 +141,7 @@ ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Purge(
   DCHECK(span_);
 
   recordreplay::Assert(
-    "[RUN-2947-2951] ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Purge %d %d %d",
+    "[RUN-3056-3057] ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Purge %d %d %d",
     is_locked(),
     last_locked_ > min_ticks,
     span_ ? recordreplay::PointerId(span_->shared_memory()) : -1);
@@ -296,7 +298,7 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
         heap_->SearchFreeLists(pages, slack);
 
     recordreplay::Assert(
-        "[RUN-1877-2453] "
+        "[RUN-3056-3057] "
         "ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory "
         "A %d %zu %zu",
         free_span ? recordreplay::PointerId(free_span->shared_memory()) : -1,
@@ -477,7 +479,7 @@ void ClientDiscardableSharedMemoryManager::PurgeUnlockedMemory(
     auto now = base::TimeTicks::Now();
 
     recordreplay::Assert(
-      "[RUN-2947-2951] ClientDiscardableSharedMemoryManager::PurgeUnlockedMemory A %zu",
+      "[RUN-3056-3057] ClientDiscardableSharedMemoryManager::PurgeUnlockedMemory A %zu",
       allocated_memory_.size());
     // Iterate this way in order to avoid invalidating the iterator while
     // removing elements from |allocated_memory_| as we iterate over it.
@@ -501,7 +503,7 @@ void ClientDiscardableSharedMemoryManager::PurgeUnlockedMemory(
   }
   
   recordreplay::Assert(
-    "[RUN-2947-2951] ClientDiscardableSharedMemoryManager::PurgeUnlockedMemory B");
+    "[RUN-3056-3057] ClientDiscardableSharedMemoryManager::PurgeUnlockedMemory B");
 
   ReleaseFreeMemory();
 }
@@ -673,8 +675,8 @@ void ClientDiscardableSharedMemoryManager::MemoryUsageChanged(
     size_t new_bytes_total,
     size_t new_bytes_free) const {
   recordreplay::Assert(
-    "[RUN-2947-2951] ClientDiscardableSharedMemoryManager::MemoryUsageChanged %zu %zu",
-    new_bytes_total, new_bytes_free);
+    "[RUN-3056-3057] ClientDiscardableSharedMemoryManager::MemoryUsageChanged %zu",
+    new_bytes_total);
   static crash_reporter::CrashKeyString<24> discardable_memory_allocated(
       "discardable-memory-allocated");
   discardable_memory_allocated.Set(base::NumberToString(new_bytes_total));
