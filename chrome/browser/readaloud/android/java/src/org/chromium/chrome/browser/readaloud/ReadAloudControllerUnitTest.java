@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.search_engines.SearchEngineType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.translate.FakeTranslateBridgeJni;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.modules.readaloud.Playback;
@@ -1264,6 +1265,33 @@ public class ReadAloudControllerUnitTest {
         final String actionName = "ReadAloud.PlaybackStarted";
         ReadAloudMetrics.recordPlaybackStarted();
         assertThat(mUserActionTester.getActions(), hasItems(actionName));
+    }
+
+    @Test
+    public void testNavigateToPlayingTab() {
+        // Play tab.
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+        verify(mPlayback, times(1)).play();
+
+        MockTab newTab = mTabModelSelector.addMockTab();
+        mTabModelSelector
+                .getModel(false)
+                .setIndex(
+                        mTabModelSelector.getModel(false).indexOf(newTab),
+                        TabSelectionType.FROM_USER,
+                        false);
+        // check that we switched to new tab
+        assertEquals(mTabModelSelector.getCurrentTab(), newTab);
+
+        // navigate
+        mController.navigateToPlayingTab();
+
+        // should switch back to original one
+        assertEquals(mTabModelSelector.getCurrentTab(), mTab);
     }
 
     private void onPlaybackSuccess(Playback playback) {
