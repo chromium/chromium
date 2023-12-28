@@ -64,11 +64,6 @@ suite('InternetPage', function() {
     },
   };
 
-  suiteSetup(function() {
-    // Disable animations so sub-pages open within one event loop.
-    testing.Test.disableAnimationsAndTransitions();
-  });
-
   function flushAsync() {
     flush();
     // Use setTimeout to wait for the next macrotask.

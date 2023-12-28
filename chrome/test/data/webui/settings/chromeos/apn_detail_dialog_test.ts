@@ -13,7 +13,6 @@ import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_con
 import {assertEquals, assertFalse, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 const TEST_APN: ApnProperties = {
@@ -62,7 +61,6 @@ suite('<apn-detail-dialog>', () => {
   }
 
   suiteSetup(() => {
-    disableAnimationsAndTransitions();
     mojoApi = new FakeNetworkConfig();
     MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
         mojoApi);

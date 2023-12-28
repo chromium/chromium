@@ -17,7 +17,6 @@ import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_ass
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {FakePasspointService} from 'chrome://webui-test/chromeos/fake_passpoint_service_mojom.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('<settings-internet-known-networks-subpage>', () => {
@@ -45,9 +44,6 @@ suite('<settings-internet-known-networks-subpage>', () => {
     passpointServiceApi = new FakePasspointService();
     MojoConnectivityProvider.getInstance().setPasspointServiceForTest(
         passpointServiceApi);
-
-    // Disable animations so sub-pages open within one event loop.
-    disableAnimationsAndTransitions();
   });
 
   function setNetworksForTest(networks: NetworkStateProperties[]): void {
