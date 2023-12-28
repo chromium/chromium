@@ -12,11 +12,8 @@
 #include "base/functional/callback.h"
 #include "storage/browser/file_system/async_file_util.h"
 
-namespace ash {
-namespace file_system_provider {
-
 // TODO(mtomasz): Remove this namespace.
-namespace internal {
+namespace ash::file_system_provider::internal {
 
 // The implementation of storage::AsyncFileUtil for provided file systems. It is
 // created one per Chrome process. It is responsible for routing calls to the
@@ -105,8 +102,6 @@ class ProviderAsyncFileUtil : public storage::AsyncFileUtil {
       CreateSnapshotFileCallback callback) override;
 };
 
-}  // namespace internal
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::internal
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_FILEAPI_PROVIDER_ASYNC_FILE_UTIL_H_

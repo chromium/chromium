@@ -20,9 +20,7 @@
 #include "extensions/browser/event_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 namespace {
 
 const char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
@@ -116,6 +114,4 @@ TEST_F(FileSystemProviderOperationsConfigureTest, OnError) {
   EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, event_result);
 }
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations

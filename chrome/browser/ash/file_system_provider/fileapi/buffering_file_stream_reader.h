@@ -18,8 +18,7 @@ namespace net {
 class IOBuffer;
 }  // namespace net
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 // Wraps the file stream reader implementation with a prefetching buffer.
 // Reads data from the internal file stream reader in chunks of size at least
@@ -77,7 +76,6 @@ class BufferingFileStreamReader : public storage::FileStreamReader {
   base::WeakPtrFactory<BufferingFileStreamReader> weak_ptr_factory_{this};
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_FILEAPI_BUFFERING_FILE_STREAM_READER_H_

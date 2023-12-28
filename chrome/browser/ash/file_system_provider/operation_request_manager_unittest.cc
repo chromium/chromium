@@ -27,8 +27,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 const RequestType kTestRequestType = RequestType::kGetMetadata;
@@ -963,5 +962,4 @@ TEST_F(FileSystemProviderRequestManagerTest, NoNotificationWhileInteractive) {
   EXPECT_EQ(1u, notification_manager_->size());
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

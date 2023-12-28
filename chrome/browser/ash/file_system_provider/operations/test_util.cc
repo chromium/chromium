@@ -8,10 +8,7 @@
 
 #include "extensions/browser/event_router.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
-namespace util {
+namespace ash::file_system_provider::operations::util {
 
 LoggingDispatchEventImpl::LoggingDispatchEventImpl(bool dispatch_reply)
     : dispatch_reply_(dispatch_reply) {
@@ -35,7 +32,4 @@ void LogStatusCallback(StatusCallbackLog* log, base::File::Error result) {
   log->push_back(result);
 }
 
-}  // namespace util
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations::util

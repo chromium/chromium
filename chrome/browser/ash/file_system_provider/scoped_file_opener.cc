@@ -8,8 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 using OpenFileCallback = ProvidedFileSystemInterface::OpenFileCallback;
 
@@ -141,5 +140,4 @@ ScopedFileOpener::~ScopedFileOpener() {
   runner_->AbortOrClose();
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

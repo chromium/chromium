@@ -14,8 +14,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 void OnAbort(int* abort_counter) {
@@ -286,5 +285,4 @@ TEST_F(FileSystemProviderQueueTest, Enqueue_Abort) {
   EXPECT_EQ(0, second_abort_counter);
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

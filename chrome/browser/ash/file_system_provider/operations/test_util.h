@@ -15,10 +15,7 @@ namespace extensions {
 struct Event;
 }  // namespace extensions
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
-namespace util {
+namespace ash::file_system_provider::operations::util {
 
 // Fake event dispatcher implementation with extra logging capability. Acts as
 // a providing extension end-point.
@@ -52,9 +49,6 @@ typedef std::vector<base::File::Error> StatusCallbackLog;
 // Pushes a result of the StatusCallback invocation to a log vector.
 void LogStatusCallback(StatusCallbackLog* log, base::File::Error result);
 
-}  // namespace util
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations::util
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OPERATIONS_TEST_UTIL_H_

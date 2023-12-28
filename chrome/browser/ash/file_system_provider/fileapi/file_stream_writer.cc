@@ -23,8 +23,7 @@
 
 using content::BrowserThread;
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 class FileStreamWriter::OperationRunner
     : public base::RefCountedThreadSafe<
@@ -384,5 +383,4 @@ void FileStreamWriter::WriteAfterInitialized(
                                     buffer_length, std::move(callback))));
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

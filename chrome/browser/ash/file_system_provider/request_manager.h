@@ -21,8 +21,7 @@
 
 class Profile;
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 // Request type, passed to RequestManager::CreateRequest. For logging purposes.
 enum class RequestType {
@@ -212,7 +211,6 @@ class RequestManager {
   base::WeakPtrFactory<RequestManager> weak_ptr_factory_{this};
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_REQUEST_MANAGER_H_

@@ -22,8 +22,7 @@
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 // Size of the fake file in bytes.
@@ -358,5 +357,4 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest, GetLength) {
   EXPECT_EQ(kFileSize, get_length_log[0]);
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

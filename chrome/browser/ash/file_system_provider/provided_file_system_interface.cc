@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 CloudIdentifier::CloudIdentifier(const std::string& provider_name,
                                  const std::string& id)
@@ -35,5 +34,4 @@ ScopedUserInteraction::ScopedUserInteraction(ScopedUserInteraction&&) = default;
 ScopedUserInteraction& ScopedUserInteraction::operator=(
     ScopedUserInteraction&&) = default;
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

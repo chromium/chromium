@@ -27,9 +27,7 @@
 
 using content::BrowserThread;
 
-namespace ash {
-namespace file_system_provider {
-namespace internal {
+namespace ash::file_system_provider::internal {
 namespace {
 
 // Executes GetFileInfo on the UI thread.
@@ -496,6 +494,4 @@ void ProviderAsyncFileUtil::CreateSnapshotFile(
                           scoped_refptr<storage::ShareableFileReference>());
 }
 
-}  // namespace internal
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::internal

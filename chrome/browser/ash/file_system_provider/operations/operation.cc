@@ -11,9 +11,7 @@
 #include "chrome/browser/ash/file_system_provider/request_dispatcher.h"
 #include "extensions/browser/event_router.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 
 namespace {
 
@@ -42,6 +40,4 @@ void Operation::OnAbort(int request_id) {
                                      file_system_info_.file_system_id());
 }
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations

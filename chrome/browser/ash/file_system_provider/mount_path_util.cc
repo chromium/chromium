@@ -24,9 +24,7 @@
 
 using content::BrowserThread;
 
-namespace ash {
-namespace file_system_provider {
-namespace util {
+namespace ash::file_system_provider::util {
 
 namespace {
 
@@ -196,6 +194,4 @@ bool LocalPathParser::Parse() {
   return true;
 }
 
-}  // namespace util
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::util
