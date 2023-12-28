@@ -105,25 +105,6 @@ std::vector<LoginHandler*> LoginHandler::GetAllLoginHandlersForTest() {
   return output;
 }
 
-void LoginHandler::Start(const GURL& request_url) {
-  auto callback = base::BindOnce(&LoginHandler::StartAsync,
-                                 weak_factory_.GetWeakPtr(), request_url);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                           std::move(callback));
-}
-
-void LoginHandler::ShowLoginPromptAfterCommit(const GURL& request_url) {
-  // The request may have been handled while the WebRequest API was processing.
-  if (!web_contents_ || !web_contents_->GetDelegate() ||
-      web_contents_->IsBeingDestroyed() || WasAuthHandled()) {
-    CancelAuth();
-    return;
-  }
-
-  prompt_started_ = true;
-  ShowLoginPrompt(request_url);
-}
-
 void LoginHandler::SetAuth(const std::u16string& username,
                            const std::u16string& password) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -169,7 +150,7 @@ void LoginHandler::SetAuth(const std::u16string& username,
   // call CloseContents() before us. Closing dialogs in the opposite order as
   // they were created avoids races where remaining dialogs in the same tab may
   // be briefly displayed to the user before they are removed.
-  if (web_contents_ && prompt_started_) {
+  if (web_contents_) {
     NotifyAuthSupplied(username, password);
   }
   CloseContents();
@@ -182,9 +163,7 @@ void LoginHandler::CancelAuth() {
 
   LoginAuthRequiredCallback callback = std::move(auth_required_callback_);
 
-  if (prompt_started_) {
-    NotifyAuthCancelled();
-  }
+  NotifyAuthCancelled();
   CloseContents();
   std::move(callback).Run(std::nullopt);
 }
@@ -194,8 +173,7 @@ LoginHandler::LoginHandler(const net::AuthChallengeInfo& auth_info,
                            LoginAuthRequiredCallback auth_required_callback)
     : web_contents_(web_contents->GetWeakPtr()),
       auth_info_(auth_info),
-      auth_required_callback_(std::move(auth_required_callback)),
-      prompt_started_(false) {
+      auth_required_callback_(std::move(auth_required_callback)) {
   GetAllLoginHandlers().push_back(weak_factory_.GetWeakPtr());
 }
 
@@ -383,25 +361,8 @@ void LoginHandler::GetDialogStrings(const GURL& request_url,
   }
 }
 
-void LoginHandler::StartAsync(const GURL& request_url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // The request may have been handled asynchronously.
-  if (!web_contents_ || !web_contents_->GetDelegate() || WasAuthHandled()) {
-    CancelAuth();
-    return;
-  }
-
-  prompt_started_ = true;
-  ShowLoginPrompt(request_url);
-}
-
 void LoginHandler::ShowLoginPrompt(const GURL& request_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!web_contents_ || WasAuthHandled()) {
-    CancelAuth();
-    return;
-  }
 
   std::u16string authority;
   std::u16string explanation;
@@ -438,11 +399,15 @@ void LoginHandler::BuildViewAndNotify(
     LoginHandler::LoginModelData* login_model_data) {
   if (login_model_data)
     password_form_ = *login_model_data->form;
-  base::WeakPtr<LoginHandler> guard = weak_factory_.GetWeakPtr();
-  BuildViewImpl(authority, explanation, login_model_data);
-  // BuildViewImpl may call Cancel, which may delete this object, so check a
-  // WeakPtr before NotifyAuthNeeded.
-  if (guard && !WasAuthHandled() && prompt_started_) {
+  bool success = BuildViewImpl(authority, explanation, login_model_data);
+  if (success) {
     NotifyAuthNeeded();
+  } else {
+    // CancelAuth results in synchronous destruction of `this`. As building the
+    // view happens synchronously, we dispatch the cancellation to avoid
+    // re-entrancy into the calling code.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LoginHandler::CancelAuth, weak_factory_.GetWeakPtr()));
   }
 }
