@@ -373,10 +373,6 @@ class AutofillManager
 
   // The following do not check for prerendering. These should only used while
   // constructing or resetting the manager.
-  // TODO(crbug.com/1239281): if we never intend to support multiple navigations
-  // while prerendering, these will be unnecessary (they're used during Reset
-  // which can be called during prerendering, but we could skip Reset for
-  // prerendering if we never have state to clear).
   AutofillClient& unsafe_client() { return *client_; }
   const AutofillClient& unsafe_client() const { return *client_; }
 
