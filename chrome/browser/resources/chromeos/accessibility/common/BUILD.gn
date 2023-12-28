@@ -29,7 +29,6 @@ js_sources = [
   "async_util.js",
   "automation_predicate.js",
   "browser_util.js",
-  "constants.js",
   "cursors/cursor.js",
   "cursors/range.js",
   "cursors/recovery_strategy.js",
@@ -51,6 +50,7 @@ js_sources = [
 ts_modules = [
   "array_util.ts",
   "chrome_event_handler.ts",
+  "constants.ts",
   "flags.ts",
   "instance_checker.ts",
   "paragraph_utils.ts",
