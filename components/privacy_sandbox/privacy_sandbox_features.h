@@ -171,6 +171,10 @@ BASE_DECLARE_FEATURE(kTrackingProtectionOnboardingRollback);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kAttributionDebugReportingCookieDeprecationTesting);
 
+// Enables chrome://privacy-sandbox-internals DevUI page.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxInternalsDevUI);
+
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_

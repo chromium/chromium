@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/predictors/predictors_ui.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 #include "chrome/browser/ui/webui/signin_internals_ui.h"
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals_ui.h"
@@ -87,6 +88,7 @@
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
@@ -874,6 +876,12 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<LensUI>;
   }
 #endif
+
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxInternalsDevUI) &&
+      url.host_piece() == chrome::kChromeUIPrivacySandboxInternalsHost) {
+    return &NewWebUI<privacy_sandbox_internals::PrivacySandboxInternalsUI>;
+  }
 
   return nullptr;
 }
