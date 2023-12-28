@@ -170416,6 +170416,19 @@
         }
        ]
       ],
+      "position-sticky-in-fixed-container.html": [
+       "359ec2fd337e76e5ba1540754c87375c4090c1e2",
+       [
+        null,
+        [
+         [
+          "/css/css-position/sticky/position-sticky-in-fixed-container-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "position-sticky-inline.html": [
        "6bd49befe5a66f66ea554d066ae52e5b7bb40ab9",
        [
@@ -327569,6 +327582,10 @@
       ],
       "position-sticky-hyperlink-ref.html": [
        "88d45a7e6db3fbf7c52b28a0602686f27f1e64af",
+       []
+      ],
+      "position-sticky-in-fixed-container-ref.html": [
+       "7d8e1489951bbdcdceef43c3c98f41f1ddd3bab0",
        []
       ],
       "position-sticky-inline-ref.html": [
