@@ -187,6 +187,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       {"emptyNote", IDS_PASSWORD_MANAGER_UI_NO_NOTE_ADDED},
       {"emptyStateImportSyncing",
        IDS_PASSWORD_MANAGER_UI_EMPTY_STATE_SYNCING_USERS},
+      {"emptyUsername", IDS_PASSWORD_MANAGER_UI_NO_USERNAME},
       {"exportPasswords", IDS_PASSWORD_MANAGER_UI_EXPORT_TITLE},
       {"exportPasswordsDescription",
        IDS_PASSWORD_MANAGER_UI_EXPORT_BANNER_DESCRIPTION},

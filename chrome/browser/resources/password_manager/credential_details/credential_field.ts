@@ -53,6 +53,11 @@ export class CredentialFieldElement extends PolymerElement {
        */
       value: String,
 
+      /*
+       * Placeholder when the value is empty.
+       */
+      placeholder: String,
+
       /**
        * If set, clicking the copy button will record this password view
        * interaction.
@@ -65,6 +70,7 @@ export class CredentialFieldElement extends PolymerElement {
   copyButtonLabel: string;
   valueCopiedToastLabel: string;
   value: string;
+  placeholder: string;
   interactionId: PasswordViewPageInteractions;
 
   override connectedCallback() {
