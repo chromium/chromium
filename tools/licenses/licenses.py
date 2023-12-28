@@ -144,14 +144,11 @@ ADDITIONAL_PATHS = (
     os.path.join('chrome', 'test', 'chromeos', 'autotest'),
     os.path.join('chrome', 'test', 'data'),
     os.path.join('native_client'),
-    os.path.join('testing', 'gmock'),
-    os.path.join('testing', 'gtest'),
     os.path.join('third_party', 'boringssl', 'src', 'third_party', 'fiat'),
     os.path.join('third_party', 'devtools-frontend', 'src', 'front_end',
                  'third_party'),
     os.path.join('third_party', 'devtools-frontend-internal', 'front_end',
                  'third_party'),
-    os.path.join('tools', 'gyp'),
     os.path.join('tools', 'page_cycler', 'acid3'),
     os.path.join('url', 'third_party', 'mozilla'),
     os.path.join('v8'),
@@ -160,9 +157,14 @@ ADDITIONAL_PATHS = (
     os.path.join('v8', 'fdlibm'),
 )
 
-# Directories where we check out directly from upstream, and therefore
-# can't provide a README.chromium.  Please prefer a README.chromium
-# wherever possible.
+# SPECIAL_CASES are used for historical directories where we checked out
+# directly from upstream into the same directory as we would put metadata.
+# In new cases, you should check out upstream source into //root/foo/src
+# and keep the corresponding README.chromium file at //root/foo/README.chromium
+# instead of adding a SPECIAL_CASE.
+# These SPECIAL_CASES should not be used to suppress errors. Please fix
+# any metadata files with errors and if you encounter a parsing issue,
+# please file a bug.
 SPECIAL_CASES = {
     os.path.join('native_client'): {
         "Name": "native client",
@@ -170,18 +172,6 @@ SPECIAL_CASES = {
         "Shipped": "yes",
         "License": "BSD",
         "License File": ["//native_client/LICENSE"],
-    },
-    os.path.join('testing', 'gmock'): {
-        "Name": "gmock",
-        "URL": "https://github.com/google/googlemock",
-        "Shipped": "no",
-        "License": "BSD",
-    },
-    os.path.join('testing', 'gtest'): {
-        "Name": "gtest",
-        "URL": "https://github.com/google/googletest",
-        "Shipped": "no",
-        "License": "BSD",
     },
     os.path.join('third_party', 'angle'): {
         "Name": "Almost Native Graphics Layer Engine",
@@ -254,18 +244,6 @@ SPECIAL_CASES = {
         "URL": "https://code.google.com/p/ppapi/",
         "Shipped": "yes",
     },
-    os.path.join('third_party', 'scons-2.0.1'): {
-        "Name": "scons-2.0.1",
-        "URL": "https://www.scons.org/",
-        "Shipped": "no",
-        "License": "MIT",
-    },
-    os.path.join('third_party', 'catapult'): {
-        "Name": "catapult",
-        "URL": "https://github.com/catapult-project/catapult",
-        "Shipped": "no",
-        "License": "BSD",
-    },
     os.path.join('third_party', 'crashpad', 'crashpad', 'third_party',
                  'getopt'): {
         "Name": "getopt",
@@ -276,32 +254,12 @@ SPECIAL_CASES = {
             "//third_party/crashpad/crashpad/third_party/getopt/LICENSE",
         ],
     },
-    os.path.join('third_party', 'crashpad', 'crashpad', 'third_party', 'lss'): {
-        "Name": "linux-syscall-support",
-        "URL": "https://chromium.googlesource.com/linux-syscall-support/",
-        "Shipped": "no",
-        "License": "BSD",
-    },
-    os.path.join('third_party', 'crashpad', 'crashpad', 'third_party',
-                 'mini_chromium'): {
-        "Name": "mini_chromium",
-        "URL": "https://chromium.googlesource.com/chromium/mini_chromium/",
-        "Shipped": "no",
-        "License": "BSD",
-    },
     os.path.join('third_party', 'crashpad', 'crashpad', 'third_party', 'xnu'): {
         "Name": "xnu",
         "URL": "https://opensource.apple.com/source/xnu/",
         "Shipped": "yes",
         "License": "Apple Public Source License 2.0",
         "License File": ["APPLE_LICENSE"],
-    },
-    os.path.join('third_party', 'crashpad', 'crashpad', 'third_party',
-                 'zlib'): {
-        "Name": "zlib",
-        "URL": "https://zlib.net/",
-        "Shipped": "no",
-        "License": "zlib",
     },
     os.path.join('third_party', 'v8-i18n'): {
         "Name": "Internationalization Library for v8",
@@ -320,18 +278,6 @@ SPECIAL_CASES = {
         "License": "BSD and LGPL v2 and LGPL v2.1",
         # Absolute path here is resolved as relative to the source root.
         "License File": ["//third_party/blink/LICENSE_FOR_ABOUT_CREDITS"],
-    },
-    os.path.join('third_party', 'webpagereplay'): {
-        "Name": "webpagereplay",
-        "URL": "https://github.com/chromium/web-page-replay",
-        "Shipped": "no",
-        "License": "Apache 2.0",
-    },
-    os.path.join('tools', 'gyp'): {
-        "Name": "gyp",
-        "URL": "https://gyp.gsrc.io/",
-        "Shipped": "no",
-        "License": "BSD",
     },
     os.path.join('v8'): {
         "Name": "V8 JavaScript Engine",
@@ -355,20 +301,6 @@ SPECIAL_CASES = {
         # Absolute path here is resolved as relative to the source root.
         "License File": ["//v8/LICENSE.fdlibm"],
         "License Android Compatible": "yes",
-    },
-    os.path.join('third_party', 'khronos_glcts'): {
-        # These sources are not shipped, are not public, and it isn't
-        # clear why they're tripping the license check.
-        "Name": "khronos_glcts",
-        "URL": "http://no-public-url",
-        "Shipped": "no",
-        "License": "Khronos",
-    },
-    os.path.join('tools', 'telemetry', 'third_party', 'gsutil'): {
-        "Name": "gsutil",
-        "URL": "https://cloud.google.com/storage/docs/gsutil",
-        "Shipped": "no",
-        "License": "Apache 2.0",
     },
     os.path.join('third_party', 'swiftshader'): {
         "Name": "SwiftShader",
