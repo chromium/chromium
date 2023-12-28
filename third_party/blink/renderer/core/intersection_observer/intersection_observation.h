@@ -55,8 +55,6 @@ class CORE_EXPORT IntersectionObservation final
     // If this bit is set, we only process intersection observations that
     // require post-layout delivery.
     kPostLayoutDeliveryOnly = 1 << 6,
-    // If this is set, the overflow clip edge is used.
-    kUseOverflowClipEdge = 1 << 7,
   };
 
   IntersectionObservation(IntersectionObserver&, Element&);
