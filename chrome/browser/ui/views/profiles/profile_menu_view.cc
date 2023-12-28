@@ -562,7 +562,8 @@ void ProfileMenuView::BuildGuestIdentity() {
 
 void ProfileMenuView::BuildAutofillButtons() {
   AddShortcutFeatureButton(
-      features::IsChromeRefresh2023() ? kKeyOpenChromeRefreshIcon : kKeyIcon,
+      features::IsChromeRefresh2023() ? vector_icons::kPasswordManagerIcon
+                                      : kKeyIcon,
       l10n_util::GetStringUTF16(
           IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE),
       base::BindRepeating(&ProfileMenuView::OnPasswordsButtonClicked,
