@@ -7,7 +7,8 @@
  * SeaPen wallpapers.
  */
 
-import '../../../common/icons.html.js';
+import 'chrome://resources/ash/common/personalization_shared_icons.html.js';
+import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
 
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -256,7 +257,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   private getSearchButtonIcon_(path: string|null): string {
     switch (path) {
       case SeaPenPaths.RESULTS:
-        return 'personalization:refresh';
+        return 'personalization-shared:refresh';
       case SeaPenPaths.ROOT:
       default:
         return 'sea-pen:photo-spark';

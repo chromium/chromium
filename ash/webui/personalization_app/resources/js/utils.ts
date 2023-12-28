@@ -140,8 +140,9 @@ export function isRecentHighlightsAlbum(album: AmbientModeAlbum|
  * Returns the icon string for the checkmark.
  */
 export function getCheckmarkIcon(): string {
-  return isPersonalizationJellyEnabled() ? 'personalization:circle_checkmark' :
-                                           'personalization:checkmark';
+  return isPersonalizationJellyEnabled() ?
+      'personalization-shared:circle-checkmark' :
+      'personalization:checkmark';
 }
 
 /**

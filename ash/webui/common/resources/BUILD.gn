@@ -190,9 +190,11 @@ icons_html_files = [
   "bluetooth/bluetooth_icons.html",
   "cellular_setup/cellular_setup_icons.html",
   "network/network_icons.html",
-  "shortcut_input_ui/icons.html",
-  "quick_unlock/pin_keyboard_icons.html",
+  "personalization_shared_icons.html",
   "quick_unlock/fingerprint_progress_icons.html",
+  "quick_unlock/pin_keyboard_icons.html",
+  "sea_pen/sea_pen_icons.html",
+  "shortcut_input_ui/icons.html",
 ]
 
 # Files that are passed as input to html_to_wrapper().
@@ -450,11 +452,13 @@ generate_definitions_js_files = [
   "network/network_select.js",
   "network/network_shared.css.js",
   "network/onc_mojo.js",
+  "personalization_shared_icons.html.js",
   "quick_unlock/fingerprint_progress.html.js",
   "quick_unlock/fingerprint_progress_icons.html.js",
   "quick_unlock/pin_keyboard.html.js",
   "quick_unlock/pin_keyboard_icons.html.js",
   "quick_unlock/setup_pin_keyboard.html.js",
+  "sea_pen/sea_pen_icons.html.js",
   "shortcut_input_ui/shortcut_input_key.html.js",
   "shortcut_input_ui/icons.html.js",
   "shortcut_input_ui/shortcut_input.html.js",

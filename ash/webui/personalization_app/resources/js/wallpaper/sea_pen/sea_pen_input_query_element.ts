@@ -7,11 +7,12 @@
  * SeaPen wallpapers.
  */
 
+import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
+import 'chrome://resources/ash/common/personalization_shared_icons.html.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import '../../../common/icons.html.js';
 import '../../../css/wallpaper.css.js';
 import '../../../css/cros_button_style.css.js';
 
@@ -85,7 +86,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   private getSearchButtonIcon_(path: string|null): string {
     switch (path) {
       case SeaPenPaths.RESULTS:
-        return 'personalization:refresh';
+        return 'personalization-shared:refresh';
       case SeaPenPaths.ROOT:
       default:
         return 'sea-pen:photo-spark';
