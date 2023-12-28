@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
+import("//media/media_options.gni")
 import("//printing/buildflags/buildflags.gni")
 
 assert(is_chromeos_ash)
@@ -34,6 +35,11 @@ source_set("browser_util") {
 }
 
 source_set("crosapi") {
+  defines = []
+  if (use_cras) {
+    defines += [ "USE_CRAS" ]
+  }
+
   sources = [
     "arc_ash.cc",
     "arc_ash.h",
@@ -395,6 +401,7 @@ source_set("crosapi") {
     "//extensions/browser/api/networking_private",
     "//extensions/browser/api/power",
     "//extensions/common",
+    "//headless:headless_non_renderer",
     "//media/mojo/mojom/stable:stable_video_decoder",
     "//printing/backend",
     "//remoting/host/chromeos:remoting_service",
@@ -406,6 +413,7 @@ source_set("crosapi") {
     "//ui/base",
     "//ui/message_center",
     "//ui/message_center/public/cpp",
+    "//ui/ozone",
     "//ui/shell_dialogs",
     "//ui/snapshot",
     "//ui/views",

@@ -22,7 +22,7 @@
 #include "base/process/process.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -35,16 +35,27 @@
 #include "components/crash/core/app/crashpad.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/nacl/common/buildflags.h"
-#include "components/nacl/common/nacl_switches.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/common/content_switches.h"
+#include "gpu/config/gpu_switches.h"
 #include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/ozone/public/ozone_switches.h"
+
+#if defined(USE_CRAS)
+#include "base/system/sys_info.h"
+#endif
+
+#if BUILDFLAG(ENABLE_NACL)
+#include "components/nacl/common/nacl_switches.h"
+#endif
 
 namespace crosapi {
 
 namespace {
+
+using LaunchParamsFromBackground = BrowserLauncher::LaunchParamsFromBackground;
 
 base::FilePath LacrosPostLoginLogPath() {
   return browser_util::GetUserDataDir().Append("lacros.log");
@@ -71,7 +82,193 @@ void TerminateProcessBackground(base::Process process,
   LOG_IF(ERROR, !success) << "Failed to terminate the lacros-chrome.";
 }
 
-using LaunchParamsFromBackground = BrowserLauncher::LaunchParamsFromBackground;
+void AppendArguments(const std::vector<std::string>& args,
+                     base::CommandLine& command_line) {
+  // TODO(crbug.com/1513045): When std::vector<std::string> becomes directly
+  // added to `base::CommandeLine` object, this function will be removed.
+  // `AppendArg()` only calls` AppendArgNative()`, and does not separate the
+  // flag into switches and keys. So, we need to separate the flag into switches
+  // and keys before calling `AppendArg()` when each flag is added to
+  // `command_line` with `AppendArg()` in for loop. In the current code,
+  // `AppendArguments()` is responsible for creating the correct command line,
+  // so even if something odd is added, it is likely to be detected here.
+  base::CommandLine command_line_to_append =
+      base::CommandLine(base::CommandLine::NO_PROGRAM);
+  for (const auto& arg : args) {
+    command_line_to_append.AppendArg(arg);
+  }
+  command_line.AppendArguments(command_line_to_append,
+                               /*include_program=*/false);
+}
+
+// NOTE: Do NOT add the command line here unless it is very fundamental. Find
+// the method suited the best from `SetUp*` or create a new one.
+base::CommandLine CreateCommandLine(const base::FilePath& chrome_path) {
+  base::CommandLine command_line = base::CommandLine(chrome_path);
+
+  command_line.AppendSwitchASCII(switches::kOzonePlatform, "wayland");
+
+  // Paths are UTF-8 safe on Chrome OS.
+  command_line.AppendSwitchASCII("user-data-dir",
+                                 browser_util::GetUserDataDir().AsUTF8Unsafe());
+
+  // Passes the locale via command line instead of via LacrosInitParams because
+  // the Lacros browser process needs it early in startup, before zygote fork.
+  command_line.AppendSwitchASCII(switches::kLang,
+                                 g_browser_process->GetApplicationLocale());
+
+#if defined(USE_CRAS)
+  // CrAS is the default audio server in Chrome OS.
+  if (base::SysInfo::IsRunningOnChromeOS()) {
+    command_line.AppendSwitch(switches::kUseCras);
+  }
+#endif
+  return command_line;
+}
+
+void SetUpForDevMode(base::CommandLine& command_line) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kSystemDevMode)) {
+    command_line.AppendSwitch(chromeos::switches::kSystemDevMode);
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAllowRAInDevMode)) {
+    command_line.AppendSwitch(switches::kAllowRAInDevMode);
+  }
+}
+
+#if BUILDFLAG(ENABLE_NACL)
+void SetUpForNacl(base::CommandLine& command_line) {
+  // This switch is forwarded to nacl_helper and is needed before zygote fork.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kVerboseLoggingInNacl)) {
+    command_line.AppendSwitchASCII(
+        switches::kVerboseLoggingInNacl,
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kVerboseLoggingInNacl));
+  }
+}
+#endif
+
+void SetUpLacrosAdditionalParameters(const LaunchParamsFromBackground& params,
+                                     base::CommandLine& command_line) {
+  std::string additional_flags =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          ash::switches::kLacrosChromeAdditionalArgs);
+
+  // `addtional_flags` is a string composed with flags and "####" is in between
+  // flags and this has to be separated one by one.
+  // TODO(elkurin): We should console an error log if flags are not in the
+  // correct format. For example, If "###" is in between flags, they become 1
+  // flag without an error for now.
+  std::vector<std::string> delimited_flags = base::SplitStringUsingSubstr(
+      additional_flags, "####", base::TRIM_WHITESPACE,
+      base::SPLIT_WANT_NONEMPTY);
+
+  // TODO(crbug.com/1513045): When `AppendSwitchesAndArguments` function in
+  // base::CommandLine become public function, these vectors will be appended
+  // `command_line` directly.
+  AppendArguments(delimited_flags, command_line);
+  AppendArguments(params.lacros_additional_args, command_line);
+}
+
+void SetUpForGpu(base::CommandLine& command_line) {
+  command_line.AppendSwitch(switches::kEnableGpuRasterization);
+  command_line.AppendSwitch(switches::kEnableWebGLImageChromium);
+  // Forward flag for zero copy video capture to Lacros if it is enabled.
+  if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
+    command_line.AppendSwitch(switches::kVideoCaptureUseGpuMemoryBuffer);
+  }
+}
+
+// NOTE: Before calling this method, be sure to check `params.logfd` is
+// valid.
+void SetUpLogging(bool launching_at_login_screen,
+                  base::CommandLine& command_line) {
+  // The next flag will make chrome log only via stderr. See
+  // DetermineLoggingDestination in logging_chrome.cc.
+  command_line.AppendSwitchASCII(switches::kEnableLogging, "stderr");
+
+  auto* current_command_line = base::CommandLine::ForCurrentProcess();
+  if (current_command_line->HasSwitch(switches::kLoggingLevel)) {
+    command_line.AppendSwitchASCII(
+        switches::kLoggingLevel,
+        current_command_line->GetSwitchValueASCII(switches::kLoggingLevel));
+  }
+
+  command_line.AppendSwitchASCII(
+      switches::kVModule,
+      // TODO(crbug.com/1371493): Remove after fix.
+      "wayland_window_drag_controller=1,wayland_data_source=1,tab_drag_"
+      // TODO(crbug.com/1472682): Remove after fix.
+      "controller=1, wayland_data_drag_controller=1");
+
+  if (launching_at_login_screen &&
+      !current_command_line->HasSwitch(switches::kDisableLoggingRedirect)) {
+    // Redirects logs to cryptohome after login on non-test images.
+    command_line.AppendSwitchASCII(chromeos::switches::kCrosPostLoginLogFile,
+                                   LacrosPostLoginLogPath().value());
+  }
+}
+
+// Sets up switches and arguments of command line for startup and post-login
+// data.
+void SetUpForStartupData(std::optional<int> startup_data_fd,
+                         std::optional<int> postlogin_data_fd,
+                         base::CommandLine& command_line) {
+  // TODO(mayukoaiba): This part and the one in BrowserManager depending on
+  // whether `startup_fd` is valid or not need to be consistent.
+  if (startup_data_fd) {
+    command_line.AppendSwitchASCII(
+        chromeos::switches::kCrosStartupDataFD,
+        base::NumberToString(startup_data_fd.value()));
+  }
+
+  // TODO(mayukoaiba): This part and the one in BrowserManager depending on
+  // `launching_at_login_screen` need to be consistent.
+  if (postlogin_data_fd) {
+    command_line.AppendSwitchASCII(
+        chromeos::switches::kCrosPostLoginDataFD,
+        base::NumberToString(postlogin_data_fd.value()));
+  }
+}
+
+void SetUpForMojo(std::string_view channel_flag_value,
+                  base::CommandLine& command_line) {
+  CHECK(!channel_flag_value.empty());
+  command_line.AppendSwitchASCII(kCrosapiMojoPlatformChannelHandle,
+                                 channel_flag_value);
+}
+
+void SetUpForCrashpad(base::CommandLine& command_line) {
+  // Paths are UTF-8 safe on Chrome OS.
+  std::string crash_dir = LacrosCrashDumpDirectory().AsUTF8Unsafe();
+  command_line.AppendSwitchASCII("breakpad-dump-location", crash_dir);
+
+  if (crash_reporter::IsCrashpadEnabled()) {
+    command_line.AppendSwitch(switches::kEnableCrashpad);
+  }
+}
+
+// Sets up switches and arguments of command line for anything shared to
+// Lacros.
+void SetUpFeatures(const LaunchParamsFromBackground& params,
+                   base::CommandLine& command_line) {
+  if (params.enable_resource_file_sharing) {
+    // Passes a flag to enable resources file sharing to Lacros.
+    // To use resources file sharing feature on Lacros, it's required for ash to
+    // run with enabling the feature as well since the feature is based on some
+    // ash behavior(clear or move cached shared resource file at lacros launch).
+    command_line.AppendSwitch(switches::kEnableResourcesFileSharing);
+  }
+
+  if (params.enable_shared_components_dir) {
+    // Passes a flag to enable using a location shared across users for browser
+    // components.
+    command_line.AppendSwitch(switches::kEnableLacrosSharedComponentsDir);
+  }
+}
 
 }  // namespace
 
@@ -170,123 +367,10 @@ bool BrowserLauncher::LaunchProcessForTesting(
   return LaunchProcessWithParameters(command_line, options);
 }
 
-std::vector<std::string> BrowserLauncher::InitializeArgv(
-    const base::FilePath& chrome_path,
-    const LaunchParamsFromBackground& params,
-    bool launching_at_login_screen,
-    std::optional<int> startup_data_fd,
-    std::optional<int> postlogin_data_fd) {
-  // Paths are UTF-8 safe on Chrome OS.
-  std::string user_data_dir = browser_util::GetUserDataDir().AsUTF8Unsafe();
-  std::string crash_dir = LacrosCrashDumpDirectory().AsUTF8Unsafe();
-
-  // Passes the locale via command line instead of via LacrosInitParams because
-  // the Lacros browser process needs it early in startup, before zygote fork.
-  std::string locale = g_browser_process->GetApplicationLocale();
-
-  // Static configuration should be enabled from Lacros rather than Ash. This
-  // vector should only be used for dynamic configuration.
-  // TODO(https://crbug.com/1145713): Remove existing static configuration.
-  std::vector<std::string> argv = {chrome_path.MaybeAsASCII(),
-                                   "--ozone-platform=wayland",
-                                   "--user-data-dir=" + user_data_dir,
-                                   "--enable-gpu-rasterization",
-                                   "--lang=" + locale,
-                                   "--enable-webgl-image-chromium",
-                                   "--breakpad-dump-location=" + crash_dir};
-
-  // CrAS is the default audio server in Chrome OS.
-  if (base::SysInfo::IsRunningOnChromeOS()) {
-    argv.push_back("--use-cras");
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kSystemDevMode)) {
-    argv.push_back("--system-developer-mode");
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kAllowRAInDevMode)) {
-    argv.push_back("--allow-ra-in-dev-mode");
-  }
-
-#if BUILDFLAG(ENABLE_NACL)
-  // This switch is forwarded to nacl_helper and is needed before zygote fork.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kVerboseLoggingInNacl)) {
-    argv.push_back("--verbose-logging-in-nacl=" +
-                   base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                       switches::kVerboseLoggingInNacl));
-  }
-#endif
-
-  std::string additional_flags =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          ash::switches::kLacrosChromeAdditionalArgs);
-  std::vector<base::StringPiece> delimited_flags =
-      base::SplitStringPieceUsingSubstr(additional_flags, "####",
-                                        base::TRIM_WHITESPACE,
-                                        base::SPLIT_WANT_NONEMPTY);
-  for (const auto& flag : delimited_flags) {
-    argv.emplace_back(flag);
-  }
-
-  argv.insert(argv.end(), params.lacros_additional_args.begin(),
-              params.lacros_additional_args.end());
-
-  // Forward flag for zero copy video capture to Lacros if it is enabled.
-  if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
-    argv.emplace_back(
-        base::StringPrintf("--%s", switches::kVideoCaptureUseGpuMemoryBuffer));
-  }
-
-  // If logfd is valid, enables logging and redirect stdout/stderr to logfd.
-  if (params.logfd.is_valid()) {
-    // The next flag will make chrome log only via stderr. See
-    // DetermineLoggingDestination in logging_chrome.cc.
-    argv.push_back("--enable-logging=stderr");
-
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(switches::kLoggingLevel)) {
-      argv.push_back(base::StringPrintf(
-          "--%s=%s", switches::kLoggingLevel,
-          command_line->GetSwitchValueASCII(switches::kLoggingLevel).c_str()));
-    }
-
-    argv.push_back(std::string("--vmodule=")
-                   // TODO(crbug.com/1371493): Remove after fix.
-                   + "wayland_window_drag_controller=1,wayland_data_source=1" +
-                   ",tab_drag_controller=1" +
-                   // TODO(crbug.com/1472682): Remove after fix.
-                   ",wayland_data_drag_controller=1");
-
-    if (launching_at_login_screen &&
-        !command_line->HasSwitch(switches::kDisableLoggingRedirect)) {
-      // Redirects logs to cryptohome after login on non-test images.
-      argv.push_back(base::StringPrintf(
-          "--%s=%s", chromeos::switches::kCrosPostLoginLogFile,
-          LacrosPostLoginLogPath().value().c_str()));
-    }
-  }
-
-  // TODO(mayukoaiba): This part and the one in BrowserManager depending on
-  // whether `startup_fd` is valid or not need to be consistent.
-  if (startup_data_fd) {
-    argv.push_back(base::StringPrintf("--%s=%d",
-                                      chromeos::switches::kCrosStartupDataFD,
-                                      startup_data_fd.value()));
-  }
-
-  // TODO(mayukoaiba): This part and the one in BrowserManager depending on
-  // `launching_at_login_screen` need to be consistent.
-  if (postlogin_data_fd) {
-    CHECK(launching_at_login_screen);
-    argv.push_back(base::StringPrintf("--%s=%d",
-                                      chromeos::switches::kCrosPostLoginDataFD,
-                                      postlogin_data_fd.value()));
-  }
-
-  return argv;
+void BrowserLauncher::SetUpAdditionalParametersForTesting(
+    LaunchParamsFromBackground& params,
+    base::CommandLine& command_line) {
+  SetUpLacrosAdditionalParameters(params, command_line);
 }
 
 base::CommandLine BrowserLauncher::InitializeParameters(
@@ -296,20 +380,23 @@ base::CommandLine BrowserLauncher::InitializeParameters(
     std::optional<int> startup_data_fd,
     std::optional<int> postlogin_data_fd,
     std::string_view channel_flag_value) {
-  // TODO(mayukoaiba): The process of initializeing command_line is written
-  // flat. And I have to break it down into functions based on their respective
-  // functionalities.
-  base::CommandLine command_line(
-      InitializeArgv(chrome_path, params, launching_at_login_screen,
-                     startup_data_fd, postlogin_data_fd));
+  // Static configuration should be enabled from Lacros rather than Ash. This
+  // vector should only be used for dynamic configuration.
+  // TODO(https://crbug.com/1145713): Remove existing static configuration.
+  base::CommandLine command_line(CreateCommandLine(chrome_path));
 
-  CHECK(!channel_flag_value.empty());
-  command_line.AppendSwitchASCII(kCrosapiMojoPlatformChannelHandle,
-                                 channel_flag_value);
-
-  if (crash_reporter::IsCrashpadEnabled()) {
-    command_line.AppendSwitch(switches::kEnableCrashpad);
+  SetUpForDevMode(command_line);
+#if BUILDFLAG(ENABLE_NACL)
+  SetUpForNacl(command_line);
+#endif
+  SetUpLacrosAdditionalParameters(params, command_line);
+  SetUpForGpu(command_line);
+  if (params.logfd.is_valid()) {
+    SetUpLogging(launching_at_login_screen, command_line);
   }
+  SetUpForStartupData(startup_data_fd, postlogin_data_fd, command_line);
+  SetUpForMojo(channel_flag_value, command_line);
+  SetUpForCrashpad(command_line);
 
   // Ensures that child processes have the same rules about what help features,
   // sharing feature and location share may show as the current process.
@@ -317,19 +404,7 @@ base::CommandLine BrowserLauncher::InitializeParameters(
   // already present, or append to the flag if it is.
   feature_engagement::Tracker::PropagateTestStateToChildProcess(command_line);
 
-  if (params.enable_resource_file_sharing) {
-    // Passes a flag to enable resources file sharing to Lacros.
-    // To use resources file sharing feature on Lacros, it's required for ash to
-    // run with enabling the feature as well since the feature is based on some
-    // ash behavior(clear or move cached shared resource file at lacros launch).
-    command_line.AppendSwitch(switches::kEnableResourcesFileSharing);
-  }
-
-  if (params.enable_shared_components_dir) {
-    // Passes a flag to enable using a location shared across users for browser
-    // components.
-    command_line.AppendSwitch(switches::kEnableLacrosSharedComponentsDir);
-  }
+  SetUpFeatures(params, command_line);
 
   return command_line;
 }

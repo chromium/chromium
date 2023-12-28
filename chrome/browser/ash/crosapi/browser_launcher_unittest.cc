@@ -9,11 +9,13 @@
 #include <string_view>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -72,6 +74,36 @@ TEST_F(BrowserLauncherTest, InitializeCommandLine) {
 
   EXPECT_EQ(command_line.GetSwitchValueASCII(kCrosapiMojoPlatformChannelHandle),
             channel_flag_value);
+}
+
+TEST_F(BrowserLauncherTest, AdditionalParametersForCommandLine) {
+  BrowserLauncher::LaunchParamsFromBackground params;
+  params.lacros_additional_args.emplace_back("--switch1");
+  params.lacros_additional_args.emplace_back("--switch2=value2");
+
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      ash::switches::kLacrosChromeAdditionalArgs, "--foo####--switch3=value3");
+
+  base::CommandLine command_line = CreateCommandLine();
+  browser_launcher()->SetUpAdditionalParametersForTesting(params, command_line);
+
+  EXPECT_TRUE(command_line.HasSwitch("switch1"));
+  EXPECT_TRUE(command_line.HasSwitch("foo"));
+  EXPECT_EQ(command_line.GetSwitchValueASCII("switch2"), "value2");
+  EXPECT_EQ(command_line.GetSwitchValueASCII("switch3"), "value3");
+
+  EXPECT_EQ(command_line.GetSwitches().size(), 4u);
+}
+
+TEST_F(BrowserLauncherTest, WithoutAdditionalParametersForCommandLine) {
+  BrowserLauncher::LaunchParamsFromBackground params;
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine command_line = CreateCommandLine();
+  command_line.RemoveSwitch(ash::switches::kLacrosChromeAdditionalArgs);
+  browser_launcher()->SetUpAdditionalParametersForTesting(params, command_line);
+
+  EXPECT_EQ(command_line.GetSwitches().size(), 0u);
 }
 
 TEST_F(BrowserLauncherTest, LaunchAndTriggerTerminate) {
