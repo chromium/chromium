@@ -4,19 +4,34 @@
 
 import {Key} from './key_code.js';
 
+interface MouseClickParams {
+  delayMs?: number;
+  mouseButton?: chrome.accessibilityPrivate.SyntheticMouseEventButton;
+}
+
+interface MouseClick {
+  x: number;
+  y: number;
+  params: MouseClickParams;
+}
+
 /** Functions to send synthetic key and mouse events. */
 export class EventGenerator {
+  static currentlyMidMouseClick = false;
+  static mouseClickQueue: MouseClick[] = [];
+
   /**
    * Sends a single key stroke (down and up) with the given key code and
    *     keyboard modifiers (whether or not CTRL, ALT, SEARCH, and SHIFT are
    *     being held).
-   * @param {!Key.Code} keyCode
-   * @param {!chrome.accessibilityPrivate.SyntheticKeyboardModifiers} modifiers
-   * @param {boolean} useRewriters If true, uses rewriters for the key event;
+   * @param useRewriters If true, uses rewriters for the key event;
    *     only allowed if used from Dictation. Otherwise indicates that rewriters
    *     should be skipped.
    */
-  static sendKeyPress(keyCode, modifiers = {}, useRewriters = false) {
+  static sendKeyPress(
+      keyCode: Key.Code,
+      modifiers: chrome.accessibilityPrivate.SyntheticKeyboardModifiers = {},
+      useRewriters = false): void {
     let type = chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN;
     chrome.accessibilityPrivate.sendSyntheticKeyEvent(
         {type, keyCode, modifiers}, useRewriters);
@@ -29,20 +44,18 @@ export class EventGenerator {
   /**
    * Sends two synthetic mouse events (a mouse press and and a mouse release)
    *     to simulate a mouse click.
-   * @param {number} x
-   * @param {number} y
-   * @param {!{
-   *  delayMs: (number|undefined),
-   *  mouseButton:
-   *   (!chrome.accessibilityPrivate.SyntheticMouseEventButton|undefined)
-   * }} params
    */
-  static sendMouseClick(x, y, params = {
+  static sendMouseClick(x: number, y: number, params: MouseClickParams = {
     delayMs: 0,
     mouseButton: chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT,
-  }) {
+  }): void {
+    // TODO(b/314203187): Set params.delayMs ??= 0; and params.mouseButton =
+    // chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT;. This fixes
+    // the case when a params object is passed in, but only one of the params is
+    // specified. In that case, the other default property isn't included in the
+    // object (since the whole default params object gets shadowed).
     if (EventGenerator.currentlyMidMouseClick) {
-      EventGenerator.mouseClickQueue.push(arguments);
+      EventGenerator.mouseClickQueue.push({x, y, params});
       return;
     }
     EventGenerator.currentlyMidMouseClick = true;
@@ -57,35 +70,30 @@ export class EventGenerator {
     chrome.accessibilityPrivate.sendSyntheticMouseEvent(
         {type, x, y, mouseButton});
 
-    const callback = () => {
+    const callback = (): void => {
       type = chrome.accessibilityPrivate.SyntheticMouseEventType.RELEASE;
       chrome.accessibilityPrivate.sendSyntheticMouseEvent(
           {type, x, y, mouseButton});
 
       EventGenerator.currentlyMidMouseClick = false;
       if (EventGenerator.mouseClickQueue.length > 0) {
-        EventGenerator.sendMouseClick(
-            ...EventGenerator.mouseClickQueue.shift());
+        const {x, y, params} = EventGenerator.mouseClickQueue.shift()!;
+        EventGenerator.sendMouseClick(x, y, params);
       }
     };
-    if (delayMs > 0) {
+    // TODO(b/314203187): Not null asserted, check these to make sure this
+    // is correct.
+    if (delayMs! > 0) {
       setTimeout(callback, delayMs);
     } else {
       callback();
     }
   }
 
-  /**
-   * Sends a synthetic mouse event to simulate a move event.
-   * @param {number} x
-   * @param {number} y
-   * @param {boolean} touchAccessibility
-   */
-  static sendMouseMove(x, y, touchAccessibility = false) {
+  /** Sends a synthetic mouse event to simulate a move event. */
+  static sendMouseMove(x: number, y: number, touchAccessibility = false): void {
     const type = chrome.accessibilityPrivate.SyntheticMouseEventType.MOVE;
     chrome.accessibilityPrivate.sendSyntheticMouseEvent(
         {type, x, y, touchAccessibility});
   }
 }
-
-EventGenerator.mouseClickQueue = [];

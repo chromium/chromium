@@ -32,7 +32,6 @@ js_sources = [
   "cursors/cursor.js",
   "cursors/range.js",
   "cursors/recovery_strategy.js",
-  "event_generator.js",
   "event_handler.js",
   "gdocs_script.js",
   "key_code.js",
@@ -51,6 +50,7 @@ ts_modules = [
   "array_util.ts",
   "chrome_event_handler.ts",
   "constants.ts",
+  "event_generator.ts",
   "flags.ts",
   "instance_checker.ts",
   "paragraph_utils.ts",
@@ -63,6 +63,7 @@ ts_modules = [
 ]
 
 ts_definitions = [
+  "../definitions/accessibility_private_mv2.d.ts",
   "../definitions/automation.d.ts",
   "../definitions/command_line_private.d.ts",
   "../definitions/extensions.d.ts",
