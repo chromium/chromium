@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -232,7 +233,7 @@ std::unique_ptr<views::View> PasspointDialogView::MakeButtonsView() {
                   weak_factory_.GetWeakPtr(), /*allow=*/false))
               .SetText(l10n_util::GetStringUTF16(
                   IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_DONT_ALLOW_BUTTON))
-              .SetProminent(false)
+              .SetStyle(ui::ButtonStyle::kDefault)
               .SetIsDefault(false),
           views::Builder<views::MdTextButton>()  // Allow button.
               .CopyAddressTo(&allow_button_)
@@ -241,7 +242,7 @@ std::unique_ptr<views::View> PasspointDialogView::MakeButtonsView() {
                   weak_factory_.GetWeakPtr(), /*allow=*/true))
               .SetText(l10n_util::GetStringUTF16(
                   IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_ALLOW_BUTTON))
-              .SetProminent(true)
+              .SetStyle(ui::ButtonStyle::kProminent)
               .SetIsDefault(true))
       .Build();
 }

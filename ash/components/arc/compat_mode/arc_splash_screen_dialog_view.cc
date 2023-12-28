@@ -269,7 +269,7 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
             .SetText(l10n_util::GetStringUTF16(
                 IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_CLOSE))
             .SetCornerRadius(16)
-            .SetProminent(true)
+            .SetStyle(ui::ButtonStyle::kProminent)
             .SetIsDefault(true)
             .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(20, 0, 0, 0))
             .Build());
