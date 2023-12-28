@@ -1,41 +1,75 @@
 <style>
   :host {
-    display: flex;
-    flex-direction: column;
+    --compose-textarea-input-height: calc(
+        4lh + (2 * var(--compose-textarea-input-padding)));
+    --compose-textarea-input-padding: 10px;
+    --compose-textarea-readonly-height: 48px;
+    --compose-textarea-readonly-padding: 16px;
+    --compose-textarea-readonly-background: var(--google-grey-100);
+
+    display: grid;
+    grid-template-areas: "content";
+    align-items: start;
+    grid-auto-columns: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --compose-textarea-readonly-background: rgba(53, 54, 58, 1);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]):host {
+    --compose-textarea-readonly-background:
+        var(--color-compose-dialog-textarea-readonly-background);
   }
 
   #inputContainer,
   #readonlyContainer {
-    flex: 1;
+    grid-area: content;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #inputContainer {
+    display: flex;
+    height: 100%;
   }
 
   textarea {
     appearance: none;
     background: transparent;
-    border: solid 1px var(--google-grey-300);
+    border: none;
+    outline: solid 1px var(--google-grey-300);
+    outline-offset: -1px;
     border-radius: 8px;
     color: var(--cr-primary-text-color);
     font: inherit;
     font-size: 12px;
     line-height: 20px;
     resize: none;
-    outline: none;
     width: 100%;
-    height: 100%;
+    height: var(--compose-textarea-input-height);
+    min-height: 100%;
     box-sizing: border-box;
     padding: 10px;
+    scroll-padding-block: 10px;
   }
 
   @media (prefers-color-scheme: dark) {
     textarea {
-      border-color: var(--google-grey-500);
+      outline-color: var(--google-grey-500);
     }
   }
 
   :host-context([chrome-refresh-2023]) textarea {
-    border-color: var(--color-compose-dialog-textarea-outline);
+    outline-color: var(--color-compose-dialog-textarea-outline);
     color: var(--color-compose-dialog-textarea);
     line-height: 16px;
+  }
+
+  :host([readonly]) textarea {
+    overflow: hidden;
   }
 
   textarea::placeholder {
@@ -57,7 +91,7 @@
     }
   }
 
-  :host-context([chrome-refresh-2023]):host([invalid-input_]) #textarea {
+  :host-context([chrome-refresh-2023]):host([invalid-input_]) textarea {
     outline-color: var(--color-compose-dialog-error);
   }
 
@@ -83,12 +117,16 @@
     outline-offset: -2px;
   }
 
+  :host-context([chrome-refresh-2023]) textarea:focus {
+    outline: solid 2px var(--cr-focus-outline-color);
+    outline-offset: -2px;
+  }
+
   #readonlyContainer {
     border-radius: 8px;
     display: flex;
-    align-items: center;
     padding: 16px;
-    background: var(--google-grey-100);
+    background: var(--compose-textarea-readonly-background);
     color: var(--cr-primary-text-color);
   }
 
@@ -138,6 +176,7 @@
    * list all the [hidden] elements below. Not all elements need this, just
    * the ones that override the default 'display' property.
    */
+  #inputContainer[hidden],
   #readonlyContainer[hidden],
   #editButtonContainer[hidden] {
     display: none;
@@ -148,7 +187,6 @@
   <textarea id="input"
       placeholder="$i18n{inputPlaceholder}"
       value="{{value::input}}"
-      rows="4"
       required
       autofocus
       aria-invalid="[[invalidInput_]]"

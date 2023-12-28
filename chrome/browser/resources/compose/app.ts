@@ -402,7 +402,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
       return;
     }
 
+    this.$.textarea.scrollInputToTop();
     this.submitted_ = true;
+    this.$.textarea.transitionToReadonly();
     this.compose_();
   }
 
