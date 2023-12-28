@@ -320,7 +320,7 @@
 <translation id="1236009322878349843">Измените сведения о смартфоне</translation>
 <translation id="1239594683407221485">Чтобы посмотреть контент, хранящийся на устройстве, откройте приложение "Файлы".</translation>
 <translation id="1239841552505950173">Запустить приложение</translation>
-<translation id="1240903469550363138">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями использования<ph name="END_LINK2" />.</translation>
+<translation id="1240903469550363138">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваше имя, адрес электронной почты и фото профиля. Ознакомьтесь с его <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями использования<ph name="END_LINK2" />.</translation>
 <translation id="1241066500170667906">Выбрать статус эксперимента "<ph name="EXPERIMENT_NAME" />"</translation>
 <translation id="124116460088058876">Другие языки</translation>
 <translation id="1241381048229838873">Показать все закладки</translation>
@@ -821,7 +821,7 @@
 <translation id="1620307519959413822">Неверный пароль. Повторите попытку или нажмите "Забыли пароль?", чтобы сбросить его.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1621382140075772850">Инструмент "Текст"</translation>
-<translation id="1621485112342885423">Корзина</translation>
+<translation id="1621485112342885423">Корзины</translation>
 <translation id="1621729191093924223">Функции, которые используют микрофон, не будут работать</translation>
 <translation id="1621831347985899379">Данные на <ph name="DEVICE_TYPE" /> будут удалены</translation>
 <translation id="1621984899599015181">Настройками доступа управляет ваша организация. Некоторые объекты могут быть скрыты.</translation>
@@ -2444,7 +2444,7 @@
 <translation id="2835177225987815960">Текущие настройки сканирования будут сброшены, включая назначенные переключатели и скорость автосканирования.</translation>
 <translation id="2835547721736623118">Сервис распознавания речи</translation>
 <translation id="2835761321523638096">Чтение и изменение записей в списке для чтения</translation>
-<translation id="2836232638504556905">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK" />политикой конфиденциальности<ph name="END_LINK" />.</translation>
+<translation id="2836232638504556905">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваше имя, адрес электронной почты и фото профиля. Ознакомьтесь с его <ph name="BEGIN_LINK" />политикой конфиденциальности<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Сбой</translation>
 <translation id="283669119850230892">Для использования сети <ph name="NETWORK_ID" /> предварительно подключитесь к Интернету.</translation>
 <translation id="2838379631617906747">Установка...</translation>
@@ -4404,7 +4404,7 @@
 <translation id="4405224443901389797">Переместить в…</translation>
 <translation id="4405781821077215583">Увеличивайте или уменьшайте размер текста и элементов на экране</translation>
 <translation id="4406883609789734330">Автоматические субтитры</translation>
-<translation id="4407039574263172582">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK" />условиями предоставления услуг<ph name="END_LINK" />.</translation>
+<translation id="4407039574263172582">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваше имя, адрес электронной почты и фото профиля. Ознакомьтесь с его <ph name="BEGIN_LINK" />условиями предоставления услуг<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">&amp;Справка</translation>
 <translation id="4408965460206576430">Файл содержит вредоносное ПО или размещен на подозрительном сайте.</translation>
 <translation id="4409271659088619928">Ваша поисковая система – <ph name="DSE" />. Изучите инструкции по удалению истории поиска в справочных материалах указанной поисковой системы.</translation>
@@ -5618,7 +5618,7 @@
 <translation id="5398572795982417028">Размер страницы больше максимально допустимого (лимит ‒ <ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="5400836586163650660">Серый</translation>
 <translation id="5401426944298678474">Отменить подписку на сайт</translation>
-<translation id="5401851137404501592">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт.</translation>
+<translation id="5401851137404501592">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваше имя, адрес электронной почты и фото профиля.</translation>
 <translation id="5402367795255837559">Шрифт Брайля</translation>
 <translation id="5402815541704507626">Скачивание обновления по мобильной сети</translation>
 <translation id="5404740137318486384">Нажмите на переключатель или клавишу, чтобы назначить их для действия "<ph name="ACTION" />".

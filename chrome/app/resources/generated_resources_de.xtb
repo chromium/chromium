@@ -2994,7 +2994,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3294437725009624529">Gast</translation>
 <translation id="3294686910656423119">Nutzungsstatistik und Absturzberichte</translation>
 <translation id="3295241308788901889">Ein Tab wird gestreamt</translation>
-<translation id="3297105622164376095">Dürfen Aufforderungen zur Anmeldung von Drittanbietern anzeigen</translation>
+<translation id="3297105622164376095">Dürfen Aufforderungen zur Anmeldung über Drittanbieter anzeigen</translation>
 <translation id="3297536526040732495">Verknüpft diese Daten vorübergehend mit deinem Google-Konto, sofern du angemeldet bist, um dich in Google-Apps zu schützen</translation>
 <translation id="329838636886466101">Reparieren</translation>
 <translation id="3298789223962368867">Die eingegebene URL ist ungültig.</translation>
@@ -4486,7 +4486,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4476590490540813026">Athletin</translation>
 <translation id="4476659815936224889">Du kannst eine QR-Scanner-App oder bestimmte Kamera-Apps auf deinem Smartphone verwenden, um diesen Code zu scannen.</translation>
 <translation id="4477015793815781985">Verwende Strg, Alt oder ⌘</translation>
-<translation id="4478161224666880173">Du kannst dein <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-Konto auf dieser Website verwenden. Melde dich bei <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> an, um fortzufahren.</translation>
+<translation id="4478161224666880173">Du kannst dein <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-Konto auf dieser Website verwenden. Melde dich in <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> an, um fortzufahren.</translation>
 <translation id="4478664379124702289">Lin&amp;k speichern unter...</translation>
 <translation id="4479424953165245642">Kioskanwendungen verwalten</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -4794,7 +4794,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4718046540206070045">Mehr als nur ein Browser</translation>
 <translation id="4722735765955348426">Passwort für <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> hat deinen Bildschirm freigegeben.</translation>
-<translation id="4722989931633062466">Dürfen keine Aufforderungen zur Anmeldung von Drittanbietern anzeigen</translation>
+<translation id="4722989931633062466">Dürfen keine Aufforderungen zur Anmeldung über Drittanbieter anzeigen</translation>
 <translation id="4723140812774948886">Mit nächstem tauschen</translation>
 <translation id="4724450788351008910">Zugehörigkeit geändert</translation>
 <translation id="4725511304875193254">Corgi</translation>

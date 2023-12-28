@@ -1127,7 +1127,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6908998565271542516">Opzione per approvare o meno un sito web aperto a schermo intero</translation>
 <translation id="6909589135458168665">Precarica le pagine</translation>
 <translation id="6910211073230771657">Eliminato</translation>
-<translation id="6918398787259831832">Se il problema persiste, <ph name="BEGIN_LINK" />richiedi ulteriori informazioni<ph name="END_LINK" /> da <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6918398787259831832">Se il problema persiste, <ph name="BEGIN_LINK" />richiedi ulteriori informazioni<ph name="END_LINK" /> a <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Tutti i codici di sicurezza salvati sul dispositivo e nell'Account Google verranno eliminati</translation>
 <translation id="6942665639005891494">Modifica in qualsiasi momento il percorso di download predefinito utilizzando l'opzione del menu Impostazioni</translation>
 <translation id="694267552845942083">Stai personalizzando le impostazioni di sincronizzazione. Per terminare l'attivazione della sincronizzazione, tocca il pulsante Conferma nella parte inferiore dello schermo. Torna indietro</translation>
@@ -1165,7 +1165,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7138678301420049075">Altro</translation>
 <translation id="7140829094791862589">Ordina manualmente</translation>
 <translation id="7146622961999026732">Questi siti e app sembrano importanti per te:</translation>
-<translation id="7148400116894863598"><ph name="BEGIN_LINK" />Leggi ulteriori informazioni<ph name="END_LINK" /> su <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="7148400116894863598"><ph name="BEGIN_LINK" />Ottieni maggiori informazioni<ph name="END_LINK" /> da <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="7149893636342594995">Ultimo giorno</translation>
 <translation id="7168323970702333693">Accesso eseguito come <ph name="USER_NAME" />. Consente di aprire le impostazioni.</translation>
 <translation id="7173114856073700355">Apri Impostazioni</translation>

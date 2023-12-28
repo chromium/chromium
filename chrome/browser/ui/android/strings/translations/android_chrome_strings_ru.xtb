@@ -49,7 +49,7 @@
 <translation id="1239792311949352652">Поделиться этой страницей. Чтобы изменить функцию кнопки, перейдите в настройки.</translation>
 <translation id="1240190568154816272">Советы по работе с Chrome</translation>
 <translation id="1240288207750131269">Выполняется загрузка пакета "<ph name="LANG" />"…</translation>
-<translation id="1240903469550363138">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями использования<ph name="END_LINK2" />.</translation>
+<translation id="1240903469550363138">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваше имя, адрес электронной почты и фото профиля. Ознакомьтесь с его <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями использования<ph name="END_LINK2" />.</translation>
 <translation id="124116460088058876">Другие языки</translation>
 <translation id="1241792820757384812">Ваши пароли будут удалены из Google Менеджера паролей в <ph name="CHROME_CHANNEL" />. Файл с паролями, который вы скачали, останется.</translation>
 <translation id="1242883863226959074">устройстве</translation>
@@ -177,7 +177,7 @@
 <translation id="1974060860693918893">Дополнительные</translation>
 <translation id="1984417487208496350">Защита отключена (не рекомендуется)</translation>
 <translation id="1986685561493779662">Это имя уже используется.</translation>
-<translation id="1995884366040846621">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" />.</translation>
+<translation id="1995884366040846621">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваше имя, адрес электронной почты и фото профиля. Ознакомьтесь с его <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" />.</translation>
 <translation id="200114059308480249">Учитывать контекст в поиске Google?</translation>
 <translation id="2009341475524975924">Для оценки эффективности рекламы сайты могут обмениваться некоторыми типами данных, например информацией о времени суток, когда вам было показано объявление.</translation>
 <translation id="201060170519281460">Блокировка профиля защищает ваши данные в автомобиле, включая пароли, транзакции и другие сведения.</translation>
@@ -815,7 +815,7 @@
 <translation id="5368227114232678694">Чтобы анонимно работать в интернете на этом устройстве, воспользуйтесь режимом инкогнито.</translation>
 <translation id="5375577065097716013">Найти через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="539881862970320163">Предложен надежный пароль. Клавиатура скрыта.</translation>
-<translation id="5401851137404501592">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт.</translation>
+<translation id="5401851137404501592">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваше имя, адрес электронной почты и фото профиля.</translation>
 <translation id="5409881200985013443">Отправить код <ph name="ONE_TIME_CODE" /> на устройство "<ph name="CLIENT_NAME" />"?</translation>
 <translation id="5414836363063783498">Проверка…</translation>
 <translation id="5423934151118863508">Здесь появятся страницы, которые вы чаще всего просматриваете.</translation>

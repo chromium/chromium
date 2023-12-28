@@ -921,6 +921,7 @@
 <translation id="1695510246756136088">يتعذَّر الاتصال بالإنترنت. يُرجى إعادة المحاولة.</translation>
 <translation id="1696555181932908973">يمكنك تجربة طرق أخرى للمتابعة على "<ph name="SITE_ETLD_PLUS_ONE" />".</translation>
 <translation id="169675691788639886">‏تم ضبط خادم SSH للجهاز، لذلك ممنوع تسجيل الدخول باستخدام حسابات حساسة.</translation>
+<translation id="1697122132646041614">عند النقر على زر عدم الإعجاب، يتم فتح نموذج لإرسال ملاحظات تفصيلية حول سبب عدم إعجابك بهذه النتائج.</translation>
 <translation id="1697150536837697295">الفن</translation>
 <translation id="1697686431566694143">تعديل الملف</translation>
 <translation id="1698796500103229697">طرق الدفع</translation>
@@ -2301,6 +2302,7 @@
 <translation id="2731700343119398978">يرجى الانتظار...</translation>
 <translation id="2731971182069536520">في المرة القادمة التي يتم فيها إعادة تشغيل الجهاز، سيُجري مشرفك تحديثًا لمرة واحدة، ما سيؤدي إلى حذف البيانات المحلية.</translation>
 <translation id="2732134891301408122">المحتوى الإضافي <ph name="CURRENT_ELEMENT" /> من أصل <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">يمكنك النقر على زر الإعجاب إذا أعجبتك هذه النتائج.</translation>
 <translation id="2733992589856193783">أنشأت مفتاح مرور لهذا الموقع الإلكتروني. يجب استخدام جهازك الجوّال لتسجيل الدخول.</translation>
 <translation id="27349076983469322">خلفية فاتحة</translation>
 <translation id="2735712963799620190">الجدول الزمني</translation>
@@ -5662,6 +5664,7 @@
 <translation id="5431318178759467895">بالألوان</translation>
 <translation id="5432145523462851548">عرض "<ph name="FILE_NAME" />" في المجلد</translation>
 <translation id="5432223177001837288">لمشاركة الصوت، عليك مشاركة علامة تبويب بدلاً من ذلك.</translation>
+<translation id="5432872710261597882">يمكنك النقر على رمز الإعجاب إذا أعجبتك هذه الميزة.</translation>
 <translation id="543338862236136125">تعديل كلمة المرور</translation>
 <translation id="5434065355175441495">‏ترميز PKCS #1 RSA</translation>
 <translation id="5435274640623994081">تفعيل ميزة تسجيل الرمز الصوتي</translation>
@@ -5697,6 +5700,7 @@
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">ملاحظات شاشة القفل</translation>
 <translation id="5459864179070366255">المتابعة إلى عملية التثبيت</translation>
+<translation id="5460861858595506978">صور مُلهمة</translation>
 <translation id="5461050611724244538">انقطع الاتصال بهاتفك</translation>
 <translation id="5463275305984126951">فهرس المجلد <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">الاشتراك في خدمة الرسائل الإلكترونية عن جهاز <ph name="DEVICE_TYPE" /></translation>
@@ -7464,7 +7468,7 @@
 <translation id="6862472520095266519">يجب ألا يتجاوز عدد الأحرف في الاسم 32 حرفًا</translation>
 <translation id="6863496016067551393">المواقع الإلكترونية التي تسمح باستخدام كل الإضافات</translation>
 <translation id="686366188661646310">هل تريد حذف كلمة المرور؟</translation>
-<translation id="6865313869410766144">الملء التلقائي للبيانات</translation>
+<translation id="6865313869410766144">الملء التلقائي لبيانات النموذج</translation>
 <translation id="6865598234501509159">الصفحة ليست باللغة <ph name="LANGUAGE" />.</translation>
 <translation id="6865708901122695652">‏سجلّات أحداث WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">صوت هادئ</translation>
@@ -7798,7 +7802,7 @@
 <translation id="7138678301420049075">أخرى</translation>
 <translation id="7139627972753429585">يستخدم تطبيق <ph name="APP_NAME" /> الميكروفون.</translation>
 <translation id="7141105143012495934">فشل تسجيل الدخول، نظرًا لعدم القدرة على استرداد تفاصيل حسابك، يُرجى الاتصال بالمسؤول أو إعادة المحاولة.</translation>
-<translation id="7141844554192012199">عمليات التحقّق من كلمات المرور</translation>
+<translation id="7141844554192012199">التحقّق من كلمات المرور</translation>
 <translation id="714301620504747562">التصفُّح والبحث أسرع من التحميل المُسبق العادي</translation>
 <translation id="7143207342074048698">اتصال</translation>
 <translation id="7143409552554575716">‏علامات ChromeOS</translation>
@@ -8878,6 +8882,7 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">تفاصيل إيثرنت</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 مع ترميز RSA</translation>
+<translation id="7973149423217802477">يمكنك النقر على رمز عدم الإعجاب إذا لم تعجبك هذه الميزة.</translation>
 <translation id="7973776233567882054">أي من العبارات التالية تمثل أفضل وصف لشبكتك؟</translation>
 <translation id="797394244396603170">اختَر الجهاز الذي تريد مشاركة الملفات معه.</translation>
 <translation id="7974566588408714340">إعادة المحاولة باستخدام <ph name="EXTENSIONNAME" /></translation>
