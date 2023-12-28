@@ -46,6 +46,7 @@ class TabOrganization : public TabData::Observer {
     return current_name_;
   }
   const absl::optional<UserChoice> choice() const { return choice_; }
+  optimization_guide::proto::UserFeedback feedback() const { return feedback_; }
   ID organization_id() const { return organization_id_; }
   const std::u16string GetDisplayName() const;
 

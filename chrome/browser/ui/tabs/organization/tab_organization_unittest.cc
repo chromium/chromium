@@ -7,6 +7,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ui/tabs/organization/logging_util.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
@@ -16,6 +17,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/optimization_guide/core/model_quality/feature_type_map.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_task_environment.h"
@@ -27,6 +30,14 @@
 namespace {
 
 int kMinimumValidTabs = 2;
+
+class FakeModelQualityLogEntry
+    : public optimization_guide::ModelQualityLogEntry {
+ public:
+  FakeModelQualityLogEntry()
+      : optimization_guide::ModelQualityLogEntry(
+            std::make_unique<optimization_guide::proto::LogAiDataRequest>()) {}
+};
 
 }  // anonymous namespace
 
@@ -1135,4 +1146,156 @@ TEST_F(TabOrganizationTest, TabOrganizationSessionRequestOnLogResultsCalled) {
   // Log Results and expect the log_results_callback to be called.
   session.reset();
   EXPECT_EQ(log_callback_called_times, 1);
+}
+
+// Logging Util
+
+TEST_F(TabOrganizationTest, LoggingUtilAddOrganizationsToModelQuality) {
+  // Create a request
+  std::unique_ptr<TabOrganizationRequest> request =
+      std::make_unique<TabOrganizationRequest>();
+  TabOrganizationRequest* request_ptr = request.get();
+
+  // Add 2 tabs for organization
+  std::vector<TabData::TabID> ids_to_group;
+  for (int i = 0; i < kMinimumValidTabs; i++) {
+    content::WebContents* tab_to_group = AddTab();
+    TabData* tab_to_group_data = request->AddTabData(
+        std::make_unique<TabData>(tab_strip_model(), tab_to_group));
+    ids_to_group.emplace_back(tab_to_group_data->tab_id());
+  }
+
+  // Create a response
+  std::vector<TabOrganizationResponse::Organization> response_organizations;
+  TabOrganizationResponse::Organization organization(u"title",
+                                                     std::move(ids_to_group));
+  response_organizations.emplace_back(std::move(organization));
+
+  std::unique_ptr<TabOrganizationResponse> response =
+      std::make_unique<TabOrganizationResponse>(response_organizations);
+
+  std::unique_ptr<TabOrganizationSession> session =
+      std::make_unique<TabOrganizationSession>(std::move(request));
+
+  // Start and complete the request so that the organizations are populated
+  session->StartRequest();
+  request_ptr->CompleteRequestForTesting(std::move(response));
+
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+      model_quality_log_entry = std::make_unique<FakeModelQualityLogEntry>();
+  optimization_guide::proto::TabOrganizationQuality* quality =
+      model_quality_log_entry
+          ->quality_data<optimization_guide::TabOrganizationFeatureTypeMap>();
+
+  EXPECT_NE(quality, nullptr);
+  EXPECT_NE(session.get(), nullptr);
+  AddSessionDetailsToQuality(quality, session.get());
+
+  // get the list of organizations and expect one to be present
+  EXPECT_EQ(quality->organizations_size(), 1);
+}
+
+TEST_F(TabOrganizationTest, LoggingUtilAddOrganizationsToModelQualityAccepted) {
+  const std::u16string kAcceptedLabelStr = u"accepted title";
+  const std::u16string kRejectedLabelString = u"rejected title";
+  const std::u16string kNonAcceptedLabelString = u"no choice title";
+  // Create a request
+  std::unique_ptr<TabOrganizationRequest> request =
+      std::make_unique<TabOrganizationRequest>();
+  TabOrganizationRequest* request_ptr = request.get();
+
+  std::vector<TabOrganizationResponse::Organization> response_organizations;
+
+  {  // Create Accept Organization
+    // Add 2 tabs for organization
+    std::vector<TabData::TabID> ids_to_group;
+    for (int i = 0; i < kMinimumValidTabs; i++) {
+      content::WebContents* tab_to_group = AddTab();
+      TabData* tab_to_group_data = request->AddTabData(
+          std::make_unique<TabData>(tab_strip_model(), tab_to_group));
+      ids_to_group.emplace_back(tab_to_group_data->tab_id());
+    }
+    TabOrganizationResponse::Organization organization(kAcceptedLabelStr,
+                                                       std::move(ids_to_group));
+    response_organizations.emplace_back(std::move(organization));
+  }
+
+  {  // Create another Organization that will be rejected.
+    // Add 2 tabs for organization
+    std::vector<TabData::TabID> ids_to_group;
+    for (int i = 0; i < kMinimumValidTabs; i++) {
+      content::WebContents* tab_to_group = AddTab();
+      TabData* tab_to_group_data = request->AddTabData(
+          std::make_unique<TabData>(tab_strip_model(), tab_to_group));
+      ids_to_group.emplace_back(tab_to_group_data->tab_id());
+    }
+    TabOrganizationResponse::Organization organization(kRejectedLabelString,
+                                                       std::move(ids_to_group));
+    response_organizations.emplace_back(std::move(organization));
+  }
+
+  {  // Create another Organization that wont have a choice applied.
+    // Add 2 tabs for organization
+    std::vector<TabData::TabID> ids_to_group;
+    for (int i = 0; i < kMinimumValidTabs; i++) {
+      content::WebContents* tab_to_group = AddTab();
+      TabData* tab_to_group_data = request->AddTabData(
+          std::make_unique<TabData>(tab_strip_model(), tab_to_group));
+      ids_to_group.emplace_back(tab_to_group_data->tab_id());
+    }
+    TabOrganizationResponse::Organization organization(kNonAcceptedLabelString,
+                                                       std::move(ids_to_group));
+    response_organizations.emplace_back(std::move(organization));
+  }
+
+  std::unique_ptr<TabOrganizationResponse> response =
+      std::make_unique<TabOrganizationResponse>(response_organizations);
+
+  std::unique_ptr<TabOrganizationSession> session =
+      std::make_unique<TabOrganizationSession>(std::move(request));
+
+  // Start and complete the request so that the organizations are populated
+  session->StartRequest();
+  request_ptr->CompleteRequestForTesting(std::move(response));
+
+  // Accept the first organization
+  {
+    TabOrganization* organization = session->GetNextTabOrganization();
+    EXPECT_EQ(kAcceptedLabelStr, organization->GetDisplayName());
+    organization->Accept();
+  }
+
+  // Reject the next organization
+  {
+    TabOrganization* organization = session->GetNextTabOrganization();
+    EXPECT_EQ(kRejectedLabelString, organization->GetDisplayName());
+    organization->Reject();
+  }
+
+  {  // Verify that the last organization has no choice set.
+    TabOrganization* organization = session->GetNextTabOrganization();
+    EXPECT_EQ(kNonAcceptedLabelString, organization->GetDisplayName());
+  }
+
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+      model_quality_log_entry = std::make_unique<FakeModelQualityLogEntry>();
+  optimization_guide::proto::TabOrganizationQuality* quality =
+      model_quality_log_entry
+          ->quality_data<optimization_guide::TabOrganizationFeatureTypeMap>();
+
+  EXPECT_NE(quality, nullptr);
+  EXPECT_NE(session.get(), nullptr);
+  AddSessionDetailsToQuality(quality, session.get());
+
+  // get the list of organizations and expect one to be present
+  EXPECT_EQ(quality->organizations_size(), 3);
+  {
+    const optimization_guide::proto::TabOrganizationQuality_Organization&
+        quality_org = quality->organizations(0);
+    EXPECT_TRUE(quality_org.has_label());
+
+    const optimization_guide::proto::TabOrganizationQuality_Organization_Label&
+        quality_org_label = quality_org.label();
+    EXPECT_FALSE(quality_org_label.edited());
+  }
 }
