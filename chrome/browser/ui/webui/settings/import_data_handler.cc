@@ -27,6 +27,7 @@
 #include "chrome/common/pref_names.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 using content::BrowserThread;
 
@@ -252,7 +253,7 @@ void ImportDataHandler::ImportEnded() {
                                                     : kImportStatusFailed));
 }
 
-void ImportDataHandler::FileSelected(const base::FilePath& path,
+void ImportDataHandler::FileSelected(const ui::SelectedFileInfo& file,
                                      int /*index*/,
                                      void* /*params*/) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -261,7 +262,7 @@ void ImportDataHandler::FileSelected(const base::FilePath& path,
 
   importer::SourceProfile source_profile;
   source_profile.importer_type = importer::TYPE_BOOKMARKS_FILE;
-  source_profile.source_path = path;
+  source_profile.source_path = file.path();
 
   StartImport(source_profile, importer::FAVORITES);
 }

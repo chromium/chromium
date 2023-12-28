@@ -16,6 +16,7 @@
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/browser_list.h"
@@ -125,10 +126,10 @@ void DownloadFilePicker::OnFileSelected(const base::FilePath& path) {
   delete this;
 }
 
-void DownloadFilePicker::FileSelected(const base::FilePath& path,
+void DownloadFilePicker::FileSelected(const ui::SelectedFileInfo& file,
                                       int index,
                                       void* params) {
-  OnFileSelected(path);
+  OnFileSelected(file.path());
   // Deletes |this|
 }
 

@@ -100,20 +100,15 @@ class MockSelectFileDialogListener : public ui::SelectFileDialog::Listener {
   void* params() const { return params_; }
 
   // ui::SelectFileDialog::Listener:
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override {
     file_selected_ = true;
-    path_ = path;
+    path_ = file.path();
     params_ = params;
     QuitMessageLoop();
   }
-  void FileSelectedWithExtraInfo(const ui::SelectedFileInfo& selected_file_info,
-                                 int index,
-                                 void* params) override {
-    FileSelected(selected_file_info.local_path, index, params);
-  }
-  void MultiFilesSelected(const std::vector<base::FilePath>& files,
+  void MultiFilesSelected(const std::vector<ui::SelectedFileInfo>& files,
                           void* params) override {
     QuitMessageLoop();
   }
@@ -908,7 +903,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpUploadAllow) {
                                      &caller));
 
   std::vector<ui::SelectedFileInfo> selected_files;
-  auto selected_file = ui::SelectedFileInfo(test_file, test_file);
+  auto selected_file = ui::SelectedFileInfo(test_file);
   selected_file.virtual_path = test_file_virtual_path;
   selected_files.push_back(std::move(selected_file));
   EXPECT_CALL(*mock_files_controller_.get(),
@@ -956,7 +951,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpUploadBlock) {
                                      &caller));
 
   std::vector<ui::SelectedFileInfo> selected_files;
-  auto selected_file = ui::SelectedFileInfo(test_file, test_file);
+  auto selected_file = ui::SelectedFileInfo(test_file);
   selected_file.virtual_path = test_file_virtual_path;
   selected_files.push_back(std::move(selected_file));
   EXPECT_CALL(*mock_files_controller_.get(),

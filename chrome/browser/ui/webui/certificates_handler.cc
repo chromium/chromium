@@ -45,6 +45,7 @@
 #include "third_party/boringssl/src/pki/input.h"
 #include "third_party/boringssl/src/pki/parser.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 using base::UTF8ToUTF16;
 
@@ -366,21 +367,21 @@ void CertificatesHandler::CertificatesRefreshed() {
   PopulateTree("otherCerts", net::OTHER_CERT);
 }
 
-void CertificatesHandler::FileSelected(const base::FilePath& path,
+void CertificatesHandler::FileSelected(const ui::SelectedFileInfo& file,
                                        int index,
                                        void* params) {
   switch (reinterpret_cast<intptr_t>(params)) {
     case EXPORT_PERSONAL_FILE_SELECTED:
-      ExportPersonalFileSelected(path);
+      ExportPersonalFileSelected(file.path());
       break;
     case IMPORT_PERSONAL_FILE_SELECTED:
-      ImportPersonalFileSelected(path);
+      ImportPersonalFileSelected(file.path());
       break;
     case IMPORT_SERVER_FILE_SELECTED:
-      ImportServerFileSelected(path);
+      ImportServerFileSelected(file.path());
       break;
     case IMPORT_CA_FILE_SELECTED:
-      ImportCAFileSelected(path);
+      ImportCAFileSelected(file.path());
       break;
     default:
       NOTREACHED();

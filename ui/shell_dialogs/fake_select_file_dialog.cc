@@ -5,6 +5,7 @@
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
 namespace ui {
@@ -80,7 +81,8 @@ bool FakeSelectFileDialog::CallFileSelected(const base::FilePath& file_path,
          file_types_.extensions[index]) {
       if (base::FilePath(ext).MaybeAsASCII() == filter_text) {
         // FileSelected accepts a 1-based index.
-        listener_->FileSelected(file_path, index + 1, params_);
+        listener_->FileSelected(SelectedFileInfo(file_path), index + 1,
+                                params_);
         return true;
       }
     }
@@ -90,7 +92,8 @@ bool FakeSelectFileDialog::CallFileSelected(const base::FilePath& file_path,
 
 void FakeSelectFileDialog::CallMultiFilesSelected(
     const std::vector<base::FilePath>& files) {
-  listener_->MultiFilesSelected(files, params_);
+  listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files),
+                                params_);
 }
 
 void FakeSelectFileDialog::ListenerDestroyed() {

@@ -25,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace {
@@ -157,14 +158,14 @@ class SelectFileDialogWinTest : public ::testing::Test,
   ~SelectFileDialogWinTest() override = default;
 
   // ui::SelectFileDialog::Listener:
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override {
-    selected_paths_.push_back(path);
+    selected_paths_.push_back(file.path());
   }
-  void MultiFilesSelected(const std::vector<base::FilePath>& files,
+  void MultiFilesSelected(const std::vector<ui::SelectedFileInfo>& files,
                           void* params) override {
-    selected_paths_ = files;
+    selected_paths_ = ui::SelectedFileInfoListToFilePathList(files);
   }
   void FileSelectionCanceled(void* params) override { was_cancelled_ = true; }
 

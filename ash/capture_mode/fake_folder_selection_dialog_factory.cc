@@ -14,6 +14,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -40,15 +41,18 @@ class FakeFolderSelectionDialog : public ui::SelectFileDialog {
 
   void AcceptPath(const base::FilePath& path) {
     DCHECK(dialog_widget_);
-    if (listener_)
-      listener_->FileSelected(path, /*index=*/0, /*params=*/nullptr);
+    if (listener_) {
+      listener_->FileSelected(ui::SelectedFileInfo(path), /*index=*/0,
+                              /*params=*/nullptr);
+    }
     DismissDialog();
   }
 
   void CancelDialog() {
     DCHECK(dialog_widget_);
-    if (listener_)
+    if (listener_) {
       listener_->FileSelectionCanceled(/*params=*/nullptr);
+    }
     DismissDialog();
   }
 

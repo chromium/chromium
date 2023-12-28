@@ -15,6 +15,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -69,6 +70,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
@@ -735,8 +737,8 @@ void BookmarkManagerPrivateIOFunction::ShowSelectFileDialog(
 
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Balanced in one of the three callbacks of SelectFileDialog:
-  // either FileSelectionCanceled, MultiFilesSelected, or FileSelected
+  // Balanced in one of the callbacks of SelectFileDialog:
+  // either FileSelectionCanceled, or FileSelected
   AddRef();
 
   WebContents* web_contents = GetSenderWebContents();
@@ -762,13 +764,6 @@ void BookmarkManagerPrivateIOFunction::FileSelectionCanceled(void* params) {
   Release();  // Balanced in BookmarkManagerPrivateIOFunction::SelectFile()
 }
 
-void BookmarkManagerPrivateIOFunction::MultiFilesSelected(
-    const std::vector<base::FilePath>& files, void* params) {
-  select_file_dialog_.reset();
-  Release();  // Balanced in BookmarsIOFunction::SelectFile()
-  NOTREACHED() << "Should not be able to select multiple files";
-}
-
 ExtensionFunction::ResponseValue
 BookmarkManagerPrivateImportFunction::RunOnReady() {
   if (!EditBookmarksEnabled())
@@ -783,14 +778,14 @@ BookmarkManagerPrivateImportFunction::RunOnReady() {
 }
 
 void BookmarkManagerPrivateImportFunction::FileSelected(
-    const base::FilePath& path,
+    const ui::SelectedFileInfo& file,
     int index,
     void* params) {
   // Deletes itself.
   ExternalProcessImporterHost* importer_host = new ExternalProcessImporterHost;
   importer::SourceProfile source_profile;
   source_profile.importer_type = importer::TYPE_BOOKMARKS_FILE;
-  source_profile.source_path = path;
+  source_profile.source_path = file.path();
   importer_host->StartImportSettings(source_profile,
                                      GetProfile(),
                                      importer::FAVORITES,
@@ -823,10 +818,10 @@ BookmarkManagerPrivateExportFunction::RunOnReady() {
 }
 
 void BookmarkManagerPrivateExportFunction::FileSelected(
-    const base::FilePath& path,
+    const ui::SelectedFileInfo& file,
     int index,
     void* params) {
-  bookmark_html_writer::WriteBookmarks(GetProfile(), path, nullptr);
+  bookmark_html_writer::WriteBookmarks(GetProfile(), file.path(), nullptr);
   select_file_dialog_.reset();
   Release();  // Balanced in BookmarkManagerPrivateIOFunction::SelectFile()
 }

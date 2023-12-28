@@ -46,6 +46,7 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 using heap_profiling::Mode;
 using heap_profiling::ProfilingProcessHost;
@@ -168,7 +169,7 @@ class MemoryInternalsDOMHandler : public content::WebUIMessageHandler,
                                    std::vector<base::ProcessId> profiled_pids);
 
   // SelectFileDialog::Listener implementation:
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
   void FileSelectionCanceled(void* params) override;
@@ -369,14 +370,14 @@ void MemoryInternalsDOMHandler::ReturnProcessListOnUIThread(
   ResolveJavascriptCallback(callback_id, result);
 }
 
-void MemoryInternalsDOMHandler::FileSelected(const base::FilePath& path,
+void MemoryInternalsDOMHandler::FileSelected(const ui::SelectedFileInfo& file,
                                              int index,
                                              void* params) {
   base::Value result("Saving...");
   FireWebUIListener("save-dump-progress", result);
 
   ProfilingProcessHost::GetInstance()->SaveTraceWithHeapDumpToFile(
-      path,
+      file.path(),
       base::BindOnce(&MemoryInternalsDOMHandler::SaveTraceFinished,
                      weak_factory_.GetWeakPtr()),
       false);

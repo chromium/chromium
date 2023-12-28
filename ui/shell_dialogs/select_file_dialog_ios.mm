@@ -14,6 +14,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 @interface NativeFileDialog : NSObject <UIDocumentPickerDelegate> {
  @private
@@ -135,9 +136,10 @@ void SelectFileDialogImpl::FileWasSelected(
     listener_->FileSelectionCanceled(params);
   } else {
     if (is_multi) {
-      listener_->MultiFilesSelected(files, params);
+      listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files),
+                                    params);
     } else {
-      listener_->FileSelected(files[0], index, params);
+      listener_->FileSelected(SelectedFileInfo(files[0]), index, params);
     }
   }
 }

@@ -31,6 +31,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace crostini {
 
@@ -220,10 +221,10 @@ void CrostiniExportImport::OpenFileDialog(OperationData* operation_data,
       static_cast<void*>(operation_data));
 }
 
-void CrostiniExportImport::FileSelected(const base::FilePath& path,
+void CrostiniExportImport::FileSelected(const ui::SelectedFileInfo& file,
                                         int index,
                                         void* params) {
-  Start(static_cast<OperationData*>(params), path,
+  Start(static_cast<OperationData*>(params), file.path(),
         /* create_new_container= */ false, base::DoNothing());
   select_folder_dialog_.reset();
 }

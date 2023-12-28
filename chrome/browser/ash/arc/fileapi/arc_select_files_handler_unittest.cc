@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/components/arc/mojom/file_system.mojom.h"
+#include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -20,6 +21,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 using JavaScriptResultCallback =
     content::RenderFrameHost::JavaScriptResultCallback;
@@ -307,7 +309,7 @@ TEST_F(ArcSelectFilesHandlerTest, FileSelected_CallbackCalled) {
   arc_select_files_handler_->SelectFiles(request, callback.Get());
 
   EXPECT_CALL(std::move(callback), Run(_)).Times(1);
-  arc_select_files_handler_->FileSelected(base::FilePath(), 0, nullptr);
+  arc_select_files_handler_->FileSelected(ui::SelectedFileInfo(), 0, nullptr);
 }
 
 TEST_F(ArcSelectFilesHandlerTest, FileSelected_PickerActivitySelected) {
@@ -328,9 +330,10 @@ TEST_F(ArcSelectFilesHandlerTest, FileSelected_PickerActivitySelected) {
               Run(SelectFilesResultMatcher(expected_result.get())))
       .Times(1);
 
-  arc_select_files_handler_->FileSelected(
-      ConvertAndroidActivityToFilePath(package_name, activity_name), 0,
-      nullptr);
+  base::FilePath path =
+      ConvertAndroidActivityToFilePath(package_name, activity_name);
+  arc_select_files_handler_->FileSelected(ui::SelectedFileInfo(path), 0,
+                                          nullptr);
 }
 
 TEST_F(ArcSelectFilesHandlerTest, FileSelectionCanceled_CallbackCalled) {

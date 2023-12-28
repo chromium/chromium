@@ -27,6 +27,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 using extensions::APIPermission;
 using extensions::Extension;
@@ -278,21 +279,21 @@ void MediaGalleriesPermissionController::FileSelectionCanceled(void* params) {
 }
 
 void MediaGalleriesPermissionController::FileSelected(
-    const base::FilePath& path,
+    const ui::SelectedFileInfo& file,
     int /*index*/,
     void* /*params*/) {
   // |web_contents_| is NULL in tests.
   if (web_contents_) {
     extensions::file_system_api::SetLastChooseEntryDirectory(
-          extensions::ExtensionPrefs::Get(GetProfile()),
-          extension_->id(),
-          path);
+        extensions::ExtensionPrefs::Get(GetProfile()), extension_->id(),
+        file.path());
   }
 
   // Try to find it in the prefs.
   MediaGalleryPrefInfo gallery;
   DCHECK(preferences_);
-  bool gallery_exists = preferences_->LookUpGalleryByPath(path, &gallery);
+  bool gallery_exists =
+      preferences_->LookUpGalleryByPath(file.path(), &gallery);
   if (gallery_exists && !gallery.IsBlockListedType()) {
     // The prefs are in sync with |known_galleries_|, so it should exist in
     // |known_galleries_| as well. User selecting a known gallery effectively

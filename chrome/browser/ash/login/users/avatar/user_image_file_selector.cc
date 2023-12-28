@@ -14,6 +14,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace {
 
@@ -85,10 +86,10 @@ gfx::NativeWindow UserImageFileSelector::GetBrowserWindow() {
   return browser ? browser->window()->GetNativeWindow() : gfx::NativeWindow();
 }
 
-void UserImageFileSelector::FileSelected(const base::FilePath& path,
+void UserImageFileSelector::FileSelected(const ui::SelectedFileInfo& file,
                                          int index,
                                          void* params) {
-  std::move(selected_cb_).Run(path);
+  std::move(selected_cb_).Run(file.path());
   select_file_dialog_.reset();
 }
 

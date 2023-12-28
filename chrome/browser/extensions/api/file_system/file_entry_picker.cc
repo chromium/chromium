@@ -45,41 +45,29 @@ FileEntryPicker::~FileEntryPicker() {
   select_file_dialog_->ListenerDestroyed();
 }
 
-void FileEntryPicker::FileSelected(const base::FilePath& path,
+void FileEntryPicker::FileSelected(const ui::SelectedFileInfo& file,
                                    int index,
                                    void* params) {
-  MultiFilesSelected({path}, params);
-}
-
-void FileEntryPicker::FileSelectedWithExtraInfo(
-    const ui::SelectedFileInfo& file,
-    int index,
-    void* params) {
-  // Normally, file.local_path is used because it is a native path to the
-  // local read-only cached file in the case of remote file system like
-  // Chrome OS's Google Drive integration. Here, however, |file.file_path| is
-  // necessary because we need to create a FileEntry denoting the remote file,
-  // not its cache. On other platforms than Chrome OS, they are the same.
-  //
-  // TODO(kinaba): remove this, once after the file picker implements proper
-  // switch of the path treatment depending on the |allowed_paths|.
-  FileSelected(file.file_path, index, params);
+  MultiFilesSelected({file}, params);
 }
 
 void FileEntryPicker::MultiFilesSelected(
-    const std::vector<base::FilePath>& files,
-    void* params) {
-  std::move(files_selected_callback_).Run(files);
-  delete this;
-}
-
-void FileEntryPicker::MultiFilesSelectedWithExtraInfo(
     const std::vector<ui::SelectedFileInfo>& files,
     void* params) {
   std::vector<base::FilePath> paths;
-  for (const auto& file : files)
+  for (const auto& file : files) {
+    // Normally, `file.local_path` is used because it is a native path to the
+    // local read-only cached file in the case of remote file system like
+    // ChromeOS's Google Drive integration. Here, however, `file.file_path` is
+    // necessary because we need to create a FileEntry denoting the remote file,
+    // not its cache. On other platforms than Chrome OS, they are the same.
+    //
+    // TODO(kinaba): remove this, once after the file picker implements proper
+    // switch of the path treatment depending on the `allowed_paths`.
     paths.push_back(file.file_path);
-  MultiFilesSelected(paths, params);
+  }
+  std::move(files_selected_callback_).Run(paths);
+  delete this;
 }
 
 void FileEntryPicker::FileSelectionCanceled(void* params) {

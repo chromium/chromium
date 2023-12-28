@@ -62,9 +62,10 @@ class FolderSelectionDialogController : public ui::SelectFileDialog::Listener,
   bool ShouldConsumeEvent(const ui::Event* event) const;
 
   // ui::SelectFileDialog::Listener:
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
+  void FileSelectionCanceled(void* params) override;
 
   // wm::TransientWindowObserver:
   void OnTransientChildAdded(aura::Window* window,

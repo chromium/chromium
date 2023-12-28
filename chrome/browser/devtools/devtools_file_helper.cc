@@ -41,6 +41,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -81,17 +82,11 @@ class SelectFileDialog : public ui::SelectFileDialog::Listener {
   }
 
   // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override {
-    std::move(selected_callback_).Run(path);
+    std::move(selected_callback_).Run(file.path());
     delete this;
-  }
-
-  void MultiFilesSelected(const std::vector<base::FilePath>& files,
-                          void* params) override {
-    delete this;
-    NOTREACHED() << "Should not be able to select multiple files";
   }
 
   void FileSelectionCanceled(void* params) override {

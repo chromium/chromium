@@ -302,30 +302,14 @@ FileSystemChooser::~FileSystemChooser() {
     dialog_->ListenerDestroyed();
 }
 
-void FileSystemChooser::FileSelected(const base::FilePath& path,
+void FileSystemChooser::FileSelected(const ui::SelectedFileInfo& file,
                                      int index,
                                      void* params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  MultiFilesSelected({path}, params);
+  MultiFilesSelected({file}, params);
 }
 
 void FileSystemChooser::MultiFilesSelected(
-    const std::vector<base::FilePath>& files,
-    void* params) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  MultiFilesSelectedWithExtraInfo(ui::FilePathListToSelectedFileInfoList(files),
-                                  params);
-}
-
-void FileSystemChooser::FileSelectedWithExtraInfo(
-    const ui::SelectedFileInfo& file,
-    int index,
-    void* params) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  MultiFilesSelectedWithExtraInfo({file}, params);
-}
-
-void FileSystemChooser::MultiFilesSelectedWithExtraInfo(
     const std::vector<ui::SelectedFileInfo>& files,
     void* params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

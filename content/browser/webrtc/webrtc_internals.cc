@@ -35,6 +35,7 @@
 #include "services/audio/public/cpp/debug_recording_session_factory.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 using base::ProcessId;
 using std::string;
@@ -666,22 +667,22 @@ void WebRTCInternals::RenderProcessExited(
   host->RemoveObserver(this);
 }
 
-void WebRTCInternals::FileSelected(const base::FilePath& path,
+void WebRTCInternals::FileSelected(const ui::SelectedFileInfo& file,
                                    int /* unused_index */,
                                    void* /*unused_params */) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   switch (selection_type_) {
     case SelectionType::kRtcEventLogs: {
-      event_log_recordings_file_path_ = path;
+      event_log_recordings_file_path_ = file.path();
       event_log_recordings_ = true;
       WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
       if (logger) {
-        logger->EnableLocalLogging(path);
+        logger->EnableLocalLogging(file.path());
       }
       break;
     }
     case SelectionType::kAudioDebugRecordings: {
-      audio_debug_recordings_file_path_ = path;
+      audio_debug_recordings_file_path_ = file.path();
       EnableAudioDebugRecordingsOnAllRenderProcessHosts();
       break;
     }

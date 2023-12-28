@@ -39,6 +39,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 CustomizeChromePageHandler::CustomizeChromePageHandler(
     mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
@@ -498,15 +499,15 @@ void CustomizeChromePageHandler::OnNtpBackgroundServiceShuttingDown() {
   ntp_background_service_ = nullptr;
 }
 
-void CustomizeChromePageHandler::FileSelected(const base::FilePath& path,
+void CustomizeChromePageHandler::FileSelected(const ui::SelectedFileInfo& file,
                                               int index,
                                               void* params) {
   DCHECK(choose_local_custom_background_callback_);
   if (ntp_custom_background_service_) {
     theme_service_->UseDefaultTheme();
 
-    profile_->set_last_selected_directory(path.DirName());
-    ntp_custom_background_service_->SelectLocalBackgroundImage(path);
+    profile_->set_last_selected_directory(file.path().DirName());
+    ntp_custom_background_service_->SelectLocalBackgroundImage(file.path());
   }
   select_file_dialog_ = nullptr;
   LogEvent(NTP_BACKGROUND_UPLOAD_DONE);

@@ -60,38 +60,24 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   class SHELL_DIALOGS_EXPORT Listener {
    public:
     // Notifies the Listener that a file/folder selection has been made. The
-    // file/folder path is in |path|. |params| is contextual passed to
+    // file/folder path is in |file|. |params| is the contextual value passed to
     // SelectFile. |index| specifies the index of the filter passed to the
-    // the initial call to SelectFile.
-    virtual void FileSelected(const base::FilePath& path,
+    // initial call to SelectFile.
+    virtual void FileSelected(const SelectedFileInfo& file,
                               int index,
                               void* params) = 0;
 
-    // Similar to FileSelected() but takes SelectedFileInfo instead of
-    // base::FilePath. Used for passing extra information (ex. display name).
-    //
-    // If not overridden, calls FileSelected() with path from |file|.
-    virtual void FileSelectedWithExtraInfo(const SelectedFileInfo& file,
-                                           int index,
-                                           void* params);
+    // Notifies the Listener that many files have been selected. The files are
+    // in |files|. |params| is the contextual value passed to SelectFile.
+    // Implementing this method is optional if no multi-file selection is ever
+    // made, as the default implementation will call NOTREACHED.
+    virtual void MultiFilesSelected(const std::vector<SelectedFileInfo>& files,
+                                    void* params);
 
-    // Notifies the Listener that many files have been selected. The
-    // files are in |files|. |params| is contextual passed to SelectFile.
-    virtual void MultiFilesSelected(const std::vector<base::FilePath>& files,
-                                    void* params) {}
-
-    // Similar to MultiFilesSelected() but takes SelectedFileInfo instead of
-    // base::FilePath. Used for passing extra information (ex. display name).
-    //
-    // If not overridden, calls MultiFilesSelected() with paths from |files|.
-    virtual void MultiFilesSelectedWithExtraInfo(
-        const std::vector<SelectedFileInfo>& files,
-        void* params);
-
-    // Notifies the Listener that the file/folder selection was aborted (via
-    // the  user canceling or closing the selection dialog box, for example).
-    // |params| is contextual passed to SelectFile.
-    virtual void FileSelectionCanceled(void* params) {}
+    // Notifies the Listener that the file/folder selection was canceled (via
+    // the user canceling or closing the selection dialog box, for example).
+    // |params| is the contextual value passed to SelectFile.
+    virtual void FileSelectionCanceled(void* params) = 0;
 
    protected:
     virtual ~Listener() = default;

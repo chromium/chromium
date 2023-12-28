@@ -46,6 +46,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -334,14 +335,14 @@ void PdfPrinterHandler::StartPrint(
   SelectFile(path, initiator, prompt_user);
 }
 
-void PdfPrinterHandler::FileSelected(const base::FilePath& path,
+void PdfPrinterHandler::FileSelected(const ui::SelectedFileInfo& file,
                                      int /* index */,
                                      void* /* params */) {
   // Update downloads location and save sticky settings.
   DownloadPrefs* download_prefs = DownloadPrefs::FromBrowserContext(profile_);
-  download_prefs->SetSaveFilePath(path.DirName());
+  download_prefs->SetSaveFilePath(file.path().DirName());
   sticky_settings_->SaveInPrefs(profile_->GetPrefs());
-  print_to_pdf_path_ = path;
+  print_to_pdf_path_ = file.path();
   select_file_dialog_.reset();
   PostPrintToPdfTask();
 }
@@ -503,7 +504,7 @@ void PdfPrinterHandler::PostPrintToPdfTask() {
 }
 
 void PdfPrinterHandler::OnGotUniqueFileName(const base::FilePath& path) {
-  FileSelected(path, 0, nullptr);
+  FileSelected(ui::SelectedFileInfo(path), 0, nullptr);
 }
 
 void PdfPrinterHandler::OnDirectorySelected(const base::FilePath& filename,

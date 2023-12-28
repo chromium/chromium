@@ -11,6 +11,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -55,6 +57,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace content {
 class BrowserContext;
@@ -97,8 +100,9 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
     if (auto_cancel_) {
       listener_->FileSelectionCanceled(params);
     } else {
-      listener_->FileSelected(base::FilePath(FILE_PATH_LITERAL("/test/path")),
-                              file_type_index, params);
+      base::FilePath path(FILE_PATH_LITERAL("/test/path"));
+      listener_->FileSelected(ui::SelectedFileInfo(path), file_type_index,
+                              params);
     }
   }
   // Pure virtual methods that need to be implemented.

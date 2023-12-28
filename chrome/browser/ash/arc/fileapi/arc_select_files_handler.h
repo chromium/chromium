@@ -133,17 +133,17 @@ class ArcSelectFilesHandler : public ui::SelectFileDialog::Listener {
       mojom::FileSystemHost::GetFileSelectorElementsCallback callback);
 
   // ui::SelectFileDialog::Listener overrides:
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
-  void MultiFilesSelected(const std::vector<base::FilePath>& files,
+  void MultiFilesSelected(const std::vector<ui::SelectedFileInfo>& files,
                           void* params) override;
   void FileSelectionCanceled(void* params) override;
 
  private:
   friend class ArcSelectFilesHandlerTest;
 
-  void FilesSelectedInternal(const std::vector<base::FilePath>& files,
+  void FilesSelectedInternal(const std::vector<ui::SelectedFileInfo>& files,
                              void* params);
 
   void SetDialogHolderForTesting(

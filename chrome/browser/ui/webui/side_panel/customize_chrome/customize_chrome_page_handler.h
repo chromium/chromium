@@ -121,7 +121,7 @@ class CustomizeChromePageHandler
   void OnNtpBackgroundServiceShuttingDown() override;
 
   // SelectFileDialog::Listener:
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
   void FileSelectionCanceled(void* params) override;

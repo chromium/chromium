@@ -38,6 +38,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
 namespace ash::diagnostics {
@@ -125,7 +126,7 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
       return;
     }
 
-    listener_->FileSelected(selected_path_, /*index=*/0,
+    listener_->FileSelected(ui::SelectedFileInfo(selected_path_), /*index=*/0,
                             /*params=*/nullptr);
   }
 

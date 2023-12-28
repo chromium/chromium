@@ -43,6 +43,7 @@
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace policy {
 namespace {
@@ -169,8 +170,8 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
       return;
     }
 
-    base::FilePath selected_path = std::move(selected_path_);
-    listener_->FileSelected(selected_path, 0 /* index */, nullptr /* params */);
+    ui::SelectedFileInfo file(selected_path_, selected_path_);
+    listener_->FileSelected(file, /*index=*/0, /*params=*/nullptr);
   }
 
   bool IsRunning(gfx::NativeWindow owning_window) const override {
@@ -182,7 +183,7 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
  private:
   ~TestSelectFileDialog() override = default;
 
-  // The simulatd file path selected by the user.
+  // The simulated file path selected by the user.
   base::FilePath selected_path_;
 };
 

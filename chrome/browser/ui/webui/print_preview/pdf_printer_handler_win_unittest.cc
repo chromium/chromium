@@ -47,7 +47,7 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
       : PdfPrinterHandler(profile, contents, sticky_settings),
         save_failed_(false) {}
 
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override {
     // Since we always cancel the dialog as soon as it is initialized, this
