@@ -88,7 +88,6 @@ void PostProcessMatches(
 }  // namespace
 
 FormSaverImpl::FormSaverImpl(PasswordStoreInterface* store) : store_(store) {
-  DCHECK(store);
 }
 
 FormSaverImpl::~FormSaverImpl() = default;
