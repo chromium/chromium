@@ -66,23 +66,6 @@ class TestClient : public GlanceablesClassroomClient {
               (GlanceablesClassroomClient::GetAssignmentsCallback),
               (override));
 
-  MOCK_METHOD(void,
-              GetTeacherAssignmentsWithApproachingDueDate,
-              (GlanceablesClassroomClient::GetAssignmentsCallback),
-              (override));
-  MOCK_METHOD(void,
-              GetTeacherAssignmentsRecentlyDue,
-              (GlanceablesClassroomClient::GetAssignmentsCallback),
-              (override));
-  MOCK_METHOD(void,
-              GetTeacherAssignmentsWithoutDueDate,
-              (GlanceablesClassroomClient::GetAssignmentsCallback),
-              (override));
-  MOCK_METHOD(void,
-              GetGradedTeacherAssignments,
-              (GlanceablesClassroomClient::GetAssignmentsCallback),
-              (override));
-
   MOCK_METHOD(void, OnGlanceablesBubbleClosed, (), (override));
 };
 

@@ -74,13 +74,6 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       GetAssignmentsCallback callback) override;
   void GetStudentAssignmentsWithoutDueDate(
       GetAssignmentsCallback callback) override;
-  void GetTeacherAssignmentsWithApproachingDueDate(
-      GetAssignmentsCallback callback) override;
-  void GetTeacherAssignmentsRecentlyDue(
-      GetAssignmentsCallback callback) override;
-  void GetTeacherAssignmentsWithoutDueDate(
-      GetAssignmentsCallback callback) override;
-  void GetGradedTeacherAssignments(GetAssignmentsCallback callback) override;
   void OnGlanceablesBubbleClosed() override;
 
   void set_number_of_assignments_prioritized_for_display_for_testing(
