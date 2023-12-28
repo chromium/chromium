@@ -159,6 +159,9 @@ BASE_DECLARE_FEATURE(kOmniboxTouchDownTriggerForPrefetch);
 // intranet site search engines.
 BASE_DECLARE_FEATURE(kSiteSearchSettingsPolicy);
 
+// Unifies the UI for managed search engines in chrome://settings.
+BASE_DECLARE_FEATURE(kPolicyIndicationForManagedDefaultSearch);
+
 // Kill switch for use of the new SQL recovery module in `ShortcutsDatabase`.
 BASE_DECLARE_FEATURE(kShortcutsDatabaseUseBuiltInRecoveryIfSupported);
 

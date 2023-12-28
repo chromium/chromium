@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/search_engines/keyword_editor_controller.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -94,7 +96,12 @@ bool KeywordEditorController::ShouldConfirmDeletion(
 
 bool KeywordEditorController::IsManaged(const TemplateURL* url) const {
   return url->created_by_policy() ==
-         TemplateURLData::CreatedByPolicy::kSiteSearch;
+             TemplateURLData::CreatedByPolicy::kSiteSearch ||
+         (base::FeatureList::IsEnabled(
+              omnibox::kPolicyIndicationForManagedDefaultSearch) &&
+          url->created_by_policy() ==
+              TemplateURLData::CreatedByPolicy::kDefaultSearchProvider &&
+          url->enforced_by_policy());
 }
 
 void KeywordEditorController::RemoveTemplateURL(int index) {

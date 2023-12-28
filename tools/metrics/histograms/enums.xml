@@ -29577,6 +29577,8 @@ from previous Chrome versions.
   <int value="-191329924" label="WallpaperSearchSettingsVisibility:disabled"/>
   <int value="-190723154" label="AppLaunchAutomation:enabled"/>
   <int value="-190449995" label="CommerceLocalPDPDetection:enabled"/>
+  <int value="-189740492"
+      label="PolicyIndicationForManagedDefaultSearch:disabled"/>
   <int value="-189478545" label="ArcCustomTabsExperiment:enabled"/>
   <int value="-188439713" label="disable-video-capture-use-gpu-memory-buffer"/>
   <int value="-186707397" label="HideArcMediaNotifications:enabled"/>
@@ -29857,6 +29859,8 @@ from previous Chrome versions.
   <int value="-64824628" label="VizHitTestSurfaceLayer:disabled"/>
   <int value="-64747770" label="IncognitoDownloadsWarning:disabled"/>
   <int value="-64293934" label="AccessibilityAXModes:disabled"/>
+  <int value="-63936199"
+      label="PolicyIndicationForManagedDefaultSearch:enabled"/>
   <int value="-63207112" label="NtpSingleRowShortcuts:disabled"/>
   <int value="-60692320" label="PrefBasedDataCollectionConsentHelper:disabled"/>
   <int value="-60219461" label="BluetoothFlossTelephony:enabled"/>

@@ -1648,6 +1648,12 @@ extern const char kPreloadingOnPerformancePageDescription[];
 extern const char kCbdTimeframeRequiredName[];
 extern const char kCbdTimeframeRequiredDescription[];
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kPolicyIndicationForManagedDefaultSearchName[];
+extern const char kPolicyIndicationForManagedDefaultSearchDescription[];
+#endif
+
 extern const char kPriceChangeModuleName[];
 extern const char kPriceChangeModuleDescription[];
 

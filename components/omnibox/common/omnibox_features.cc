@@ -529,6 +529,12 @@ BASE_FEATURE(kSiteSearchSettingsPolicy,
              "SiteSearchSettingsPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, shows the policy indicator for Default Search Provider set by
+// Enterprise policy chrome://settings.
+BASE_FEATURE(kPolicyIndicationForManagedDefaultSearch,
+             "PolicyIndicationForManagedDefaultSearch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, prefer to use the new recovery module to recover the
 // `ShortcutsDatabase` database. See https://crbug.com/1385500 for details.
 // This is a kill switch and is not intended to be used in a field trial.
