@@ -663,9 +663,10 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
                 !std::is_void_v<typename std::remove_cv<U>::type> &&
                 partition_alloc::internal::is_offset_type<Z>>>
   U& operator[](Z delta_elems) const {
-    // Don't check for AllowPtrArithmetic here, as operator+ already does that,
-    // and we'd get double errors.
-    return *(*this + delta_elems).GetForDereference();
+    static_assert(
+        raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
+        "cannot index raw_ptr unless AllowPtrArithmetic trait is present.");
+    return *Impl::Advance(wrapped_ptr_, delta_elems);
   }
 
   // Do not disable operator+() and operator-().
@@ -679,8 +680,6 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   template <typename Z>
   PA_ALWAYS_INLINE friend constexpr raw_ptr operator+(const raw_ptr& p,
                                                       Z delta_elems) {
-    // Don't check for AllowPtrArithmetic here, as operator+= already does that,
-    // and we'd get double errors.
     raw_ptr result = p;
     return result += delta_elems;
   }
@@ -692,8 +691,6 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   template <typename Z>
   PA_ALWAYS_INLINE friend constexpr raw_ptr operator-(const raw_ptr& p,
                                                       Z delta_elems) {
-    // Don't check for AllowPtrArithmetic here, as operator-= already does that,
-    // and we'd get double errors.
     raw_ptr result = p;
     return result -= delta_elems;
   }
