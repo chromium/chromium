@@ -59,6 +59,7 @@ class DeletePageTaskTest : public ModelTaskTestBase {
 
   absl::optional<DeletePageResult> last_delete_page_result_;
   std::vector<OfflinePageItem> last_deleted_page_items_;
+  base::WeakPtrFactory<DeletePageTaskTest> weak_ptr_factory_{this};
 };
 
 void DeletePageTaskTest::SetUp() {
@@ -76,7 +77,7 @@ void DeletePageTaskTest::OnDeletePageDone(
 DeletePageTask::DeletePageTaskCallback
 DeletePageTaskTest::delete_page_callback() {
   return base::BindOnce(&DeletePageTaskTest::OnDeletePageDone,
-                        base::AsWeakPtr(this));
+                        weak_ptr_factory_.GetWeakPtr());
 }
 
 bool DeletePageTaskTest::CheckPageDeleted(const OfflinePageItem& page) {
