@@ -217,8 +217,9 @@ suite('SearchEnginePageTests', function() {
             'hidden'));
     assertFalse(defaultsListElement.shadowRoot!.querySelector('.shortcut')!
                     .hasAttribute('hidden'));
-    assertTrue(defaultsListElement.shadowRoot!.querySelector('.url-padded')!
-                   .hasAttribute('hidden'));
+    assertTrue(
+        defaultsListElement.shadowRoot!.querySelector('.url')!.hasAttribute(
+            'hidden'));
 
     // The default engines list should not collapse and should show all entries
     // in the list by default.
@@ -239,8 +240,9 @@ suite('SearchEnginePageTests', function() {
     assertFalse(
         activesListElement.shadowRoot!.querySelector('.shortcut')!.hasAttribute(
             'hidden'));
-    assertTrue(activesListElement.shadowRoot!.querySelector('.url-padded')!
-                   .hasAttribute('hidden'));
+    assertTrue(
+        activesListElement.shadowRoot!.querySelector('.url')!.hasAttribute(
+            'hidden'));
 
     // With less than `visibleEnginesSize` elements in the list, all elements
     // should be visible and the collapsible section should not be present.
@@ -266,8 +268,9 @@ suite('SearchEnginePageTests', function() {
     assertTrue(
         othersListElement.shadowRoot!.querySelector('.shortcut')!.hasAttribute(
             'hidden'));
-    assertFalse(othersListElement.shadowRoot!.querySelector('.url-padded')!
-                    .hasAttribute('hidden'));
+    assertFalse(
+        othersListElement.shadowRoot!.querySelector('.url')!.hasAttribute(
+            'hidden'));
 
     // Any engines greater than `visibleEnginesSize` will be in a second list
     // under the collapsible section. The button to expand this section must be

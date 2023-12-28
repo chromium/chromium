@@ -43,7 +43,7 @@ suite('SearchEngineEntryTest', function() {
         entry.shadowRoot!.querySelector('#shortcut-column')!.textContent);
     assertEquals(
         searchEngine.url,
-        entry.shadowRoot!.querySelector('#url-column-padded')!.textContent);
+        entry.shadowRoot!.querySelector('#url-column')!.textContent);
   });
 
   // Tests that columns are hidden and shown appropriately.
@@ -62,12 +62,10 @@ suite('SearchEngineEntryTest', function() {
     // Test query URL column visibility.
     entry.showQueryUrl = true;
     assertFalse(
-        entry.shadowRoot!.querySelector<HTMLElement>(
-                             '#url-column-padded')!.hidden);
+        entry.shadowRoot!.querySelector<HTMLElement>('#url-column')!.hidden);
     entry.showQueryUrl = false;
     assertTrue(
-        entry.shadowRoot!.querySelector<HTMLElement>(
-                             '#url-column-padded')!.hidden);
+        entry.shadowRoot!.querySelector<HTMLElement>('#url-column')!.hidden);
   });
 
   // Open and return the action menu
@@ -289,7 +287,7 @@ suite('EnterpriseSiteSearchEntryTests', function() {
         entry.shadowRoot!.querySelector('#shortcut-column')!.textContent);
     assertEquals(
         searchEngine.url,
-        entry.shadowRoot!.querySelector('#url-column-padded')!.textContent);
+        entry.shadowRoot!.querySelector('#url-column')!.textContent);
   });
 
   // Verifies that the "edit" and "activate" buttons and the 3-dot action menu
