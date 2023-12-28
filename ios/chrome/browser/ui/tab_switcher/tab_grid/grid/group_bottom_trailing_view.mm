@@ -12,18 +12,18 @@
 namespace {
 // Offsets and dimension ratio constraints of the top and bottom subviews.
 const CGFloat kSubviewsDimensionRatio = 0.5;
-const CGFloat kSubviewsWidthOffset = 2;
-const CGFloat kSubviewsHeightOffset = 2;
+const CGFloat kSubviewsWidthOffset = 1;
+const CGFloat kSubviewsHeightOffset = 1;
 }  // namespace
 
 @interface GroupGridBottomTrailingView ()
 
 @property(nonatomic, assign) NSInteger numberOfSubviews;
 @property(nonatomic, weak) TopAlignedImageView* mainSubview;
-@property(nonatomic, weak) UIImageView* topLeadingView;
-@property(nonatomic, weak) UIImageView* topTrailingView;
-@property(nonatomic, weak) UIImageView* bottomLeadingView;
-@property(nonatomic, weak) UIImageView* bottomTrailingView;
+@property(nonatomic, weak) TopAlignedImageView* topLeadingView;
+@property(nonatomic, weak) TopAlignedImageView* topTrailingView;
+@property(nonatomic, weak) TopAlignedImageView* bottomLeadingView;
+@property(nonatomic, weak) TopAlignedImageView* bottomTrailingView;
 
 @end
 
@@ -36,10 +36,10 @@ const CGFloat kSubviewsHeightOffset = 2;
     mainSubview.hidden = YES;
     mainSubview.translatesAutoresizingMaskIntoConstraints = NO;
 
-    UIImageView* topLeadingView = [self setupFaviconView];
-    UIImageView* topTrailingView = [self setupFaviconView];
-    UIImageView* bottomLeadingView = [self setupFaviconView];
-    UIImageView* bottomTrailingView = [self setupFaviconView];
+    TopAlignedImageView* topLeadingView = [self setupFaviconView];
+    TopAlignedImageView* topTrailingView = [self setupFaviconView];
+    TopAlignedImageView* bottomLeadingView = [self setupFaviconView];
+    TopAlignedImageView* bottomTrailingView = [self setupFaviconView];
 
     [self addSubview:mainSubview];
     [self addSubview:topLeadingView];
@@ -53,8 +53,6 @@ const CGFloat kSubviewsHeightOffset = 2;
     _bottomLeadingView = bottomLeadingView;
     _bottomTrailingView = bottomTrailingView;
 
-    // TODO(crbug.com/1501837): Apply different corner radius to each corner.
-    _mainSubview.layer.cornerRadius = kGridCellCornerRadius;
     self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     AddSameConstraints(self, mainSubview);
 
@@ -174,12 +172,10 @@ const CGFloat kSubviewsHeightOffset = 2;
   self.mainSubview.hidden = YES;
 }
 
-- (UIImageView*)setupFaviconView {
-  UIImageView* imageView = [[UIImageView alloc] init];
+- (TopAlignedImageView*)setupFaviconView {
+  TopAlignedImageView* imageView = [[TopAlignedImageView alloc] init];
   imageView.hidden = YES;
-  // TODO(crbug.com/1501837): Apply different corner radius depending on the
-  // view's position.
-  imageView.layer.cornerRadius = kGroupGridBottomTrailingCellsCornerRadius;
+  imageView.layer.cornerRadius = kGroupGridBottomTrailingCellCornerRadius;
   imageView.translatesAutoresizingMaskIntoConstraints = NO;
   return imageView;
 }

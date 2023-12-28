@@ -146,11 +146,16 @@ const CGFloat kSnapShotViewBottomOffset = 4;
         [UIColor colorNamed:kBackgroundColor];
     self.bottomTrailingSnapshotView.backgroundColor =
         [UIColor colorNamed:kBackgroundColor];
-    // TODO(crbug.com/1501837): Apply different corner radius to each view.
-    self.bottomLeadingSnapshotView.layer.cornerRadius = kGridCellCornerRadius;
-    self.topLeadingSnapshotView.layer.cornerRadius = kGridCellCornerRadius;
-    self.topTrailingSnapshotView.layer.cornerRadius = kGridCellCornerRadius;
-    self.bottomTrailingSnapshotView.layer.cornerRadius = kGridCellCornerRadius;
+
+    self.topLeadingSnapshotView.layer.cornerRadius = kGroupGridCellCornerRadius;
+    self.topTrailingSnapshotView.layer.cornerRadius =
+        kGroupGridCellCornerRadius;
+    self.bottomLeadingSnapshotView.layer.cornerRadius =
+        kGroupGridCellCornerRadius;
+    self.bottomTrailingSnapshotView.layer.cornerRadius =
+        kGroupGridCellCornerRadius;
+    self.bottomTrailingSnapshotView.layer.masksToBounds = YES;
+
     self.topLeadingSnapshotView.hidden = YES;
     self.topTrailingSnapshotView.hidden = YES;
     self.bottomLeadingSnapshotView.hidden = YES;
@@ -168,6 +173,9 @@ const CGFloat kSnapShotViewBottomOffset = 4;
     self.layer.shadowRadius = 4.0f;
     self.layer.shadowOpacity = 0.5f;
     self.layer.masksToBounds = NO;
+    self.groupSnapshotsView.layer.cornerRadius = kGridCellCornerRadius;
+    self.groupSnapshotsView.layer.masksToBounds = YES;
+
     NSArray* constraints = @[
       [topBar.topAnchor constraintEqualToAnchor:contentView.topAnchor],
       [topBar.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor],
@@ -292,8 +300,6 @@ const CGFloat kSnapShotViewBottomOffset = 4;
   self.titleHidden = NO;
   self.icon = nil;
   [self configureWithGroupTabInfos:nil];
-  self.bottomTrailingSnapshotView.mainSubviewImageAndFavicon.snapshot = nil;
-  self.bottomTrailingSnapshotView.favicons = nil;
   self.selected = NO;
   self.opacity = 1.0;
   [self hideActivityIndicator];
@@ -359,9 +365,12 @@ const CGFloat kSnapShotViewBottomOffset = 4;
   self.topLeadingSnapshotView.image = nil;
   self.topTrailingSnapshotView.image = nil;
   self.bottomLeadingSnapshotView.image = nil;
+  self.bottomTrailingSnapshotView.mainSubviewImageAndFavicon.snapshot = nil;
+  self.bottomTrailingSnapshotView.favicons = nil;
   self.topLeadingSnapshotView.hidden = YES;
   self.topTrailingSnapshotView.hidden = YES;
   self.bottomLeadingSnapshotView.hidden = YES;
+  self.bottomTrailingSnapshotView.hidden = YES;
 
   int groupTabInfosLength = [groupTabInfos count];
   if (groupTabInfosLength > 0) {
