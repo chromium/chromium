@@ -89,7 +89,6 @@ BASE_DECLARE_FEATURE(kIncognitoScreenshot);
 BASE_DECLARE_FEATURE(kImprovedA2HS);
 BASE_DECLARE_FEATURE(kInstantStart);
 BASE_DECLARE_FEATURE(kLanguagesPreference);
-BASE_DECLARE_FEATURE(kLensCameraAssistedSearch);
 BASE_DECLARE_FEATURE(kLensOnQuickActionSearchWidget);
 BASE_DECLARE_FEATURE(kLocationBarModelOptimizations);
 BASE_DECLARE_FEATURE(kMultiInstanceApplicationStatusCleanup);
