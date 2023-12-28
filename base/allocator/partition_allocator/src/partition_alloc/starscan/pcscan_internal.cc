@@ -408,8 +408,6 @@ static_assert(
     "SuperPageSnapshot must stay relatively small to be allocated on stack");
 
 SuperPageSnapshot::SuperPageSnapshot(uintptr_t super_page) {
-  using SlotSpan = SlotSpanMetadata;
-
   auto* extent_entry = PartitionSuperPageToExtent(super_page);
 
   ::partition_alloc::internal::ScopedGuard lock(
@@ -430,8 +428,10 @@ SuperPageSnapshot::SuperPageSnapshot(uintptr_t super_page) {
   size_t current = 0;
 
   IterateNonEmptySlotSpans(
-      super_page, nonempty_slot_spans, [this, &current](SlotSpan* slot_span) {
-        const uintptr_t payload_begin = SlotSpan::ToSlotSpanStart(slot_span);
+      super_page, nonempty_slot_spans,
+      [this, &current](SlotSpanMetadata* slot_span) {
+        const uintptr_t payload_begin =
+            SlotSpanMetadata::ToSlotSpanStart(slot_span);
         // For single-slot slot-spans, scan only utilized slot part.
         const size_t provisioned_size =
             PA_UNLIKELY(slot_span->CanStoreRawSize())
@@ -736,7 +736,7 @@ void PCScanTask::ClearQuarantinedSlotsAndPrepareCardTable() {
     auto* bitmap = StateBitmapFromAddr(super_page);
     auto* root = Root::FromFirstSuperPage(super_page);
     bitmap->IterateQuarantined([root, clear_type](uintptr_t slot_start) {
-      auto* slot_span = SlotSpan::FromSlotStart(slot_start);
+      auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start);
       // Use zero as a zapping value to speed up the fast bailout check in
       // ScanPartitions.
       const size_t size = root->GetSlotUsableSize(slot_span);
@@ -1009,16 +1009,15 @@ void UnmarkInCardTable(uintptr_t slot_start, SlotSpanMetadata* slot_span) {
                                                     uintptr_t super_page,
                                                     size_t epoch,
                                                     SweepStat& stat) {
-  using SlotSpan = SlotSpanMetadata;
-
   auto* bitmap = StateBitmapFromAddr(super_page);
-  SlotSpan* previous_slot_span = nullptr;
+  SlotSpanMetadata* previous_slot_span = nullptr;
   internal::PartitionFreelistEntry* freelist_tail = nullptr;
   internal::PartitionFreelistEntry* freelist_head = nullptr;
   size_t freelist_entries = 0;
 
   const auto bitmap_iterator = [&](uintptr_t slot_start) {
-    SlotSpan* current_slot_span = SlotSpan::FromSlotStart(slot_start);
+    SlotSpanMetadata* current_slot_span =
+        SlotSpanMetadata::FromSlotStart(slot_start);
     auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(slot_start);
 
     if (current_slot_span != previous_slot_span) {

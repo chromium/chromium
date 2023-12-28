@@ -78,7 +78,7 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
   orig_address = 0;
 
   auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start);
-  auto* root = PartitionRoot::FromSlotSpan(slot_span);
+  auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   // Double check that ref-count is indeed present.
   PA_DCHECK(root->brp_enabled());
 
@@ -1060,7 +1060,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
     // logic to find a new active slot span.
     memset(&sentinel_bucket, 0, sizeof(sentinel_bucket));
     sentinel_bucket.active_slot_spans_head =
-        SlotSpan::get_sentinel_slot_span_non_const();
+        SlotSpanMetadata::get_sentinel_slot_span_non_const();
 
     // This is a "magic" value so we can test if a root pointer is valid.
     inverted_self = ~reinterpret_cast<uintptr_t>(this);
@@ -1169,7 +1169,7 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
       internal::IsManagedByDirectMap(reinterpret_cast<uintptr_t>(slot_span)));
 
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
-  auto* extent = DirectMapExtent::FromSlotSpan(slot_span);
+  auto* extent = DirectMapExtent::FromSlotSpanMetadata(slot_span);
   size_t current_reservation_size = extent->reservation_size;
   // Calculate the new reservation size the way PartitionDirectMap() would, but
   // skip the alignment, because this call isn't requesting it.
@@ -1206,7 +1206,7 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
   // bucket->slot_size is the currently committed size of the allocation.
   size_t current_slot_size = slot_span->bucket->slot_size;
   size_t current_usable_size = GetSlotUsableSize(slot_span);
-  uintptr_t slot_start = SlotSpan::ToSlotSpanStart(slot_span);
+  uintptr_t slot_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
   // This is the available part of the reservation up to which the new
   // allocation can grow.
   size_t available_reservation_size =
@@ -1280,9 +1280,10 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
   return true;
 }
 
-bool PartitionRoot::TryReallocInPlaceForNormalBuckets(void* object,
-                                                      SlotSpan* slot_span,
-                                                      size_t new_size) {
+bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
+    void* object,
+    SlotSpanMetadata* slot_span,
+    size_t new_size) {
   uintptr_t slot_start = ObjectToSlotStart(object);
   PA_DCHECK(internal::IsManagedByNormalBuckets(slot_start));
 
@@ -1383,7 +1384,7 @@ void PartitionRoot::ShrinkEmptySlotSpansRing(size_t limit) {
   int16_t index = global_empty_slot_span_ring_index;
   int16_t starting_index = index;
   while (empty_slot_spans_dirty_bytes > limit) {
-    SlotSpan* slot_span = global_empty_slot_span_ring[index];
+    SlotSpanMetadata* slot_span = global_empty_slot_span_ring[index];
     // The ring is not always full, may be nullptr.
     if (slot_span) {
       slot_span->DecommitIfPossible(this);
@@ -1587,7 +1588,7 @@ void PartitionRoot::ResetForTesting(bool allow_leaks) {
 
   for (Bucket& bucket : buckets) {
     bucket.active_slot_spans_head =
-        SlotSpan::get_sentinel_slot_span_non_const();
+        SlotSpanMetadata::get_sentinel_slot_span_non_const();
     bucket.empty_slot_spans_head = nullptr;
     bucket.decommitted_slot_spans_head = nullptr;
     bucket.num_full_slot_spans = 0;

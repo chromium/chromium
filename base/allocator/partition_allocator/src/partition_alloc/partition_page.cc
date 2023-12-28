@@ -33,9 +33,9 @@ void UnmapNow(uintptr_t reservation_start,
               pool_handle pool);
 
 PA_ALWAYS_INLINE void PartitionDirectUnmap(SlotSpanMetadata* slot_span) {
-  auto* root = PartitionRoot::FromSlotSpan(slot_span);
+  auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   PartitionRootLock(root).AssertAcquired();
-  auto* extent = PartitionDirectMapExtent::FromSlotSpan(slot_span);
+  auto* extent = PartitionDirectMapExtent::FromSlotSpanMetadata(slot_span);
 
   // Maintain the doubly-linked list of all direct mappings.
   if (extent->prev_extent) {
@@ -81,7 +81,7 @@ PA_ALWAYS_INLINE void PartitionDirectUnmap(SlotSpanMetadata* slot_span) {
 
 PA_ALWAYS_INLINE void SlotSpanMetadata::RegisterEmpty() {
   PA_DCHECK(is_empty());
-  auto* root = PartitionRoot::FromSlotSpan(this);
+  auto* root = PartitionRoot::FromSlotSpanMetadata(this);
   PartitionRootLock(root).AssertAcquired();
 
   root->empty_slot_spans_dirty_bytes +=
@@ -149,7 +149,7 @@ SlotSpanMetadata::SlotSpanMetadata(PartitionBucket* bucket)
     : bucket(bucket), can_store_raw_size_(bucket->CanStoreRawSize()) {}
 
 void SlotSpanMetadata::FreeSlowPath(size_t number_of_freed) {
-  DCheckRootLockIsAcquired(PartitionRoot::FromSlotSpan(this));
+  DCheckRootLockIsAcquired(PartitionRoot::FromSlotSpanMetadata(this));
   PA_DCHECK(this != get_sentinel_slot_span());
 
   // The caller has already modified |num_allocated_slots|. It is a

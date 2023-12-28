@@ -282,7 +282,7 @@ struct SubsequentPageMetadata {
 // "Pack" the union so that common page metadata still fits within
 // kPageMetadataSize. (SlotSpanMetadata is also "packed".)
 #pragma pack(push, 1)
-struct PartitionPage {
+struct PartitionPageMetadata {
   union {
     SlotSpanMetadata slot_span_metadata;
 
@@ -319,26 +319,27 @@ struct PartitionPage {
   bool has_valid_span_after_this : 1;
   uint8_t unused;
 
-  PA_ALWAYS_INLINE static PartitionPage* FromAddr(uintptr_t address);
+  PA_ALWAYS_INLINE static PartitionPageMetadata* FromAddr(uintptr_t address);
 };
 #pragma pack(pop)
-static_assert(sizeof(PartitionPage) == kPageMetadataSize,
+static_assert(sizeof(PartitionPageMetadata) == kPageMetadataSize,
               "PartitionPage must be able to fit in a metadata slot");
 
-// Certain functions rely on PartitionPage being either SlotSpanMetadata or
-// SubsequentPageMetadata, and therefore freely casting between each other.
+// Certain functions rely on PartitionPageMetadata being either SlotSpanMetadata
+// or SubsequentPageMetadata, and therefore freely casting between each other.
 // TODO(https://crbug.com/1500662) Stop ignoring the -Winvalid-offsetof warning.
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #endif
-static_assert(offsetof(PartitionPage, slot_span_metadata) == 0, "");
-static_assert(offsetof(PartitionPage, subsequent_page_metadata) == 0, "");
+static_assert(offsetof(PartitionPageMetadata, slot_span_metadata) == 0, "");
+static_assert(offsetof(PartitionPageMetadata, subsequent_page_metadata) == 0,
+              "");
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
 
-PA_ALWAYS_INLINE PartitionPage* PartitionSuperPageToMetadataArea(
+PA_ALWAYS_INLINE PartitionPageMetadata* PartitionSuperPageToMetadataArea(
     uintptr_t super_page) {
   // This can't be just any super page, but it has to be the first super page of
   // the reservation, as we assume here that the metadata is near its beginning.
@@ -346,17 +347,18 @@ PA_ALWAYS_INLINE PartitionPage* PartitionSuperPageToMetadataArea(
   PA_DCHECK(!(super_page & kSuperPageOffsetMask));
   // The metadata area is exactly one system page (the guard page) into the
   // super page.
-  return reinterpret_cast<PartitionPage*>(super_page + SystemPageSize());
+  return reinterpret_cast<PartitionPageMetadata*>(super_page +
+                                                  SystemPageSize());
 }
 
 PA_ALWAYS_INLINE const SubsequentPageMetadata* GetSubsequentPageMetadata(
-    const PartitionPage* page) {
-  return &(page + 1)->subsequent_page_metadata;
+    const PartitionPageMetadata* page_metadata) {
+  return &(page_metadata + 1)->subsequent_page_metadata;
 }
 
 PA_ALWAYS_INLINE SubsequentPageMetadata* GetSubsequentPageMetadata(
-    PartitionPage* page) {
-  return &(page + 1)->subsequent_page_metadata;
+    PartitionPageMetadata* page_metadata) {
+  return &(page_metadata + 1)->subsequent_page_metadata;
 }
 
 PA_ALWAYS_INLINE PartitionSuperPageExtentEntry* PartitionSuperPageToExtent(
@@ -459,15 +461,16 @@ PA_ALWAYS_INLINE bool IsWithinSuperPagePayload(uintptr_t address,
 }
 
 // Converts from an address inside a super page into a pointer to the
-// PartitionPage object (within super pages's metadata) that describes the
-// partition page where |address| is located. |address| doesn't have to be
+// PartitionPageMetadata object (within super pages's metadata) that describes
+// the partition page where |address| is located. |address| doesn't have to be
 // located within a valid (i.e. allocated) slot span, but must be within the
 // super page's payload area (i.e. area devoted to slot spans).
 //
 // While it is generally valid for |ptr| to be in the middle of an allocation,
 // care has to be taken with direct maps that span multiple super pages. This
 // function's behavior is undefined if |ptr| lies in a subsequent super page.
-PA_ALWAYS_INLINE PartitionPage* PartitionPage::FromAddr(uintptr_t address) {
+PA_ALWAYS_INLINE PartitionPageMetadata* PartitionPageMetadata::FromAddr(
+    uintptr_t address) {
   uintptr_t super_page = address & kSuperPageBaseMask;
 
 #if BUILDFLAG(PA_DCHECK_IS_ON)
@@ -520,20 +523,20 @@ SlotSpanMetadata::ToSlotSpanStart(const SlotSpanMetadata* slot_span) {
 // partition page.
 PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromAddr(
     uintptr_t address) {
-  auto* page = PartitionPage::FromAddr(address);
-  PA_DCHECK(page->is_valid);
+  auto* page_metadata = PartitionPageMetadata::FromAddr(address);
+  PA_DCHECK(page_metadata->is_valid);
   // Partition pages in the same slot span share the same SlotSpanMetadata
-  // object (located in the first PartitionPage object of that span). Adjust
-  // for that.
-  page -= page->slot_span_metadata_offset;
-  PA_DCHECK(page->is_valid);
-  PA_DCHECK(!page->slot_span_metadata_offset);
-  auto* slot_span = &page->slot_span_metadata;
+  // object (located in the first PartitionPageMetadata object of that span).
+  // Adjust for that.
+  page_metadata -= page_metadata->slot_span_metadata_offset;
+  PA_DCHECK(page_metadata->is_valid);
+  PA_DCHECK(!page_metadata->slot_span_metadata_offset);
+  auto* slot_span = &page_metadata->slot_span_metadata;
   // TODO(crbug.com/1257655): See if we can afford to make this a CHECK.
   DCheckIsValidSlotSpan(slot_span);
   // For direct map, if |address| doesn't point within the first partition page,
-  // |slot_span_metadata_offset| will be 0, |page| won't get shifted, leaving
-  // |slot_size| at 0.
+  // |slot_span_metadata_offset| will be 0, |page_metadata| won't get shifted,
+  // leaving |slot_size| at 0.
   PA_DCHECK(slot_span->bucket->slot_size);
   return slot_span;
 }
@@ -590,14 +593,14 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObjectInnerPtr(
 PA_ALWAYS_INLINE void SlotSpanMetadata::SetRawSize(size_t raw_size) {
   PA_DCHECK(CanStoreRawSize());
   auto* subsequent_page_metadata =
-      GetSubsequentPageMetadata(reinterpret_cast<PartitionPage*>(this));
+      GetSubsequentPageMetadata(reinterpret_cast<PartitionPageMetadata*>(this));
   subsequent_page_metadata->raw_size = raw_size;
 }
 
 PA_ALWAYS_INLINE size_t SlotSpanMetadata::GetRawSize() const {
   PA_DCHECK(CanStoreRawSize());
-  const auto* subsequent_page_metadata =
-      GetSubsequentPageMetadata(reinterpret_cast<const PartitionPage*>(this));
+  const auto* subsequent_page_metadata = GetSubsequentPageMetadata(
+      reinterpret_cast<const PartitionPageMetadata*>(this));
   return subsequent_page_metadata->raw_size;
 }
 
@@ -778,39 +781,40 @@ void IterateSlotSpans(uintptr_t super_page,
   DCheckRootLockIsAcquired(extent_entry->root);
 #endif
 
-  using Page = PartitionPage;
-  using SlotSpan = SlotSpanMetadata;
-  auto* const first_page =
-      Page::FromAddr(SuperPagePayloadBegin(super_page, with_quarantine));
-  auto* const last_page =
-      Page::FromAddr(SuperPagePayloadEnd(super_page) - PartitionPageSize());
-  Page* page = nullptr;
-  SlotSpan* slot_span = nullptr;
-  for (page = first_page; page <= last_page;) {
-    PA_DCHECK(!page->slot_span_metadata_offset);  // Ensure slot span beginning.
-    if (!page->is_valid) {
-      if (page->has_valid_span_after_this) {
-        // The page doesn't represent a valid slot span, but there is another
-        // one somewhere after this. Keep iterating to find it.
-        ++page;
+  auto* const first_page_metadata = PartitionPageMetadata::FromAddr(
+      SuperPagePayloadBegin(super_page, with_quarantine));
+  auto* const last_page_metadata = PartitionPageMetadata::FromAddr(
+      SuperPagePayloadEnd(super_page) - PartitionPageSize());
+  PartitionPageMetadata* page_metadata = nullptr;
+  SlotSpanMetadata* slot_span = nullptr;
+  for (page_metadata = first_page_metadata;
+       page_metadata <= last_page_metadata;) {
+    PA_DCHECK(!page_metadata
+                   ->slot_span_metadata_offset);  // Ensure slot span beginning.
+    if (!page_metadata->is_valid) {
+      if (page_metadata->has_valid_span_after_this) {
+        // page_metadata doesn't represent a valid slot span, but there is
+        // another one somewhere after this. Keep iterating to find it.
+        ++page_metadata;
         continue;
       }
       // There are currently no valid spans from here on. No need to iterate
-      // the rest of the super page.
+      // the rest of the super page_metadata.
       break;
     }
-    slot_span = &page->slot_span_metadata;
+    slot_span = &page_metadata->slot_span_metadata;
     if (callback(slot_span)) {
       return;
     }
-    page += slot_span->bucket->get_pages_per_slot_span();
+    page_metadata += slot_span->bucket->get_pages_per_slot_span();
   }
   // Each super page must have at least one valid slot span.
-  PA_DCHECK(page > first_page);
+  PA_DCHECK(page_metadata > first_page_metadata);
   // Just a quick check that the search ended at a valid slot span and there
   // was no unnecessary iteration over gaps afterwards.
-  PA_DCHECK(page == reinterpret_cast<Page*>(slot_span) +
-                        slot_span->bucket->get_pages_per_slot_span());
+  PA_DCHECK(page_metadata ==
+            reinterpret_cast<PartitionPageMetadata*>(slot_span) +
+                slot_span->bucket->get_pages_per_slot_span());
 }
 
 }  // namespace partition_alloc::internal

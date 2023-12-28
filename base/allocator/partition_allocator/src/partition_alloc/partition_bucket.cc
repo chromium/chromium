@@ -230,7 +230,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
   }
 
   PartitionDirectMapExtent* map_extent = nullptr;
-  PartitionPage* page = nullptr;
+  PartitionPageMetadata* page_metadata = nullptr;
 
   {
     // Getting memory for direct-mapped allocations doesn't interact with the
@@ -359,48 +359,55 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     PA_DCHECK(!super_page_extent->number_of_consecutive_super_pages);
     PA_DCHECK(!super_page_extent->next);
 
-    PartitionPage* first_page =
-        reinterpret_cast<PartitionPage*>(super_page_extent) + 1;
-    page = PartitionPage::FromAddr(slot_start);
-    // |first_page| and |page| may be equal, if there is no alignment padding.
-    if (page != first_page) {
-      PA_DCHECK(page > first_page);
-      PA_DCHECK(page - first_page <= PartitionPage::kMaxSlotSpanMetadataOffset);
-      PA_CHECK(!first_page->is_valid);
-      first_page->has_valid_span_after_this = true;
-      first_page->slot_span_metadata_offset = page - first_page;
+    PartitionPageMetadata* first_page_metadata =
+        reinterpret_cast<PartitionPageMetadata*>(super_page_extent) + 1;
+    page_metadata = PartitionPageMetadata::FromAddr(slot_start);
+    // |first_page_metadata| and |page_metadata| may be equal, if there is no
+    // alignment padding.
+    if (page_metadata != first_page_metadata) {
+      PA_DCHECK(page_metadata > first_page_metadata);
+      PA_DCHECK(page_metadata - first_page_metadata <=
+                PartitionPageMetadata::kMaxSlotSpanMetadataOffset);
+      PA_CHECK(!first_page_metadata->is_valid);
+      first_page_metadata->has_valid_span_after_this = true;
+      first_page_metadata->slot_span_metadata_offset =
+          page_metadata - first_page_metadata;
     }
-    auto* metadata = reinterpret_cast<PartitionDirectMapMetadata*>(page);
-    // Since direct map metadata is larger than PartitionPage, make sure the
-    // first and the last bytes are on the same system page, i.e. within the
+    auto* direct_map_metadata =
+        reinterpret_cast<PartitionDirectMapMetadata*>(page_metadata);
+    // Since direct map metadata is larger than PartitionPageMetadata, make sure
+    // the first and the last bytes are on the same system page, i.e. within the
     // super page metadata region.
-    PA_DCHECK(base::bits::AlignDown(reinterpret_cast<uintptr_t>(metadata),
-                                    SystemPageSize()) ==
-              base::bits::AlignDown(reinterpret_cast<uintptr_t>(metadata) +
-                                        sizeof(PartitionDirectMapMetadata) - 1,
-                                    SystemPageSize()));
-    PA_DCHECK(page == &metadata->page);
-    page->is_valid = true;
-    PA_DCHECK(!page->has_valid_span_after_this);
-    PA_DCHECK(!page->slot_span_metadata_offset);
-    PA_DCHECK(!page->slot_span_metadata.next_slot_span);
-    PA_DCHECK(!page->slot_span_metadata.marked_full);
-    PA_DCHECK(!page->slot_span_metadata.num_allocated_slots);
-    PA_DCHECK(!page->slot_span_metadata.num_unprovisioned_slots);
-    PA_DCHECK(!page->slot_span_metadata.in_empty_cache());
+    PA_DCHECK(
+        base::bits::AlignDown(reinterpret_cast<uintptr_t>(direct_map_metadata),
+                              SystemPageSize()) ==
+        base::bits::AlignDown(reinterpret_cast<uintptr_t>(direct_map_metadata) +
+                                  sizeof(PartitionDirectMapMetadata) - 1,
+                              SystemPageSize()));
+    PA_DCHECK(page_metadata == &direct_map_metadata->page_metadata);
+    page_metadata->is_valid = true;
+    PA_DCHECK(!page_metadata->has_valid_span_after_this);
+    PA_DCHECK(!page_metadata->slot_span_metadata_offset);
+    PA_DCHECK(!page_metadata->slot_span_metadata.next_slot_span);
+    PA_DCHECK(!page_metadata->slot_span_metadata.marked_full);
+    PA_DCHECK(!page_metadata->slot_span_metadata.num_allocated_slots);
+    PA_DCHECK(!page_metadata->slot_span_metadata.num_unprovisioned_slots);
+    PA_DCHECK(!page_metadata->slot_span_metadata.in_empty_cache());
 
-    PA_DCHECK(!metadata->subsequent_page.subsequent_page_metadata.raw_size);
+    PA_DCHECK(!direct_map_metadata->second_page_metadata
+                   .subsequent_page_metadata.raw_size);
     // Raw size is set later, by the caller.
-    metadata->subsequent_page.slot_span_metadata_offset = 1;
+    direct_map_metadata->second_page_metadata.slot_span_metadata_offset = 1;
 
-    PA_DCHECK(!metadata->bucket.active_slot_spans_head);
-    PA_DCHECK(!metadata->bucket.empty_slot_spans_head);
-    PA_DCHECK(!metadata->bucket.decommitted_slot_spans_head);
-    PA_DCHECK(!metadata->bucket.num_system_pages_per_slot_span);
-    PA_DCHECK(!metadata->bucket.num_full_slot_spans);
-    metadata->bucket.slot_size = slot_size;
+    PA_DCHECK(!direct_map_metadata->bucket.active_slot_spans_head);
+    PA_DCHECK(!direct_map_metadata->bucket.empty_slot_spans_head);
+    PA_DCHECK(!direct_map_metadata->bucket.decommitted_slot_spans_head);
+    PA_DCHECK(!direct_map_metadata->bucket.num_system_pages_per_slot_span);
+    PA_DCHECK(!direct_map_metadata->bucket.num_full_slot_spans);
+    direct_map_metadata->bucket.slot_size = slot_size;
 
-    new (&page->slot_span_metadata) SlotSpanMetadata(&metadata->bucket);
+    new (&page_metadata->slot_span_metadata)
+        SlotSpanMetadata(&direct_map_metadata->bucket);
 
     // It is typically possible to map a large range of inaccessible pages, and
     // this is leveraged in multiple places, including the pools. However,
@@ -440,12 +447,12 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     }
 
     auto* next_entry = PartitionFreelistEntry::EmplaceAndInitNull(slot_start);
-    page->slot_span_metadata.SetFreelistHead(next_entry);
+    page_metadata->slot_span_metadata.SetFreelistHead(next_entry);
 
-    map_extent = &metadata->direct_map_extent;
+    map_extent = &direct_map_metadata->direct_map_extent;
     map_extent->reservation_size = reservation_size;
     map_extent->padding_for_alignment = padding_for_alignment;
-    map_extent->bucket = &metadata->bucket;
+    map_extent->bucket = &direct_map_metadata->bucket;
   }
 
   PartitionRootLock(root).AssertAcquired();
@@ -458,7 +465,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
   map_extent->prev_extent = nullptr;
   root->direct_map_list = map_extent;
 
-  return &page->slot_span_metadata;
+  return &page_metadata->slot_span_metadata;
 }
 
 uint8_t ComputeSystemPagesPerSlotSpanPreferSmall(size_t slot_size) {
@@ -667,8 +674,10 @@ PA_ALWAYS_INLINE SlotSpanMetadata* PartitionBucket::AllocNewSlotSpan(
              root->next_partition_page_end);
   }
 
-  auto* gap_start_page = PartitionPage::FromAddr(root->next_partition_page);
-  auto* gap_end_page = PartitionPage::FromAddr(adjusted_next_partition_page);
+  auto* gap_start_page =
+      PartitionPageMetadata::FromAddr(root->next_partition_page);
+  auto* gap_end_page =
+      PartitionPageMetadata::FromAddr(adjusted_next_partition_page);
   for (auto* page = gap_start_page; page < gap_end_page; ++page) {
     PA_DCHECK(!page->is_valid);
     page->has_valid_span_after_this = 1;
@@ -909,11 +918,11 @@ PA_ALWAYS_INLINE void PartitionBucket::InitializeSlotSpan(
   slot_span->Reset();
 
   uint16_t num_partition_pages = get_pages_per_slot_span();
-  auto* page = reinterpret_cast<PartitionPage*>(slot_span);
-  for (uint16_t i = 0; i < num_partition_pages; ++i, ++page) {
-    PA_DCHECK(i <= PartitionPage::kMaxSlotSpanMetadataOffset);
-    page->slot_span_metadata_offset = i;
-    page->is_valid = true;
+  auto* page_metadata = reinterpret_cast<PartitionPageMetadata*>(slot_span);
+  for (uint16_t i = 0; i < num_partition_pages; ++i, ++page_metadata) {
+    PA_DCHECK(i <= PartitionPageMetadata::kMaxSlotSpanMetadataOffset);
+    page_metadata->slot_span_metadata_offset = i;
+    page_metadata->is_valid = true;
   }
 }
 
