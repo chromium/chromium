@@ -15,6 +15,9 @@
 
 namespace ash::personalization_app {
 
+// TestPersonalizationAppMojomBannedWebUIProvider provides fake mojom provider
+// implementations that immediately crash if a mojom request occurs. This is
+// used to test UI components in isolation.
 class TestPersonalizationAppMojomBannedWebUIProvider
     : public TestChromeWebUIControllerFactory::WebUIProvider {
  public:

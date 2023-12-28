@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/webui/personalization_app/test/personalization_app_mojom_banned_mocha_test_base.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_mocha_test_base.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash::personalization_app {
@@ -211,6 +213,43 @@ using PersonalizationAppControllerTest =
 IN_PROC_BROWSER_TEST_F(PersonalizationAppControllerTest, All) {
   RunTest("chromeos/personalization_app/personalization_app_controller_test.js",
           "mocha.run()");
+}
+
+// Tests the entire chrome://personalization application, including the mojom
+// bindings. Some mojom providers are fake test implementations, some are real
+// implementations but with mocked out network handler helper classes.
+using PersonalizationAppBrowserTest = PersonalizationAppMochaTestBase;
+
+IN_PROC_BROWSER_TEST_F(PersonalizationAppBrowserTest, Main) {
+  RunTestWithoutTestLoader(
+      "chromeos/personalization_app/personalization_app_test.js",
+      "runMochaSuite('main page')");
+}
+
+IN_PROC_BROWSER_TEST_F(PersonalizationAppBrowserTest, AmbientModeAllowed) {
+  ash::AmbientClient::Get()->SetAmbientModeAllowedForTesting(true);
+  RunTestWithoutTestLoader(
+      "chromeos/personalization_app/personalization_app_test.js",
+      "runMochaSuite('ambient mode allowed')");
+}
+
+IN_PROC_BROWSER_TEST_F(PersonalizationAppBrowserTest, AmbientModeDisallowed) {
+  ash::AmbientClient::Get()->SetAmbientModeAllowedForTesting(false);
+  RunTestWithoutTestLoader(
+      "chromeos/personalization_app/personalization_app_test.js",
+      "runMochaSuite('ambient mode disallowed')");
+}
+
+IN_PROC_BROWSER_TEST_F(PersonalizationAppBrowserTest, WallpaperSubpage) {
+  RunTestWithoutTestLoader(
+      "chromeos/personalization_app/personalization_app_test.js",
+      "runMochaSuite('ambient mode disallowed')");
+}
+
+IN_PROC_BROWSER_TEST_F(PersonalizationAppBrowserTest, DynamicColor) {
+  RunTestWithoutTestLoader(
+      "chromeos/personalization_app/personalization_app_test.js",
+      "runMochaSuite('dynamic color')");
 }
 
 }  // namespace ash::personalization_app

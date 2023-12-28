@@ -110,7 +110,6 @@ if (include_js2gtest_tests) {
       "diagnostics/diagnostics_browsertest.js",
       "manage_mirrorsync/manage_mirrorsync_browsertest.js",
       "parent_access/parent_access_browsertest.js",
-      "personalization_app/personalization_app_browsertest.js",
       "print_management/print_management_browsertest.js",
       "shortcut_customization/shortcut_customization_browsertest.js",
     ]

@@ -2,31 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_BROWSERTEST_FIXTURE_H_
-#define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_BROWSERTEST_FIXTURE_H_
+#ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_MOCHA_TEST_BASE_H_
+#define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_MOCHA_TEST_BASE_H_
 
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/test_personalization_app_webui_provider.h"
-#include "chrome/test/base/ash/mojo_web_ui_browser_test.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 
 namespace ash::personalization_app {
 
-class PersonalizationAppBrowserTestFixture : public MojoWebUIBrowserTest {
+class PersonalizationAppMochaTestBase : public WebUIMochaBrowserTest {
  public:
-  PersonalizationAppBrowserTestFixture();
+  PersonalizationAppMochaTestBase();
 
-  PersonalizationAppBrowserTestFixture(
-      const PersonalizationAppBrowserTestFixture&) = delete;
-  PersonalizationAppBrowserTestFixture& operator=(
-      const PersonalizationAppBrowserTestFixture&) = delete;
+  PersonalizationAppMochaTestBase(
+      const PersonalizationAppMochaTestBase&) = delete;
+  PersonalizationAppMochaTestBase& operator=(
+      const PersonalizationAppMochaTestBase&) = delete;
 
-  ~PersonalizationAppBrowserTestFixture() override;
+  ~PersonalizationAppMochaTestBase() override;
 
   void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   TestChromeWebUIControllerFactory test_factory_;
   TestPersonalizationAppWebUIProvider test_webui_provider_;
   content::ScopedWebUIControllerFactoryRegistration
@@ -35,4 +37,4 @@ class PersonalizationAppBrowserTestFixture : public MojoWebUIBrowserTest {
 
 }  // namespace ash::personalization_app
 
-#endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_BROWSERTEST_FIXTURE_H_
+#endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_MOCHA_TEST_BASE_H_

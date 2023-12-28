@@ -31,6 +31,7 @@ build_webui_tests("build_webui_tests") {
     "keyboard_backlight_element_test.ts",
     "local_images_element_test.ts",
     "personalization_app_controller_test.ts",
+    "personalization_app_test.ts",
     "personalization_app_test_utils.ts",
     "personalization_breadcrumb_element_test.ts",
     "personalization_main_element_test.ts",
