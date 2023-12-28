@@ -633,6 +633,8 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 
   [view setNeedsLayout];
   [view layoutIfNeeded];
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  self.titleLabel);
 }
 
 // Replaces text of the title label and adds a done button.
@@ -662,6 +664,8 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 
   [view setNeedsLayout];
   [view layoutIfNeeded];
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  self.titleLabel);
 }
 
 // Stops any ongoing animations and starts a new one (profile images sliding to
