@@ -77,6 +77,7 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   void NotifyClick();
   void OnMouseExited();
   void OnBlur();
+  void OnThemeChanged(const ui::ColorProvider* color_provider);
 
  private:
   enum class ButtonTextState {

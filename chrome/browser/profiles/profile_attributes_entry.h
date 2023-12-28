@@ -236,7 +236,6 @@ class ProfileAttributesEntry {
 
  private:
   friend class ProfileAttributesStorage;
-  friend class ProfileThemeUpdateServiceBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest,
                            EntryInternalAccessors);
   FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest, ProfileActiveTime);

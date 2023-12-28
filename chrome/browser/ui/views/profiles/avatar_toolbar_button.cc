@@ -415,6 +415,7 @@ void AvatarToolbarButton::OnBlur() {
 
 void AvatarToolbarButton::OnThemeChanged() {
   ToolbarButton::OnThemeChanged();
+  delegate_->OnThemeChanged(GetColorProvider());
   UpdateText();
   if (features::IsChromeRefresh2023()) {
     UpdateInkdrop();

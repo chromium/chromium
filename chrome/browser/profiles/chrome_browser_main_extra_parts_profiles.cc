@@ -269,7 +269,6 @@
 #include "chrome/browser/new_tab_page/modules/recipes/recipes_service_factory.h"
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
 #include "chrome/browser/profile_resetter/reset_report_uploader_factory.h"
-#include "chrome/browser/profiles/profile_theme_update_service_factory.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/storage/storage_notification_service_factory.h"
@@ -1053,9 +1052,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   ProfileNetworkContextServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   ProfileStatisticsFactory::GetInstance();
-#endif
-#if !BUILDFLAG(IS_ANDROID)
-  ProfileThemeUpdateServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   ProfileTokenWebSigninInterceptorFactory::GetInstance();
