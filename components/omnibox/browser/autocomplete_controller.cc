@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include <limits.h>
 #include <algorithm>
 #include <cstddef>
 #include <map>
@@ -1118,6 +1119,8 @@ void AutocompleteController::MlRerank(OldResult& old_result) {
     }
   }
 
+  if (internal_result_.empty())
+    return;
   if (!OmniboxFieldTrial::IsMlUrlScoringEnabled())
     return;
   if (!provider_client_->GetAutocompleteScoringModelService())
@@ -1125,25 +1128,12 @@ void AutocompleteController::MlRerank(OldResult& old_result) {
   if (disable_ml_)
     return;
 
-  const auto& ml_config = OmniboxFieldTrial::GetMLConfig();
-  // TODO(yoangela|manukh): remove `ml_url_scoring_rerank_final_matches_only`
-  //   code.
-  if (ml_config.ml_url_scoring_rerank_final_matches_only) {
-    internal_result_.SortAndCull(input_, template_url_service_,
-                                 triggered_feature_service_,
-                                 old_result.default_match_to_preserve);
-    if (internal_result_.default_match() &&
-        ml_config.ml_url_scoring_preserve_default) {
-      old_result.default_match_to_preserve = *internal_result_.default_match();
-    }
-  } else {
-    // Deduplicate matches prior to running ML scoring. This step is not needed
-    // if `SortAndCull()` is called before the model is executed.
-    internal_result_.DeduplicateMatches(input_, template_url_service_);
-  }
-
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  RunBatchUrlScoringModel();
+  if (OmniboxFieldTrial::GetMLConfig().stable_search_ranking) {
+    RunBatchUrlScoringModelWithStableSearches(old_result);
+  } else {
+    RunBatchUrlScoringModel(old_result);
+  }
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -1727,8 +1717,12 @@ bool AutocompleteController::ShouldRunProvider(
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-void AutocompleteController::RunBatchUrlScoringModel() {
+void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
   TRACE_EVENT0("omnibox", "AutocompleteController::RunBatchUrlScoringModel");
+
+  // Dedupe matches; otherwise, e.g., duplicate bookmark and history matches
+  // would be scored independently with their partial signals.
+  internal_result_.DeduplicateMatches(input_, template_url_service_);
 
   size_t eligible_matches_count = base::ranges::count_if(
       internal_result_.matches_,
@@ -1828,6 +1822,113 @@ void AutocompleteController::RunBatchUrlScoringModel() {
     }
     relevance_heap.pop();
     prediction_and_match_itr_heap.pop();
+  }
+
+  for (Observer& obs : observers_)
+    obs.OnMlScored(this, internal_result_);
+}
+
+void AutocompleteController::RunBatchUrlScoringModelWithStableSearches(
+    OldResult& old_result) {
+  TRACE_EVENT0(
+      "omnibox",
+      "AutocompleteController::RunBatchUrlScoringModelWithStableSearches");
+
+  // Sort according to traditional scores. This is needed to determine the
+  // traditional default and # of shortcut boosted suggestions.
+  internal_result_.Sort(input_, template_url_service_,
+                        old_result.default_match_to_preserve);
+
+  // Run the model for the eligible matches. Keep a reference to those matches
+  // to later redistribute their relevance scores based on the model output.
+  std::vector<const ScoringSignals*> batch_scoring_signals;
+  std::vector<size_t> scored_positions;
+  // Redistribute shortcut boosting but preserve the # of URLs above searches.
+  // Don't count boosted shortcuts that were traditionally the default, because
+  // their position is already preserved when assuring the default suggestion
+  // remains a swearch or URL. Otherwise, if ML ranking picks a
+  // non-boosted-shortcted as the default, there would be an extra URL above
+  // searches.
+  size_t num_boosted_shortcuts_below_default = 0;
+  std::vector<int> scores_pool;
+  for (size_t i = 0; i < internal_result_.size(); ++i) {
+    const auto& match = internal_result_.matches_[i];
+    if (!match.IsUrlScoringEligible())
+      continue;
+    if (i > 0 && match.shortcut_boosted)
+      num_boosted_shortcuts_below_default++;
+    batch_scoring_signals.push_back(&match.scoring_signals.value());
+    scored_positions.push_back(i);
+    scores_pool.push_back(match.relevance);
+  }
+  base::ranges::sort(scores_pool, std::greater<>());
+
+  if (batch_scoring_signals.empty())
+    return;
+
+  auto elapsed_timer = base::ElapsedTimer();
+  const auto results = provider_client_->GetAutocompleteScoringModelService()
+                           ->BatchScoreAutocompleteUrlMatchesSync(
+                               std::move(batch_scoring_signals));
+  if (results.empty())
+    return;
+
+  // Record how many eligible matches the model was executed for.
+  base::UmaHistogramCounts1000("Omnibox.URLScoringModelExecuted.Matches",
+                               results.size());
+
+  // Record how long it took to execute the model for all eligible matches.
+  base::UmaHistogramTimes("Omnibox.URLScoringModelExecuted.ElapsedTime",
+                          elapsed_timer.Elapsed());
+
+  // Record whether the model was executed for at least one eligible match.
+  provider_client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+      metrics::OmniboxEventProto_Feature_ML_URL_SCORING);
+
+  if (OmniboxFieldTrial::IsMlUrlScoringCounterfactual())
+    return;
+
+  std::vector<std::pair<float, size_t>> prediction_and_position_heap;
+  for (size_t i = 0; i < results.size(); ++i)
+    prediction_and_position_heap.push_back({*results[i], scored_positions[i]});
+  base::ranges::sort(prediction_and_position_heap, std::greater<>(),
+                     [](const auto& pair) { return pair.first; });
+
+  if (internal_result_.matches_[0].IsUrlScoringEligible()) {
+    const auto& new_default = base::ranges::find_if(
+        prediction_and_position_heap, [&](const auto& tuple) {
+          return internal_result_.matches_[tuple.second]
+              .allowed_to_be_default_match;
+        });
+    // `new_default` can be null If there are no `allowed_to_be_default_match`
+    // matches.
+    if (new_default != prediction_and_position_heap.end()) {
+      internal_result_.matches_[new_default->second].relevance = scores_pool[0];
+      scores_pool.erase(scores_pool.begin());
+      prediction_and_position_heap.erase(new_default);
+    }
+  }
+
+  // Avoid duplicate scores, especially for matches with unique ML scores. Also
+  // avoid an ML URL default replacing a traditional search default.
+  int max_score = internal_result_.matches_[0].IsUrlScoringEligible()
+                      ? INT_MAX
+                      : internal_result_.matches_[0].relevance;
+  for (auto& score : scores_pool) {
+    score = std::min(score, max_score - 1);
+    max_score = score;
+  }
+
+  // Redistribute scores and shortcut boosting.
+  for (size_t i = 0; i < prediction_and_position_heap.size(); ++i) {
+    auto& match =
+        internal_result_.matches_[prediction_and_position_heap[i].second];
+    match.relevance = scores_pool[i];
+    if (num_boosted_shortcuts_below_default > 0) {
+      match.shortcut_boosted = true;
+      num_boosted_shortcuts_below_default--;
+    } else
+      match.shortcut_boosted = false;
   }
 
   for (Observer& obs : observers_)

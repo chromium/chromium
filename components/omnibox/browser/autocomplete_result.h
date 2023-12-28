@@ -106,22 +106,38 @@ class AutocompleteResult {
   void DeduplicateMatches(const AutocompleteInput& input,
                           TemplateURLService* template_url_service);
 
-  // Removes duplicates, puts the list in sorted order and culls to leave only
-  // the best GetMaxMatches() matches. Sets the default match to the best match
-  // and updates the alternate nav URL.
+  // See `Sort()`. `SortAndCull()` also groups and culls the suggestions.
+  // TODO(manukh): `Sort()` without grouping and culling is only needed
+  //   temporarily for ML ranking without changing the search v URL balance.
+  //   After we remove that restriction, they should be re-merged into 1
+  //   function, because calling `Sort()` without calling `SortAndCull()`
+  //   afterwards is probably invalid.
+  void SortAndCull(const AutocompleteInput& input,
+                   TemplateURLService* template_url_service,
+                   OmniboxTriggeredFeatureService* triggered_feature_service,
+                   absl::optional<AutocompleteMatch> default_match_to_preserve =
+                       absl::nullopt);
+
+  // Removes duplicates, puts the list in sorted order. Sets the default match
+  // to the best match and updates the alternate nav URL.
   //
-  // |default_match_to_preserve| can be used to prevent the default match from
+  // `default_match_to_preserve` can be used to prevent the default match from
   // being surprisingly swapped out during the asynchronous pass. If it has a
   // value, this method searches the results for that match, and promotes it to
   // the top. But we don't add back that match if it doesn't already exist.
   //
   // On desktop, it filters the matches to be either all tail suggestions
   // (except for the first match) or no tail suggestions.
-  void SortAndCull(const AutocompleteInput& input,
-                   TemplateURLService* template_url_service,
-                   OmniboxTriggeredFeatureService* triggered_feature_service,
-                   absl::optional<AutocompleteMatch> default_match_to_preserve =
-                       absl::nullopt);
+  //
+  // TODO(manukh): `Sort()` is useful for determining the default suggestion
+  //   accurately. It includes more code than absolutely necessary for
+  //   determining the default suggestion to help avoid accidentally leaving the
+  //   results in an invalid state. But it really shouldn't be called except if
+  //   `SortAndCull()` is guaranteed to be called soon after. The 2 should be
+  //   re-merged into 1 function once this is no longer needed.
+  void Sort(const AutocompleteInput& input,
+            TemplateURLService* template_url_service,
+            absl::optional<AutocompleteMatch> default_match_to_preserve);
 
   // Ensures that matches belonging to suggestion groups, i.e., those with a
   // suggestion_group_id value and a corresponding suggestion group info, are

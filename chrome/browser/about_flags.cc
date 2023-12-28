@@ -1438,23 +1438,12 @@ const FeatureEntry::FeatureVariation
          std::size(kOmniboxRichAutocompletionAggressive4), nullptr},
 };
 
-const FeatureEntry::FeatureParam kOmniboxMlUrlScoringRerankFinalMatchesOnly[] =
-    {
-        {"MlUrlScoringRerankFinalMatchesOnly", "true"},
-        {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
-        {"MlUrlScoringShortcutDocumentSignals", "true"},
-};
-const FeatureEntry::FeatureParam kOmniboxMlUrlScoringPreserveDefault[] = {
-    {"MlUrlScoringRerankFinalMatchesOnly", "true"},
-    {"MlUrlScoringPreserveDefault", "true"},
-    {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
-    {"MlUrlScoringShortcutDocumentSignals", "true"},
-};
 const FeatureEntry::FeatureParam kOmniboxMlUrlScoringUnlimitedNumCandidates[] =
     {
         {"MlUrlScoringUnlimitedNumCandidates", "true"},
         {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
         {"MlUrlScoringShortcutDocumentSignals", "true"},
+        {"stable_search_ranking", "true"},
 };
 // Sets Bookmark(1), History Quick(4), History URL(8), Shortcuts(64), and
 // History Fuzzy(65536) providers max matches to 10.
@@ -1463,14 +1452,10 @@ const FeatureEntry::FeatureParam kOmniboxMlUrlScoringMaxMatchesByProvider10[] =
         {"MlUrlScoringMaxMatchesByProvider", "1:10,4:10,8:10,64:10,65536:10"},
         {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
         {"MlUrlScoringShortcutDocumentSignals", "true"},
+        {"stable_search_ranking", "true"},
 };
 
 const FeatureEntry::FeatureVariation kOmniboxMlUrlScoringVariations[] = {
-    {"final matches only", kOmniboxMlUrlScoringRerankFinalMatchesOnly,
-     std::size(kOmniboxMlUrlScoringRerankFinalMatchesOnly), nullptr},
-    {"final matches only, preserve legacy default match",
-     kOmniboxMlUrlScoringPreserveDefault,
-     std::size(kOmniboxMlUrlScoringPreserveDefault), nullptr},
     {"unlimited suggestion candidates",
      kOmniboxMlUrlScoringUnlimitedNumCandidates,
      std::size(kOmniboxMlUrlScoringUnlimitedNumCandidates), nullptr},
