@@ -5,147 +5,22 @@
 import 'chrome://compose/app.js';
 
 import {ComposeAppElement, ComposeAppState} from 'chrome://compose/app.js';
-import {CloseReason, ComposeDialogCallbackRouter, ComposeState, ComposeStatus, ConsentState, Length, OpenMetadata, StyleModifiers, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
-import {ComposeApiProxy, ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
+import {CloseReason, ComposeState, ComposeStatus, ConsentState, Length, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
+import {ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
 
-class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
-  private currentConsentState_: ConsentState = ConsentState.kConsented;
-  private currentMSBBState_: boolean = true;
-  private initialInput_: string = '';
-  private textSelected_: boolean = false;
-  private initialState_: ComposeState = {
-    webuiState: '',
-    feedback: UserFeedback.kUserFeedbackUnspecified,
-    hasPendingRequest: false,
-  };
-  private router_: ComposeDialogCallbackRouter =
-      new ComposeDialogCallbackRouter();
-  remote = this.router_.$.bindNewPipeAndPassRemote();
-  private undoResponse_: ComposeState|null = null;
-
-  constructor() {
-    super([
-      'acceptComposeResult',
-      'closeUi',
-      'compose',
-      'rewrite',
-      'openBugReportingLink',
-      'openFeedbackSurveyLink',
-      'requestInitialState',
-      'saveWebuiState',
-      'setUserFeedback',
-      'undo',
-    ]);
-  }
-
-  acceptComposeResult(): Promise<boolean> {
-    this.methodCalled('acceptComposeResult');
-    return Promise.resolve(true);
-  }
-
-  acknowledgeConsentDisclaimer() {}
-
-  approveConsent() {}
-
-  closeUi(reason: CloseReason) {
-    this.methodCalled('closeUi', reason);
-  }
-
-  compose(input: string, edited: boolean): void {
-    this.methodCalled('compose', {input, edited});
-  }
-
-  rewrite(style: StyleModifiers): void {
-    this.methodCalled('rewrite', {style});
-  }
-
-  undo(): Promise<(ComposeState | null)> {
-    this.methodCalled('undo');
-    return Promise.resolve(this.undoResponse_);
-  }
-
-  getRouter() {
-    return this.router_;
-  }
-
-  openBugReportingLink() {
-    this.methodCalled('openBugReportingLink');
-  }
-
-  openComposeLearnMorePage() {}
-
-  openFeedbackSurveyLink() {
-    this.methodCalled('openFeedbackSurveyLink');
-  }
-
-  openComposeSettings() {}
-
-  requestInitialState(): Promise<OpenMetadata> {
-    this.methodCalled('requestInitialState');
-    return Promise.resolve({
-      consentState: this.currentConsentState_,
-      msbbState: this.currentMSBBState_,
-      composeState: this.initialState_,
-      initialInput: this.initialInput_,
-      textSelected: this.textSelected_,
-      configurableParams: {
-        minWordLimit: 2,
-        maxWordLimit: 50,
-        maxCharacterLimit: 100,
-      },
-    });
-  }
-
-  saveWebuiState(state: string) {
-    this.methodCalled('saveWebuiState', state);
-  }
-
-  setUserFeedback(feedback: UserFeedback) {
-    this.methodCalled('setUserFeedback', feedback);
-  }
-
-  setCurrentConsentState(consent: ConsentState) {
-    this.currentConsentState_ = consent;
-  }
-  setCurrentMsbbState(msbb: boolean) {
-    this.currentMSBBState_ = msbb;
-  }
-
-  setInitialState(state: Partial<ComposeState>, input?: string) {
-    this.initialState_ = Object.assign(
-        {
-          webuiState: '',
-          style: {tone: Tone.kUnset, length: Length.kUnset},
-          feedback: UserFeedback.kUserFeedbackUnspecified,
-          hasPendingRequest: false,
-        },
-        state);
-    this.initialInput_ = input || '';
-  }
-
-  setTextSelected(selected: boolean) {
-    this.textSelected_ = selected;
-  }
-
-  setUndoResponse(state: ComposeState|null) {
-    this.undoResponse_ = state;
-  }
-
-  showUi() {}
-}
+import {TestComposeApiProxy} from './test_compose_api_proxy.js';
 
 suite('ComposeApp', () => {
   let app: ComposeAppElement;
-  let testProxy: TestingApiProxy;
+  let testProxy: TestComposeApiProxy;
 
   setup(async () => {
-    testProxy = new TestingApiProxy();
+    testProxy = new TestComposeApiProxy();
     ComposeApiProxyImpl.setInstance(testProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -172,8 +47,7 @@ suite('ComposeApp', () => {
   async function initializeNewAppWithConsentAndMsbbState(
       consent: ConsentState, msbb: boolean): Promise<ComposeAppElement> {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy.setCurrentConsentState(consent);
-    testProxy.setCurrentMsbbState(msbb);
+    testProxy.setOpenMetadata({consentState: consent, msbbState: msbb});
     const newApp = document.createElement('compose-app');
     document.body.appendChild(newApp);
     await flushTasks();
@@ -232,7 +106,7 @@ suite('ComposeApp', () => {
     async function initializeNewAppWithTextSelectedState(textSelected: boolean):
         Promise<ComposeAppElement> {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      testProxy.setTextSelected(textSelected);
+      testProxy.setOpenMetadata({textSelected});
       const newApp = document.createElement('compose-app');
       document.body.appendChild(newApp);
       await flushTasks();
@@ -267,7 +141,7 @@ suite('ComposeApp', () => {
     const args = await testProxy.whenCalled('rewrite');
     await mockResponse('Refreshed output.');
 
-    assertEquals(null, args.style);
+    assertEquals(null, args);
 
     // Verify UI has updated with refreshed results.
     assertFalse(isVisible(app.$.loading));
@@ -413,7 +287,7 @@ suite('ComposeApp', () => {
         state: Partial<ComposeState>,
         input?: string): Promise<ComposeAppElement> {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      testProxy.setInitialState(state, input);
+      testProxy.setOpenMetadata({initialInput: input}, state);
       const newApp = document.createElement('compose-app');
       document.body.appendChild(newApp);
       await flushTasks();
@@ -682,7 +556,7 @@ suite('ComposeApp', () => {
     const args = await testProxy.whenCalled('rewrite');
     await mockResponse();
 
-    assertEquals(Length.kShorter, args.style.length);
+    assertEquals(Length.kShorter, args.length);
 
     testProxy.resetResolver('rewrite');
 
@@ -696,13 +570,13 @@ suite('ComposeApp', () => {
     const args2 = await testProxy.whenCalled('rewrite');
     await mockResponse();
 
-    assertEquals(Tone.kCasual, args2.style.tone);
+    assertEquals(Tone.kCasual, args2.tone);
   });
 
   test('Undo', async () => {
     // Set up initial state to show undo button and mock up a previous state.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy.setInitialState({
+    testProxy.setOpenMetadata({}, {
       hasPendingRequest: false,
       response: {
         status: ComposeStatus.kOk,

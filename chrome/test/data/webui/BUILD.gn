@@ -230,6 +230,11 @@ source_set("interactive_ui_tests") {
     "//components/password_manager/content/common:common",
     "//components/search:search",
   ]
+
+  if (enable_compose) {
+    sources += [ "compose/compose_focus_test.cc" ]
+    deps += [ "//components/compose/core/browser:features" ]
+  }
 }
 
 if (is_chromeos_ash) {
