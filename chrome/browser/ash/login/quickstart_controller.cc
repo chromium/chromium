@@ -250,6 +250,7 @@ void QuickStartController::OnStatusChanged(
     case Step::REQUESTING_GOOGLE_ACCOUNT_INFO:
       return;
     case Step::GOOGLE_ACCOUNT_INFO_RECEIVED:
+      UpdateUiState(UiState::TRANSFERRING_GAIA_CREDENTIALS);
       bootstrap_controller_->AttemptGoogleAccountTransfer();
       return;
     case Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
@@ -355,7 +356,7 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
 }
 
 void QuickStartController::StartAccountTransfer() {
-  UpdateUiState(UiState::TRANSFERRING_GAIA_CREDENTIALS);
+  UpdateUiState(UiState::CONFIRM_GOOGLE_ACCOUNT);
   bootstrap_controller_->RequestGoogleAccountInfo();
 }
 

@@ -34,6 +34,7 @@ export const QuickStartUIState = {
   VERIFICATION: 'verification',
   CONNECTING_TO_WIFI: 'connecting_to_wifi',
   CONNECTED_TO_WIFI: 'connected_to_wifi',
+  CONFIRM_GOOGLE_ACCOUNT: 'confirm_google_account',
   GAIA_CREDENTIALS: 'gaia_credentials',
   FIDO_ASSERTION_RECEIVED: 'fido_assertion_received',
 };
@@ -102,6 +103,7 @@ class QuickStartScreen extends QuickStartScreenBase {
       'setPin',
       'showConnectingToWifi',
       'setDiscoverableName',
+      'showConfirmGoogleAccount',
       'showTransferringGaiaCredentials',
       'showFidoAssertionReceived',
     ];
@@ -152,6 +154,10 @@ class QuickStartScreen extends QuickStartScreenBase {
 
   setDiscoverableName(discoverableName) {
     this.discoverableName_ = discoverableName;
+  }
+
+  showConfirmGoogleAccount() {
+    this.setUIStep(QuickStartUIState.CONFIRM_GOOGLE_ACCOUNT);
   }
 
   showTransferringGaiaCredentials() {

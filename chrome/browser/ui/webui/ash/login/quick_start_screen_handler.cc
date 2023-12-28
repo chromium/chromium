@@ -7,6 +7,7 @@
 #include "base/values.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
+#include "quick_start_screen_handler.h"
 
 namespace ash {
 
@@ -34,6 +35,10 @@ void QuickStartScreenHandler::SetDiscoverableName(
 
 void QuickStartScreenHandler::ShowConnectingToWifi() {
   CallExternalAPI("showConnectingToWifi");
+}
+
+void QuickStartScreenHandler::ShowConfirmGoogleAccount() {
+  CallExternalAPI("showConfirmGoogleAccount");
 }
 
 void QuickStartScreenHandler::ShowTransferringGaiaCredentials() {
@@ -78,6 +83,10 @@ void QuickStartScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_CANCEL);
   builder->Add("quickStartBluetoothEnableButton",
                IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_ENABLE);
+  builder->Add("quickStartConfirmAccountTitle",
+               IDS_LOGIN_QUICK_START_CONFIRM_ACCOUNT_TITLE);
+  builder->Add("quickStartConfirmAccountSubtitle",
+               IDS_LOGIN_QUICK_START_CONFIRM_ACCOUNT_SUBTITLE);
 }
 
 }  // namespace ash

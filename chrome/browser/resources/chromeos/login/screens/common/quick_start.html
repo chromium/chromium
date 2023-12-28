@@ -172,6 +172,26 @@ found in the LICENSE file.
     </oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
+<!-- CONFIRM GOOGLE ACCOUNT -->
+<oobe-adaptive-dialog id="confirmAccountDialog" for-step="confirm_google_account">
+  <iron-icon slot="icon" icon="oobe-32:googleg">
+  </iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'quickStartConfirmAccountTitle')]]
+  </h1>
+  <div slot="subtitle">
+    [[i18nDynamic(locale, 'quickStartConfirmAccountSubtitle')]]
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <iron-icon class="illustration-jelly" icon="oobe-illos:quick-start-confirm-account">
+    </iron-icon>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="cancelButton" on-click="onCancelClicked_"
+        text-key="cancelButton">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
 <!-- TRANSFERRING GAIA CREDENTIALS -->
 <oobe-loading-dialog id="gaiaTransferDialog" for-step="gaia_credentials"
     title-key="quickStartAccountTransferTitle"

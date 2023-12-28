@@ -116,6 +116,9 @@ void QuickStartScreen::OnUiUpdateRequested(
     case quick_start::QuickStartController::UiState::WIFI_CREDENTIALS_RECEIVED:
       exit_callback_.Run(Result::WIFI_CREDENTIALS_RECEIVED);
       break;
+    case quick_start::QuickStartController::UiState::CONFIRM_GOOGLE_ACCOUNT:
+      view_->ShowConfirmGoogleAccount();
+      break;
     case ash::quick_start::QuickStartController::UiState::
         TRANSFERRING_GAIA_CREDENTIALS:
       view_->ShowTransferringGaiaCredentials();

@@ -55,6 +55,7 @@ constexpr char kQuickStartBluetoothEnableButton[] =
 constexpr char kLoadingDialog[] = "loadingDialog";
 constexpr char kCancelButton[] = "cancelButton";
 constexpr char kPinCodeWrapper[] = "pinWrapper";
+constexpr char kConfirmAccountDialog[] = "confirmAccountDialog";
 constexpr char kGaiaTransferDialog[] = "gaiaTransferDialog";
 constexpr char kScreenOpenedHistogram[] = "QuickStart.ScreenOpened";
 constexpr test::UIPath kQuickStartEntryPointPath = {
@@ -79,8 +80,8 @@ constexpr test::UIPath kQuickStartPinCode = {QuickStartView::kScreenId.name,
                                              kPinCodeWrapper};
 constexpr test::UIPath kQuickStartQrCodeCanvas = {
     QuickStartView::kScreenId.name, "qrCodeCanvas"};
-constexpr test::UIPath kGaiaTransferDialogPath = {
-    QuickStartView::kScreenId.name, kGaiaTransferDialog};
+constexpr test::UIPath kConfirmAccountDialogPath = {
+    QuickStartView::kScreenId.name, kConfirmAccountDialog};
 constexpr test::UIPath kCancelButtonGaiaTransferDialog = {
     QuickStartView::kScreenId.name, kGaiaTransferDialog, kCancelButton};
 constexpr test::UIPath kQuickStartButtonGaia = {
@@ -422,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTestWithBluetoothDisabled,
 }
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTestWithBluetoothDisabled,
-                       TurningOnBlueoothFromBluetoothDialog) {
+                       TurningOnBluetoothFromBluetoothDialog) {
   test::WaitForWelcomeScreen();
 
   test::OobeJS()
@@ -759,16 +760,16 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
   test::OobeJS()
       .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonGaia)
       ->Wait();
+
   test::OobeJS().ClickOnPath(kQuickStartButtonGaia);
   OobeScreenWaiter(QuickStartView::kScreenId).Wait();
   EnsureFlowActive();
-
   SimulatePhoneConnection();
   SimulateUserVerification();
 
-  // Gaia credential transfer step should become visible
+  // "Confirm your account" step should become visible
   test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true, kGaiaTransferDialogPath)
+      .CreateVisibilityWaiter(/*visibility=*/true, kConfirmAccountDialogPath)
       ->Wait();
 
   // Cancel and return to the Gaia screen.

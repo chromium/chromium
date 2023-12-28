@@ -70,6 +70,7 @@ class QuickStartController
       SHOWING_PIN,
       CONNECTING_TO_WIFI,
       WIFI_CREDENTIALS_RECEIVED,
+      CONFIRM_GOOGLE_ACCOUNT,
       TRANSFERRING_GAIA_CREDENTIALS,
       SHOWING_FIDO,
       // Exits the screen.
