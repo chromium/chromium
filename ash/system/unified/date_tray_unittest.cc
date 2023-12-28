@@ -95,22 +95,6 @@ class TestGlanceablesClassroomClient : public GlanceablesClassroomClient {
       GlanceablesClassroomClient::GetAssignmentsCallback cb) override {
     pending_student_assignments_callbacks_.push_back(std::move(cb));
   }
-  void GetTeacherAssignmentsWithApproachingDueDate(
-      GlanceablesClassroomClient::GetAssignmentsCallback cb) override {
-    pending_teacher_assignments_callbacks_.push_back(std::move(cb));
-  }
-  void GetTeacherAssignmentsRecentlyDue(
-      GlanceablesClassroomClient::GetAssignmentsCallback cb) override {
-    pending_teacher_assignments_callbacks_.push_back(std::move(cb));
-  }
-  void GetTeacherAssignmentsWithoutDueDate(
-      GlanceablesClassroomClient::GetAssignmentsCallback cb) override {
-    pending_teacher_assignments_callbacks_.push_back(std::move(cb));
-  }
-  void GetGradedTeacherAssignments(
-      GlanceablesClassroomClient::GetAssignmentsCallback cb) override {
-    pending_teacher_assignments_callbacks_.push_back(std::move(cb));
-  }
   void OnGlanceablesBubbleClosed() override { ++bubble_closed_count_; }
 
   // Returns `bubble_closed_count_`, while also resetting the counter.
@@ -140,26 +124,11 @@ class TestGlanceablesClassroomClient : public GlanceablesClassroomClient {
     return true;
   }
 
-  bool RespondToNextPendingTeacherAssignmentsCallback(
-      std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>
-          assignments) {
-    if (pending_teacher_assignments_callbacks_.empty()) {
-      return false;
-    }
-
-    auto callback = std::move(pending_teacher_assignments_callbacks_.front());
-    pending_teacher_assignments_callbacks_.pop_front();
-    std::move(callback).Run(/*success=*/true, std::move(assignments));
-    return true;
-  }
-
  private:
   std::vector<GlanceablesClassroomClient::IsRoleEnabledCallback>
       pending_is_student_role_enabled_callbacks_;
   std::list<GlanceablesClassroomClient::GetAssignmentsCallback>
       pending_student_assignments_callbacks_;
-  std::list<GlanceablesClassroomClient::GetAssignmentsCallback>
-      pending_teacher_assignments_callbacks_;
 
   // Number of times `OnGlanceablesBubbleClosed()` has been called.
   int bubble_closed_count_ = 0;

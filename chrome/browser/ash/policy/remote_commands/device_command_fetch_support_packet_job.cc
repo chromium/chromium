@@ -53,6 +53,7 @@
 #include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using enterprise_management::FetchSupportPacketResultCode;
 using enterprise_management::FetchSupportPacketResultNote;
@@ -440,6 +441,9 @@ void DeviceCommandFetchSupportPacketJob::EnqueueEvent() {
   log_upload_event->mutable_upload_settings()->set_upload_parameters(
       GetUploadParameters(exported_path_, unique_id()));
   log_upload_event->set_command_id(unique_id());
+  log_upload_event->set_command_result_payload(GetCommandResultPayload(
+      FetchSupportPacketResultCode::FETCH_SUPPORT_PACKET_RESULT_SUCCESS,
+      notes_));
   report_queue_->Enqueue(
       std::move(log_upload_event), reporting::Priority::SLOW_BATCH,
       base::BindOnce(&DeviceCommandFetchSupportPacketJob::OnEventEnqueued,
@@ -454,11 +458,12 @@ void DeviceCommandFetchSupportPacketJob::OnEventEnqueued(
         EnterpriseFetchSupportPacketFailureType::kNoFailure);
     SYSLOG(INFO) << "FETCH_SUPPORT_PACKET command job has successfully "
                     "finished execution.";
-    std::move(result_callback_)
-        .Run(ResultType::kAcked,
-             GetCommandResultPayload(FetchSupportPacketResultCode::
-                                         FETCH_SUPPORT_PACKET_RESULT_SUCCESS,
-                                     notes_));
+    // Command result will only be send to DMServer if the command execution is
+    // finished (with success or failure). It won't be sent when command is only
+    // acked. That's why we omit result payload here. FETCH_SUPPORT_PACKET
+    // command execution will be counted as finished only when LogUploadEvent is
+    // uploaded to Reporting server.
+    std::move(result_callback_).Run(ResultType::kAcked, absl::nullopt);
     return;
   }
 

@@ -328,14 +328,10 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
 void ConfigureLensButtonAppearance(UIButton* lens_button, BOOL use_new_badge) {
   lens_button.translatesAutoresizingMaskIntoConstraints = NO;
 
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfig =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
-    lens_button.configuration = buttonConfig;
-  } else {
-    SetAdjustsImageWhenHighlighted(lens_button, NO);
-  }
+  UIButtonConfiguration* buttonConfig =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
+  lens_button.configuration = buttonConfig;
   lens_button.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_LENS);
   lens_button.accessibilityIdentifier = @"Lens";
 
