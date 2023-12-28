@@ -1213,6 +1213,10 @@ def _EnsureSystemSettings(device):
   set_date_command.append(strgmtime)
   device.RunShellCommand(set_date_command, check_return=True, as_root=True)
 
+  logging.info('Hide system error dialogs such as crash and ANR dialogs.')
+  device.RunShellCommand(
+      ['settings', 'put', 'global', 'hide_error_dialogs', '1'])
+
 
 def _EnableNetwork(device):
   logging.info('Enable the network on the emulator.')
