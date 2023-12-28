@@ -114,12 +114,13 @@ suite('SearchEngineEntryTest', function() {
     assertTrue(!!editButton);
     assertFalse(editButton.hidden);
 
-    const promise = eventToPromise('edit-search-engine', entry).then(e => {
-      assertEquals(engine, e.detail.engine);
-      assertEquals(
-          entry.shadowRoot!.querySelector('cr-icon-button'),
-          e.detail.anchorElement);
-    });
+    const promise =
+        eventToPromise('view-or-edit-search-engine', entry).then(e => {
+          assertEquals(engine, e.detail.engine);
+          assertEquals(
+              entry.shadowRoot!.querySelector('cr-icon-button'),
+              e.detail.anchorElement);
+        });
     editButton.click();
     return promise;
   });
@@ -309,6 +310,28 @@ suite('EnterpriseSiteSearchEntryTests', function() {
         'cr-icon-button.icon-more-vert');
     assertTrue(!!menuButton);
     assertTrue(menuButton.hidden);
+  });
+
+  // Verifies that the details can be seen.
+  test('ViewDetailsAllowed', function() {
+    flush();
+
+    const engine = entry.engine;
+    const viewDetailsButton =
+        entry.shadowRoot!.querySelector<HTMLButtonElement>(
+            `#viewDetailsButton`);
+    assertTrue(!!viewDetailsButton);
+    assertFalse(viewDetailsButton.hidden);
+
+    const promise =
+        eventToPromise('view-or-edit-search-engine', entry).then(e => {
+          assertEquals(engine, e.detail.engine);
+          assertEquals(
+              entry.shadowRoot!.querySelector('cr-icon-button'),
+              e.detail.anchorElement);
+        });
+    viewDetailsButton.click();
+    return promise;
   });
 
   // Verifies that the policy indicator is shown.

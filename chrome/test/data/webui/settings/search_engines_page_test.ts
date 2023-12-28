@@ -6,6 +6,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrInputElement, SettingsSearchEngineEditDialogElement, SettingsSearchEnginesListElement, SettingsSearchEnginesPageElement} from 'chrome://settings/lazy_load.js';
 import {SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions} from 'chrome://settings/settings.js';
@@ -67,7 +68,11 @@ suite('AddSearchEngineDialogTests', function() {
     assertEquals('', dialog.$.searchEngine.value);
     assertEquals('', dialog.$.keyword.value);
     assertEquals('', dialog.$.queryUrl.value);
+    assertFalse(dialog.$.queryUrl.readonly);
+    assertFalse(dialog.$.cancel.disabled);
     assertTrue(actionButton.disabled);
+    assertEquals(
+        actionButton.textContent!.trim(), loadTimeData.getString('add'));
     await inputAndValidate('searchEngine');
     await inputAndValidate('keyword');
     await inputAndValidate('queryUrl');
@@ -126,13 +131,17 @@ suite('SearchEnginePageTests', function() {
         id: 1,
         name: 'search_engine_default_B',
         displayName: 'B displayName',
+        isManaged: true,
         keyword: 'default B',
+        url: 'https://www.default_b.com/search?q=%s',
       }),
       createSampleSearchEngine({
         id: 2,
         name: 'search_engine_default_C',
         displayName: 'C displayName',
         keyword: 'default C',
+        url: 'https://www.default_c.com/search?q=%s',
+        urlLocked: true,
       }),
       createSampleSearchEngine({
         id: 3,
@@ -378,7 +387,7 @@ suite('SearchEnginePageTests', function() {
 
   test('EditSearchEngineDialog', async function() {
     const engine = searchEnginesInfo.others[0]!;
-    page.dispatchEvent(new CustomEvent('edit-search-engine', {
+    page.dispatchEvent(new CustomEvent('view-or-edit-search-engine', {
       bubbles: true,
       composed: true,
       detail: {
@@ -397,7 +406,76 @@ suite('SearchEnginePageTests', function() {
     assertEquals(engine.keyword, dialog.$.keyword.value);
     assertEquals(engine.url, dialog.$.queryUrl.value);
 
+    assertFalse(dialog.$.cancel.hidden);
+    assertFalse(dialog.$.cancel.disabled);
+    assertFalse(dialog.$.actionButton.hidden);
     assertFalse(dialog.$.actionButton.disabled);
+    assertEquals(
+        dialog.$.actionButton.textContent!.trim(),
+        loadTimeData.getString('save'));
+  });
+
+  test('EditSearchEngineDialog_IsManaged', async function() {
+    const engine = searchEnginesInfo.defaults[1]!;
+    page.dispatchEvent(new CustomEvent('view-or-edit-search-engine', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        engine,
+        anchorElement: page.shadowRoot!.querySelector('#addSearchEngine')!,
+      },
+    }));
+    const modelIndex = await browserProxy.whenCalled('searchEngineEditStarted');
+    assertEquals(engine.modelIndex, modelIndex);
+    const dialog =
+        page.shadowRoot!.querySelector('settings-search-engine-edit-dialog')!;
+    assertTrue(!!dialog);
+
+    // Check that the cr-input fields are pre-populated.
+    assertEquals(engine.name, dialog.$.searchEngine.value);
+    assertTrue(dialog.$.searchEngine.readonly);
+    assertEquals(engine.keyword, dialog.$.keyword.value);
+    assertTrue(dialog.$.keyword.readonly);
+    assertEquals(engine.url, dialog.$.queryUrl.value);
+    assertTrue(dialog.$.queryUrl.readonly);
+
+    assertTrue(dialog.$.cancel.hidden);
+    assertFalse(dialog.$.actionButton.hidden);
+    assertFalse(dialog.$.actionButton.disabled);
+    assertEquals(
+        dialog.$.actionButton.textContent!.trim(),
+        loadTimeData.getString('done'));
+  });
+
+  test('EditSearchEngineDialog_UrlLocked', async function() {
+    const engine = searchEnginesInfo.defaults[2]!;
+    page.dispatchEvent(new CustomEvent('view-or-edit-search-engine', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        engine,
+        anchorElement: page.shadowRoot!.querySelector('#addSearchEngine')!,
+      },
+    }));
+    const modelIndex = await browserProxy.whenCalled('searchEngineEditStarted');
+    assertEquals(engine.modelIndex, modelIndex);
+    const dialog =
+        page.shadowRoot!.querySelector('settings-search-engine-edit-dialog')!;
+    assertTrue(!!dialog);
+
+    // Check that the cr-input fields are pre-populated.
+    assertEquals(engine.name, dialog.$.searchEngine.value);
+    assertEquals(engine.keyword, dialog.$.keyword.value);
+    assertEquals(engine.url, dialog.$.queryUrl.value);
+    assertTrue(dialog.$.queryUrl.readonly);
+
+    assertFalse(dialog.$.cancel.hidden);
+    assertFalse(dialog.$.cancel.disabled);
+    assertFalse(dialog.$.actionButton.hidden);
+    assertFalse(dialog.$.actionButton.disabled);
+    assertEquals(
+        dialog.$.actionButton.textContent!.trim(),
+        loadTimeData.getString('save'));
   });
 
   // Tests that filtering the three search engines lists works, and that the
