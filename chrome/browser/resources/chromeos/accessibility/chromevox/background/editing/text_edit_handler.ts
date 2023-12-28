@@ -13,34 +13,30 @@ import {EditableLine} from './editable_line.js';
 import {AutomationEditableText} from './editable_text.js';
 import {AutomationRichEditableText} from './editing.js';
 
-const AutomationIntent = chrome.automation.AutomationIntent;
-const AutomationNode = chrome.automation.AutomationNode;
-const Dir = constants.Dir;
-const IntentCommandType = chrome.automation.IntentCommandType;
-const RoleType = chrome.automation.RoleType;
-const StateType = chrome.automation.StateType;
+import AutomationIntent = chrome.automation.AutomationIntent;
+import AutomationNode = chrome.automation.AutomationNode;
+import Dir = constants.Dir;
+import IntentCommandType = chrome.automation.IntentCommandType;
+import RoleType = chrome.automation.RoleType;
+import StateType = chrome.automation.StateType;
 
 /**
  * A handler for automation events in a focused text field or editable root
  * such as a |contenteditable| subtree.
  */
 export class TextEditHandler {
-  /**
-   * @param {!AutomationNode} node
-   */
-  constructor(node) {
-    /** @const {!AutomationNode} @private */
-    this.node_ = node;
+  readonly node: AutomationNode;
+  private editableText_: AutomationEditableText;
+  private inferredIntents_: AutomationIntent[] = [];
 
-    if (!node.state[StateType.EDITABLE]) {
+  constructor(node: AutomationNode) {
+    this.node = node;
+
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
+    if (!node.state![StateType.EDITABLE]) {
       throw new Error('|node| must be editable.');
     }
-
-    /** @private {!AutomationEditableText} */
     this.editableText_ = this.createEditableText_();
-
-    /** @private {!Array<AutomationIntent>} */
-    this.inferredIntents_ = [];
   }
 
   /**
@@ -59,24 +55,20 @@ export class TextEditHandler {
    *
    * Note that these definitions slightly differ from those in Blink, which
    * only considers text fields in web content.
-   * @return {boolean}
    */
-  useRichText_() {
-    return this.node_.state[StateType.RICHLY_EDITABLE] ||
+  private useRichText_(): boolean {
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
+    return this.node.state![StateType.RICHLY_EDITABLE] ||
         // This condition is a full proof way to ensure the node is editable
         // and has the content editable attribute set to any valid value.
-        (this.node_.state[StateType.EDITABLE] && this.node_.htmlAttributes &&
-         this.node_.htmlAttributes['contenteditable'] !== undefined &&
-         this.node_.htmlAttributes['contenteditable'] !== 'false') ||
+        (this.node.state![StateType.EDITABLE] && this.node.htmlAttributes &&
+         this.node.htmlAttributes['contenteditable'] !== undefined &&
+         this.node.htmlAttributes['contenteditable'] !== 'false') ||
         false;
   }
 
-  /**
-   * @return {!AutomationEditableText}
-   * @private
-   */
-  createEditableText_() {
-    const isTextArea = this.node_.htmlTag === 'textarea';
+  private createEditableText_(): AutomationEditableText {
+    const isTextArea = this.node.htmlTag === 'textarea';
 
     const useRichText = this.useRichText_() || isTextArea;
 
@@ -86,17 +78,12 @@ export class TextEditHandler {
     // have thousands or more inline text boxes. This is a very specific check
     // because ignoring offscreen nodes can impact the way in which we convert
     // from a tree position to a deep equivalent on the inline text boxes.
-    const firstStaticText = this.node_.find({role: RoleType.STATIC_TEXT});
+    const firstStaticText = this.node.find({role: RoleType.STATIC_TEXT});
     EditableLine.includeOffscreen = !isTextArea || !firstStaticText ||
         firstStaticText.children.length < MAX_INLINE_TEXT_BOXES;
 
-    return useRichText ? new AutomationRichEditableText(this.node_) :
-                         new AutomationEditableText(this.node_);
-  }
-
-  /** @return {!AutomationNode} */
-  get node() {
-    return this.node_;
+    return useRichText ? new AutomationRichEditableText(this.node) :
+                         new AutomationEditableText(this.node);
   }
 
   /**
@@ -105,10 +92,10 @@ export class TextEditHandler {
    * |valueInTextFieldChanged|.
    * An implementation of this method should emit the appropriate braille and
    * spoken feedback for the event.
-   * @param {!ChromeVoxEvent} evt
    */
-  onEvent(evt) {
-    if (!evt.target.state.focused || evt.target !== this.node_) {
+  onEvent(evt: ChromeVoxEvent): void {
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
+    if (!evt.target.state!['focused'] || evt.target !== this.node) {
       return;
     }
 
@@ -126,65 +113,50 @@ export class TextEditHandler {
     this.editableText_.onUpdate(intents);
   }
 
-  /**
-   * Returns true if selection starts at the first line.
-   * @return {boolean}
-   */
-  isSelectionOnFirstLine() {
+  /** Returns true if selection starts at the first line. */
+  isSelectionOnFirstLine(): boolean {
     return this.editableText_.isSelectionOnFirstLine();
   }
 
-  /**
-   * Returns true if selection ends at the last line.
-   * @return {boolean}
-   */
-  isSelectionOnLastLine() {
+  /** Returns true if selection ends at the last line. */
+  isSelectionOnLastLine(): boolean {
     return this.editableText_.isSelectionOnLastLine();
   }
 
-  /**
-   * Moves range to after this text field.
-   */
-  moveToAfterEditText() {
+  /** Moves range to after this text field. */
+  moveToAfterEditText(): void {
     const after = AutomationUtil.findNextNode(
-        this.node_, Dir.FORWARD, AutomationPredicate.object,
+        this.node, Dir.FORWARD, AutomationPredicate.object,
         {skipInitialSubtree: true});
-    ChromeVoxRange.navigateTo(CursorRange.fromNode(after ?? this.node_));
+    ChromeVoxRange.navigateTo(CursorRange.fromNode(after ?? this.node));
   }
 
   /**
    * Injects intents into the stream of editing events. In particular, |intents|
    * will be applied to the next processed edfiting event.
-   * @param {!Array<AutomationIntent>} intents
    */
-  injectInferredIntents(intents) {
+  injectInferredIntents(intents: AutomationIntent[]): void {
     this.inferredIntents_ = intents;
   }
 
   /**
-   * @param {!AutomationNode} node The root editable node, i.e. the root of a
+   * @param node The root editable node, i.e. the root of a
    *     contenteditable subtree or a text field.
-   * @return {TextEditHandler}
    */
-  static createForNode(node) {
-    if (!node.state.editable) {
+  static createForNode(node: AutomationNode): TextEditHandler {
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
+    if (!node.state!['editable']) {
       throw new Error('Expected editable node.');
     }
-
     return new TextEditHandler(node);
   }
 }
 
 // Local to module.
 
-/** @type {number} */
 const MAX_INLINE_TEXT_BOXES = 500;
 
-/**
- * @param {!AutomationIntent} intent
- * @return {boolean}
- */
-function isSetOrClear(intent) {
+function isSetOrClear(intent: AutomationIntent): boolean {
   return intent.command === IntentCommandType.SET_SELECTION ||
       intent.command === IntentCommandType.CLEAR_SELECTION;
 }
